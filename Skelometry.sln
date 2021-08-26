@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skelometry", "Skelometry\Skelometry.csproj", "{5B58FB2B-61BA-4F0A-B211-3E9E05A49772}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkelometryUI", "SkelometryUI\SkelometryUI.csproj", "{DE2669D9-554B-4326-B5A6-584AC3BF5DA6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B58FB2B-61BA-4F0A-B211-3E9E05A49772}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B58FB2B-61BA-4F0A-B211-3E9E05A49772}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B58FB2B-61BA-4F0A-B211-3E9E05A49772}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B58FB2B-61BA-4F0A-B211-3E9E05A49772}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE2669D9-554B-4326-B5A6-584AC3BF5DA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE2669D9-554B-4326-B5A6-584AC3BF5DA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE2669D9-554B-4326-B5A6-584AC3BF5DA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE2669D9-554B-4326-B5A6-584AC3BF5DA6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6AB32F2C-CD63-4022-BEC8-6A1FFE512435}
+	EndGlobalSection
+EndGlobal
