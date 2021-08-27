@@ -2,7 +2,8 @@
 {
     using System;
 
-    public class Vector
+    public class Vector : Scalar
     {
+	    public Joint Joint;
     }
 }
