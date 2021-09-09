@@ -8,8 +8,8 @@ namespace Skelometry
     // Maybe the dot product part is ad-bc what the triangles do, and the wedge is the area/rotation.
     // Would be nice if the wedge captured the triangles better, but maybe thats just visualization.
 
-    // When a V shape joins, you do see extra matter at the joint, or at least extra weight.
-    // It mentally degrades if you see the parts aren't acutally joined but just visually touch. This is joined objects.
+    // When a V shape joins, you do perceive extra matter at the joint, or at least extra weight.
+    // It mentally degrades if you see the parts aren't actually joined but just visually touch. This is joined objects.
 
     public class Bivector : Vector
     {

@@ -51,6 +51,7 @@
     <Compile Include="Scalar.cs" />
     <Compile Include="Segment.cs" />
     <Compile Include="Segments.cs" />
+    <Compile Include="SkelAgent.cs" />
     <Compile Include="Vector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
