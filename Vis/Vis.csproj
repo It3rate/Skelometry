@@ -61,6 +61,7 @@
     <Compile Include="Forms\VisForm.Designer.cs">
       <DependentUpon>VisForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Agent\VisDragAgent.cs" />
     <Compile Include="Model\Primitives\VisShape.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

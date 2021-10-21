@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Vis;
 using Vis.Model;
 
 namespace Vis.Forms
@@ -26,15 +25,15 @@ namespace Vis.Forms
             _agent = new VisAgent(_renderer);
         }
 
+        public void OnDraw(Graphics g)
+        {
+            _agent.Draw(g);
+        }
+
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 	        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 	        OnDraw(e.Graphics);
-        }
-
-        public void OnDraw(Graphics g)
-        {
-            _agent.Draw(g);
         }
 
         private void btNext_Click(object sender, EventArgs e)

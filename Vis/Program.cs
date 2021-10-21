@@ -17,7 +17,7 @@ namespace Vis
 {
     static class Program
     {
-        private static int _formIndex = 0;
+        private static int _formIndex = -1;
         private static Form ActiveForm;
         private static List<Form> Forms;
 
