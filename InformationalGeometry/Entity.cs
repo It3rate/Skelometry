@@ -24,5 +24,5 @@ public class Facet
 
 public class Entity
 {
-    public List<Facet> Facets { get; set; }
+    //public List<Facet> Facets { get; set; }
 }
