@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.ML.Probabilistic.Distributions;
 
 
-namespace MLTest.Vis
+namespace Vis.Model
 {
     /// <summary>
     /// A joint is observed on a concrete shape (primitives can not make joints). Generally any node with a reference that is a stroke will be a joint, but there can be others, such as crosses.

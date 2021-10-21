@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MLTest.Vis
+namespace Vis.Model
 {
     // maybe primitive paths always need to reference volume primitives? Or this is a type of stroke only.
     public class Arc : Point, IPath, IPrimitivePath

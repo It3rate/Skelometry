@@ -5,9 +5,9 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MLTest.Vis;
+using Vis.Model;
 
-namespace MLTest.Vis
+namespace Vis.Model
 {
     public class VisRenderer
     {

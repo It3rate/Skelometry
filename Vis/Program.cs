@@ -10,9 +10,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MLTest.Forms;
+using Vis.Forms;
+using Vis.Model;
 
-namespace MLTest
+namespace Vis
 {
     static class Program
     {
@@ -32,7 +33,8 @@ namespace MLTest
 	            //new InteractForm(genForm.Generator),
 	           // new TyloxForm(),
 	            //new SimForm(),
-	            new VisForm(),
+	            new VisDragForm(),
+                new VisForm(),
             };
 
             NextForm();

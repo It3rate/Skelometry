@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ML.Probabilistic.Distributions;
 
-namespace MLTest.Vis
+namespace Vis.Model
 {
 
  //   public class VisOval : CircleRef

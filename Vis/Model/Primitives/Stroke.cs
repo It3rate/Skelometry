@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MLTest.Vis
+namespace Vis.Model
 {
     public class Stroke : IPath
     {

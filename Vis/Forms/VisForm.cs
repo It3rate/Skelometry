@@ -8,9 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MLTest.Vis;
+using Vis;
+using Vis.Model;
 
-namespace MLTest.Forms
+namespace Vis.Forms
 {
     public partial class VisForm : Form
     {
@@ -18,9 +19,9 @@ namespace MLTest.Forms
         VisRenderer _renderer;
         public VisForm()
         {
+            DoubleBuffered = true;
             InitializeComponent();
 
-            DoubleBuffered = true;
             _renderer = new VisRenderer(panel1.Width, panel1.Height);
             _agent = new VisAgent(_renderer);
         }

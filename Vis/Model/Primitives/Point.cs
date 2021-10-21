@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.ML.Probabilistic.Distributions;
 
 
-namespace MLTest.Vis
+namespace Vis.Model
 {
 	//public enum VisElementType { Any, Point, Node, Circle, Square, Rectangle, Oval, Joint, Stroke, Shape }
 
@@ -101,39 +101,39 @@ namespace MLTest.Vis
 		    var pi8 = Math.PI / 8f;
 		    if (dir < -(pi8 * 7))
 		    {
-			    result = Vis.LinearDirection.Horizontal;
+			    result = Vis.Model.LinearDirection.Horizontal;
 		    }
 		    else if (dir < -(pi8 * 5))
 		    {
-			    result = Vis.LinearDirection.TRDiagonal;
+			    result = Vis.Model.LinearDirection.TRDiagonal;
 		    }
 		    else if (dir < -(pi8 * 3))
 		    {
-			    result = Vis.LinearDirection.Vertical;
+			    result = Vis.Model.LinearDirection.Vertical;
 		    }
 		    else if (dir < -(pi8 * 1))
 		    {
-			    result = Vis.LinearDirection.TLDiagonal;
+			    result = Vis.Model.LinearDirection.TLDiagonal;
 		    }
 		    else if (dir < (pi8 * 1))
 		    {
-			    result = Vis.LinearDirection.Horizontal;
+			    result = Vis.Model.LinearDirection.Horizontal;
 		    }
 		    else if (dir < (pi8 * 3))
 		    {
-			    result = Vis.LinearDirection.TRDiagonal;
+			    result = Vis.Model.LinearDirection.TRDiagonal;
 		    }
 		    else if (dir < (pi8 * 5))
 		    {
-			    result = Vis.LinearDirection.Vertical;
+			    result = Vis.Model.LinearDirection.Vertical;
 		    }
 		    else if (dir < (pi8 * 7))
 		    {
-			    result = Vis.LinearDirection.TLDiagonal;
+			    result = Vis.Model.LinearDirection.TLDiagonal;
 		    }
 		    else
 		    {
-			    result = Vis.LinearDirection.Horizontal;
+			    result = Vis.Model.LinearDirection.Horizontal;
 		    }
 
 		    return result;

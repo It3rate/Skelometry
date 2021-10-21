@@ -1,4 +1,4 @@
-﻿namespace MLTest.Forms
+﻿namespace Vis.Forms
 {
     partial class VisForm
     {

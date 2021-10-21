@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkelometryUI", "SkelometryU
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InformationalGeometry", "InformationalGeometry\InformationalGeometry.csproj", "{B83327C7-8628-4627-B539-24C4B5BA4268}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Viz", "Viz\Viz.csproj", "{863A8EEA-967B-4A28-8D2E-B7412651314D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vis", "Vis\Vis.csproj", "{863A8EEA-967B-4A28-8D2E-B7412651314D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
