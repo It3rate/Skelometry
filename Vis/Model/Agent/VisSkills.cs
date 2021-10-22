@@ -61,7 +61,7 @@ namespace Vis.Model.Agent
 
             var topLine = letterbox.GetLine(CompassDirection.N);
             var rightLine = letterbox.GetLine(CompassDirection.E);
-            var seenLeftStroke = viewPad.GetSimilar(leftLine);
+            var seenLeftStroke = viewPad.GetSimilar((IPath)leftLine);
 
             //var radius = topLine.NodeAt(0.55f, 0f);
             //var center = topLine.NodeAt(0.55f, 0.22f);
@@ -117,7 +117,7 @@ namespace Vis.Model.Agent
             viewPad.Paths.Add(leftStroke);
 
             var rightLine = letterbox.GetLine(CompassDirection.E);
-            var seenLeftStroke = viewPad.GetSimilar(leftLine);
+            var seenLeftStroke = viewPad.GetSimilar((IPath)leftLine);
 
             var midLine = letterbox.GetLine(CompassDirection.N, 0.45f);
             var midNode = midLine.StartNode;

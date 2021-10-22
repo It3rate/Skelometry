@@ -26,10 +26,6 @@ namespace Vis.Model.Controller
             //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(-1f, 0), new PointF(1f, 0));
             //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(0, -1f), new PointF(0, 1f));
 
-            foreach (var prim in agent.WorkingPad.Paths)
-            {
-                DrawPrimitive(g, prim, penIndex);
-            }
             foreach (var prim in agent.FocusPad.Paths)
             {
                 DrawPrimitive(g, prim, penIndex);
@@ -38,6 +34,11 @@ namespace Vis.Model.Controller
             foreach (var path in agent.ViewPad.Paths)
             {
                 DrawPath(g, path, 1);
+            }
+
+            foreach (var prim in agent.WorkingPad.Paths)
+            {
+                DrawPrimitive(g, prim, penIndex);
             }
         }
         public void DrawPrimitive(Graphics g, IPrimitive path, int penIndex = 0)
@@ -54,6 +55,10 @@ namespace Vis.Model.Controller
             else if (path is VisRectangle rect)
             {
                 DrawRect(g, rect, penIndex);
+            }
+            else if (path is RenderPoint rp)
+            {
+                DrawSpot(g, rp, rp.PenIndex, rp.Scale);// penIndex);
             }
             else if (path is VisPoint p)
             {
@@ -164,6 +169,7 @@ namespace Vis.Model.Controller
             Pens.Add(GetPen(Color.DarkGreen, 8f / scale));
             Pens.Add(GetPen(Color.DarkBlue, 8f / scale));
             Pens.Add(GetPen(Color.DarkViolet, 16f / scale));
+            Pens.Add(GetPen(Color.Red, 32f / scale));
         }
         private Pen GetPen(Color color, float width)
         {

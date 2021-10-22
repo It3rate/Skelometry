@@ -30,20 +30,43 @@ namespace Vis.Model.Agent
         //public VisElement GetByLocation(VisElement reference, VisLocator locator) => null;
         //   public VisElement GetNearby(Node node, VisElementType elementType = VisElementType.Any) => null;
 
-        public VisJoint GetSimilar(VisJoint joint) => null;
-        public T GetSimilar(IPath path, params VisJoint[] joints)
+        //public VisJoint GetSimilar(VisJoint joint) => null;
+
+        public IPrimitive GetSimilar(IPrimitive query)
         {
-            var result = default(T);
-            var centerPoint = new VisPoint(0.5f, 0.5f);
-            var lineDir = path.StartPoint.LinearDirection(path.EndPoint);
-            var loc = path.MidPoint.DirectionFrom(centerPoint);
+            var result = default(IPrimitive);
+            if (query is VisPoint qp)
+            {
+                foreach (var item in Paths)
+                {
+                    if (item is VisPoint p)
+                    {
+                        var dist = p.SquaredDistanceTo(qp);
+                        if (dist < 0.003f)
+                        {
+                            result = p;
+                            break;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+            
+        public IPath GetSimilar(IPath query, params VisJoint[] joints)
+        {
+            var result = default(IPath);
             foreach (var item in Paths)
             {
                 if (item is IPath padPath)
                 {
+                    IPath path = (IPath)query;
+                    var centerPoint = new VisPoint(0.5f, 0.5f);
+                    var lineDir = path.StartPoint.LinearDirection(path.EndPoint);
+                    var loc = path.MidPoint.DirectionFrom(centerPoint);
                     if (padPath.StartPoint.LinearDirection(padPath.EndPoint) == lineDir && padPath.MidPoint.DirectionFrom(centerPoint) == loc)
                     {
-                        result = item;
+                        result = padPath;
                     }
                 }
             }

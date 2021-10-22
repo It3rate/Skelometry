@@ -9,9 +9,10 @@ namespace Vis.Model.Agent
 {
     public class VisMeasureSkills
     {
-        public void Point(IAgent agent, VisPoint p)
+        public void Point(IAgent agent, VisPoint p, bool permanent = false)
         {
-            agent.FocusPad.Paths.Add(p);
+            var pad = permanent ? agent.FocusPad : agent.WorkingPad;
+            pad.Paths.Add(p);
         }
         public void Line(IAgent agent, VisPoint start, VisPoint end, bool permanent = false)
         {

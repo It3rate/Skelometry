@@ -31,6 +31,7 @@ namespace Vis.Model.Agent
         }
 
         bool _isDown = false;
+        bool _isHighlighting = false;
         VisPoint _startPoint;
         public bool MouseDown(MouseEventArgs e)
         {
@@ -43,11 +44,28 @@ namespace Vis.Model.Agent
         public bool MouseMove(MouseEventArgs e)
         {
             var result = false;
+            var p = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
             if (_isDown)
             {
-                var endPoint = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
-                _skills.Line(this, _startPoint, endPoint);
+                _skills.Line(this, _startPoint, p);
                 result = true; 
+            }
+            else
+            {
+                var similarPt = FocusPad.GetSimilar(p);
+                if(similarPt is VisPoint sp)
+                {
+                    var rp = new RenderPoint(sp, 7, 2f);
+                    _skills.Point(this, rp);
+                    _isHighlighting = true;
+                    result = true;
+                }
+
+                if(!result && _isHighlighting)
+                {
+                    _isHighlighting = false;
+                    result = true;
+                }
             }
             return result;
         }
@@ -78,7 +96,8 @@ namespace Vis.Model.Agent
             var state = g.Save();
             //g.TranslateTransform(10, 10);
             g.ScaleTransform(_unitPixels, _unitPixels);
-            _renderer.Draw(g, this, 3);
+            int penIndex = _isDown ? 3 : 2;
+            _renderer.Draw(g, this, penIndex);
             g.Restore(state);
 
             Clear();
