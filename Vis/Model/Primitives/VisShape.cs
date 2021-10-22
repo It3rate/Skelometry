@@ -4,23 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vis.Model
+namespace Vis.Model.Primitives
 {
     public class VisShape
     {
-	    public float Length => 0;
-	    public Point Anchor { get; } = null;
+        public float Length => 0;
+        public VisPoint Anchor { get; } = null;
 
-	    public List<Stroke> Strokes { get; } = new List<Stroke>();
+        public List<VisStroke> Strokes { get; } = new List<VisStroke>();
 
         // computed
-	    public List<VisJoint> ComputedJoints { get; } = new List<VisJoint>();
+        public List<VisJoint> ComputedJoints { get; } = new List<VisJoint>();
 
-	    public float IsInside(IPath element) => 0;
+        public float IsInside(IPath element) => 0;
 
-	    public VisShape(params Stroke[] strokes)
-	    {
-		    Strokes.AddRange(strokes);
-	    }
+        public VisShape(params VisStroke[] strokes)
+        {
+            Strokes.AddRange(strokes);
+        }
     }
 }

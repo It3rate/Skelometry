@@ -8,7 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Vis.Model;
+using Vis.Model.Agent;
+using Vis.Model.Controller;
 
 namespace Vis.Forms
 {
@@ -45,5 +46,25 @@ namespace Vis.Forms
             Application.Exit();
         }
 
+        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        {
+            _agent.MouseDown(e);
+            panel1.Invalidate();
+        }
+
+        private void panel1_MouseMove(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void panel1_MouseUp(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void VisDragForm_KeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
     }
 }

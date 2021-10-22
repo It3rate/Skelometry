@@ -87,6 +87,9 @@ namespace Vis.Forms
             this.panel1.Size = new System.Drawing.Size(750, 334);
             this.panel1.TabIndex = 19;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
             // 
             // btNext
             // 
@@ -129,6 +132,7 @@ namespace Vis.Forms
             this.Name = "VisDragForm";
             this.Text = "VisDragForm";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this._formClosed);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.VisDragForm_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

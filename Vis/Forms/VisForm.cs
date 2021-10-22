@@ -8,7 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Vis.Model;
+using Vis.Model.Agent;
+using Vis.Model.Controller;
 
 namespace Vis.Forms
 {

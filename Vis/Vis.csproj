@@ -61,7 +61,9 @@
     <Compile Include="Forms\VisForm.Designer.cs">
       <DependentUpon>VisForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Agent\IAgent.cs" />
     <Compile Include="Model\Agent\VisDragAgent.cs" />
+    <Compile Include="Model\Agent\VisMeasureSkills.cs" />
     <Compile Include="Model\Primitives\VisShape.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,13 +71,13 @@
     <Compile Include="Model\Agent\VisPad.cs" />
     <Compile Include="Model\Agent\VisSkills.cs" />
     <Compile Include="Model\Controller\VisRenderer.cs" />
-    <Compile Include="Model\Primitives\Arc.cs" />
-    <Compile Include="Model\Primitives\Circle.cs" />
-    <Compile Include="Model\Primitives\Line.cs" />
-    <Compile Include="Model\Primitives\Node.cs" />
-    <Compile Include="Model\Primitives\Point.cs" />
-    <Compile Include="Model\Primitives\Rectangle.cs" />
-    <Compile Include="Model\Primitives\Stroke.cs" />
+    <Compile Include="Model\Primitives\VisArc.cs" />
+    <Compile Include="Model\Primitives\VisCircle.cs" />
+    <Compile Include="Model\Primitives\VisLine.cs" />
+    <Compile Include="Model\Primitives\VisNode.cs" />
+    <Compile Include="Model\Primitives\VisPoint.cs" />
+    <Compile Include="Model\Primitives\VisRectangle.cs" />
+    <Compile Include="Model\Primitives\VisStroke.cs" />
     <Compile Include="Model\Primitives\VisJoint.cs" />
     <Compile Include="Model\Primitives\VisLocator.cs" />
     <Compile Include="Model\Primitives\VisPrimitives.cs" />
