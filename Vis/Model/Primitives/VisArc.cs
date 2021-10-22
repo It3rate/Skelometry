@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -77,6 +78,19 @@ namespace Vis.Model.Primitives
             }
             result.Add(EndPoint);
             return result.ToArray();
+        }
+        public IEnumerator<VisPoint> GetEnumerator()
+        {
+            yield return StartPoint;
+            yield return EndPoint;
+            yield return Center;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            yield return StartPoint;
+            yield return EndPoint;
+            yield return Center;
         }
     }
 }

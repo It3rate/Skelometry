@@ -34,7 +34,7 @@ namespace Vis.Model.Primitives
 
         public VisPoint GetPoint(float position, float offset = 0)
         {
-            throw new NotImplementedException();
+            return Reference.GetPoint(position, offset);
         }
 
 

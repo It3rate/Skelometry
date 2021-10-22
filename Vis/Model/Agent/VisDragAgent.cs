@@ -52,7 +52,7 @@ namespace Vis.Model.Agent
             }
             else
             {
-                var similarPt = FocusPad.GetSimilar(p);
+                var similarPt = ViewPad.GetSimilar(p);
                 if(similarPt is VisPoint sp)
                 {
                     var rp = new RenderPoint(sp, 7, 2f);

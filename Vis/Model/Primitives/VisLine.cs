@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -112,6 +113,18 @@ namespace Vis.Model
         public override string ToString()
         {
 	        return String.Format("Ln:{0:0.##},{1:0.##} {2:0.##},{3:0.##}", X, Y, EndPoint.X, EndPoint.Y);
+        }
+
+        public IEnumerator<VisPoint> GetEnumerator()
+        {
+            yield return StartPoint;
+            yield return EndPoint;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            yield return StartPoint;
+            yield return EndPoint;
         }
     }
 }

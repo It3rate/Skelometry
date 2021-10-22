@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -139,5 +140,22 @@ namespace Vis.Model.Primitives
         public VisNode StartNode => Nodes[0];
         public VisNode MidNode => new VisNode(this, 0.5f);
         public VisNode EndNode => Nodes[Nodes.Count - 1];
+
+        public IEnumerator<VisPoint> GetEnumerator()
+        {
+            foreach(var node in Nodes)
+            {
+                yield return node.GetPoint(0);
+                yield return node.GetPoint(1); // need to get all relevant points
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            foreach (var node in Nodes)
+            {
+                yield return node.GetPoint(0);
+            }
+        }
     }
 }

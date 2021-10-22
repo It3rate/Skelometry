@@ -25,7 +25,7 @@ namespace Vis.Model.Primitives
         VisPoint[] GetPolylinePoints(int pointCount = 24);
     }
 
-    public interface IPath
+    public interface IPath : IEnumerable<VisPoint>
     {
         float Length { get; }
         VisPoint StartPoint { get; }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -188,6 +189,20 @@ namespace Vis.Model.Primitives
             return result.ToArray();
         }
 
+        public IEnumerator<VisPoint> GetEnumerator()
+        {
+            yield return StartPoint;
+            yield return EndPoint;
+            yield return Center;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            yield return StartPoint;
+            yield return EndPoint;
+            yield return Center;
+
+        }
         public override string ToString()
         {
             return $"Circ:{X:0.##},{Y:0.##} r{Radius:0.##}";

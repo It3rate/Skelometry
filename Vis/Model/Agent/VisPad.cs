@@ -39,13 +39,26 @@ namespace Vis.Model.Agent
             {
                 foreach (var item in Paths)
                 {
+                    float dist = float.MaxValue;
                     if (item is VisPoint p)
                     {
-                        var dist = p.SquaredDistanceTo(qp);
+                        dist = p.SquaredDistanceTo(qp);
                         if (dist < 0.003f)
                         {
                             result = p;
                             break;
+                        }
+                    }
+                    else if (item is IPath path)
+                    {
+                        foreach (VisPoint pp in path)
+                        {
+                            dist = pp.SquaredDistanceTo(qp);
+                            if (dist < 0.003f)
+                            {
+                                result = pp;
+                                break;
+                            }
                         }
                     }
                 }
