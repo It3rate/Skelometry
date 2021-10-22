@@ -21,14 +21,18 @@ namespace Vis.Model.Controller
             Height = height;
             GenPens(height * 4);
         }
-        public void Draw(Graphics g, IAgent agent)
+        public void Draw(Graphics g, IAgent agent, int penIndex = 0)
         {
             //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(-1f, 0), new PointF(1f, 0));
             //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(0, -1f), new PointF(0, 1f));
 
+            foreach (var prim in agent.WorkingPad.Paths)
+            {
+                DrawPrimitive(g, prim, penIndex);
+            }
             foreach (var prim in agent.FocusPad.Paths)
             {
-                DrawPrimitive(g, prim, 0);
+                DrawPrimitive(g, prim, penIndex);
             }
 
             foreach (var path in agent.ViewPad.Paths)
@@ -40,7 +44,7 @@ namespace Vis.Model.Controller
         {
             if (path is VisLine line)
             {
-                DrawLine(g, line.StartPoint, line.EndPoint);
+                DrawLine(g, line.StartPoint, line.EndPoint, penIndex);
             }
             else if (path is VisCircle circ)
             {

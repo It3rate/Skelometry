@@ -12,6 +12,7 @@ namespace Vis.Model.Agent
 {
     public class VisDragAgent : IAgent
     {
+        public VisPad<VisPoint> WorkingPad { get; private set; }
         public VisPad<VisPoint> FocusPad { get; private set; }
         public VisPad<VisStroke> ViewPad { get; private set; }
         private VisRenderer _renderer;
@@ -24,28 +25,40 @@ namespace Vis.Model.Agent
             _renderer = renderer;
 
             _skills = new VisMeasureSkills();
+            WorkingPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height);
             FocusPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height);
             ViewPad = new VisPad<VisStroke>(_renderer.Width, _renderer.Height);
         }
 
         bool _isDown = false;
-        public void MouseDown(MouseEventArgs e)
+        VisPoint _startPoint;
+        public bool MouseDown(MouseEventArgs e)
         {
             _isDown = true;
-            _skills.Line(FocusPad, ViewPad, e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+            _startPoint = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+            _skills.Point(this, _startPoint);
+            return true;
         }
 
-        public void MouseMove(object sender, MouseEventArgs e)
+        public bool MouseMove(MouseEventArgs e)
         {
+            var result = false;
             if (_isDown)
             {
-
+                var endPoint = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+                _skills.Line(this, _startPoint, endPoint);
+                result = true; 
             }
+            return result;
         }
 
-        public void MouseUp(object sender, MouseEventArgs e)
+        public bool MouseUp(MouseEventArgs e)
         {
             _isDown = false;
+            var endPoint = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+            _skills.Line(this, _startPoint, endPoint, true);
+            _startPoint = null;
+            return true;
         }
 
         public void KeyDown(object sender, KeyEventArgs e)
@@ -55,8 +68,9 @@ namespace Vis.Model.Agent
 
         public void Clear()
         {
-            FocusPad.Clear();
-            ViewPad.Clear();
+            WorkingPad.Clear();
+            //FocusPad.Clear();
+            //ViewPad.Clear();
         }
 
         public void Draw(Graphics g)
@@ -64,8 +78,10 @@ namespace Vis.Model.Agent
             var state = g.Save();
             //g.TranslateTransform(10, 10);
             g.ScaleTransform(_unitPixels, _unitPixels);
-            _renderer.Draw(g, this);
+            _renderer.Draw(g, this, 3);
             g.Restore(state);
+
+            Clear();
         }
 
 

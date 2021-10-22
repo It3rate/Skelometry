@@ -9,7 +9,7 @@ namespace Vis.Model.Agent
 {
     public enum PadType { Rectangle, Oval, Hexagon }
 
-    public class VisPad<T> //where T : IPath
+    public class VisPad<T> //where T : IPrimitive
     {
         public PadType Type { get; }
 

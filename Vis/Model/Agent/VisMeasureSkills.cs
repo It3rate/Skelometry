@@ -9,13 +9,17 @@ namespace Vis.Model.Agent
 {
     public class VisMeasureSkills
     {
-        public void Line(VisPad<VisPoint> focusPad, VisPad<VisStroke> viewPad, float x, float y)
+        public void Point(IAgent agent, VisPoint p)
         {
-            //var letterbox = new Rectangle(0.5f, 0.5f, 0f, 0f);
-            //focusPad.Paths.Add(letterbox);
-
-            var p = new VisPoint(x, y);
-            focusPad.Paths.Add(p);
+            agent.FocusPad.Paths.Add(p);
+        }
+        public void Line(IAgent agent, VisPoint start, VisPoint end, bool permanent = false)
+        {
+            var pad = permanent ? agent.FocusPad : agent.WorkingPad;
+            VisLine line = VisLine.ByEndpoints(start, end);
+            pad.Paths.Add(line);
+            pad.Paths.Add(start);
+            pad.Paths.Add(end);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Vis.Model.Agent
 {
     public interface IAgent
     {
+        VisPad<VisPoint> WorkingPad { get; }
         VisPad<VisPoint> FocusPad { get; }
         VisPad<VisStroke> ViewPad { get; }
 

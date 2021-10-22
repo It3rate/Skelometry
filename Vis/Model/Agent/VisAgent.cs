@@ -11,6 +11,7 @@ namespace Vis.Model.Agent
 {
     public class VisAgent : IAgent
     {
+        public VisPad<VisPoint> WorkingPad { get; private set; }
         public VisPad<VisPoint> FocusPad { get; private set; }
         public VisPad<VisStroke> ViewPad { get; private set; }
 
@@ -23,6 +24,7 @@ namespace Vis.Model.Agent
             _renderer = renderer;
 
             Skills = new VisSkills();
+            WorkingPad = new VisPad<VisPoint>(250, 250);
             FocusPad = new VisPad<VisPoint>(250, 250);
             ViewPad = new VisPad<VisStroke>(250, 250);
 

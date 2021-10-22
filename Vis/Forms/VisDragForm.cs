@@ -48,18 +48,26 @@ namespace Vis.Forms
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
-            _agent.MouseDown(e);
-            panel1.Invalidate();
+            if (_agent.MouseDown(e))
+            {
+                panel1.Invalidate();
+            }
         }
 
         private void panel1_MouseMove(object sender, MouseEventArgs e)
         {
-
+            if (_agent.MouseMove(e))
+            {
+                panel1.Invalidate();
+            }
         }
 
         private void panel1_MouseUp(object sender, MouseEventArgs e)
         {
-
+            if (_agent.MouseUp(e))
+            {
+                panel1.Invalidate();
+            }
         }
 
         private void VisDragForm_KeyDown(object sender, KeyEventArgs e)
