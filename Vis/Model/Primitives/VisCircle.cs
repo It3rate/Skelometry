@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vis.Model.Agent;
 
 namespace Vis.Model.Primitives
 {
@@ -27,6 +28,7 @@ namespace Vis.Model.Primitives
         public VisPoint EndPoint => PerimeterOrigin;
 
         public VisPoint Center => this;
+        public VisNode CenterNode;
 
         //public CircleRef(Point center, float radius) : base(center.X, center.Y)
         //{
@@ -187,6 +189,24 @@ namespace Vis.Model.Primitives
                 result.Add(GetPoint(i));
             }
             return result.ToArray();
+        }
+
+        public VisNode NodeNear(VisPoint point)
+        {
+	        VisNode result = null;
+	        if (StartPoint.SquaredDistanceTo(point) < point.NearThreshold)
+	        {
+		        result = StartNode;
+	        }
+	        else if (EndPoint.SquaredDistanceTo(point) < point.NearThreshold)
+	        {
+		        result = EndNode;
+	        }
+	        else if (Center.SquaredDistanceTo(point) < point.NearThreshold)
+	        {
+		        //result = Center; // need to define nodes for things like centers and areas along perimeter in order to know the source of matches
+	        }
+            return result;
         }
 
         public IEnumerator<VisPoint> GetEnumerator()

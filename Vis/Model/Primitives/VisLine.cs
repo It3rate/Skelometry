@@ -110,9 +110,18 @@ namespace Vis.Model
 	        return result.ToArray();
         }
 
-        public override string ToString()
+        public VisNode NodeNear(VisPoint point)
         {
-	        return String.Format("Ln:{0:0.##},{1:0.##} {2:0.##},{3:0.##}", X, Y, EndPoint.X, EndPoint.Y);
+	        VisNode result = null;
+	        if (StartPoint.SquaredDistanceTo(point) < point.NearThreshold)
+	        {
+		        result = StartNode;
+	        }
+	        if (EndPoint.SquaredDistanceTo(point) < point.NearThreshold)
+	        {
+		        result = EndNode;
+	        }
+	        return result;
         }
 
         public IEnumerator<VisPoint> GetEnumerator()
@@ -126,5 +135,11 @@ namespace Vis.Model
             yield return StartPoint;
             yield return EndPoint;
         }
+
+        public override string ToString()
+        {
+	        return String.Format("Ln:{0:0.##},{1:0.##} {2:0.##},{3:0.##}", X, Y, EndPoint.X, EndPoint.Y);
+        }
+
     }
 }

@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.ML.Probabilistic, Version=0.3.2102.1701, Culture=neutral, PublicKeyToken=e4813102a62778da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ML.Probabilistic.0.3.2102.1701\lib\netstandard2.0\Microsoft.ML.Probabilistic.dll</HintPath>
+      <HintPath>F:\packages\Microsoft.ML.Probabilistic.0.3.2102.1701\lib\netstandard2.0\Microsoft.ML.Probabilistic.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

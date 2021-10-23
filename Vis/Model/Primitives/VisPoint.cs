@@ -36,6 +36,7 @@ namespace Vis.Model.Primitives
         VisPoint GetPointFromCenter(float centeredPosition, float offset = 0);
 
         VisNode NodeAt(float position, float offset = 0);
+        VisNode NodeNear(VisPoint point);
         VisNode StartNode { get; }
         VisNode MidNode { get; }
         VisNode EndNode { get; }
@@ -58,6 +59,7 @@ namespace Vis.Model.Primitives
         public float X { get; }
         public float Y { get; }
 
+        public float NearThreshold = 0.003f;
         protected const float pi2 = (float)(Math.PI * 2.0);
 
         public VisPoint(float x, float y)
@@ -70,6 +72,11 @@ namespace Vis.Model.Primitives
         {
             X = p.X;
             Y = p.Y;
+        }
+
+        public bool IsNear(VisPoint p)
+        {
+	        return this.SquaredDistanceTo(p) < NearThreshold;
         }
 
         public VisPoint Sample(Gaussian g) => new VisPoint(X + (float)g.Sample(), Y + (float)g.Sample());

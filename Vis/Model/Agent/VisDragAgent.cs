@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.ML.Probabilistic.Factors;
 using Vis.Model.Controller;
 using Vis.Model.Primitives;
 
@@ -32,12 +33,35 @@ namespace Vis.Model.Agent
 
         bool _isDown = false;
         bool _isHighlighting = false;
+        VisPoint _highlightingPoint;
         VisPoint _startPoint;
         public bool MouseDown(MouseEventArgs e)
         {
             _isDown = true;
-            _startPoint = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
-            _skills.Point(this, _startPoint);
+            if (_isHighlighting)
+            {
+	            var path = ViewPad.PathWithNodeNear(_highlightingPoint);
+	            if (path != null)
+	            {
+		            _startPoint = path.EndPoint.IsNear(_highlightingPoint) ? path.StartPoint : path.EndPoint;
+		            _skills.Point(this, _startPoint);
+		            if (path is VisStroke stroke)
+		            {
+			            ViewPad.Remove(stroke);
+                    }
+                }
+                else
+	            {
+		            _isHighlighting = false;
+		            _highlightingPoint = null;
+	            }
+            }
+            
+            if(!_isHighlighting)
+            {
+	            _startPoint = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+	            _skills.Point(this, _startPoint);
+            }
             return true;
         }
 
@@ -50,24 +74,26 @@ namespace Vis.Model.Agent
                 _skills.Line(this, _startPoint, p);
                 result = true; 
             }
-            else
-            {
-                var similarPt = ViewPad.GetSimilar(p);
-                if(similarPt is VisPoint sp)
-                {
-                    var rp = new RenderPoint(sp, 7, 2f);
-                    _skills.Point(this, rp);
-                    _isHighlighting = true;
-                    result = true;
-                }
 
-                if(!result && _isHighlighting)
-                {
-                    _isHighlighting = false;
-                    result = true;
-                }
+            // check if we are over an existing point
+            var similarPt = ViewPad.GetSimilar(p);
+            if(similarPt is VisPoint sp)
+            {
+                var rp = new RenderPoint(sp, 4, 4f);
+                _skills.Point(this, rp);
+                _isHighlighting = true;
+                _highlightingPoint = rp;
+                result = true;
             }
-            return result;
+
+            if (!result && _isHighlighting)
+            {
+                _isHighlighting = false;
+                _highlightingPoint = null;
+                result = true;
+            }
+
+	        return result;
         }
 
         public bool MouseUp(MouseEventArgs e)

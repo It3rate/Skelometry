@@ -141,6 +141,25 @@ namespace Vis.Model.Primitives
         public VisNode MidNode => new VisNode(this, 0.5f);
         public VisNode EndNode => Nodes[Nodes.Count - 1];
 
+        public VisNode NodeNear(VisPoint point)
+        {
+	        VisNode result = null;
+	        foreach (var node in Nodes)
+	        {
+		        if (node.GetPoint(0).SquaredDistanceTo(point) < point.NearThreshold)
+		        {
+			        result = node;
+			        break;
+		        }
+                else if (node.GetPoint(1).SquaredDistanceTo(point) < point.NearThreshold)
+		        {
+			        result = node;
+			        break;
+		        }
+            }
+	        return result;
+        }
+
         public IEnumerator<VisPoint> GetEnumerator()
         {
             foreach(var node in Nodes)
@@ -155,7 +174,12 @@ namespace Vis.Model.Primitives
             foreach (var node in Nodes)
             {
                 yield return node.GetPoint(0);
+                yield return node.GetPoint(1);
             }
+        }
+        public override string ToString()
+        {
+	        return String.Format("Stroke:{0},{1:0.##}, {2:0.##},{3:0.##},{4:0.##}", Nodes.Count, StartPoint.X, StartPoint.Y, EndPoint.X, EndPoint.Y);
         }
     }
 }

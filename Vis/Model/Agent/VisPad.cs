@@ -22,15 +22,60 @@ namespace Vis.Model.Agent
             Width = width;
             Height = height;
         }
+        public void Remove(T item)
+        {
+	        Paths.Remove(item);
+        }
         public void Clear()
         {
-            Paths.Clear();
+	        Paths.Clear();
         }
 
         //public VisElement GetByLocation(VisElement reference, VisLocator locator) => null;
         //   public VisElement GetNearby(Node node, VisElementType elementType = VisElementType.Any) => null;
 
         //public VisJoint GetSimilar(VisJoint joint) => null;
+
+        public VisNode NodeNear(VisPoint query)
+        {
+	        VisNode result = null;
+	        foreach (var item in Paths)
+	        {
+		        if (item is IPath path)
+		        {
+			        foreach (VisPoint p in path)
+			        {
+				        var dist = p.SquaredDistanceTo(query);
+				        if (dist < query.NearThreshold)
+				        {
+					        result = path.NodeNear(p);
+					        break;
+				        }
+			        }
+		        }
+	        }
+	        return result;
+        }
+        public IPath PathWithNodeNear(VisPoint query)
+        {
+	        IPath result = null;
+	        foreach (var item in Paths)
+	        {
+		        if (item is IPath path)
+		        {
+			        foreach (VisPoint p in path)
+			        {
+				        var dist = p.SquaredDistanceTo(query);
+				        if (dist < query.NearThreshold)
+				        {
+					        result = path;
+					        break;
+				        }
+			        }
+		        }
+	        }
+	        return result;
+        }
 
         public IPrimitive GetSimilar(IPrimitive query)
         {
@@ -43,7 +88,7 @@ namespace Vis.Model.Agent
                     if (item is VisPoint p)
                     {
                         dist = p.SquaredDistanceTo(qp);
-                        if (dist < 0.003f)
+                        if (dist < qp.NearThreshold)
                         {
                             result = p;
                             break;
@@ -54,7 +99,7 @@ namespace Vis.Model.Agent
                         foreach (VisPoint pp in path)
                         {
                             dist = pp.SquaredDistanceTo(qp);
-                            if (dist < 0.003f)
+                            if (dist < qp.NearThreshold)
                             {
                                 result = pp;
                                 break;

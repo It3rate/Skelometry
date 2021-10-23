@@ -79,6 +79,25 @@ namespace Vis.Model.Primitives
             result.Add(EndPoint);
             return result.ToArray();
         }
+
+        public VisNode NodeNear(VisPoint point)
+        {
+	        VisNode result = null;
+	        if (StartPoint.SquaredDistanceTo(point) < point.NearThreshold)
+	        {
+		        result = StartNode;
+	        }
+	        else if (EndPoint.SquaredDistanceTo(point) < point.NearThreshold)
+	        {
+		        result = EndNode;
+	        }
+	        else if (Center.SquaredDistanceTo(point) < point.NearThreshold)
+	        {
+		        //result = Center; // need to define nodes for things like centers and areas along perimeter in order to know the source of matches
+	        }
+	        return result;
+        }
+
         public IEnumerator<VisPoint> GetEnumerator()
         {
             yield return StartPoint;
