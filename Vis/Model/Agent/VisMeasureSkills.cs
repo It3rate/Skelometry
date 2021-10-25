@@ -19,6 +19,7 @@ namespace Vis.Model.Agent
             VisLine line = VisLine.ByEndpoints(start, end);
             if (permanent)
             {
+                agent.FocusPad.Paths.Add(line);
                 var nodeStart = new VisNode(line, 0);
                 var nodeEnd = new VisNode(line, 1);
                 agent.ViewPad.Paths.Add(new VisStroke(nodeStart, nodeEnd));

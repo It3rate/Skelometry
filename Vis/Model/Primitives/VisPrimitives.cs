@@ -8,6 +8,51 @@ using Microsoft.ML.Probabilistic.Distributions;
 
 namespace Vis.Model.Primitives
 {
+	//public enum VisElementType { Any, Point, Node, Circle, Square, Rectangle, Oval, Joint, Stroke, Shape }
+
+	/// <summary>
+	/// The mental map primitives when we conceptualize things at a high level. These are meant to be (ideally) what we use, not what is mathematically possible or even simple.
+	/// </summary>
+	public interface IPrimitive
+	{
+		float X { get; }
+		float Y { get; }
+		float Similarity(IPrimitive p);
+		VisPoint Sample(Gaussian g);
+	}
+	public interface IPrimitivePath : IPath
+	{
+		VisPoint[] GetPolylinePoints(int pointCount = 24);
+	}
+
+	public interface IPath : IEnumerable<VisPoint>
+	{
+		float Length { get; }
+		VisPoint StartPoint { get; }
+		VisPoint MidPoint { get; }
+		VisPoint EndPoint { get; }
+
+		VisPoint GetPoint(float position, float offset = 0);
+		VisPoint GetPointFromCenter(float centeredPosition, float offset = 0);
+
+		VisNode NodeAt(float position, float offset = 0);
+		VisNode NodeNear(VisPoint point);
+		VisNode StartNode { get; }
+		VisNode MidNode { get; }
+		VisNode EndNode { get; }
+	}
+
+	public interface IArea
+	{
+		VisPoint Center { get; }
+		float Area { get; }
+		VisRectangle Bounds { get; }
+		bool IsClosed { get; }
+		bool IsConcave { get; }
+		int JointCount { get; }
+		int CornerCount { get; }
+		float Sharpness { get; }
+	}
 
     //   public class VisOval : CircleRef
     //   {

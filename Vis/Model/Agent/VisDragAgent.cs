@@ -33,8 +33,10 @@ namespace Vis.Model.Agent
 
         bool _isDown = false;
         bool _isHighlighting = false;
+        private bool _isDraggingExisting = false;
         VisPoint _highlightingPoint;
         VisPoint _startPoint;
+        VisPoint _dragPoint;
         public bool MouseDown(MouseEventArgs e)
         {
             _isDown = true;
@@ -47,21 +49,25 @@ namespace Vis.Model.Agent
 		            _skills.Point(this, _startPoint);
 		            if (path is VisStroke stroke)
 		            {
-			            ViewPad.Remove(stroke);
-                    }
+			            _isDraggingExisting = true;
+			            _dragPoint = _highlightingPoint;
+			            _isHighlighting = false;
+		            }
                 }
                 else
 	            {
 		            _isHighlighting = false;
-		            _highlightingPoint = null;
 	            }
             }
             
             if(!_isHighlighting)
             {
-	            _startPoint = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+	            _startPoint = _isDraggingExisting ? _highlightingPoint.Clone() : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
 	            _skills.Point(this, _startPoint);
             }
+
+            _isHighlighting = false;
+            _highlightingPoint = null;
             return true;
         }
 
@@ -71,8 +77,17 @@ namespace Vis.Model.Agent
             var p = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
             if (_isDown)
             {
-                _skills.Line(this, _startPoint, p);
-                result = true; 
+	            if (_isDraggingExisting)
+	            {
+		            _dragPoint.X = p.X;
+		            _dragPoint.Y = p.Y;
+		            _skills.Line(this, _startPoint, p);
+                }
+	            else
+	            {
+	                _skills.Line(this, _startPoint, p);
+	            }
+	            result = true;
             }
 
             // check if we are over an existing point
@@ -82,8 +97,13 @@ namespace Vis.Model.Agent
                 var rp = new RenderPoint(sp, 4, 4f);
                 _skills.Point(this, rp);
                 _isHighlighting = true;
-                _highlightingPoint = rp;
+                _highlightingPoint = sp;
                 result = true;
+            }
+            else
+            {
+	            _isHighlighting = false;
+	            _highlightingPoint = null;
             }
 
             if (!result && _isHighlighting)
@@ -99,9 +119,12 @@ namespace Vis.Model.Agent
         public bool MouseUp(MouseEventArgs e)
         {
             _isDown = false;
-            var endPoint = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+            var endPoint = _isHighlighting ? _highlightingPoint : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+
             _skills.Line(this, _startPoint, endPoint, true);
             _startPoint = null;
+            _isDraggingExisting = false;
+            _dragPoint = null;
             return true;
         }
 

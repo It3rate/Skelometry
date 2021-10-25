@@ -11,10 +11,12 @@ namespace Vis.Model.Controller
     {
         public int PenIndex { get; set; }
         public float Scale { get; set; }
+        public VisPoint InternalPoint { get; set; }
         public RenderPoint(VisPoint p, int penIndex, float scale) : base(p)
         {
             PenIndex = penIndex;
             Scale = scale;
+            InternalPoint = p;
         }
     }
 }

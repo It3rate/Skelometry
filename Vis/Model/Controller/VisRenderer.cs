@@ -33,6 +33,7 @@ namespace Vis.Model.Controller
 
             foreach (var path in agent.ViewPad.Paths)
             {
+	            Console.WriteLine(path.StartPoint);
                 DrawPath(g, path, 1);
             }
 

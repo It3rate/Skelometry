@@ -8,56 +8,20 @@ using Microsoft.ML.Probabilistic.Distributions;
 
 namespace Vis.Model.Primitives
 {
-    //public enum VisElementType { Any, Point, Node, Circle, Square, Rectangle, Oval, Joint, Stroke, Shape }
-
-    /// <summary>
-    /// The mental map primitives when we conceptualize things at a high level. These are meant to be (ideally) what we use, not what is mathematically possible or even simple.
-    /// </summary>
-    public interface IPrimitive
-    {
-        float X { get; }
-        float Y { get; }
-        float Similarity(IPrimitive p);
-        VisPoint Sample(Gaussian g);
-    }
-    public interface IPrimitivePath : IPath
-    {
-        VisPoint[] GetPolylinePoints(int pointCount = 24);
-    }
-
-    public interface IPath : IEnumerable<VisPoint>
-    {
-        float Length { get; }
-        VisPoint StartPoint { get; }
-        VisPoint MidPoint { get; }
-        VisPoint EndPoint { get; }
-
-        VisPoint GetPoint(float position, float offset = 0);
-        VisPoint GetPointFromCenter(float centeredPosition, float offset = 0);
-
-        VisNode NodeAt(float position, float offset = 0);
-        VisNode NodeNear(VisPoint point);
-        VisNode StartNode { get; }
-        VisNode MidNode { get; }
-        VisNode EndNode { get; }
-    }
-
-    public interface IArea
-    {
-        VisPoint Center { get; }
-        float Area { get; }
-        VisRectangle Bounds { get; }
-        bool IsClosed { get; }
-        bool IsConcave { get; }
-        int JointCount { get; }
-        int CornerCount { get; }
-        float Sharpness { get; }
-    }
+    // VisPoint was specifically not an IPath, with the idea that all nodes should reference a structure 
+    // rather than an arbitrary point (all strokes are relative to something else, and ultimately there
+    // is a mental frame things get placed in, like a letterbox).
+    // With abstact math this is still true, but user input with a mouse kind of requires points that are picked.
+    // So may make this an IPath (so nodes can reference them), but if that happens use sparingly!
+    // Or just use a letterbox the size of the screen. hmm.
 
     public class VisPoint : IPrimitive
     {
-        public float X { get; }
-        public float Y { get; }
+        public float X { get; set; }
+        public float Y { get; set; }
+
+        public static int _index = 0;
+        public int Index;
 
         public float NearThreshold = 0.003f;
         protected const float pi2 = (float)(Math.PI * 2.0);
@@ -66,12 +30,14 @@ namespace Vis.Model.Primitives
         {
             X = x;
             Y = y;
+            Index = _index++;
         }
 
         public VisPoint(VisPoint p)
         {
             X = p.X;
             Y = p.Y;
+            Index = _index++;
         }
 
         public bool IsNear(VisPoint p)
@@ -195,9 +161,13 @@ namespace Vis.Model.Primitives
             return line.ProjectPointOnto(this);
         }
 
+        public VisPoint Clone()
+        {
+            return new VisPoint(this.X, this.Y);
+        }
         public override string ToString()
         {
-            return string.Format("Pt:{0:0.##},{1:0.##}", X, Y);
+            return string.Format("Pt_{0}: {1:0.##},{2:0.##}", Index, X, Y);
         }
     }
 

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vis.Model.Primitives;
 
-namespace Vis.Model
+namespace Vis.Model.Primitives
 {
     /// <summary>
     /// Maybe primitives are always 0-1 (lengths are always positive) and joints/nodes are -1 to 1 (we balance by midpoints of objects)?
-    /// Or because lines have a start and endPoint (no volume) they are 0-1, where rects and circles are a point mass that is centered (no start and endPoint). How does inside/outside map to start/endPoint? (center0, edge1, outside>1)
+    /// Or because lines have a start and endPoint (no volume) they are 0-1, where rects and circles are a point mass that is centered (no start and endPoint).
+    /// How does inside/outside map to start/endPoint? (center0, edge1, outside>1)
     /// We only use rects and circles to express containment boundaries so they are 0 centered, the corner (or edge) of a rect isn't a volume so it has a start (and endPoint).
     /// 0 is past (known duration), 1 is present, > 1 is future (unknown potentially infinite duration)
     /// </summary>
