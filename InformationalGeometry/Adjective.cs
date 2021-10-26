@@ -1,11 +1,19 @@
+using System.Collections.Generic;
+
 namespace InformationalGeometry
 {
-	public class Facet
+	public class Adjective : IReference
 	{
-		public float Value { get; set; }
-		public int Kind { get; set; }
-		public Entity Parent { get; set; }
+		public int ID { get; }
+		public string Name { get; }
+        public int Kind { get; private set; }
+        public float Value { get; set; }
+
+		public Noun Parent { get; }
+		public List<Preposition> Linkages { get; }
+
 		public bool IsUnit { get; set; }
+		public Adjective UnitInstance { get; private set; } // probably need a translator here too
      
 		public int PrecisionMeasured { get; set; }  
 		public int PrecisionActual { get; set; }

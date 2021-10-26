@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace InformationalGeometry
 {
     // Entity is an object with no other inherent information. 
@@ -18,8 +20,21 @@ namespace InformationalGeometry
     // A specific Facet value is used as the unit in continuous measurements, and with join, extend and stretch you get the 
     // traditional +-*/ etc.
 
-	public class Entity
-	{
-		//public List<Facet> Facets { get; set; }
+	public class Noun : IReference
+    {
+        public int ID { get; }
+        public string Name { get; }
+        public int Kind { get; }
+
+        public Noun Parent { get; }
+        public List<Preposition> Linkages { get; }
+
+        public List<Adjective> Facets { get; }
+
+        public List<Noun> Children { get; }
+        public List<Noun> Siblings { get; }
+        public bool IsRoot { get; }
+
+
 	}
 }
