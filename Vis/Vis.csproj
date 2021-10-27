@@ -106,6 +106,7 @@
     <Compile Include="Model\Agent\IAgent.cs" />
     <Compile Include="Model\Agent\VisDragAgent.cs" />
     <Compile Include="Model\Agent\VisMeasureSkills.cs" />
+    <Compile Include="Model\Controller\IRenderer.cs" />
     <Compile Include="Model\Controller\RenderPoint.cs" />
     <Compile Include="Model\Controller\SkiaRenderer.cs" />
     <Compile Include="Model\Controller\VisPens.cs" />
