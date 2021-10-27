@@ -7,6 +7,7 @@ namespace InformationalGeometry
 		public int ID { get; }
 		public string Name { get; }
         public int Kind { get; private set; }
+        public bool IsRoot { get; }
         public float Value { get; set; }
 
 		public Noun Parent { get; }

@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IReference.cs" />
+    <Compile Include="Landmark.cs" />
     <Compile Include="Noun.cs" />
     <Compile Include="Adjective.cs" />
     <Compile Include="Operation.cs" />
