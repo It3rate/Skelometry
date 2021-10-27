@@ -17,18 +17,21 @@ namespace Vis.Forms
     {
 	    VisAgent _agent;
         VisRenderer _renderer;
+        Panel _panel;
         public VisForm()
         {
             DoubleBuffered = true;
             InitializeComponent();
 
-            _renderer = new VisRenderer(panel1.Width, panel1.Height);
+            _panel = panel1;
+            _renderer = new VisRenderer();
             _agent = new VisAgent(_renderer);
         }
 
         public void OnDraw(Graphics g)
         {
-            _agent.Draw(g);
+            _renderer.SetGraphicsContext(g);
+            _agent.Draw();
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -52,7 +55,7 @@ namespace Vis.Forms
 	        {
 		        _agent.Skills.rTailStart = e.NewValue / 100f;
 		        lbVariationA.Text = "Value: " + e.NewValue;
-                panel1.Invalidate();
+                _panel.Invalidate();
 	        }
         }
 
@@ -62,7 +65,7 @@ namespace Vis.Forms
 	        {
 		        _agent.Skills.bTopCenter = e.NewValue / 100f;
 		        lbVariationB.Text = "Value: " + e.NewValue;
-                panel1.Invalidate();
+                _panel.Invalidate();
 	        }
 
         }

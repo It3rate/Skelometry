@@ -29,6 +29,7 @@ namespace Vis.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.lbVariationB = new System.Windows.Forms.Label();
             this.lbVariationA = new System.Windows.Forms.Label();
             this.slLayout = new System.Windows.Forms.HScrollBar();
@@ -36,6 +37,9 @@ namespace Vis.Forms
             this.panel1 = new System.Windows.Forms.Panel();
             this.btNext = new System.Windows.Forms.Button();
             this.lbTitleX = new System.Windows.Forms.Label();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.visPanel = new Vis.Model.Controller.VisRenderer();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
             // lbVariationB
@@ -81,15 +85,11 @@ namespace Vis.Forms
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.panel1.Location = new System.Drawing.Point(1, 30);
+            this.panel1.Location = new System.Drawing.Point(391, 30);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(750, 334);
+            this.panel1.Size = new System.Drawing.Size(360, 334);
             this.panel1.TabIndex = 19;
-            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
-            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
-            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
-            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
             // 
             // btNext
             // 
@@ -117,11 +117,24 @@ namespace Vis.Forms
             this.lbTitleX.Text = "VIS DRAG";
             this.lbTitleX.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
+            // visPanel
+            // 
+            this.visPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.visPanel.Location = new System.Drawing.Point(50, 52);
+            this.visPanel.Name = "visPanel";
+            this.visPanel.Size = new System.Drawing.Size(250, 250);
+            this.visPanel.TabIndex = 24;
+            this.visPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
+            this.visPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
+            this.visPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
+            this.visPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
+            // 
             // VisDragForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(752, 419);
+            this.Controls.Add(this.visPanel);
             this.Controls.Add(this.lbVariationB);
             this.Controls.Add(this.lbVariationA);
             this.Controls.Add(this.slLayout);
@@ -133,6 +146,7 @@ namespace Vis.Forms
             this.Text = "VisDragForm";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this._formClosed);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.VisDragForm_KeyDown);
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -147,5 +161,7 @@ namespace Vis.Forms
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btNext;
         private System.Windows.Forms.Label lbTitleX;
+        private System.Windows.Forms.BindingSource bindingSource1;
+        private Model.Controller.VisRenderer visPanel;
     }
 }
