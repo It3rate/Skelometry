@@ -16,12 +16,12 @@ namespace Vis.Model.Agent
         public VisPad<VisPoint> WorkingPad { get; private set; }
         public VisPad<VisPoint> FocusPad { get; private set; }
         public VisPad<VisStroke> ViewPad { get; private set; }
-        private VisRenderer _renderer;
+        private IRenderer _renderer;
         private VisMeasureSkills _skills;
 
         public int _unitPixels = 220;
 
-        public VisDragAgent(VisRenderer renderer)
+        public VisDragAgent(IRenderer renderer)
         {
             _renderer = renderer;
 
@@ -140,16 +140,16 @@ namespace Vis.Model.Agent
             //ViewPad.Clear();
         }
 
-        public void Draw(Graphics g)
+        public void Draw()
         {
-            var state = g.Save();
-            //g.TranslateTransform(10, 10);
-            g.ScaleTransform(_unitPixels, _unitPixels);
-            int penIndex = _isDown ? 3 : 2;
-            _renderer.Draw(g, this, penIndex);
-            g.Restore(state);
+            _renderer.BeginDraw(_unitPixels);
 
+            int penIndex = _isDown ? 3 : 2;
+            _renderer.Draw(this, penIndex);
+
+            _renderer.EndDraw();
             Clear();
+
         }
 
 

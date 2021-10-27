@@ -37,24 +37,19 @@ namespace Vis.Model.Agent
         }
 
         public int _unitPixels = 220;
-        public void Draw(Graphics g)
+        public void Draw()
         {
-            var state = g.Save();
+            _renderer.BeginDraw(_unitPixels);
 
-            float w = _renderer.Width;
-            float h = _renderer.Height;
-            g.TranslateTransform(10, 10);
-            g.ScaleTransform(_unitPixels, _unitPixels);
+            DrawLetter("A");
+            DrawLetter("R");
+            DrawLetter("C");
+            DrawLetter("B");
 
-            DrawLetter(g, "A");
-            DrawLetter(g, "R");
-            DrawLetter(g, "C");
-            DrawLetter(g, "B");
-
-            g.Restore(state);
+            _renderer.EndDraw();
         }
 
-        private void DrawLetter(Graphics g, string letter)
+        private void DrawLetter(string letter)
         {
             VisRectangle bx;
             switch (letter)
@@ -72,8 +67,8 @@ namespace Vis.Model.Agent
                     bx = Skills.LetterR(FocusPad, ViewPad);
                     break;
             }
-            _renderer.Draw(g, this);
-            g.TranslateTransform(bx.Size.X * 1.1f, 0);
+            _renderer.Draw(this);
+            _renderer.TranslateContext(bx.Size.X * 1.1f, 0);
             Clear();
 
         }

@@ -15,6 +15,6 @@ namespace Vis.Model.Agent
         VisPad<VisStroke> ViewPad { get; }
 
         void Clear();
-        void Draw(Graphics g);
+        void Draw();
     }
 }

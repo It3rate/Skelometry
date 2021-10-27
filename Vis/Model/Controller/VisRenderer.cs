@@ -5,140 +5,182 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Vis.Model.Agent;
 using Vis.Model.Primitives;
 
 namespace Vis.Model.Controller
 {
-    public class VisRenderer
+    public interface IRenderer
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
+        int Width { get; set; }
+        int Height { get; set; }
 
-        public VisRenderer(int width = 250, int height = 250)
+        void Invalidate();
+        void SetGraphicsContext(object context);
+        void TranslateContext(float x, float y);
+        void BeginDraw(int unitPixels);
+        void Draw(IAgent agent, int penIndex = 0);
+        void EndDraw();
+    }
+
+    public class VisRenderer : Panel, IRenderer
+    {
+        //public int Width { get; set; }
+        //public int Height { get; set; }
+        private VisPens Pens { get; }
+
+        public VisRenderer()
+        {
+            Width = 250;
+            Height = 250;
+            Pens = new VisPens(250 * 4);
+        }
+        public VisRenderer(int width, int height) : base()
         {
             Width = width;
             Height = height;
-            GenPens(height * 4);
+            Pens = new VisPens(height * 4);
         }
-        public void Draw(Graphics g, IAgent agent, int penIndex = 0)
+
+        private Graphics _graphics;
+        private GraphicsState _graphicsState;
+        public void SetGraphicsContext(object context) { _graphics = (Graphics)context; }
+        public void TranslateContext(float x, float y)
+        {
+            _graphics.TranslateTransform(x, y);
+        }
+
+        public void BeginDraw(int unitPixels)
+        {
+            _graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            _graphicsState = _graphics.Save();
+            _graphics.TranslateTransform(10, 10);
+            _graphics.ScaleTransform(unitPixels, unitPixels);
+
+        }
+        public void EndDraw()
+        {
+            _graphics.Restore(_graphicsState);
+            _graphicsState = null;
+            _graphics = null;
+        }
+        public void Draw(IAgent agent, int penIndex = 0)
         {
             //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(-1f, 0), new PointF(1f, 0));
             //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(0, -1f), new PointF(0, 1f));
 
             foreach (var prim in agent.FocusPad.Paths)
             {
-                DrawPrimitive(g, prim, penIndex);
+                DrawPrimitive(prim, penIndex);
             }
 
             foreach (var path in agent.ViewPad.Paths)
             {
-	            Console.WriteLine(path.StartPoint);
-                DrawPath(g, path, 1);
+                DrawPath(path, 1);
             }
 
             foreach (var prim in agent.WorkingPad.Paths)
             {
-                DrawPrimitive(g, prim, penIndex);
+                DrawPrimitive(prim, penIndex);
             }
         }
-        public void DrawPrimitive(Graphics g, IPrimitive path, int penIndex = 0)
+        public void DrawPrimitive(IPrimitive path, int penIndex = 0)
         {
             if (path is VisLine line)
             {
-                DrawLine(g, line.StartPoint, line.EndPoint, penIndex);
+                DrawLine(line.StartPoint, line.EndPoint, penIndex);
             }
             else if (path is VisCircle circ)
             {
-                DrawSpot(g, circ.Center, penIndex);
-                DrawCircle(g, circ, penIndex);
+                DrawSpot(circ.Center, penIndex);
+                DrawCircle(circ, penIndex);
             }
             else if (path is VisRectangle rect)
             {
-                DrawRect(g, rect, penIndex);
+                DrawRect(rect, penIndex);
             }
             else if (path is RenderPoint rp)
             {
-                DrawSpot(g, rp, rp.PenIndex, rp.Scale);// penIndex);
+                DrawSpot(rp, rp.PenIndex, rp.Scale);// penIndex);
             }
             else if (path is VisPoint p)
             {
-                DrawSpot(g, p, 6);// penIndex);
+                DrawSpot(p, 6);// penIndex);
             }
         }
-        public void DrawShape(Graphics g, VisStroke shape)
+        public void DrawShape(VisStroke shape)
         {
             //foreach (var stroke in shape.Strokes)
             //{
-            //    DrawStroke(g, stroke, (int)shape.StructuralType);
+            //    DrawStroke(stroke, (int)shape.StructuralType);
             //}
         }
 
-        public void DrawPath(Graphics g, VisStroke stroke, int penIndex = 0)
+        public void DrawPath(VisStroke stroke, int penIndex = 0)
         {
             foreach (var segment in stroke.Segments)
             {
                 if (segment is VisLine line)
                 {
-                    DrawLine(g, line, penIndex);
+                    DrawLine(line, penIndex);
                 }
                 else if (segment is VisArc arc)
                 {
-                    DrawPolyline(g, arc.GetPolylinePoints(), penIndex);
+                    DrawPolyline(arc.GetPolylinePoints(), penIndex);
                 }
             }
-            g.Flush();
+            _graphics.Flush();
 
             //foreach (var point in stroke.Anchors)
             //{
-            //    DrawCircle(g, point, 0);
+            //    DrawCircle(point, 0);
             //}
 
             //if (stroke.Edges.Count == 0)
             //{
-            //    DrawLine(g, stroke.Start, stroke.EndPoint, penIndex);
+            //    DrawLine(stroke.Start, stroke.EndPoint, penIndex);
             //}
             //else
             //{
             //    foreach (var edge in stroke.Edges)
             //    {
-            //        DrawCircle(g, edge.Anchor0, 2, 0.5);
-            //        DrawCircle(g, edge.Anchor1, 3, 0.5);
+            //        DrawCircle(edge.Anchor0, 2, 0.5);
+            //        DrawCircle(edge.Anchor1, 3, 0.5);
             //    }
-            //    //DrawCurve(g, stroke.Start, stroke.Edges[0], stroke.EndPoint, penIndex);
-            //    DrawCurve(g, stroke, penIndex);
+            //    //DrawCurve(stroke.Start, stroke.Edges[0], stroke.EndPoint, penIndex);
+            //    DrawCurve(stroke, penIndex);
             //}
         }
-        public void DrawSpot(Graphics g, VisPoint pos, int penIndex = 0, float scale = 1f)
+        public void DrawSpot(VisPoint pos, int penIndex = 0, float scale = 1f)
         {
             var r = Pens[penIndex].Width * scale;
-            g.DrawEllipse(Pens[penIndex], pos.X - r, pos.Y - r, r * 2f, r * 2f);
+            _graphics.DrawEllipse(Pens[penIndex], pos.X - r, pos.Y - r, r * 2f, r * 2f);
         }
 
-        public void DrawCircle(Graphics g, VisCircle circ, int penIndex = 0)
+        public void DrawCircle(VisCircle circ, int penIndex = 0)
         {
             var pos = circ.Center;
             var r = circ.Radius;
-            g.DrawEllipse(Pens[penIndex], pos.X - r, pos.Y - r, r * 2f, r * 2f);
+            _graphics.DrawEllipse(Pens[penIndex], pos.X - r, pos.Y - r, r * 2f, r * 2f);
         }
-        public void DrawRect(Graphics g, VisRectangle rect, int penIndex = 0)
+        public void DrawRect(VisRectangle rect, int penIndex = 0)
         {
-            g.DrawRectangle(Pens[penIndex], rect.TopLeft.X, rect.TopLeft.Y, rect.Size.X, rect.Size.Y);
+            _graphics.DrawRectangle(Pens[penIndex], rect.TopLeft.X, rect.TopLeft.Y, rect.Size.X, rect.Size.Y);
         }
 
-        public void DrawLine(Graphics g, VisLine line, int penIndex = 0)
+        public void DrawLine(VisLine line, int penIndex = 0)
         {
-            g.DrawLine(Pens[penIndex], line.StartPoint.X, line.StartPoint.Y, line.EndPoint.X, line.EndPoint.Y);
+            _graphics.DrawLine(Pens[penIndex], line.StartPoint.X, line.StartPoint.Y, line.EndPoint.X, line.EndPoint.Y);
         }
-        public void DrawLine(Graphics g, VisPoint p0, VisPoint p1, int penIndex = 0)
+        public void DrawLine(VisPoint p0, VisPoint p1, int penIndex = 0)
         {
-            g.DrawLine(Pens[penIndex], p0.X, p0.Y, p1.X, p1.Y);
+            _graphics.DrawLine(Pens[penIndex], p0.X, p0.Y, p1.X, p1.Y);
         }
-        public void DrawPolyline(Graphics g, VisPoint[] points, int penIndex = 0)
+        public void DrawPolyline(VisPoint[] points, int penIndex = 0)
         {
-            g.DrawLines(Pens[penIndex], ToPointF(points));
+            _graphics.DrawLines(Pens[penIndex], ToPointF(points));
         }
-
 
         private PointF[] ToPointF(VisPoint[] points)
         {
@@ -148,37 +190,6 @@ namespace Vis.Model.Controller
                 result[i] = points[i].PointF;
             }
             return result;
-        }
-        public List<Pen> Pens = new List<Pen>();
-        private enum PenTypes
-        {
-            LightGray,
-            Black,
-            DarkRed,
-            Orange,
-            DarkGreen,
-            DarkBlue,
-            DarkViolet,
-        }
-        private void GenPens(float scale)
-        {
-            Pens.Clear();
-            Pens.Add(GetPen(Color.LightGray, 8f / scale));
-            Pens.Add(GetPen(Color.Black, 8f / scale));
-            Pens.Add(GetPen(Color.DarkRed, 8f / scale));
-            Pens.Add(GetPen(Color.Orange, 8f / scale));
-            Pens.Add(GetPen(Color.DarkGreen, 8f / scale));
-            Pens.Add(GetPen(Color.DarkBlue, 8f / scale));
-            Pens.Add(GetPen(Color.DarkViolet, 16f / scale));
-            Pens.Add(GetPen(Color.Red, 32f / scale));
-        }
-        private Pen GetPen(Color color, float width)
-        {
-            var pen = new Pen(color, width);
-            pen.LineJoin = LineJoin.Round;
-            pen.StartCap = LineCap.Round;
-            pen.EndCap = LineCap.Round;
-            return pen;
         }
     }
 }

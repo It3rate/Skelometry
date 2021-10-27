@@ -34,7 +34,7 @@ namespace Vis
 	           // new TyloxForm(),
 	            //new SimForm(),
 	            new VisDragForm(),
-                //new VisForm(),
+                new VisForm(),
             };
 
             NextForm();
