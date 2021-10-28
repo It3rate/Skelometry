@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Vis.Model.Agent;
 using Vis.Model.Primitives;
 
@@ -18,15 +19,28 @@ namespace Vis.Model.Controller
 
         void Invalidate();
         event EventHandler DrawingComplete;
+        event MouseEventHandler MouseDown;
+        event MouseEventHandler MouseMove;
+        event MouseEventHandler MouseUp;
     }
 
     public abstract class RendererBase
     {
 	    public event EventHandler DrawingComplete;
 	    public IAgent Agent { get; set; }
-	    public float UnitPixels { get; set; } = 220;
 	    public int PenIndex { get; set; }
+	    private float _unitPixels = 220;
+	    public float UnitPixels
+	    {
+		    get => _unitPixels;
+		    set
+		    {
+			    _unitPixels = value;
+                GeneratePens();
+            }
+	    }
 
+        public abstract void GeneratePens();
 	    public abstract void BeginDraw();
 	    public abstract void EndDraw();
 	    public abstract void Flush();
@@ -37,6 +51,11 @@ namespace Vis.Model.Controller
 	    public abstract void DrawLine(VisPoint p0, VisPoint p1, int penIndex = 0);
 	    public abstract void DrawPolyline(VisPoint[] points, int penIndex = 0);
 
+
+	    protected void OnDrawingComplete()
+	    {
+		    DrawingComplete?.Invoke(this, EventArgs.Empty);
+        }
 
 	    public void Draw()
 	    {

@@ -18,7 +18,7 @@ namespace Vis.Model.Controller
 	    public float UnitPixels { get; set; } = 220;
         public int PenIndex { get; set; }
 
-        private VisPens Pens { get; }
+        private VisPens Pens { get; set;  }
 
         public VisRenderer()
         {
@@ -30,9 +30,12 @@ namespace Vis.Model.Controller
         {
             Width = width;
             Height = height;
-            Pens = new VisPens(height * 4);
         }
 
+        public void GeneratePens()
+        {
+	        Pens = new VisPens(UnitPixels * 4);
+        }
         protected override void OnPaint(PaintEventArgs e)
         {
 	        base.OnPaint(e);
