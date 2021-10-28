@@ -105,6 +105,7 @@
     <Compile Include="Model\Agent\VisMeasureSkills.cs" />
     <Compile Include="Model\Controller\IRenderer.cs" />
     <Compile Include="Model\Controller\RenderPoint.cs" />
+    <Compile Include="Model\Controller\SkiaPens.cs" />
     <Compile Include="Model\Controller\SkiaRenderer.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -47,12 +47,7 @@ namespace Vis.Model.Controller
 
         private Graphics _graphics;
         private GraphicsState _graphicsState;
-        public void AttachPaintEvent()
-        {
-	       
-        }
 
-        public void SetGraphicsContext(object context) { _graphics = (Graphics)context; }
         public void TranslateContext(float x, float y)
         {
             _graphics.TranslateTransform(x, y);
@@ -140,27 +135,12 @@ namespace Vis.Model.Controller
                     DrawPolyline(arc.GetPolylinePoints(), penIndex);
                 }
             }
+            Flush();
+        }
+
+        public void Flush()
+        {
             _graphics.Flush();
-
-            //foreach (var point in stroke.Anchors)
-            //{
-            //    DrawCircle(point, 0);
-            //}
-
-            //if (stroke.Edges.Count == 0)
-            //{
-            //    DrawLine(stroke.Start, stroke.EndPoint, penIndex);
-            //}
-            //else
-            //{
-            //    foreach (var edge in stroke.Edges)
-            //    {
-            //        DrawCircle(edge.Anchor0, 2, 0.5);
-            //        DrawCircle(edge.Anchor1, 3, 0.5);
-            //    }
-            //    //DrawCurve(stroke.Start, stroke.Edges[0], stroke.EndPoint, penIndex);
-            //    DrawCurve(stroke, penIndex);
-            //}
         }
         public void DrawSpot(VisPoint pos, int penIndex = 0, float scale = 1f)
         {
@@ -189,10 +169,10 @@ namespace Vis.Model.Controller
         }
         public void DrawPolyline(VisPoint[] points, int penIndex = 0)
         {
-            _graphics.DrawLines(Pens[penIndex], ToPointF(points));
+            _graphics.DrawLines(Pens[penIndex], ToPoints(points));
         }
 
-        private PointF[] ToPointF(VisPoint[] points)
+        private PointF[] ToPoints(VisPoint[] points)
         {
             var result = new PointF[points.Length];
             for (int i = 0; i < points.Length; i++)

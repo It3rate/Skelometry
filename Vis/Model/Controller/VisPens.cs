@@ -8,19 +8,9 @@ using System.Threading.Tasks;
 
 namespace Vis.Model.Controller
 {
-    class VisPens
+    public class VisPens
     {
         public List<Pen> Pens = new List<Pen>();
-        private enum PenTypes
-        {
-            LightGray,
-            Black,
-            DarkRed,
-            Orange,
-            DarkGreen,
-            DarkBlue,
-            DarkViolet,
-        }
         public VisPens(float scale)
         {
             GenPens(scale);
