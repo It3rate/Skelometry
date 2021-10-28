@@ -13,8 +13,7 @@ namespace InformationalGeometry
         public int Kind { get; }
 
         public IReference Source { get; private set; }
-        public IReference Target { get; private set; }
+        public IReference Target { get; private set; }   
         public float Magnitude { get; private set; }
-
     }
 }

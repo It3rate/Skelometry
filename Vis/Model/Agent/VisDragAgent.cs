@@ -24,6 +24,8 @@ namespace Vis.Model.Agent
         public VisDragAgent(IRenderer renderer)
         {
             _renderer = renderer;
+            _renderer.UnitPixels = _unitPixels;
+            _renderer.DrawingComplete += _renderer_DrawingComplete;
 
             _skills = new VisMeasureSkills();
             WorkingPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height);
@@ -142,14 +144,12 @@ namespace Vis.Model.Agent
 
         public void Draw()
         {
-            _renderer.BeginDraw(_unitPixels);
+	        _renderer.PenIndex = _isDown ? 3 : 2;
+        }
 
-            int penIndex = _isDown ? 3 : 2;
-            _renderer.Draw(this, penIndex);
-
-            _renderer.EndDraw();
-            Clear();
-
+        private void _renderer_DrawingComplete(object sender, EventArgs e)
+        {
+	        Clear();
         }
 
 

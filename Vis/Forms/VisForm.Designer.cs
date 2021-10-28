@@ -28,23 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
             this.btNext = new System.Windows.Forms.Button();
             this.lbTitleX = new System.Windows.Forms.Label();
             this.lbVariationB = new System.Windows.Forms.Label();
             this.lbVariationA = new System.Windows.Forms.Label();
             this.slLayout = new System.Windows.Forms.HScrollBar();
             this.slColor = new System.Windows.Forms.HScrollBar();
+            this.panel1 = new Vis.Model.Controller.VisRenderer();
             this.SuspendLayout();
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.panel1.Location = new System.Drawing.Point(0, 94);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1125, 385);
-            this.panel1.TabIndex = 11;
-            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
             // btNext
             // 
@@ -110,16 +101,27 @@
             this.slColor.Value = 50;
             this.slColor.Scroll += new System.Windows.Forms.ScrollEventHandler(this.slColor_Scroll);
             // 
+            // panel1
+            // 
+            this.panel1.Agent = null;
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.panel1.Location = new System.Drawing.Point(-1, 56);
+            this.panel1.Name = "panel1";
+            this.panel1.PenIndex = 0;
+            this.panel1.Size = new System.Drawing.Size(1129, 515);
+            this.panel1.TabIndex = 17;
+            this.panel1.UnitPixels = 220F;
+            // 
             // VisForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1128, 645);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.lbVariationB);
             this.Controls.Add(this.lbVariationA);
             this.Controls.Add(this.slLayout);
             this.Controls.Add(this.slColor);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.btNext);
             this.Controls.Add(this.lbTitleX);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -132,13 +134,12 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btNext;
         private System.Windows.Forms.Label lbTitleX;
         private System.Windows.Forms.Label lbVariationB;
         private System.Windows.Forms.Label lbVariationA;
         private System.Windows.Forms.HScrollBar slLayout;
         private System.Windows.Forms.HScrollBar slColor;
+        private Model.Controller.VisRenderer panel1;
     }
 }

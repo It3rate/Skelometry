@@ -15,11 +15,11 @@ namespace Vis.Model.Agent
         public VisPad<VisPoint> FocusPad { get; private set; }
         public VisPad<VisStroke> ViewPad { get; private set; }
 
-        private VisRenderer _renderer;
+        private IRenderer _renderer;
 
         public VisSkills Skills { get; }
 
-        public VisAgent(VisRenderer renderer)
+        public VisAgent(IRenderer renderer)
         {
             _renderer = renderer;
 
@@ -27,7 +27,7 @@ namespace Vis.Model.Agent
             WorkingPad = new VisPad<VisPoint>(250, 250);
             FocusPad = new VisPad<VisPoint>(250, 250);
             ViewPad = new VisPad<VisStroke>(250, 250);
-
+            _renderer.DrawingComplete += _renderer_DrawingComplete;
         }
 
         public void Clear()
@@ -39,14 +39,10 @@ namespace Vis.Model.Agent
         public int _unitPixels = 220;
         public void Draw()
         {
-            _renderer.BeginDraw(_unitPixels);
-
-            DrawLetter("A");
+	        DrawLetter("A");
             DrawLetter("R");
             DrawLetter("C");
             DrawLetter("B");
-
-            _renderer.EndDraw();
         }
 
         private void DrawLetter(string letter)
@@ -67,10 +63,15 @@ namespace Vis.Model.Agent
                     bx = Skills.LetterR(FocusPad, ViewPad);
                     break;
             }
-            _renderer.Draw(this);
-            _renderer.TranslateContext(bx.Size.X * 1.1f, 0);
-            Clear();
+            //todo: need to create new dynamic contexts for each focused view. Can be per letter for now, probably copies of agent.
+            //_renderer.Draw(this);
+            //_renderer.TranslateContext(bx.Size.X * 1.1f, 0);
+            //Clear();
 
+        }
+        private void _renderer_DrawingComplete(object sender, EventArgs e)
+        {
+	        Clear();
         }
     }
 }

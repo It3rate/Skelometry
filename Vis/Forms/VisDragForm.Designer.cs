@@ -34,7 +34,6 @@ namespace Vis.Forms
             this.lbVariationA = new System.Windows.Forms.Label();
             this.slLayout = new System.Windows.Forms.HScrollBar();
             this.slColor = new System.Windows.Forms.HScrollBar();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.btNext = new System.Windows.Forms.Button();
             this.lbTitleX = new System.Windows.Forms.Label();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
@@ -45,60 +44,48 @@ namespace Vis.Forms
             // lbVariationB
             // 
             this.lbVariationB.AutoSize = true;
-            this.lbVariationB.Location = new System.Drawing.Point(542, 374);
-            this.lbVariationB.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lbVariationB.Location = new System.Drawing.Point(813, 575);
             this.lbVariationB.Name = "lbVariationB";
-            this.lbVariationB.Size = new System.Drawing.Size(58, 13);
+            this.lbVariationB.Size = new System.Drawing.Size(87, 20);
             this.lbVariationB.TabIndex = 23;
             this.lbVariationB.Text = "Variation B";
             // 
             // lbVariationA
             // 
             this.lbVariationA.AutoSize = true;
-            this.lbVariationA.Location = new System.Drawing.Point(9, 374);
-            this.lbVariationA.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lbVariationA.Location = new System.Drawing.Point(14, 575);
             this.lbVariationA.Name = "lbVariationA";
-            this.lbVariationA.Size = new System.Drawing.Size(58, 13);
+            this.lbVariationA.Size = new System.Drawing.Size(87, 20);
             this.lbVariationA.TabIndex = 22;
             this.lbVariationA.Text = "Variation A";
             // 
             // slLayout
             // 
-            this.slLayout.Location = new System.Drawing.Point(528, 389);
+            this.slLayout.Location = new System.Drawing.Point(792, 598);
             this.slLayout.Maximum = 120;
             this.slLayout.Minimum = 40;
             this.slLayout.Name = "slLayout";
-            this.slLayout.Size = new System.Drawing.Size(219, 26);
+            this.slLayout.Size = new System.Drawing.Size(328, 26);
             this.slLayout.TabIndex = 21;
             this.slLayout.Value = 90;
             // 
             // slColor
             // 
-            this.slColor.Location = new System.Drawing.Point(7, 389);
+            this.slColor.Location = new System.Drawing.Point(10, 598);
             this.slColor.Maximum = 106;
             this.slColor.Minimum = 1;
             this.slColor.Name = "slColor";
-            this.slColor.Size = new System.Drawing.Size(219, 26);
+            this.slColor.Size = new System.Drawing.Size(328, 26);
             this.slColor.TabIndex = 20;
             this.slColor.Value = 50;
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.panel1.Location = new System.Drawing.Point(391, 30);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(360, 334);
-            this.panel1.TabIndex = 19;
             // 
             // btNext
             // 
             this.btNext.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.btNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btNext.Location = new System.Drawing.Point(690, 3);
-            this.btNext.Margin = new System.Windows.Forms.Padding(2);
+            this.btNext.Location = new System.Drawing.Point(1035, 5);
             this.btNext.Name = "btNext";
-            this.btNext.Size = new System.Drawing.Size(50, 23);
+            this.btNext.Size = new System.Drawing.Size(75, 35);
             this.btNext.TabIndex = 18;
             this.btNext.TabStop = false;
             this.btNext.Text = "Next";
@@ -109,39 +96,41 @@ namespace Vis.Forms
             // 
             this.lbTitleX.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lbTitleX.Font = new System.Drawing.Font("Berlin Sans FB", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbTitleX.Location = new System.Drawing.Point(245, 366);
-            this.lbTitleX.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lbTitleX.Location = new System.Drawing.Point(368, 563);
             this.lbTitleX.Name = "lbTitleX";
-            this.lbTitleX.Size = new System.Drawing.Size(267, 36);
+            this.lbTitleX.Size = new System.Drawing.Size(400, 55);
             this.lbTitleX.TabIndex = 17;
             this.lbTitleX.Text = "VIS DRAG";
             this.lbTitleX.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // visPanel
             // 
+            this.visPanel.Agent = null;
             this.visPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.visPanel.Location = new System.Drawing.Point(50, 52);
+            this.visPanel.Location = new System.Drawing.Point(75, 80);
+            this.visPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.visPanel.Name = "visPanel";
-            this.visPanel.Size = new System.Drawing.Size(250, 250);
+            this.visPanel.PenIndex = 0;
+            this.visPanel.Size = new System.Drawing.Size(948, 385);
             this.visPanel.TabIndex = 24;
-            this.visPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
+            this.visPanel.UnitPixels = 0F;
             this.visPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
             this.visPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
             this.visPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
             // 
             // VisDragForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(752, 419);
+            this.ClientSize = new System.Drawing.Size(1128, 645);
             this.Controls.Add(this.visPanel);
             this.Controls.Add(this.lbVariationB);
             this.Controls.Add(this.lbVariationA);
             this.Controls.Add(this.slLayout);
             this.Controls.Add(this.slColor);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.btNext);
             this.Controls.Add(this.lbTitleX);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "VisDragForm";
             this.Text = "VisDragForm";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this._formClosed);
@@ -158,7 +147,6 @@ namespace Vis.Forms
         private System.Windows.Forms.Label lbVariationA;
         private System.Windows.Forms.HScrollBar slLayout;
         private System.Windows.Forms.HScrollBar slColor;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btNext;
         private System.Windows.Forms.Label lbTitleX;
         private System.Windows.Forms.BindingSource bindingSource1;

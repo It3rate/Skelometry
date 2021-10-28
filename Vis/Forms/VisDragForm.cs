@@ -19,46 +19,52 @@ namespace Vis.Forms
     {
         VisDragAgent _agent;
         IRenderer _renderer;
-        Panel _panel;
+
         public VisDragForm()
         {
             DoubleBuffered = true;
             InitializeComponent();
 
-            _panel = visPanel;
-            _renderer = (IRenderer)_panel;// new VisRenderer();
-            //_renderer = new SkiaRenderer(panel1, panel1.Width/2, panel1.Height);
+            //_renderer = (IRenderer)visPanel;// new VisRenderer();
+            var skia = new SkiaRenderer(visPanel);
+            visPanel.MouseDown -= OnMouseDown;
+            visPanel.MouseMove -= OnMouseMove;
+            visPanel.MouseUp -= OnMouseUp;
+            skia.MouseDown += OnMouseDown;
+            skia.MouseMove += OnMouseMove;
+            skia.MouseUp += OnMouseUp;
+            _renderer = skia;// new SkiaRenderer(visPanel);
             _agent = new VisDragAgent(_renderer);
-        }
-
-        private void OnPaint(object sender, PaintEventArgs e)
-        {
-            _renderer.SetGraphicsContext(e.Graphics);
-            _agent.Draw();
         }
 
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
-            if (_agent.MouseDown(e))
-            {
-                _renderer.Invalidate();
-            }
+	        if (_agent.MouseDown(e))
+	        {
+		        Redraw();
+	        }
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (_agent.MouseMove(e))
-            {
-                _renderer.Invalidate();
-            }
+	        if (_agent.MouseMove(e))
+	        {
+		        Redraw();
+	        }
         }
 
         private void OnMouseUp(object sender, MouseEventArgs e)
         {
-            if (_agent.MouseUp(e))
-            {
-                _renderer.Invalidate();
-            }
+	        if (_agent.MouseUp(e))
+	        {
+		        Redraw();
+	        }
+        }
+
+        private void Redraw()
+        {
+	        _renderer.Agent = _agent;
+	        _renderer.Invalidate();
         }
 
         private void btNext_Click(object sender, EventArgs e)

@@ -11,11 +11,13 @@ using Vis.Model.Primitives;
 
 namespace Vis.Model.Controller
 {
-
-    public class VisRenderer : Panel, IRenderer
+	public class VisRenderer : Panel, IRenderer
     {
-        //public int Width { get; set; }
-        //public int Height { get; set; }
+	    public event EventHandler DrawingComplete;
+	    public IAgent Agent { get; set; }
+	    public float UnitPixels { get; set; } = 220;
+        public int PenIndex { get; set; }
+
         private VisPens Pens { get; }
 
         public VisRenderer()
@@ -31,46 +33,57 @@ namespace Vis.Model.Controller
             Pens = new VisPens(height * 4);
         }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+	        base.OnPaint(e);
+	        if (Agent != null)
+	        {
+		        _graphics = e.Graphics;
+		        BeginDraw();
+		        Draw();
+		        EndDraw();
+	        }
+        }
+
         private Graphics _graphics;
         private GraphicsState _graphicsState;
+        public void AttachPaintEvent()
+        {
+	       
+        }
+
         public void SetGraphicsContext(object context) { _graphics = (Graphics)context; }
         public void TranslateContext(float x, float y)
         {
             _graphics.TranslateTransform(x, y);
         }
 
-        public void BeginDraw(int unitPixels)
+        public void BeginDraw()
         {
             _graphics.SmoothingMode = SmoothingMode.AntiAlias;
             _graphicsState = _graphics.Save();
             _graphics.TranslateTransform(10, 10);
-            _graphics.ScaleTransform(unitPixels, unitPixels);
+            _graphics.ScaleTransform(UnitPixels, UnitPixels);
 
         }
-        public void EndDraw()
-        {
-            _graphics.Restore(_graphicsState);
-            _graphicsState = null;
-            _graphics = null;
-        }
-        public void Draw(IAgent agent, int penIndex = 0)
+        public void Draw()
         {
             //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(-1f, 0), new PointF(1f, 0));
             //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(0, -1f), new PointF(0, 1f));
 
-            foreach (var prim in agent.FocusPad.Paths)
+            foreach (var prim in Agent.FocusPad.Paths)
             {
-                DrawPrimitive(prim, penIndex);
+                DrawPrimitive(prim, PenIndex);
             }
 
-            foreach (var path in agent.ViewPad.Paths)
+            foreach (var path in Agent.ViewPad.Paths)
             {
                 DrawPath(path, 1);
             }
 
-            foreach (var prim in agent.WorkingPad.Paths)
+            foreach (var prim in Agent.WorkingPad.Paths)
             {
-                DrawPrimitive(prim, penIndex);
+                DrawPrimitive(prim, PenIndex);
             }
         }
         public void DrawPrimitive(IPrimitive path, int penIndex = 0)
@@ -97,6 +110,15 @@ namespace Vis.Model.Controller
                 DrawSpot(p, 6);// penIndex);
             }
         }
+
+        public void EndDraw()
+        {
+	        _graphics.Restore(_graphicsState);
+	        _graphicsState = null;
+	        _graphics = null;
+	        DrawingComplete(this, EventArgs.Empty);
+        }
+
         public void DrawShape(VisStroke shape)
         {
             //foreach (var stroke in shape.Strokes)

@@ -10,21 +10,28 @@ using Vis.Model.Agent;
 
 namespace Vis.Model.Controller
 {
-    public class SkiaRenderer : IRenderer
+    public class SkiaRenderer : SKControl, IRenderer
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
+	    public event EventHandler DrawingComplete;
+	    public IAgent Agent { get; set; }
+        public float UnitPixels { get; set; }
+	    public int PenIndex { get; set; }
 
-        public SkiaRenderer(Control parent, int width = 250, int height = 250)
+        public SkiaRenderer()
         {
-            Width = width;
-            Height = height;
+        }
 
-            SKControl skControl = new SKControl();
-            skControl.Width = parent.Width / 2;
-            skControl.Height = parent.Height;
-            skControl.PaintSurface += SkControl_PaintSurface;
-            parent.Controls.Add(skControl);
+        public SkiaRenderer(Control parent, int width = -1, int height = -1)
+        {
+            Width = width == -1 ? parent.Width : width;
+            Height = height == -1 ? parent.Height : height;
+
+            //_skControl = new SKControl();
+            //_skControl.Width = Width;
+            //_skControl.Height = Height;
+            this.PaintSurface += SkiaRenderer_PaintSurface;
+            parent.Controls.Add(this);
+            //this.Invalidate();
 
             //GenPens(height * 4);
             //SKImageInfo imageInfo = new SKImageInfo(250, 250);
@@ -35,31 +42,43 @@ namespace Vis.Model.Controller
             //}
         }
 
-        private void SkControl_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
+        private void SkiaRenderer_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
+        {
+	        if (Agent != null)
+	        {
+				SetGraphicsContext(e.Surface);
+		        BeginDraw();
+		        Draw();
+		        EndDraw();
+	        }
+        }
+
+
+        public void AttachPaintEvent()
         {
         }
+
         public void TranslateContext(float x, float y)
         {
             //g.TranslateTransform(x, y);
         }
 
-        public void BeginDraw(int unitPixels)
+        private SKSurface _surface;
+        public void SetGraphicsContext(object context) { _surface = (SKSurface)context; }
+        public void BeginDraw()
         {
+	        _surface.Canvas.Clear(SKColors.Blue);
         }
         public void EndDraw()
         {
+	        DrawingComplete?.Invoke(this, EventArgs.Empty);
         }
-        public void Draw(IAgent agent, int penIndex = 0)
+
+        public void Draw()
         {
         }
 
-        public void SetGraphicsContext(object context)
-        {
-        }
 
-        public void Invalidate()
-        {
-        }
 
 
         //public void Draw(Graphics IAgent agent, int penIndex = 0)

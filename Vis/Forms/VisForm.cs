@@ -17,27 +17,16 @@ namespace Vis.Forms
     {
 	    VisAgent _agent;
         VisRenderer _renderer;
-        Panel _panel;
+        //Panel _panel;
         public VisForm()
         {
-            DoubleBuffered = true;
             InitializeComponent();
+            DoubleBuffered = true;
 
-            _panel = panel1;
-            _renderer = new VisRenderer();
+            _renderer = (VisRenderer)panel1;
+            //_renderer = new VisRenderer();
             _agent = new VisAgent(_renderer);
-        }
-
-        public void OnDraw(Graphics g)
-        {
-            _renderer.SetGraphicsContext(g);
-            _agent.Draw();
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-	        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-	        OnDraw(e.Graphics);
+            Redraw();
         }
 
         private void btNext_Click(object sender, EventArgs e)
@@ -55,7 +44,7 @@ namespace Vis.Forms
 	        {
 		        _agent.Skills.rTailStart = e.NewValue / 100f;
 		        lbVariationA.Text = "Value: " + e.NewValue;
-                _panel.Invalidate();
+		        Redraw();
 	        }
         }
 
@@ -65,9 +54,16 @@ namespace Vis.Forms
 	        {
 		        _agent.Skills.bTopCenter = e.NewValue / 100f;
 		        lbVariationB.Text = "Value: " + e.NewValue;
-                _panel.Invalidate();
-	        }
+		        Redraw();
+            }
 
+        }
+
+        private void Redraw()
+        {
+	        _agent.Draw();
+            _renderer.Agent = _agent;
+	        _renderer.Invalidate();
         }
     }
 }
