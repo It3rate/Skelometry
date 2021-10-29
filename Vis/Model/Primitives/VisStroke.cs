@@ -22,6 +22,7 @@ namespace Vis.Model.Primitives
 
         private List<VisPoint> Anchors = new List<VisPoint>();
         public List<IPrimitivePath> Segments = new List<IPrimitivePath>();
+        public IPath UnitReference { get; set; }
 
 
         public VisStroke(VisNode first, VisNode second, params VisNode[] remaining)

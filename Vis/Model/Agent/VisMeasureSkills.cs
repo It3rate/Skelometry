@@ -14,16 +14,19 @@ namespace Vis.Model.Agent
             var pad = permanent ? agent.FocusPad : agent.WorkingPad;
             pad.Paths.Add(p);
         }
-        public void Line(IAgent agent, VisPoint start, VisPoint end, bool permanent = false)
+        public IPath Line(IAgent agent, VisPoint start, VisPoint end, bool permanent = false)
         {
-	        VisLine line = VisLine.ByEndpoints(start, end);
+	        IPath result = null;
+            VisLine line = VisLine.ByEndpoints(start, end);
 	        if (permanent)
 	        {
 		        agent.FocusPad.Paths.Add(line);
 		        var nodeStart = new VisNode(line, 0);
 		        var nodeEnd = new VisNode(line, 1);
-		        agent.ViewPad.Paths.Add(new VisStroke(nodeStart, nodeEnd));
-	        }
+		        var stroke = new VisStroke(nodeStart, nodeEnd);
+                agent.ViewPad.Paths.Add(stroke);
+		        result = stroke;
+            }
 	        else
 	        {
 		        var pad = agent.WorkingPad;
@@ -31,16 +34,20 @@ namespace Vis.Model.Agent
 		        pad.Paths.Add(start);
 		        pad.Paths.Add(end);
 	        }
+	        return result;
         }
-        public void Circle(IAgent agent, VisPoint start, VisPoint end, bool permanent = false)
+        public IPath Circle(IAgent agent, VisPoint start, VisPoint end, bool permanent = false)
         {
+	        IPath result = null;
 	        var circ = new VisCircle(start, end);
 	        if (permanent)
 	        {
 		        agent.FocusPad.Paths.Add(circ);
                 //agent.ViewPad.Paths.Add(new VisStroke());
                 var tn = new TangentNode(circ, ClockDirection.CW);
-                agent.ViewPad.Paths.Add(new VisStroke(circ.StartNode, tn, circ.EndNode));
+                var stroke = new VisStroke(circ.StartNode, tn, circ.StartNode);
+                agent.ViewPad.Paths.Add(stroke);
+                result = stroke;
 	        }
             else
 	        {
@@ -51,6 +58,8 @@ namespace Vis.Model.Agent
                 pad.Paths.Add(start);
 		        pad.Paths.Add(end);
 	        }
+
+	        return result;
         }
     }
 }

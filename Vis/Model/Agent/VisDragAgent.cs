@@ -18,6 +18,7 @@ namespace Vis.Model.Agent
         public VisPad<VisStroke> ViewPad { get; private set; }
         private IRenderer _renderer;
         private VisMeasureSkills _skills;
+        private IPath unit;
 
         public int _unitPixels = 220;
 
@@ -87,8 +88,10 @@ namespace Vis.Model.Agent
                 }
 	            else
 	            {
-	                _skills.Circle(this, _startPoint, p);
-	            }
+	                var path = _drawCircle ?
+		                _skills.Circle(this, _startPoint, p) :
+		                _skills.Line(this, _startPoint, p);
+                }
 	            result = true;
             }
 
@@ -123,16 +126,42 @@ namespace Vis.Model.Agent
             _isDown = false;
             var endPoint = _isHighlighting ? _highlightingPoint : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
 
-            _skills.Circle(this, _startPoint, endPoint, true);
+            var path = _drawCircle ? 
+	            _skills.Circle(this, _startPoint, endPoint, true) :
+	            _skills.Line(this, _startPoint, endPoint, true);
+
+            if (unit == null)
+            {
+	            unit = path;
+            }
+            else
+            {
+	            path.UnitReference = unit;
+            }
             _startPoint = null;
             _isDraggingExisting = false;
             _dragPoint = null;
             return true;
         }
 
-        public void KeyDown(object sender, KeyEventArgs e)
+        private Keys _keyDown = Keys.None;
+        private bool _drawCircle = false;
+        public bool KeyDown(KeyEventArgs e)
         {
-
+	        bool result = false;
+	        _keyDown = e.KeyCode;
+	        if (_keyDown == Keys.C && !_drawCircle)
+	        {
+		        _drawCircle = true;
+		        result = true;
+	        }
+	        return result;
+        }
+        public bool KeyUp(KeyEventArgs e)
+        {
+	        _keyDown = Keys.None;
+	        _drawCircle = false;
+	        return true;
         }
 
         public void Clear()

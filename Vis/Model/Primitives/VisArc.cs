@@ -25,6 +25,7 @@ namespace Vis.Model.Primitives
         public VisPoint MidPoint => Reference.GetPoint(0.5f, 0);
         public VisPoint EndPoint { get; }
 
+        public IPath UnitReference { get; set; }
 
         public VisArc(VisCircle circle, VisPoint startPoint, VisPoint endPoint, ClockDirection direction = ClockDirection.CW) : base(startPoint)
         {
@@ -37,6 +38,11 @@ namespace Vis.Model.Primitives
             if (direction == ClockDirection.CCW)
             {
                 _arcLength = pi2 - _arcLength;
+            }
+
+            if (_arcLength < circle.NearThreshold)
+            {
+	            _arcLength = pi2;
             }
         }
 
@@ -67,7 +73,7 @@ namespace Vis.Model.Primitives
         public ClockDirection CounterDirection => Direction == ClockDirection.CW ? ClockDirection.CCW : ClockDirection.CW;
         public VisArc CounterArc => new VisArc(Reference, EndPoint, StartPoint, CounterDirection);
 
-        public VisPoint[] GetPolylinePoints(int pointCount = 32)
+        public VisPoint[] GetPolylinePoints(int pointCount = 64)
         {
             var result = new List<VisPoint>(pointCount);
             var step = 1f / pointCount;
@@ -110,6 +116,11 @@ namespace Vis.Model.Primitives
             yield return StartPoint;
             yield return EndPoint;
             yield return Center;
+        }
+
+        public override string ToString()
+        {
+	        return $"Arc:{X:0.##},{Y:0.##} r{Radius:0.##}";
         }
     }
 }

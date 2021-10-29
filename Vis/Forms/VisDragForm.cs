@@ -30,6 +30,8 @@ namespace Vis.Forms
             skia.MouseDown += OnMouseDown;
             skia.MouseMove += OnMouseMove;
             skia.MouseUp += OnMouseUp;
+            skia.KeyDown += OnKeyDown;
+            skia.KeyUp += OnKeyUp;
             _renderer = skia;
             _agent = new VisDragAgent(_renderer);
         }
@@ -53,6 +55,21 @@ namespace Vis.Forms
         private void OnMouseUp(object sender, MouseEventArgs e)
         {
 	        if (_agent.MouseUp(e))
+	        {
+		        Redraw();
+	        }
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+	        if (_agent.KeyDown(e))
+	        {
+		        Redraw();
+	        }
+        }
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+	        if (_agent.KeyUp(e))
 	        {
 		        Redraw();
 	        }

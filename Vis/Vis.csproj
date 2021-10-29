@@ -110,6 +110,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Model\Controller\VisPens.cs" />
+    <Compile Include="Model\Primitives\IPath.cs" />
     <Compile Include="Model\Primitives\VisShape.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

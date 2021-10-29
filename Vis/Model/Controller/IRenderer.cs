@@ -84,8 +84,18 @@ namespace Vis.Model.Controller
 		    add => Control.MouseUp += value;
 		    remove => Control.MouseUp -= value;
         }
+	    public event KeyEventHandler KeyDown
+	    {
+		    add => Control.KeyDown += value;
+		    remove => Control.KeyDown -= value;
+	    }
+	    public event KeyEventHandler KeyUp
+        {
+		    add => Control.KeyUp += value;
+		    remove => Control.KeyUp -= value;
+	    }
 
-	    public void Invalidate()
+        public void Invalidate()
 	    {
 		    Control.Invalidate();
 	    }
@@ -118,14 +128,20 @@ namespace Vis.Model.Controller
 		    if (path is VisLine line)
 		    {
                 DrawLine(line.StartPoint, line.EndPoint, penIndex);
-                DrawRulerTicks(line, line.Length / 8);
+                if (line.UnitReference != null)
+                {
+	                DrawRulerTicks(line, line.UnitReference);
+                }
 		    }
 		    else if (path is VisCircle circ)
 		    {
 			    DrawSpot(circ.Center, penIndex);
 			    DrawCircle(circ, penIndex);
-			    DrawRulerTicks(circ, circ.Length / 8);
-            }
+			    if (circ.UnitReference != null)
+			    {
+				    DrawRulerTicks(circ, circ.UnitReference);
+			    }
+		    }
 		    else if (path is VisRectangle rect)
 		    {
 			    DrawRect(rect, penIndex);
@@ -151,8 +167,14 @@ namespace Vis.Model.Controller
 			    else if (segment is VisArc arc)
 			    {
 				    DrawPolyline(arc.GetPolylinePoints(), penIndex);
-			    }
+                }
+            }
+
+		    if (stroke.UnitReference != null)
+		    {
+			    DrawRulerTicks(stroke, stroke.UnitReference);
 		    }
+
 		    Flush();
 	    }
 
@@ -166,13 +188,19 @@ namespace Vis.Model.Controller
 		    {
                 DrawStroke(stroke, penIndex);
 		    }
+
+		    if (path.UnitReference != null)
+		    {
+			    DrawRulerTicks(path, path.UnitReference);
+		    }
 	    }
+    
 
 	    public void DrawShape(VisStroke shape, int penIndex = 0)
 	    {
 	    }
 
-	    public void DrawRulerTicks(VisStroke stroke, IPath unitPath, int penIndex = 0)
+	    public void DrawRulerTicks(IPath stroke, IPath unitPath, int penIndex = 0)
 	    {
 		    DrawRulerTicks(stroke, unitPath.Length, penIndex);
         }

@@ -19,6 +19,8 @@ namespace Vis.Model.Primitives
 
         public VisPoint Center => GetPoint(0.5f, 0);
 
+        public IPath UnitReference { get; set; }
+
         private float _length;
         public float Length
         {
