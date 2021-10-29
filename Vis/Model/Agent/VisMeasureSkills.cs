@@ -33,6 +33,7 @@ namespace Vis.Model.Agent
 		        pad.Paths.Add(line);
 		        pad.Paths.Add(start);
 		        pad.Paths.Add(end);
+		        result = line;
 	        }
 	        return result;
         }
@@ -57,6 +58,7 @@ namespace Vis.Model.Agent
                 pad.Paths.Add(line);
                 pad.Paths.Add(start);
 		        pad.Paths.Add(end);
+		        result = circ;
 	        }
 
 	        return result;

@@ -91,8 +91,9 @@ namespace Vis.Model.Agent
 	                var path = _drawCircle ?
 		                _skills.Circle(this, _startPoint, p) :
 		                _skills.Line(this, _startPoint, p);
+					path.UnitReference = unit;
                 }
-	            result = true;
+                result = true;
             }
 
             // check if we are over an existing point
