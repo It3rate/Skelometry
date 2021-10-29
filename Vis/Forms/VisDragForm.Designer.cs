@@ -37,7 +37,7 @@ namespace Vis.Forms
             this.btNext = new System.Windows.Forms.Button();
             this.lbTitleX = new System.Windows.Forms.Label();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.visPanel = new Vis.Model.Controller.VisRenderer();
+            this.visPanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,18 +105,11 @@ namespace Vis.Forms
             // 
             // visPanel
             // 
-            this.visPanel.Agent = null;
             this.visPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.visPanel.Location = new System.Drawing.Point(75, 80);
-            this.visPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.visPanel.Location = new System.Drawing.Point(37, 52);
             this.visPanel.Name = "visPanel";
-            this.visPanel.PenIndex = 0;
-            this.visPanel.Size = new System.Drawing.Size(948, 385);
+            this.visPanel.Size = new System.Drawing.Size(1036, 508);
             this.visPanel.TabIndex = 24;
-            this.visPanel.UnitPixels = 0F;
-            this.visPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
-            this.visPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
-            this.visPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
             // 
             // VisDragForm
             // 
@@ -150,6 +143,6 @@ namespace Vis.Forms
         private System.Windows.Forms.Button btNext;
         private System.Windows.Forms.Label lbTitleX;
         private System.Windows.Forms.BindingSource bindingSource1;
-        private Model.Controller.VisRenderer visPanel;
+        private System.Windows.Forms.Panel visPanel;
     }
 }

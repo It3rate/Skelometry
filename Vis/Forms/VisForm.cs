@@ -16,15 +16,14 @@ namespace Vis.Forms
     public partial class VisForm : Form
     {
 	    VisAgent _agent;
-        VisRenderer _renderer;
-        //Panel _panel;
+        IRenderer _renderer;
         public VisForm()
         {
             InitializeComponent();
             DoubleBuffered = true;
 
-            _renderer = (VisRenderer)panel1;
-            //_renderer = new VisRenderer();
+            //_renderer = new VisRenderer(panel);
+            _renderer = new SkiaRenderer(panel);
             _agent = new VisAgent(_renderer);
             Redraw();
         }

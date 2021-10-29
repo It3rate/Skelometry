@@ -24,7 +24,7 @@ namespace Vis.Model.Controller
         event MouseEventHandler MouseUp;
     }
 
-    public abstract class RendererBase
+    public abstract class RendererBase : IRenderer
     {
 	    public event EventHandler DrawingComplete;
 	    public IAgent Agent { get; set; }
@@ -40,6 +40,20 @@ namespace Vis.Model.Controller
             }
 	    }
 
+	    protected readonly Control Control;
+
+	    protected RendererBase(Control parent, int width = -1, int height = -1)
+	    {
+		    Control = CreateControl();
+		    Control.Width = width == -1 ? parent.Width : width;
+		    Control.Height = height == -1 ? parent.Height : height;
+		    parent.Controls.Add(Control);
+
+            GeneratePens();
+	    }
+
+	    protected abstract Control CreateControl();
+
         public abstract void GeneratePens();
 	    public abstract void BeginDraw();
 	    public abstract void EndDraw();
@@ -51,8 +65,31 @@ namespace Vis.Model.Controller
 	    public abstract void DrawLine(VisPoint p0, VisPoint p1, int penIndex = 0);
 	    public abstract void DrawPolyline(VisPoint[] points, int penIndex = 0);
 
+	    public int Width { get => Control.Width; set => Control.Width = value; }
+	    public int Height { get => Control.Height; set => Control.Height = value; }
 
-	    protected void OnDrawingComplete()
+        public event MouseEventHandler MouseDown
+	    {
+		    add => Control.MouseDown += value;
+		    remove => Control.MouseDown -= value;
+	    }
+	    public event MouseEventHandler MouseMove
+	    {
+		    add => Control.MouseMove += value;
+		    remove => Control.MouseMove -= value;
+	    }
+	    public event MouseEventHandler MouseUp
+	    {
+		    add => Control.MouseUp += value;
+		    remove => Control.MouseUp -= value;
+        }
+
+	    public void Invalidate()
+	    {
+		    Control.Invalidate();
+	    }
+
+        protected void OnDrawingComplete()
 	    {
 		    DrawingComplete?.Invoke(this, EventArgs.Empty);
         }

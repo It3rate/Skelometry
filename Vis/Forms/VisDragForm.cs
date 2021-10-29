@@ -27,13 +27,10 @@ namespace Vis.Forms
 
             //_renderer = (IRenderer)visPanel;// new VisRenderer();
             var skia = new SkiaRenderer(visPanel);
-            visPanel.MouseDown -= OnMouseDown;
-            visPanel.MouseMove -= OnMouseMove;
-            visPanel.MouseUp -= OnMouseUp;
             skia.MouseDown += OnMouseDown;
             skia.MouseMove += OnMouseMove;
             skia.MouseUp += OnMouseUp;
-            _renderer = skia;// new SkiaRenderer(visPanel);
+            _renderer = skia;
             _agent = new VisDragAgent(_renderer);
         }
 

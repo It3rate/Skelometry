@@ -16,6 +16,11 @@ namespace Vis.Model.Primitives
         public VisPoint Size => HalfSize.Multiply(2f);
         public VisPoint HalfSize { get; private set; }
         public VisPoint Center => this;
+        public float Left => TopLeft.X;
+        public float Top => TopLeft.Y;
+        public float Right => Center.X + HalfSize.X;
+        public float Bottom => Center.Y + HalfSize.Y;
+
 
         public VisRectangle(VisPoint center, VisPoint corner) : base(center.X, center.Y)
         {

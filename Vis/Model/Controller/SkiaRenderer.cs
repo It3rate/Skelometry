@@ -11,41 +11,19 @@ using Vis.Model.Primitives;
 
 namespace Vis.Model.Controller
 {
-    public class SkiaRenderer : RendererBase, IRenderer
+    public class SkiaRenderer : RendererBase
     {
-	    public int Width { get => _control.Width; set => _control.Width = value; }
-	    public int Height { get => _control.Height; set => _control.Height = value; }
-
-	    private readonly Control _control;
         private SkiaPens Pens { get; set; }
 
-	    public event MouseEventHandler MouseDown
-	    {
-		    add => _control.MouseDown += value;
-		    remove => _control.MouseDown -= value;
-	    }
-	    public event MouseEventHandler MouseMove
+        public SkiaRenderer(Control parent, int width = -1, int height = -1) : base(parent, width, height)
         {
-		    add => _control.MouseMove += value;
-		    remove => _control.MouseMove -= value;
-	    }
-	    public event MouseEventHandler MouseUp
+        }
+
+        protected override Control CreateControl()
         {
-		    add => _control.MouseUp += value;
-		    remove => _control.MouseUp -= value;
-	    }
-
-        public SkiaRenderer(Control parent, int width = -1, int height = -1)
-        {
-	        var skControl = new SKControl();
-	        _control = skControl;
-
-            _control.Width = width == -1 ? parent.Width : width;
-            _control.Height = height == -1 ? parent.Height : height;
-            skControl.PaintSurface += SkiaRenderer_PaintSurface;
-            parent.Controls.Add(_control);
-
-            Pens = new SkiaPens(250 * 4);
+            var result = new SKControl();
+            result.PaintSurface += SkiaRenderer_PaintSurface;
+            return result;
         }
 
         private void SkiaRenderer_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
@@ -59,10 +37,6 @@ namespace Vis.Model.Controller
 	        }
         }
 
-        public void Invalidate()
-        {
-            _control.Invalidate();
-        }
 
         private SKCanvas _canvas;
         public override void BeginDraw()
@@ -95,7 +69,8 @@ namespace Vis.Model.Controller
 
         public override void DrawRect(VisRectangle rect, int penIndex = 0)
         {
-            _canvas.DrawRect(new SKRect(rect.X, rect.Y, rect.X + rect.Size.X, rect.Y + rect.Size.Y), Pens[penIndex]);
+	        var skRect = new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom);
+            _canvas.DrawRect(skRect, Pens[penIndex]);
         }
 
         public override void DrawLine(VisLine line, int penIndex = 0)
@@ -110,7 +85,7 @@ namespace Vis.Model.Controller
 
         public override void DrawPolyline(VisPoint[] points, int penIndex = 0)
         {
-            _canvas.DrawPoints(SKPointMode.Lines, ToPoints(points), Pens[penIndex]);
+            _canvas.DrawPoints(SKPointMode.Polygon, ToPoints(points), Pens[penIndex]);
         }
 
         public override void GeneratePens()

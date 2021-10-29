@@ -34,7 +34,7 @@
             this.lbVariationA = new System.Windows.Forms.Label();
             this.slLayout = new System.Windows.Forms.HScrollBar();
             this.slColor = new System.Windows.Forms.HScrollBar();
-            this.panel1 = new Vis.Model.Controller.VisRenderer();
+            this.panel = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // btNext
@@ -101,23 +101,19 @@
             this.slColor.Value = 50;
             this.slColor.Scroll += new System.Windows.Forms.ScrollEventHandler(this.slColor_Scroll);
             // 
-            // panel1
+            // panel
             // 
-            this.panel1.Agent = null;
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.panel1.Location = new System.Drawing.Point(-1, 56);
-            this.panel1.Name = "panel1";
-            this.panel1.PenIndex = 0;
-            this.panel1.Size = new System.Drawing.Size(1129, 515);
-            this.panel1.TabIndex = 17;
-            this.panel1.UnitPixels = 220F;
+            this.panel.Location = new System.Drawing.Point(16, 66);
+            this.panel.Name = "panel";
+            this.panel.Size = new System.Drawing.Size(1093, 505);
+            this.panel.TabIndex = 17;
             // 
             // VisForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1128, 645);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panel);
             this.Controls.Add(this.lbVariationB);
             this.Controls.Add(this.lbVariationA);
             this.Controls.Add(this.slLayout);
@@ -141,5 +137,6 @@
         private System.Windows.Forms.HScrollBar slLayout;
         private System.Windows.Forms.HScrollBar slColor;
         private Model.Controller.VisRenderer panel1;
+        private System.Windows.Forms.Panel panel;
     }
 }
