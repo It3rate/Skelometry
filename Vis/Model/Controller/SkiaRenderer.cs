@@ -23,7 +23,20 @@ namespace Vis.Model.Controller
         {
             var result = new SKControl();
             result.PaintSurface += SkiaRenderer_PaintSurface;
+            //var result = new SKGLControl();
+            //result.PaintSurface += GL_PaintSurface;
             return result;
+        }
+
+        private void GL_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
+        {
+	        if (Agent != null)
+	        {
+		        _canvas = e.Surface.Canvas;
+		        BeginDraw();
+		        Draw();
+		        EndDraw();
+	        }
         }
 
         private void SkiaRenderer_PaintSurface(object sender, SKPaintSurfaceEventArgs e)

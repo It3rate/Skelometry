@@ -104,7 +104,7 @@ namespace Vis.Model.Controller
 
 		    foreach (var path in Agent.ViewPad.Paths)
 		    {
-			    DrawPath(path, 1);
+			    DrawStroke(path, 1);
 		    }
 
 		    foreach (var prim in Agent.WorkingPad.Paths)
@@ -117,7 +117,8 @@ namespace Vis.Model.Controller
 	    {
 		    if (path is VisLine line)
 		    {
-			    DrawLine(line.StartPoint, line.EndPoint, penIndex);
+                DrawLine(line.StartPoint, line.EndPoint, penIndex);
+                DrawRulerTicks(line, line.Length / 8);
 		    }
 		    else if (path is VisCircle circ)
 		    {
@@ -138,11 +139,7 @@ namespace Vis.Model.Controller
 		    }
 	    }
 
-	    public void DrawShape(VisStroke shape)
-	    {
-	    }
-
-	    public void DrawPath(VisStroke stroke, int penIndex = 0)
+        public void DrawStroke(VisStroke stroke, int penIndex = 0)
 	    {
 		    foreach (var segment in stroke.Segments)
 		    {
@@ -155,7 +152,44 @@ namespace Vis.Model.Controller
 				    DrawPolyline(arc.GetPolylinePoints(), penIndex);
 			    }
 		    }
+		    Flush();
+	    }
 
+	    public void DrawIPath(IPath path, int penIndex = 0)
+	    {
+		    if (path is IPrimitive primitive)
+		    {
+                DrawPrimitive(primitive, penIndex);
+		    }
+            else if (path is VisStroke stroke)
+		    {
+                DrawStroke(stroke, penIndex);
+		    }
+	    }
+
+	    public void DrawShape(VisStroke shape, int penIndex = 0)
+	    {
+	    }
+
+	    public void DrawRulerTicks(VisStroke stroke, IPath unitPath, int penIndex = 0)
+	    {
+		    DrawRulerTicks(stroke, unitPath.Length, penIndex);
+        }
+
+	    public void DrawRulerTicks(IPath path, float unitLength, int penIndex = 0)
+	    {
+		    if (unitLength > 0 && path.Length > 0)
+		    {
+			    var strokeLen = path.Length;
+	            if (unitLength > 0 && strokeLen > unitLength)
+	            {
+		            for (var total = 0f; total <= strokeLen; total += unitLength)
+		            {
+			            var pt = path.GetPoint(total / strokeLen);
+	                    DrawSpot(pt, 5, 1f);
+		            }
+	            }
+		    }
 		    Flush();
 	    }
     }

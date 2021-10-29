@@ -26,7 +26,8 @@ namespace Vis.Model.Primitives
             {
                 if (_length == 0)
                 {
-                    _length = (float)Math.Sqrt((EndPoint.X - X) * (EndPoint.X - X) + (EndPoint.Y - Y) * (EndPoint.Y - Y));
+	                var dist = (EndPoint.X - X) * (EndPoint.X - X) + (EndPoint.Y - Y) * (EndPoint.Y - Y);
+                    _length = dist > 0.0001 ? (float)Math.Sqrt(dist) : 0;
                 }
                 return _length;
             }
