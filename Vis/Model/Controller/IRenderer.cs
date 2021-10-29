@@ -124,7 +124,8 @@ namespace Vis.Model.Controller
 		    {
 			    DrawSpot(circ.Center, penIndex);
 			    DrawCircle(circ, penIndex);
-		    }
+			    DrawRulerTicks(circ, circ.Length / 8);
+            }
 		    else if (path is VisRectangle rect)
 		    {
 			    DrawRect(rect, penIndex);

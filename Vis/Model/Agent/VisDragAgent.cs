@@ -87,7 +87,7 @@ namespace Vis.Model.Agent
                 }
 	            else
 	            {
-	                _skills.Line(this, _startPoint, p);
+	                _skills.Circle(this, _startPoint, p);
 	            }
 	            result = true;
             }
@@ -123,7 +123,7 @@ namespace Vis.Model.Agent
             _isDown = false;
             var endPoint = _isHighlighting ? _highlightingPoint : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
 
-            _skills.Line(this, _startPoint, endPoint, true);
+            _skills.Circle(this, _startPoint, endPoint, true);
             _startPoint = null;
             _isDraggingExisting = false;
             _dragPoint = null;
