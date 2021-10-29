@@ -20,6 +20,8 @@ namespace Vis.Model.Primitives
         public float Top => TopLeft.Y;
         public float Right => Center.X + HalfSize.X;
         public float Bottom => Center.Y + HalfSize.Y;
+        public float Width => HalfSize.X * 2;
+        public float Height => HalfSize.Y * 2;
 
 
         public VisRectangle(VisPoint center, VisPoint corner) : base(center.X, center.Y)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,8 +61,6 @@ namespace Vis.Model.Primitives
         public float SquaredDistanceTo(VisPoint pt) => (pt.X - X) * (pt.X - X) + (pt.Y - Y) * (pt.Y - Y);
         public float DotProduct(VisPoint pt) => X * pt.X + Y * pt.Y; // negative because inverted Y
         public float Atan2(VisPoint pt) => (float)Math.Atan2(pt.Y - Y, pt.X - X);
-
-        public PointF PointF => new PointF(X, Y);
 
         public LinearDirection LinearDirection(VisPoint pt)
         {

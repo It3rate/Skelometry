@@ -60,6 +60,7 @@ namespace Vis.Model.Controller
 	    public abstract void Flush();
 	    public abstract void DrawSpot(VisPoint pos, int penIndex = 0, float scale = 1f);
 	    public abstract void DrawCircle(VisCircle circ, int penIndex = 0);
+	    public abstract void DrawOval(VisRectangle rect, int penIndex = 0);
 	    public abstract void DrawRect(VisRectangle rect, int penIndex = 0);
 	    public abstract void DrawLine(VisLine line, int penIndex = 0);
 	    public abstract void DrawLine(VisPoint p0, VisPoint p1, int penIndex = 0);

@@ -64,13 +64,17 @@ namespace Vis.Model.Controller
         }
         public override void DrawCircle(VisCircle circ, int penIndex = 0)
         {
-            _canvas.DrawCircle(circ.Center.X, circ.Center.Y, circ.Radius, Pens[penIndex]);
+	        _canvas.DrawCircle(circ.Center.X, circ.Center.Y, circ.Radius, Pens[penIndex]);
+        }
+
+        public override void DrawOval(VisRectangle rect, int penIndex = 0)
+        {
+	        _canvas.DrawOval(rect.Center.X, rect.Center.Y, rect.HalfSize.X, rect.HalfSize.Y, Pens[penIndex]);
         }
 
         public override void DrawRect(VisRectangle rect, int penIndex = 0)
         {
-	        var skRect = new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom);
-            _canvas.DrawRect(skRect, Pens[penIndex]);
+            _canvas.DrawRect(rect.SKRect(), Pens[penIndex]);
         }
 
         public override void DrawLine(VisLine line, int penIndex = 0)
@@ -85,24 +89,13 @@ namespace Vis.Model.Controller
 
         public override void DrawPolyline(VisPoint[] points, int penIndex = 0)
         {
-            _canvas.DrawPoints(SKPointMode.Polygon, ToPoints(points), Pens[penIndex]);
+            _canvas.DrawPoints(SKPointMode.Polygon, points.SKPoints(), Pens[penIndex]);
         }
 
         public override void GeneratePens()
         {
 	        Pens = new SkiaPens(UnitPixels * 4);
         }
-
-        private SKPoint[] ToPoints(VisPoint[] points)
-        {
-	        var result = new SKPoint[points.Length];
-	        for (int i = 0; i < points.Length; i++)
-	        {
-		        result[i] = new SKPoint(points[i].X, points[i].Y);
-	        }
-	        return result;
-        }
-
 
         //public void Draw(Graphics IAgent agent, int penIndex = 0)
         //{
@@ -115,5 +108,19 @@ namespace Vis.Model.Controller
         //    }
 
         //}
+    }
+    public static class SkiaExtensions
+    {
+	    public static SKPoint[] SKPoints(this VisPoint[] points)
+	    {
+		    var result = new SKPoint[points.Length];
+		    for (int i = 0; i < points.Length; i++)
+		    {
+			    result[i] = points[i].SKPoint();
+		    }
+		    return result;
+	    }
+	    public static SKPoint SKPoint(this VisPoint point) => new SKPoint(point.X, point.Y);
+	    public static SKRect SKRect(this VisRectangle rect) => new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom);
     }
 }

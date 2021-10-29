@@ -79,6 +79,10 @@ namespace Vis.Model.Controller
             var r = circ.Radius;
             _graphics.DrawEllipse(Pens[penIndex], pos.X - r, pos.Y - r, r * 2f, r * 2f);
         }
+        public override void DrawOval(VisRectangle rect, int penIndex = 0)
+        {
+	        _graphics.DrawEllipse(Pens[penIndex], rect.RectF());
+        }
         public override void DrawRect(VisRectangle rect, int penIndex = 0)
         {
             _graphics.DrawRectangle(Pens[penIndex], rect.TopLeft.X, rect.TopLeft.Y, rect.Size.X, rect.Size.Y);
@@ -94,7 +98,7 @@ namespace Vis.Model.Controller
         }
         public override void DrawPolyline(VisPoint[] points, int penIndex = 0)
         {
-            _graphics.DrawLines(Pens[penIndex], ToPoints(points));
+            _graphics.DrawLines(Pens[penIndex], points.PointFs());
         }
 
         public void DrawShape(VisStroke shape)
@@ -127,14 +131,20 @@ namespace Vis.Model.Controller
 	        Pens = new VisPens(UnitPixels * 4);
         }
 
-        private PointF[] ToPoints(VisPoint[] points)
-        {
-            var result = new PointF[points.Length];
-            for (int i = 0; i < points.Length; i++)
-            {
-                result[i] = points[i].PointF;
-            }
-            return result;
-        }
+    }
+
+    public static class GdiExtensions
+    {
+	    public static PointF[] PointFs(this VisPoint[] points)
+	    {
+		    var result = new PointF[points.Length];
+		    for(int i = 0; i < points.Length; i++)
+		    {
+			    result[i] = points[i].PointF();
+		    }
+		    return result;
+	    }
+	    public static PointF PointF(this VisPoint point) => new PointF(point.X, point.Y);
+	    public static RectangleF RectF(this VisRectangle rect) => new RectangleF(rect.Left, rect.Top, rect.Width, rect.Height);
     }
 }
