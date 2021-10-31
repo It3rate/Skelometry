@@ -38,7 +38,7 @@ namespace Vis.Model.Agent
         bool _isHighlighting = false;
         private bool _isDraggingExisting = false;
         VisPoint _highlightingPoint;
-        VisPoint _startPoint;
+        VisPoint _pivotPoint;
         VisPoint _dragPoint;
         public bool MouseDown(MouseEventArgs e)
         {
@@ -48,8 +48,9 @@ namespace Vis.Model.Agent
 	            var path = ViewPad.PathWithNodeNear(_highlightingPoint);
 	            if (path != null)
 	            {
-		            _startPoint = path.EndPoint.IsNear(_highlightingPoint) ? path.StartPoint : path.EndPoint;
-		            _skills.Point(this, _startPoint);
+		            bool isOnStartPoint = path.StartPoint.IsNear(_highlightingPoint);
+		            _pivotPoint = isOnStartPoint ? path.EndPoint : path.StartPoint;
+		            //_skills.Point(this, _pivotPoint, true);
 		            if (path is VisStroke stroke)
 		            {
 			            _isDraggingExisting = true;
@@ -65,8 +66,8 @@ namespace Vis.Model.Agent
             
             if(!_isHighlighting)
             {
-	            _startPoint = _isDraggingExisting ? _highlightingPoint.Clone() : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
-	            _skills.Point(this, _startPoint);
+	            _pivotPoint = _isDraggingExisting ? _highlightingPoint.Clone() : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+	            _skills.Point(this, _pivotPoint);
             }
 
             _isHighlighting = false;
@@ -84,13 +85,13 @@ namespace Vis.Model.Agent
 	            {
 		            _dragPoint.X = p.X;
 		            _dragPoint.Y = p.Y;
-		            _skills.Line(this, _startPoint, p);
+		            _skills.Line(this, _pivotPoint, p);
                 }
 	            else
 	            {
 	                var path = _drawCircle ?
-		                _skills.Circle(this, _startPoint, p) :
-		                _skills.Line(this, _startPoint, p);
+		                _skills.Circle(this, _pivotPoint, p) :
+		                _skills.Line(this, _pivotPoint, p);
 					path.UnitReference = unit;
                 }
                 result = true;
@@ -128,8 +129,8 @@ namespace Vis.Model.Agent
             var endPoint = _isHighlighting ? _highlightingPoint : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
 
             var path = _drawCircle ? 
-	            _skills.Circle(this, _startPoint, endPoint, true) :
-	            _skills.Line(this, _startPoint, endPoint, true);
+	            _skills.Circle(this, _pivotPoint, endPoint, true) :
+	            _skills.Line(this, _pivotPoint, endPoint, true);
 
             if (unit == null)
             {
@@ -139,7 +140,7 @@ namespace Vis.Model.Agent
             {
 	            path.UnitReference = unit;
             }
-            _startPoint = null;
+            _pivotPoint = null;
             _isDraggingExisting = false;
             _dragPoint = null;
             return true;

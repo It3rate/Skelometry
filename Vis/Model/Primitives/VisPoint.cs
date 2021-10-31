@@ -39,6 +39,10 @@ namespace Vis.Model.Primitives
             Index = _index++;
         }
 
+        public void SetIndex()
+        {
+
+        }
         public bool IsNear(VisPoint p)
         {
 	        return this.SquaredDistanceTo(p) < NearThreshold;

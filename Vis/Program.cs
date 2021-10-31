@@ -26,15 +26,10 @@ namespace Vis
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //var genForm = new GeneratorForm();
             Forms = new List<Form>
             {
-	            //genForm,
-	            //new InteractForm(genForm.Generator),
-	           // new TyloxForm(),
-	            //new SimForm(),
 	            new VisDragForm(),
-                new VisForm(),
+                //new VisForm(),
             };
 
             NextForm();

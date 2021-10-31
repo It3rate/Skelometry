@@ -20,6 +20,10 @@ namespace Vis.Model.Primitives
         public VisPoint EndPoint => EndNode.Anchor;
         public VisPoint Center => MidPoint; // Will be the center of the bounds once that is calculated
 
+        public VisNode StartNode => Nodes[0];
+        public VisNode MidNode => new VisNode(this, 0.5f);
+        public VisNode EndNode => Nodes[Nodes.Count - 1];
+
         private List<VisPoint> Anchors = new List<VisPoint>();
         public List<IPrimitivePath> Segments = new List<IPrimitivePath>();
         public IPath UnitReference { get; set; }
@@ -135,13 +139,8 @@ namespace Vis.Model.Primitives
         public float LikelyDiagonalUp { get; }
         public float LikelyDiagonalDown { get; }
 
-
         public VisNode NodeAt(float position) => new VisNode(this, position);
         public VisNode NodeAt(float position, float offset) => new TipNode(this, position, offset);
-        public VisNode StartNode => Nodes[0];
-        public VisNode MidNode => new VisNode(this, 0.5f);
-        public VisNode EndNode => Nodes[Nodes.Count - 1];
-
         public VisNode NodeNear(VisPoint point)
         {
 	        VisNode result = null;

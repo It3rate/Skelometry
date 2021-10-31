@@ -16,7 +16,7 @@ namespace Vis.Model.Primitives
         public VisNode NextNode { get; private set; }
 
         // calculated
-        public VisPoint Anchor { get; protected set; }
+        public VisPoint Anchor => Reference.GetPoint(Position); //; protected set; }
         public float X => Anchor.X;
         public float Y => Anchor.Y;
 
@@ -28,7 +28,7 @@ namespace Vis.Model.Primitives
             Reference = reference;
             Position = position;
 
-            Anchor = reference.GetPoint(position);
+            //Anchor = reference.GetPoint(position);
         }
 
 
@@ -105,7 +105,7 @@ namespace Vis.Model.Primitives
         public TipNode(IPath reference, float position, float offset) : base(reference, position)
         {
             Offset = offset;
-            Anchor = reference.GetPoint(position, offset);
+            //Anchor = reference.GetPoint(position, offset);
         }
         //public TipNode(IPath reference, float position, float offset, float length) : base(reference, position)
         //{
