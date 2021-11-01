@@ -106,9 +106,7 @@
     <Compile Include="Model\Controller\IRenderer.cs" />
     <Compile Include="Model\Controller\RenderPoint.cs" />
     <Compile Include="Model\Controller\SkiaPens.cs" />
-    <Compile Include="Model\Controller\SkiaRenderer.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Model\Controller\SkiaRenderer.cs"/>
     <Compile Include="Model\Controller\VisPens.cs" />
     <Compile Include="Model\Primitives\IPath.cs" />
     <Compile Include="Model\Primitives\VisShape.cs" />
@@ -117,9 +115,7 @@
     <Compile Include="Model\Agent\VisAgent.cs" />
     <Compile Include="Model\Agent\VisPad.cs" />
     <Compile Include="Model\Agent\VisSkills.cs" />
-    <Compile Include="Model\Controller\VisRenderer.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Model\Controller\VisRenderer.cs"/>
     <Compile Include="Model\Primitives\VisArc.cs" />
     <Compile Include="Model\Primitives\VisCircle.cs" />
     <Compile Include="Model\Primitives\VisLine.cs" />
