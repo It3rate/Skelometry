@@ -11,6 +11,31 @@ using Vis.Model.Primitives;
 
 namespace Vis.Model.Agent
 {
+    // view: toggle prominent focus or view, multiple pads.
+    // hover: select none, node, edge. From focus or view.
+    //  If edge is selected, option to move or separate joints, select sections.
+    //  If shape is selected, option to move joints and all connections at once.
+    // click:
+    //  Select hovered element. Multiple clicks cycle through options.
+    //  Perhaps joints could have a circular flyout of joints/attributes if there are more than one connection.
+    // right click: Option to change joint/node/line type
+    // drag:
+    //  move reference node/edge, all connections update and move with it
+    //  move joint: Joint slides along edges, changing the type of joint as needed. Joins update.
+    //  disconnect/reconnect node, based on selection and keys
+    // up: set end point of new line
+    //  reconnect or disconnect dragging node
+    //  create new node/edge on selected pad
+    //  finalize move, add, delete or change
+
+    // do not delete and recreate nodes, esp as dragging
+    // put nodes and edges in indexed tables?
+    // state machine for creation by mouse
+    // commands for creation, git?
+    // attribute has unit, correlation level (potential multiple correlations if not 100%)
+    //  correlation is a joint, is exactly the binding of two elements in a 2D relation
+    // Resolve if elements are inside a given area, or touch point within tolerance
+
     public class VisDragAgent : IAgent
     {
         public VisPad<VisPoint> WorkingPad { get; private set; }

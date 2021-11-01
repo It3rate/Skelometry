@@ -193,6 +193,8 @@ namespace Vis.Model.Primitives
             return result.ToArray();
         }
 
+        public virtual VisRectangle BoundingBox() => new VisRectangle(Center, new VisPoint(Center.X - Radius, Center.Y - Radius));
+
         public VisNode NodeNear(VisPoint point)
         {
 	        VisNode result = null;

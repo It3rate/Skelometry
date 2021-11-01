@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Vis.Model.Primitives
 {
@@ -85,11 +86,36 @@ namespace Vis.Model.Primitives
         public VisNode MidNode => new VisNode(this, 0.5f);
         public VisNode EndNode => new VisNode(this, 1f);
 
-        public VisPoint IntersectionPoint(VisLine line) => null;
-        public VisCircle CircleFrom() => new VisCircle(this, EndPoint);
+
+        
+        public virtual bool IsInBoundingBox(double x, double y)
+        {
+	        return (x >= X && x <= EndPoint.X || x >= EndPoint.X && x <= X) && 
+	               (y >= Y && y <= EndPoint.Y || y >= EndPoint.Y && y <= Y);
+        }
+        public virtual VisRectangle BoundingBox() => new VisRectangle(this, EndPoint);
         public VisRectangle RectangleFrom() => new VisRectangle(this, EndPoint);
+        public VisCircle CircleFrom() => new VisCircle(this, EndPoint);
 
-
+        public (float, float, float) ABCLine()
+        {
+	        return StartPoint.ABCLine(EndPoint);
+        }
+        public float Determinant(VisLine line) => (EndPoint.Y - Y) * (line.X - line.EndPoint.X) - (X - EndPoint.X) * (line.EndPoint.Y - line.Y);
+        public VisPoint IntersectionPoint(VisLine line)
+        {
+	        VisPoint result = null;
+	        var (a0, b0, c0) = ABCLine();
+	        var (a1, b1, c1) = line.ABCLine();
+            var determinant = a0 * b0 - a1 * b0;
+            if (determinant != 0) // not parallel
+            {
+	            var x = (b1 * c0 - b0 * c1) / determinant;
+	            var y = (a0 * c1 - a1 * c0) / determinant;
+	            result = new VisPoint(x, y);
+            }
+            return result;
+        }
         public VisPoint ProjectPointOnto(VisPoint p)
         {
 	        var e1 = EndPoint.Subtract(this);

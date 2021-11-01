@@ -53,6 +53,8 @@ namespace Vis.Model.Primitives
             return direction.GetPointFrom(this);
         }
 
+        public virtual VisRectangle BoundingBox() => new VisRectangle(this, TopLeft);
+        
         public VisPoint NearestIntersectionTo(VisPoint p) => null;
         public bool IntersectsWith(VisPoint p) => false;
         public bool IntersectsWith(VisLine line) => Math.Abs(Center.X - line.Center.X) <= HalfSize.X + line.MidPoint.X && Math.Abs(Center.Y - line.Center.Y) <= HalfSize.Y + line.MidPoint.Y;

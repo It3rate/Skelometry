@@ -86,6 +86,9 @@ namespace Vis.Model.Primitives
             return result.ToArray();
         }
 
+        // todo: Arc bounds needs to account for segment having a smaller bounds than a circle.
+        public virtual VisRectangle BoundingBox() => new VisRectangle(Center, new VisPoint(Center.X - Radius, Center.Y - Radius));
+
         public VisNode NodeNear(VisPoint point)
         {
 	        VisNode result = null;
