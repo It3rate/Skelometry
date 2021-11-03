@@ -109,17 +109,17 @@ namespace Vis.Model.Controller
 	    {
 		    foreach (var prim in Agent.FocusPad.Paths)
 		    {
-			    DrawPrimitive(prim, PenIndex);
+			    DrawPrimitive(prim.Element, PenIndex);
 		    }
 
 		    foreach (var path in Agent.ViewPad.Paths)
 		    {
-			    DrawStroke(path, 1);
+			    DrawStroke(path.Element, 1);
 		    }
 
 		    foreach (var prim in Agent.WorkingPad.Paths)
 		    {
-			    DrawPrimitive(prim, PenIndex);
+			    DrawPrimitive(prim.Element, PenIndex);
 		    }
 	    }
 

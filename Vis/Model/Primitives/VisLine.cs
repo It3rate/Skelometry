@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using Vis.Model.Connections;
 
 namespace Vis.Model.Primitives
 {

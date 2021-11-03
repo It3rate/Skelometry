@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.ML.Probabilistic.Distributions;
+﻿using Microsoft.ML.Probabilistic.Distributions;
+using Vis.Model.Primitives;
 
-namespace Vis.Model.Primitives
+namespace Vis.Model.Connections
 {
+    /// <summary>
+    /// Nodes specify landmarks where things relate to each other in various ways.
+    /// It is more abstract than a joint, in that it can apply to any type of reference, and
+    /// can specify positions of unrelated things, like two lines that happen to overlap.
+    /// They are the 'mental' version of joints, and do not need to map the solved reality of a scene.
+    /// (they are read to the joints write)
+    /// </summary>
     public class VisNode : IPrimitive
     {
         public IPath Reference { get; } // if reference is a stroke, this must be a joint
@@ -27,16 +30,13 @@ namespace Vis.Model.Primitives
         {
             Reference = reference;
             Position = position;
-
             //Anchor = reference.GetPoint(position);
         }
-
 
         public VisPoint GetPoint(float position, float offset = 0)
         {
             return Reference.GetPoint(position, offset);
         }
-
 
         public float Similarity(IPrimitive p) => 0;
         public VisPoint Sample(Gaussian g) => null;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vis.Model.Agent;
+using Vis.Model.Connections;
 
 namespace Vis.Model.Primitives
 {

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vis.Model.Connections;
+using Vis.Model.Controller;
 using Vis.Model.Primitives;
 
 namespace Vis.Model.Agent
@@ -13,7 +15,7 @@ namespace Vis.Model.Agent
     {
         public PadType Type { get; }
 
-        public List<T> Paths { get; } = new List<T>();
+        public List<PadElement<T>> Paths { get; } = new List<PadElement<T>>();
         public int Width { get; }
         public int Height { get; }
 
@@ -22,7 +24,14 @@ namespace Vis.Model.Agent
             Width = width;
             Height = height;
         }
-        public void Remove(T item)
+
+        public PadElement<T> Add(T item)
+        {
+            var element = new PadElement<T>(item);
+            Paths.Add(element);
+            return element;
+        }
+        public void Remove(PadElement<T> item)
         {
 	        Paths.Remove(item);
         }
@@ -41,7 +50,7 @@ namespace Vis.Model.Agent
 	        VisNode result = null;
 	        foreach (var item in Paths)
 	        {
-		        if (item is IPath path)
+		        if (item.Element is IPath path)
 		        {
 			        foreach (VisPoint p in path)
 			        {
@@ -61,7 +70,7 @@ namespace Vis.Model.Agent
 	        IPath result = null;
 	        foreach (var item in Paths)
 	        {
-		        if (item is IPath path)
+		        if (item.Element is IPath path)
 		        {
 			        foreach (VisPoint p in path)
 			        {
@@ -85,7 +94,7 @@ namespace Vis.Model.Agent
                 foreach (var item in Paths)
                 {
                     float dist = float.MaxValue;
-                    if (item is VisPoint p)
+                    if (item.Element is VisPoint p)
                     {
                         dist = p.SquaredDistanceTo(qp);
                         if (dist < qp.NearThreshold)
@@ -94,7 +103,7 @@ namespace Vis.Model.Agent
                             break;
                         }
                     }
-                    else if (item is IPath path)
+                    else if (item.Element is IPath path)
                     {
                         foreach (VisPoint pp in path)
                         {
@@ -116,7 +125,7 @@ namespace Vis.Model.Agent
             var result = default(IPath);
             foreach (var item in Paths)
             {
-                if (item is IPath padPath)
+                if (item.Element is IPath padPath)
                 {
                     IPath path = (IPath)query;
                     var centerPoint = new VisPoint(0.5f, 0.5f);

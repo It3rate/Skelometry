@@ -103,10 +103,12 @@
     <Compile Include="Model\Agent\IAgent.cs" />
     <Compile Include="Model\Agent\VisDragAgent.cs" />
     <Compile Include="Model\Agent\VisMeasureSkills.cs" />
+    <Compile Include="Model\Connections\VisCorrelations.cs" />
     <Compile Include="Model\Controller\IRenderer.cs" />
+    <Compile Include="Model\Controller\PadElement.cs" />
     <Compile Include="Model\Controller\RenderPoint.cs" />
     <Compile Include="Model\Controller\SkiaPens.cs" />
-    <Compile Include="Model\Controller\SkiaRenderer.cs"/>
+    <Compile Include="Model\Controller\SkiaRenderer.cs" />
     <Compile Include="Model\Controller\VisPens.cs" />
     <Compile Include="Model\Primitives\IPath.cs" />
     <Compile Include="Model\Primitives\VisShape.cs" />
@@ -115,15 +117,15 @@
     <Compile Include="Model\Agent\VisAgent.cs" />
     <Compile Include="Model\Agent\VisPad.cs" />
     <Compile Include="Model\Agent\VisSkills.cs" />
-    <Compile Include="Model\Controller\VisRenderer.cs"/>
+    <Compile Include="Model\Controller\VisRenderer.cs" />
     <Compile Include="Model\Primitives\VisArc.cs" />
     <Compile Include="Model\Primitives\VisCircle.cs" />
     <Compile Include="Model\Primitives\VisLine.cs" />
-    <Compile Include="Model\Primitives\VisNode.cs" />
+    <Compile Include="Model\Connections\VisNode.cs" />
     <Compile Include="Model\Primitives\VisPoint.cs" />
     <Compile Include="Model\Primitives\VisRectangle.cs" />
     <Compile Include="Model\Primitives\VisStroke.cs" />
-    <Compile Include="Model\Primitives\VisJoint.cs" />
+    <Compile Include="Model\Connections\VisJoint.cs" />
     <Compile Include="Model\Primitives\VisLocator.cs" />
     <Compile Include="Model\Primitives\VisPrimitives.cs" />
     <EmbeddedResource Include="Forms\VisDragForm.resx">
@@ -204,6 +206,7 @@
       <Version>4.5.2</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
   </Target>

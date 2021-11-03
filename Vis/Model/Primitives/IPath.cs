@@ -1,4 +1,6 @@
-﻿namespace Vis.Model.Primitives
+﻿using Vis.Model.Connections;
+
+namespace Vis.Model.Primitives
 {
     using System;
     using System.Collections.Generic;

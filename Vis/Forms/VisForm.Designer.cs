@@ -136,7 +136,9 @@
         private System.Windows.Forms.Label lbVariationA;
         private System.Windows.Forms.HScrollBar slLayout;
         private System.Windows.Forms.HScrollBar slColor;
+#pragma warning disable CS0169 // The field 'VisForm.panel1' is never used
         private Model.Controller.VisRenderer panel1;
+#pragma warning restore CS0169 // The field 'VisForm.panel1' is never used
         private System.Windows.Forms.Panel panel;
     }
 }

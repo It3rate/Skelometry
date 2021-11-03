@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.ML.Probabilistic.Distributions;
+﻿using Microsoft.ML.Probabilistic.Distributions;
+using Vis.Model.Primitives;
 
-namespace Vis.Model.Primitives
+namespace Vis.Model.Connections
 {
     /// <summary>
-    /// A joint is observed on a concrete shape (primitives can not make joints). Generally any node with a reference that is a stroke will be a joint, but there can be others, such as crosses.
+    /// A joint is observed on a concrete shape (primitives can not make joints).
+    /// Generally any node with a reference that is a stroke will be a joint, but there can be others, such as crosses.
     /// </summary>
     public class VisJoint
     {

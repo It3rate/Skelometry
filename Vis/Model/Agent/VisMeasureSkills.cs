@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vis.Model.Connections;
 using Vis.Model.Primitives;
 
 namespace Vis.Model.Agent
@@ -12,7 +13,7 @@ namespace Vis.Model.Agent
         public void Point(IAgent agent, VisPoint p, bool permanent = false)
         {
             var pad = permanent ? agent.FocusPad : agent.WorkingPad;
-            pad.Paths.Add(p);
+            pad.Add(p);
         }
         public IPath Line(IAgent agent, VisPoint start, VisPoint end, bool permanent = false)
         {
@@ -20,19 +21,19 @@ namespace Vis.Model.Agent
             VisLine line = VisLine.ByEndpoints(start, end);
 	        if (permanent)
 	        {
-		        agent.FocusPad.Paths.Add(line);
+		        agent.FocusPad.Add(line);
 		        var nodeStart = new VisNode(line, 0);
 		        var nodeEnd = new VisNode(line, 1);
 		        var stroke = new VisStroke(nodeStart, nodeEnd);
-                agent.ViewPad.Paths.Add(stroke);
+                agent.ViewPad.Add(stroke);
 		        result = stroke;
             }
 	        else
 	        {
 		        var pad = agent.WorkingPad;
-		        pad.Paths.Add(line);
-		        pad.Paths.Add(start);
-		        pad.Paths.Add(end);
+		        pad.Add(line);
+		        pad.Add(start);
+		        pad.Add(end);
 		        result = line;
 	        }
 	        return result;
@@ -43,21 +44,21 @@ namespace Vis.Model.Agent
 	        var circ = new VisCircle(start, end);
 	        if (permanent)
 	        {
-		        agent.FocusPad.Paths.Add(circ);
+		        agent.FocusPad.Add(circ);
                 //agent.ViewPad.Paths.Add(new VisStroke());
                 var tn = new TangentNode(circ, ClockDirection.CW);
                 var stroke = new VisStroke(circ.StartNode, tn, circ.StartNode);
-                agent.ViewPad.Paths.Add(stroke);
+                agent.ViewPad.Add(stroke);
                 result = stroke;
 	        }
             else
 	        {
 		        var line = VisLine.ByEndpoints(start, end);
                 var pad = agent.WorkingPad;
-                pad.Paths.Add(circ);
-                pad.Paths.Add(line);
-                pad.Paths.Add(start);
-		        pad.Paths.Add(end);
+                pad.Add(circ);
+                pad.Add(line);
+                pad.Add(start);
+		        pad.Add(end);
 		        result = circ;
 	        }
 
