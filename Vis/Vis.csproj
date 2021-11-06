@@ -104,7 +104,7 @@
     <Compile Include="Model\Agent\VisDragAgent.cs" />
     <Compile Include="Model\Agent\VisMeasureSkills.cs" />
     <Compile Include="Model\Connections\VisCorrelations.cs" />
-    <Compile Include="Model\Controller\IRenderer.cs" />
+    <Compile Include="Model\Controller\RendererBase.cs" />
     <Compile Include="Model\Controller\PadElement.cs" />
     <Compile Include="Model\Controller\RenderPoint.cs" />
     <Compile Include="Model\Controller\SkiaPens.cs" />
@@ -130,6 +130,7 @@
     <Compile Include="Model\Primitives\VisPrimitives.cs" />
     <EmbeddedResource Include="Forms\VisDragForm.resx">
       <DependentUpon>VisDragForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\VisForm.resx">
       <DependentUpon>VisForm.cs</DependentUpon>
@@ -142,6 +143,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

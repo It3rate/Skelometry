@@ -16,7 +16,7 @@ namespace Vis.Model.Agent
     //  If edge is selected, option to move or separate joints, select sections.
     //  If shape is selected, option to move joints and all connections at once.
     // click:
-    //  Select hovered element. Multiple clicks cycle through options.
+    //  Select hovered attributes. Multiple clicks cycle through options.
     //  Perhaps joints could have a circular flyout of joints/attributes if there are more than one connection.
     // right click: Option to change joint/node/line type
     // drag:
@@ -54,7 +54,7 @@ namespace Vis.Model.Agent
             _renderer.DrawingComplete += _renderer_DrawingComplete;
 
             _skills = new VisMeasureSkills();
-            WorkingPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height);
+            WorkingPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height, false);
             FocusPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height);
             ViewPad = new VisPad<VisStroke>(_renderer.Width, _renderer.Height);
         }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,13 +60,13 @@ namespace Vis.Model.Controller
 	    public abstract void BeginDraw();
 	    public abstract void EndDraw();
 	    public abstract void Flush();
-	    public abstract void DrawSpot(VisPoint pos, int penIndex = 0, float scale = 1f);
-	    public abstract void DrawCircle(VisCircle circ, int penIndex = 0);
-	    public abstract void DrawOval(VisRectangle rect, int penIndex = 0);
-	    public abstract void DrawRect(VisRectangle rect, int penIndex = 0);
-	    public abstract void DrawLine(VisLine line, int penIndex = 0);
-	    public abstract void DrawLine(VisPoint p0, VisPoint p1, int penIndex = 0);
-	    public abstract void DrawPolyline(VisPoint[] points, int penIndex = 0);
+	    public abstract void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f);
+	    public abstract void DrawCircle(VisCircle circ, PadAttributes attributes = null);
+	    public abstract void DrawOval(VisRectangle rect, PadAttributes attributes = null);
+	    public abstract void DrawRect(VisRectangle rect, PadAttributes attributes = null);
+	    public abstract void DrawLine(VisLine line, PadAttributes attributes = null);
+	    public abstract void DrawLine(VisPoint p0, VisPoint p1, PadAttributes attributes = null);
+	    public abstract void DrawPolyline(VisPoint[] points, PadAttributes attributes = null);
 
 	    public int Width { get => Control.Width; set => Control.Width = value; }
 	    public int Height { get => Control.Height; set => Control.Height = value; }
@@ -109,25 +111,26 @@ namespace Vis.Model.Controller
 	    {
 		    foreach (var prim in Agent.FocusPad.Paths)
 		    {
-			    DrawPrimitive(prim.Element, PenIndex);
+			    DrawPrimitive(prim);
 		    }
 
 		    foreach (var path in Agent.ViewPad.Paths)
 		    {
-			    DrawStroke(path.Element, 1);
+			    DrawStroke(path);
 		    }
 
 		    foreach (var prim in Agent.WorkingPad.Paths)
 		    {
-			    DrawPrimitive(prim.Element, PenIndex);
+			    DrawPrimitive(prim);
 		    }
 	    }
 
-	    public void DrawPrimitive(IPrimitive path, int penIndex = 0)
+	    public void DrawPrimitive(PadAttributes<VisPoint> padAttributes)
 	    {
+		    var path = padAttributes.Element;
 		    if (path is VisLine line)
 		    {
-                DrawLine(line.StartPoint, line.EndPoint, penIndex);
+                DrawLine(line.StartPoint, line.EndPoint, padAttributes);
                 if (line.UnitReference != null)
                 {
 	                DrawRulerTicks(line, line.UnitReference);
@@ -135,8 +138,8 @@ namespace Vis.Model.Controller
 		    }
 		    else if (path is VisCircle circ)
 		    {
-			    DrawSpot(circ.Center, penIndex);
-			    DrawCircle(circ, penIndex);
+			    DrawSpot(circ.Center, padAttributes);
+			    DrawCircle(circ, padAttributes);
 			    if (circ.UnitReference != null)
 			    {
 				    DrawRulerTicks(circ, circ.UnitReference);
@@ -144,29 +147,31 @@ namespace Vis.Model.Controller
 		    }
 		    else if (path is VisRectangle rect)
 		    {
-			    DrawRect(rect, penIndex);
+			    DrawRect(rect, padAttributes);
 		    }
 		    else if (path is RenderPoint rp)
 		    {
-			    DrawSpot(rp, rp.PenIndex, rp.Scale); // penIndex);
-		    }
+			    //DrawSpot(rp, rp.PenIndex, rp.Scale); // penIndex);
+			    DrawSpot(rp, padAttributes, rp.Scale); // penIndex);
+            }
 		    else if (path is VisPoint p)
 		    {
-			    DrawSpot(p, 6); // penIndex);
+			    DrawSpot(p, padAttributes); // penIndex);
 		    }
 	    }
 
-        public void DrawStroke(VisStroke stroke, int penIndex = 0)
-	    {
+        public void DrawStroke(PadAttributes<VisStroke> padAttributes)
+        {
+	        var stroke = padAttributes.Element;
 		    foreach (var segment in stroke.Segments)
 		    {
 			    if (segment is VisLine line)
 			    {
-				    DrawLine(line, penIndex);
+				    DrawLine(line, padAttributes);
 			    }
 			    else if (segment is VisArc arc)
 			    {
-				    DrawPolyline(arc.GetPolylinePoints(), penIndex);
+				    DrawPolyline(arc.GetPolylinePoints(), padAttributes);
                 }
             }
 
@@ -178,22 +183,22 @@ namespace Vis.Model.Controller
 		    Flush();
 	    }
 
-	    public void DrawIPath(IPath path, int penIndex = 0)
-	    {
-		    if (path is IPrimitive primitive)
-		    {
-                DrawPrimitive(primitive, penIndex);
-		    }
-            else if (path is VisStroke stroke)
-		    {
-                DrawStroke(stroke, penIndex);
-		    }
+	    //public void DrawIPath(IPath path, int penIndex = 0)
+	    //{
+		   // if (path is IPrimitive primitive)
+		   // {
+     //           DrawPrimitive(primitive, penIndex);
+		   // }
+     //       else if (path is VisStroke stroke)
+		   // {
+     //           DrawStroke(stroke, penIndex);
+		   // }
 
-		    if (path.UnitReference != null)
-		    {
-			    DrawRulerTicks(path, path.UnitReference);
-		    }
-	    }
+		   // if (path.UnitReference != null)
+		   // {
+			  //  DrawRulerTicks(path, path.UnitReference);
+		   // }
+	    //}
     
 
 	    public void DrawShape(VisStroke shape, int penIndex = 0)
@@ -215,7 +220,7 @@ namespace Vis.Model.Controller
 		            for (var total = 0f; total <= strokeLen; total += unitLength)
 		            {
 			            var pt = path.GetPoint(total / strokeLen);
-	                    DrawSpot(pt, 5, 1f);
+	                    DrawSpot(pt, null, 1f);
 		            }
 	            }
 		    }

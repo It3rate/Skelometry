@@ -67,38 +67,45 @@ namespace Vis.Model.Controller
             _graphics.Flush();
         }
 
-        public override void DrawSpot(VisPoint pos, int penIndex = 0, float scale = 1f)
+        public override void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f)
         {
-            var r = Pens[penIndex].Width * scale;
-            _graphics.DrawEllipse(Pens[penIndex], pos.X - r, pos.Y - r, r * 2f, r * 2f);
+	        var pen = Pens.GetPenForUIType(UIType.HighlightSpot);
+	        var r = pen.Width * scale;
+            _graphics.DrawEllipse(pen, pos.X - r, pos.Y - r, r * 2f, r * 2f);
         }
 
-        public override void DrawCircle(VisCircle circ, int penIndex = 0)
+        public override void DrawCircle(VisCircle circ, PadAttributes attributes = null)
         {
+	        var pen = Pens.GetPenForElement(attributes);
             var pos = circ.Center;
             var r = circ.Radius;
-            _graphics.DrawEllipse(Pens[penIndex], pos.X - r, pos.Y - r, r * 2f, r * 2f);
+            _graphics.DrawEllipse(pen, pos.X - r, pos.Y - r, r * 2f, r * 2f);
         }
-        public override void DrawOval(VisRectangle rect, int penIndex = 0)
+        public override void DrawOval(VisRectangle rect, PadAttributes attributes = null)
         {
-	        _graphics.DrawEllipse(Pens[penIndex], rect.RectF());
+	        var pen = Pens.GetPenForElement(attributes);
+            _graphics.DrawEllipse(pen, rect.RectF());
         }
-        public override void DrawRect(VisRectangle rect, int penIndex = 0)
+        public override void DrawRect(VisRectangle rect, PadAttributes attributes = null)
         {
-            _graphics.DrawRectangle(Pens[penIndex], rect.TopLeft.X, rect.TopLeft.Y, rect.Size.X, rect.Size.Y);
+	        var pen = Pens.GetPenForElement(attributes);
+            _graphics.DrawRectangle(pen, rect.TopLeft.X, rect.TopLeft.Y, rect.Size.X, rect.Size.Y);
         }
 
-        public override void DrawLine(VisLine line, int penIndex = 0)
+        public override void DrawLine(VisLine line, PadAttributes attributes = null)
         {
-            _graphics.DrawLine(Pens[penIndex], line.StartPoint.X, line.StartPoint.Y, line.EndPoint.X, line.EndPoint.Y);
+	        var pen = Pens.GetPenForElement(attributes);
+            _graphics.DrawLine(pen, line.StartPoint.X, line.StartPoint.Y, line.EndPoint.X, line.EndPoint.Y);
         }
-        public override void DrawLine(VisPoint p0, VisPoint p1, int penIndex = 0)
+        public override void DrawLine(VisPoint p0, VisPoint p1, PadAttributes attributes = null)
         {
-            _graphics.DrawLine(Pens[penIndex], p0.X, p0.Y, p1.X, p1.Y);
+	        var pen = Pens.GetPenForElement(attributes);
+            _graphics.DrawLine(pen, p0.X, p0.Y, p1.X, p1.Y);
         }
-        public override void DrawPolyline(VisPoint[] points, int penIndex = 0)
+        public override void DrawPolyline(VisPoint[] points, PadAttributes attributes = null)
         {
-            _graphics.DrawLines(Pens[penIndex], points.PointFs());
+	        var pen = Pens.GetPenForElement(attributes);
+            _graphics.DrawLines(pen, points.PointFs());
         }
 
         public void DrawShape(VisStroke shape)
@@ -109,17 +116,17 @@ namespace Vis.Model.Controller
 	        //}
         }
 
-        public void DrawPath(VisStroke stroke, int penIndex = 0)
+        public void DrawPath(VisStroke stroke, PadAttributes attributes = null)
         {
 	        foreach (var segment in stroke.Segments)
 	        {
 		        if (segment is VisLine line)
 		        {
-			        DrawLine(line, penIndex);
+			        DrawLine(line, attributes);
 		        }
 		        else if (segment is VisArc arc)
 		        {
-			        DrawPolyline(arc.GetPolylinePoints(), penIndex);
+			        DrawPolyline(arc.GetPolylinePoints(), attributes);
 		        }
 	        }
 	        Flush();

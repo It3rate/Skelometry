@@ -29,7 +29,7 @@ namespace Vis
             Forms = new List<Form>
             {
 	            new VisDragForm(),
-                //new VisForm(),
+                new VisForm(),
             };
 
             NextForm();

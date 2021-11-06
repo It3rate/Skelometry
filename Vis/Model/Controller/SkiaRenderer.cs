@@ -13,8 +13,7 @@ namespace Vis.Model.Controller
 {
     public class SkiaRenderer : RendererBase
     {
-        private SkiaPens Pens { get; set; }
-
+	    private SkiaPens Pens;
         public SkiaRenderer(Control parent, int width = -1, int height = -1) : base(parent, width, height)
         {
         }
@@ -70,39 +69,46 @@ namespace Vis.Model.Controller
             _canvas.Flush();
         }
 
-        public override void DrawSpot(VisPoint pos, int penIndex = 0, float scale = 1f)
+        public override void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f)
         {
-	        var r = Pens[penIndex].StrokeWidth * scale;
-            _canvas.DrawCircle(pos.X, pos.Y, r, Pens[penIndex]);
+	        var pen = Pens.GetPenForUIType(UIType.HighlightSpot);
+	        var r = pen.StrokeWidth * scale;
+            _canvas.DrawCircle(pos.X, pos.Y, r, pen);
         }
-        public override void DrawCircle(VisCircle circ, int penIndex = 0)
+        public override void DrawCircle(VisCircle circ, PadAttributes attributes = null)
         {
-	        _canvas.DrawCircle(circ.Center.X, circ.Center.Y, circ.Radius, Pens[penIndex]);
-        }
-
-        public override void DrawOval(VisRectangle rect, int penIndex = 0)
-        {
-	        _canvas.DrawOval(rect.Center.X, rect.Center.Y, rect.HalfSize.X, rect.HalfSize.Y, Pens[penIndex]);
+	        var pen = Pens.GetPenForElement(attributes);
+	        _canvas.DrawCircle(circ.Center.X, circ.Center.Y, circ.Radius, pen);
         }
 
-        public override void DrawRect(VisRectangle rect, int penIndex = 0)
+        public override void DrawOval(VisRectangle rect, PadAttributes attributes = null)
         {
-            _canvas.DrawRect(rect.SKRect(), Pens[penIndex]);
+	        var pen = Pens.GetPenForElement(attributes);
+            _canvas.DrawOval(rect.Center.X, rect.Center.Y, rect.HalfSize.X, rect.HalfSize.Y, pen);
         }
 
-        public override void DrawLine(VisLine line, int penIndex = 0)
+        public override void DrawRect(VisRectangle rect, PadAttributes attributes = null)
         {
-            _canvas.DrawLine(line.X, line.Y, line.EndPoint.X, line.EndPoint.Y, Pens[penIndex]);
+	        var pen = Pens.GetPenForElement(attributes);
+            _canvas.DrawRect(rect.SKRect(), pen);
         }
 
-        public override void DrawLine(VisPoint p0, VisPoint p1, int penIndex = 0)
+        public override void DrawLine(VisLine line, PadAttributes attributes = null)
         {
-	        _canvas.DrawLine(p0.X, p0.Y, p1.X, p1.Y, Pens[penIndex]);
+	        var pen = Pens.GetPenForElement(attributes);
+            _canvas.DrawLine(line.X, line.Y, line.EndPoint.X, line.EndPoint.Y, pen);
         }
 
-        public override void DrawPolyline(VisPoint[] points, int penIndex = 0)
+        public override void DrawLine(VisPoint p0, VisPoint p1, PadAttributes attributes = null)
         {
-            _canvas.DrawPoints(SKPointMode.Polygon, points.SKPoints(), Pens[penIndex]);
+	        var pen = Pens.GetPenForElement(attributes);
+            _canvas.DrawLine(p0.X, p0.Y, p1.X, p1.Y, pen);
+        }
+
+        public override void DrawPolyline(VisPoint[] points, PadAttributes attributes = null)
+        {
+	        var pen = Pens.GetPenForElement(attributes);
+            _canvas.DrawPoints(SKPointMode.Polygon, points.SKPoints(), pen);
         }
 
         public override void GeneratePens()

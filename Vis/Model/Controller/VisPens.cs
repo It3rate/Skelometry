@@ -19,6 +19,18 @@ namespace Vis.Model.Controller
         {
             get { return Pens[index]; }
         }
+        public Pen GetPenForElement(PadAttributes attributes)
+        {
+	        Pen result = Pens[1]; // todo: sync pens with skia
+            return result;
+        }
+
+        public Pen GetPenForUIType(UIType uiType)
+        {
+	        Pen result = Pens[1]; // todo: sync pens with skia
+	        return result;
+        }
+
         private void GenPens(float scale)
         {
             Pens.Clear();

@@ -6,17 +6,27 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    public class PadElement<T> //where T : IPrimitive
+    public class PadAttributes
     {
-        public int Index { get; } // may make a double for concurrent editing
+        public static readonly PadAttributes Empty = new PadAttributes();
 
+	    public int Index { get; }
+	    public UIType DisplayType { get; } = UIType.None;
+	    public DisplayStyle DisplayStyle { get; } = DisplayStyle.None;
+	    public DisplayState DisplayState { get; } = DisplayState.None;
+	    public CorrelationState CorrelationState { get; } = CorrelationState.None;
+
+	    public PadAttributes(int index = -1)
+	    {
+		    Index = index;
+	    }
+    }
+
+    public class PadAttributes<T> : PadAttributes //where T : IPrimitive
+    {
 	    public T Element { get; }
-	    public UIType DisplayType { get; }
-        public DisplayStyle DisplayStyle { get; }
-        public DisplayState DisplayState { get; }
-	    public CorrelationState CorrelationState { get; }
 
-	    public PadElement(T element)
+	    public PadAttributes(T element, int index = -1) : base(index)
 	    {
 		    Element = element;
 	    }

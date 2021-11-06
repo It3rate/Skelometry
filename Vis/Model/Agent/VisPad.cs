@@ -13,25 +13,31 @@ namespace Vis.Model.Agent
 
     public class VisPad<T> //where T : IPrimitive
     {
-        public PadType Type { get; }
+	    private static int _padIndexCounter;
+	    public int Index;
+	    public PadType Type { get; }
+	    public bool AutoIndex { get; set; }
 
-        public List<PadElement<T>> Paths { get; } = new List<PadElement<T>>();
+        public List<PadAttributes<T>> Paths { get; } = new List<PadAttributes<T>>();
         public int Width { get; }
         public int Height { get; }
 
-        public VisPad(int width, int height, PadType padType = PadType.Rectangle)
+        public VisPad(int width, int height, bool autoIndex = true, PadType padType = PadType.Rectangle)
         {
+	        Index = _padIndexCounter++;
             Width = width;
             Height = height;
+            AutoIndex = autoIndex;
         }
 
-        public PadElement<T> Add(T item)
+        private int _indexCounter = 1;
+        public PadAttributes<T> Add(T item)
         {
-            var element = new PadElement<T>(item);
+            var element = AutoIndex ? new PadAttributes<T>(item, _indexCounter++) : new PadAttributes<T>(item);
             Paths.Add(element);
             return element;
         }
-        public void Remove(PadElement<T> item)
+        public void Remove(PadAttributes<T> item)
         {
 	        Paths.Remove(item);
         }
@@ -143,7 +149,7 @@ namespace Vis.Model.Agent
 
         public static VisPad<T> CreateRectPad(int w, int h, Type T)
         {
-            var result = new VisPad<T>(w, h, PadType.Rectangle);
+            var result = new VisPad<T>(w, h, true, PadType.Rectangle);
             return result;
         }
     }
