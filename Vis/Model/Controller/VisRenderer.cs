@@ -74,6 +74,13 @@ namespace Vis.Model.Controller
             _graphics.DrawEllipse(pen, pos.X - r, pos.Y - r, r * 2f, r * 2f);
         }
 
+        public override void DrawTick(VisPoint pos, PadAttributes attributes = null, float scale = 1f)
+        {
+	        var pen = Pens.GetPenForUIType(UIType.MeasureTick);
+	        var r = pen.Width * scale;
+	        _graphics.DrawEllipse(pen, pos.X - r, pos.Y - r, r * 2f, r * 2f);
+        }
+
         public override void DrawCircle(VisCircle circ, PadAttributes attributes = null)
         {
 	        var pen = Pens.GetPenForElement(attributes);

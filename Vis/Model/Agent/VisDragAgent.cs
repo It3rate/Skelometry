@@ -126,7 +126,7 @@ namespace Vis.Model.Agent
             var similarPt = ViewPad.GetSimilar(p);
             if(similarPt is VisPoint sp)
             {
-                var rp = new RenderPoint(sp, 4, 4f);
+                var rp = new RenderPoint(sp, 4, 2f);
                 _skills.Point(this, rp);
                 _isHighlighting = true;
                 _highlightingPoint = sp;

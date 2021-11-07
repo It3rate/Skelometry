@@ -40,7 +40,7 @@
         Edge,
         HighlightSpot,
         HighlightPath,
-        Measure,
+        MeasureTick,
     }
 
     [Flags]

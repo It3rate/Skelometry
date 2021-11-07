@@ -61,6 +61,7 @@ namespace Vis.Model.Controller
 	    public abstract void EndDraw();
 	    public abstract void Flush();
 	    public abstract void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f);
+	    public abstract void DrawTick(VisPoint pos, PadAttributes attributes = null, float scale = 1f);
 	    public abstract void DrawCircle(VisCircle circ, PadAttributes attributes = null);
 	    public abstract void DrawOval(VisRectangle rect, PadAttributes attributes = null);
 	    public abstract void DrawRect(VisRectangle rect, PadAttributes attributes = null);
@@ -220,7 +221,7 @@ namespace Vis.Model.Controller
 		            for (var total = 0f; total <= strokeLen; total += unitLength)
 		            {
 			            var pt = path.GetPoint(total / strokeLen);
-	                    DrawSpot(pt, null, 1f);
+	                    DrawTick(pt, null, 0.7f);
 		            }
 	            }
 		    }

@@ -61,21 +61,33 @@ namespace Vis.Model.Controller
 		    Pens.Add(GetPen(SKColors.LightGray, DefaultWidth));
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));
 		    Pens.Add(GetPen(SKColors.DarkRed, DefaultWidth));
-		    Pens.Add(GetPen(SKColors.Orange, DefaultWidth));
+		    Pens.Add(GetPen(SKColors.DarkOrange, DefaultWidth));
+		    Pens.Add(GetPen(SKColors.DarkGoldenrod, DefaultWidth));
+		    Pens.Add(GetPen(SKColors.DarkOliveGreen, DefaultWidth));
 		    Pens.Add(GetPen(SKColors.DarkGreen, DefaultWidth));
-		    Pens.Add(GetPen(SKColors.DarkBlue, DefaultWidth));
-		    Pens.Add(GetPen(SKColors.DarkViolet, DefaultWidth * 2f));
-		    Pens.Add(GetPen(SKColors.Red, DefaultWidth * 4f));
+            Pens.Add(GetPen(SKColors.DarkCyan, DefaultWidth));
+            Pens.Add(GetPen(SKColors.DarkBlue, DefaultWidth));
+            Pens.Add(GetPen(SKColors.DarkOrchid, DefaultWidth));
+            Pens.Add(GetPen(SKColors.DarkMagenta, DefaultWidth));
+            Pens.Add(GetPen(SKColors.Red, DefaultWidth));
+            Pens.Add(GetPen(SKColors.Orange, DefaultWidth));
+            Pens.Add(GetPen(SKColors.Yellow, DefaultWidth));
+            Pens.Add(GetPen(SKColors.Chartreuse, DefaultWidth));
+            Pens.Add(GetPen(SKColors.Green, DefaultWidth));
+            Pens.Add(GetPen(SKColors.Cyan, DefaultWidth));
+            Pens.Add(GetPen(SKColors.Blue, DefaultWidth));
+            Pens.Add(GetPen(SKColors.Orchid, DefaultWidth));
+            Pens.Add(GetPen(SKColors.Magenta, DefaultWidth));
 
-		    UIPens = new Dictionary<UIType, SKPaint>()
+            UIPens = new Dictionary<UIType, SKPaint>()
 		    {
 			    {UIType.None, GetPen(SKColors.Empty, DefaultWidth)},
 			    {UIType.Node, GetPen(SKColors.DarkBlue, DefaultWidth)},
 			    {UIType.Joint, GetPen(SKColors.DarkGreen, DefaultWidth)},
 			    {UIType.Edge, GetPen(SKColors.Black, DefaultWidth)},
-                {UIType.HighlightSpot, GetPen(SKColors.Red, DefaultWidth * 2f)},
+                {UIType.HighlightSpot, GetPen(SKColors.MediumSlateBlue, DefaultWidth * 2f)},
                 {UIType.HighlightPath, GetPen(SKColors.DarkViolet, DefaultWidth * 2f)},
-                {UIType.Measure, GetPen(SKColors.Gray, DefaultWidth)},
+                {UIType.MeasureTick, GetPen(SKColors.DarkSlateGray, DefaultWidth)},
             };
 
 	    }

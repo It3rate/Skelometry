@@ -73,7 +73,13 @@ namespace Vis.Model.Controller
         {
 	        var pen = Pens.GetPenForUIType(UIType.HighlightSpot);
 	        var r = pen.StrokeWidth * scale;
-            _canvas.DrawCircle(pos.X, pos.Y, r, pen);
+	        _canvas.DrawCircle(pos.X, pos.Y, r, pen);
+        }
+        public override void DrawTick(VisPoint pos, PadAttributes attributes = null, float scale = 1f)
+        {
+	        var pen = Pens.GetPenForUIType(UIType.MeasureTick);
+	        var r = pen.StrokeWidth * scale;
+	        _canvas.DrawCircle(pos.X, pos.Y, r, pen);
         }
         public override void DrawCircle(VisCircle circ, PadAttributes attributes = null)
         {
