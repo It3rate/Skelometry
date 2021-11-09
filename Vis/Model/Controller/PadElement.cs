@@ -1,4 +1,6 @@
-﻿namespace Vis.Model.Controller
+﻿using Vis.Model.Agent;
+
+namespace Vis.Model.Controller
 {
     using System;
     using System.Collections.Generic;
@@ -11,10 +13,11 @@
         public static readonly PadAttributes Empty = new PadAttributes();
 
 	    public int Index { get; }
-	    public UIType DisplayType { get; } = UIType.None;
-	    public DisplayStyle DisplayStyle { get; } = DisplayStyle.None;
-	    public DisplayState DisplayState { get; } = DisplayState.None;
-	    public CorrelationState CorrelationState { get; } = CorrelationState.None;
+	    public PadKind PadKind { get; set; } = PadKind.None;
+	    public UIType DisplayType { get; set; } = UIType.None;
+        public DisplayStyle DisplayStyle { get; set; } = DisplayStyle.None;
+	    public DisplayState DisplayState { get; set; } = DisplayState.None;
+	    public CorrelationState CorrelationState { get; set; } = CorrelationState.None;
 
 	    public PadAttributes(int index = -1)
 	    {
@@ -48,7 +51,7 @@
     {
 	    None,
 	    ShowTicks,
-	    ShowRuler,
+        ShowRuler,
 	    ShowHotspots,
 	    WillDelete,
     }

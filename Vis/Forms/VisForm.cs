@@ -27,13 +27,16 @@ namespace Vis.Forms
             _renderer = new SkiaRenderer();
             _control = _renderer.AddAsControl(panel, false);
             _agent = new VisAgent(_renderer);
-            Redraw();
+            //Redraw();
         }
 
         protected override void OnVisibleChanged(EventArgs e)
         {
 	        base.OnVisibleChanged(e);
-	        Redraw();
+	        if (Visible)
+	        {
+		        Redraw();
+            }
         }
 
         private void btNext_Click(object sender, EventArgs e)

@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using SkiaSharp;
+using Vis.Model.Agent;
 
 namespace Vis.Model.Controller
 {
@@ -27,7 +28,16 @@ namespace Vis.Model.Controller
 
 	    public SKPaint GetPenForElement(PadAttributes attributes)
 	    {
-		    SKPaint result = GetPenForIndex(attributes.Index);
+		    SKPaint result;
+		    if (attributes.PadKind == PadKind.Focus)
+		    {
+			    result = Pens[0];
+		    }
+		    else
+		    {
+			   result = GetPenForIndex(attributes.Index);
+            }
+		    //result.Color.WithAlpha()
 		    return result;
 	    }
 

@@ -23,10 +23,28 @@ namespace Vis.Model.Agent
         // Feedback - back to step 1
 
         public float halfM = 0.5f;
+        public float offsetX = 0f;
+        public float offsetY = 0f;
 
+        public void ResetFocus()
+        {
+	        offsetX = 0f;
+	        offsetY = 0f;
+        }
+
+        public void TranslateFocus(float x, float y)
+        {
+	        offsetX += x;
+	        offsetY += y;
+        }
+
+        private VisRectangle GetLetterbox(float cx, float cy, float cornerX, float cornerY)
+        {
+            return new VisRectangle(cx + offsetX, cy + offsetY, cornerX + offsetX, cornerY + offsetY);
+        }
         public VisRectangle LetterA(VisPad<VisPoint> focusPad, VisPad<VisStroke> viewPad)
         {
-            var letterbox = new VisRectangle(halfM * .9f, 0.5f, 0f, 0f);
+            var letterbox = GetLetterbox(halfM * .9f, 0.5f, 0f, 0f);
             focusPad.Add(letterbox);
 
             var topLine = letterbox.GetLine(CompassDirection.N);
@@ -53,7 +71,7 @@ namespace Vis.Model.Agent
             // Find loop stroke
             // TailS: Make with joints LoopS:0.8 (butt), LeftS:1 offset 1 (tip)
 
-            var letterbox = new VisRectangle(0.25f, 0.5f, 0f, 0f);
+            var letterbox = GetLetterbox(0.25f, 0.5f, 0f, 0f);
             focusPad.Add(letterbox);
 
             var leftLine = letterbox.GetLine(CompassDirection.W);
@@ -93,7 +111,7 @@ namespace Vis.Model.Agent
 
         public VisRectangle LetterC(VisPad<VisPoint> focusPad, VisPad<VisStroke> viewPad)
         {
-            var letterbox = new VisRectangle(0.5f, 0.5f, 0f, 0f);
+            var letterbox = GetLetterbox(0.5f, 0.5f, 0f, 0f);
             focusPad.Add(letterbox);
             var rightLine = letterbox.GetLine(CompassDirection.E);
 
@@ -110,7 +128,7 @@ namespace Vis.Model.Agent
         }
         public VisRectangle LetterB(VisPad<VisPoint> focusPad, VisPad<VisStroke> viewPad)
         {
-            var letterbox = new VisRectangle(0.30f, 0.5f, 0f, 0f);
+            var letterbox = GetLetterbox(0.30f, 0.5f, 0f, 0f);
             focusPad.Add(letterbox);
 
             var leftLine = letterbox.GetLine(CompassDirection.W);

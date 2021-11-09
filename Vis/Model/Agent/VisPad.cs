@@ -9,11 +9,12 @@ using Vis.Model.Primitives;
 
 namespace Vis.Model.Agent
 {
-    public enum PadType { Rectangle, Oval, Hexagon }
+	public enum PadGrid { Rectangle, Oval, Hexagon }
+	public enum PadKind { None, Bitmap, Working, Focus, View }
 
     public interface IPad
     {
-	   PadType Type { get; }
+	   PadGrid Grid { get; }
 	   bool AutoIndex { get; set; }
 	   int Width { get; }
 	   int Height { get; }
@@ -23,16 +24,18 @@ namespace Vis.Model.Agent
     {
 	    private static int _padIndexCounter;
 	    public int Index;
-	    public PadType Type { get; }
-	    public bool AutoIndex { get; set; }
+	    public PadGrid Grid { get; }
+	    public PadKind PadKind { get; }
+        public bool AutoIndex { get; set; }
 
         public List<PadAttributes<T>> Paths { get; } = new List<PadAttributes<T>>();
         public int Width { get; }
         public int Height { get; }
 
-        public VisPad(int width, int height, bool autoIndex = true, PadType padType = PadType.Rectangle)
+        public VisPad(int width, int height, PadKind padKind, bool autoIndex = true, PadGrid padGrid = PadGrid.Rectangle)
         {
 	        Index = _padIndexCounter++;
+	        PadKind = padKind;
             Width = width;
             Height = height;
             AutoIndex = autoIndex;
@@ -42,6 +45,7 @@ namespace Vis.Model.Agent
         public PadAttributes<T> Add(T item)
         {
             var element = AutoIndex ? new PadAttributes<T>(item, _indexCounter++) : new PadAttributes<T>(item);
+            element.PadKind = PadKind;
             Paths.Add(element);
             return element;
         }
@@ -51,6 +55,7 @@ namespace Vis.Model.Agent
         }
         public void Clear()
         {
+	        _indexCounter = 1;
 	        Paths.Clear();
         }
 
@@ -151,13 +156,6 @@ namespace Vis.Model.Agent
                     }
                 }
             }
-            return result;
-        }
-
-
-        public static VisPad<T> CreateRectPad(int w, int h, Type T)
-        {
-            var result = new VisPad<T>(w, h, true, PadType.Rectangle);
             return result;
         }
     }

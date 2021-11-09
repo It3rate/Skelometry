@@ -55,9 +55,9 @@ namespace Vis.Model.Agent
             _renderer.DrawingComplete += _renderer_DrawingComplete;
 
             _skills = new VisMeasureSkills();
-            WorkingPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height, false);
-            FocusPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height);
-            ViewPad = new VisPad<VisStroke>(_renderer.Width, _renderer.Height);
+            WorkingPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height, PadKind.Working, false);
+            FocusPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height, PadKind.Focus);
+            ViewPad = new VisPad<VisStroke>(_renderer.Width, _renderer.Height, PadKind.View);
 
             _renderer.Pads = new List<IPad>(){ WorkingPad, FocusPad, ViewPad };
 
