@@ -77,7 +77,7 @@ namespace Vis.Forms
 
         private void Redraw()
         {
-	        _renderer.Agent = _agent;
+	        //_renderer.Agent = _agent;
 	        _renderer.Invalidate();
         }
 

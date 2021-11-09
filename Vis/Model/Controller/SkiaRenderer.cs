@@ -14,9 +14,12 @@ namespace Vis.Model.Controller
     public class SkiaRenderer : RendererBase
     {
 	    private SkiaPens Pens;
-        public SkiaRenderer(Control parent, int width = -1, int height = -1) : base(parent, width, height)
-        {
+	    public SkiaRenderer(Control parent, int width = -1, int height = -1) : base(parent, width, height)
+	    {
         }
+	    public SkiaRenderer(int width, int height) : base(width, height)
+	    {
+	    }
 
         protected override Control CreateControl()
         {
@@ -27,26 +30,46 @@ namespace Vis.Model.Controller
             return result;
         }
 
+        public SKBitmap Bitmap { get; private set; }
+
+        protected override void GenerateBitmap(int width, int height)
+        {
+	        Bitmap = new SKBitmap(width, height);
+        }
+
+        public override void DrawOnBitmap()
+        {
+	        if (Bitmap != null)
+	        {
+		        using (SKCanvas canvas = new SKCanvas(Bitmap))
+		        {
+					DrawOnCanvas(canvas);
+		        }
+	        }
+        }
+
         private void GL_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
         {
-	        if (Agent != null)
+	        if (Pads != null)
 	        {
-		        _canvas = e.Surface.Canvas;
-		        BeginDraw();
-		        Draw();
-		        EndDraw();
-	        }
+		        DrawOnCanvas(e.Surface.Canvas);
+            }
         }
 
         private void SkiaRenderer_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
         {
-	        if (Agent != null)
+	        if (Pads != null)
 	        {
-		        _canvas = e.Surface.Canvas;
-		        BeginDraw();
-		        Draw();
-		        EndDraw();
+		        DrawOnCanvas(e.Surface.Canvas);
 	        }
+        }
+
+        public void DrawOnCanvas(SKCanvas canvas)
+        {
+	        _canvas = canvas;
+	        BeginDraw();
+	        Draw();
+	        EndDraw();
         }
 
 

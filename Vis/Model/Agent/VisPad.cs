@@ -11,7 +11,15 @@ namespace Vis.Model.Agent
 {
     public enum PadType { Rectangle, Oval, Hexagon }
 
-    public class VisPad<T> //where T : IPrimitive
+    public interface IPad
+    {
+	   PadType Type { get; }
+	   bool AutoIndex { get; set; }
+	   int Width { get; }
+	   int Height { get; }
+    }
+
+    public class VisPad<T> : IPad //where T : IPrimitive
     {
 	    private static int _padIndexCounter;
 	    public int Index;

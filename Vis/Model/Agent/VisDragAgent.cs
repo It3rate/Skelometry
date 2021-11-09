@@ -42,6 +42,7 @@ namespace Vis.Model.Agent
         public VisPad<VisPoint> FocusPad { get; private set; }
         public VisPad<VisStroke> ViewPad { get; private set; }
         private IRenderer _renderer;
+        private SkiaRenderer _hoverRender;
         private VisMeasureSkills _skills;
         private IPath unit;
 
@@ -57,6 +58,11 @@ namespace Vis.Model.Agent
             WorkingPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height, false);
             FocusPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height);
             ViewPad = new VisPad<VisStroke>(_renderer.Width, _renderer.Height);
+
+            _renderer.Pads = new List<IPad>(){ WorkingPad, FocusPad, ViewPad };
+
+            _hoverRender = new SkiaRenderer(_renderer.Width, _renderer.Height);
+            _hoverRender.Pads = new List<IPad>(){ ViewPad };
         }
 
         bool _isDown = false;
@@ -104,6 +110,13 @@ namespace Vis.Model.Agent
         {
             var result = false;
             var p = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+
+            if (_hoverRender != null)
+            {
+	            var col =_hoverRender.Bitmap.GetPixel(e.X, e.Y);
+	            Console.WriteLine(col);
+            }
+
             if (_isDown)
             {
 	            if (_isDraggingExisting)
@@ -205,6 +218,7 @@ namespace Vis.Model.Agent
 
         private void _renderer_DrawingComplete(object sender, EventArgs e)
         {
+	        _hoverRender?.DrawOnBitmap();
 	        Clear();
         }
 

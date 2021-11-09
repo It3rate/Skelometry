@@ -26,9 +26,18 @@ namespace Vis.Model.Controller
 		    return result;
 	    }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+	    protected override void GenerateBitmap(int width, int height)
+	    {
+		    throw new NotImplementedException();
+	    }
+        public override void DrawOnBitmap()
         {
-	        if (Agent != null)
+	        throw new NotImplementedException();
+        }
+
+	    private void OnPaint(object sender, PaintEventArgs e)
+        {
+	        if (Pads != null)
 	        {
 		        _graphics = e.Graphics;
 		        BeginDraw();
@@ -44,6 +53,7 @@ namespace Vis.Model.Controller
         {
             _graphics.TranslateTransform(x, y);
         }
+
 
         public override void BeginDraw()
         {

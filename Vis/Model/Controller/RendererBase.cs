@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,13 +14,15 @@ namespace Vis.Model.Controller
 {
     public interface IRenderer
     {
-        IAgent Agent { get; set; }
-        int Width { get; set; }
-        int Height { get; set; }
+        //IAgent Agent { get; set; }
+        List<IPad> Pads { get; set; }
+        int Width { get; }
+        int Height { get; }
         float UnitPixels { get; set; }
         int PenIndex { get; set; }
 
         void Invalidate();
+        //void GenerateBitmap(int width, int height);
         event EventHandler DrawingComplete;
         event MouseEventHandler MouseDown;
         event MouseEventHandler MouseMove;
@@ -29,7 +32,11 @@ namespace Vis.Model.Controller
     public abstract class RendererBase : IRenderer
     {
 	    public event EventHandler DrawingComplete;
-	    public IAgent Agent { get; set; }
+
+	    public List<IPad> Pads { get; set; }
+
+        public Control Control;
+	    //public IAgent Agent { get; set; }
 	    public int PenIndex { get; set; }
 	    private float _unitPixels = 220;
 	    public float UnitPixels
@@ -42,21 +49,35 @@ namespace Vis.Model.Controller
             }
 	    }
 
-	    protected readonly Control Control;
+	    //protected readonly Control Control;
+	    //public int Width { get => Control.Width; set => Control.Width = value; }
+	    //public int Height { get => Control.Height; set => Control.Height = value; }
+        public int Width { get; protected set; }
+	    public int Height { get; protected set; }
 
 	    protected RendererBase(Control parent, int width = -1, int height = -1)
 	    {
 		    Control = CreateControl();
-		    Control.Width = width == -1 ? parent.Width : width;
-		    Control.Height = height == -1 ? parent.Height : height;
+		    Control.Width = parent.Width;
+		    Control.Height = parent.Height;
+		    Width = Control.Width;
+		    Height = Control.Height;
 		    parent.Controls.Add(Control);
-
             GeneratePens();
 	    }
+	    protected RendererBase(int width, int height)
+	    {
+		    Width = width;
+		    Height = height;
+		    GenerateBitmap(width, height);
+		    GeneratePens();
+	    }
 
-	    protected abstract Control CreateControl();
+        protected abstract Control CreateControl();
+        protected abstract void GenerateBitmap(int width, int height);
+	    public abstract void GeneratePens();
 
-        public abstract void GeneratePens();
+        public abstract void DrawOnBitmap();
 	    public abstract void BeginDraw();
 	    public abstract void EndDraw();
 	    public abstract void Flush();
@@ -69,10 +90,7 @@ namespace Vis.Model.Controller
 	    public abstract void DrawLine(VisPoint p0, VisPoint p1, PadAttributes attributes = null);
 	    public abstract void DrawPolyline(VisPoint[] points, PadAttributes attributes = null);
 
-	    public int Width { get => Control.Width; set => Control.Width = value; }
-	    public int Height { get => Control.Height; set => Control.Height = value; }
-
-        public event MouseEventHandler MouseDown
+	    public event MouseEventHandler MouseDown
 	    {
 		    add => Control.MouseDown += value;
 		    remove => Control.MouseDown -= value;
@@ -110,23 +128,26 @@ namespace Vis.Model.Controller
 
 	    public void Draw()
 	    {
-		    foreach (var prim in Agent.FocusPad.Paths)
+		    foreach (var pad in Pads)
 		    {
-			    DrawPrimitive(prim);
-		    }
-
-		    foreach (var path in Agent.ViewPad.Paths)
-		    {
-			    DrawStroke(path);
-		    }
-
-		    foreach (var prim in Agent.WorkingPad.Paths)
-		    {
-			    DrawPrimitive(prim);
+			    if (pad is VisPad<VisPoint> ppad)
+			    {
+				    foreach (var prim in ppad.Paths)
+				    {
+					    DrawPrimitive(prim);
+				    }
+                }
+			    else if (pad is VisPad<VisStroke> spad)
+			    {
+				    foreach (var prim in spad.Paths)
+				    {
+					    DrawStroke(prim);
+				    }
+                }
 		    }
 	    }
 
-	    public void DrawPrimitive(PadAttributes<VisPoint> padAttributes)
+        public void DrawPrimitive(PadAttributes<VisPoint> padAttributes)
 	    {
 		    var path = padAttributes.Element;
 		    if (path is VisLine line)
