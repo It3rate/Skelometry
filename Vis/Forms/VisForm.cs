@@ -16,16 +16,24 @@ namespace Vis.Forms
     public partial class VisForm : Form
     {
 	    VisAgent _agent;
-        IRenderer _renderer;
+	    IRenderer _renderer;
+	    Control _control;
         public VisForm()
         {
             InitializeComponent();
             DoubleBuffered = true;
 
             //_renderer = new VisRenderer(panel);
-            _renderer = new SkiaRenderer(panel);
+            _renderer = new SkiaRenderer();
+            _control = _renderer.AddAsControl(panel, false);
             _agent = new VisAgent(_renderer);
             Redraw();
+        }
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+	        base.OnVisibleChanged(e);
+	        Redraw();
         }
 
         private void btNext_Click(object sender, EventArgs e)
@@ -62,7 +70,7 @@ namespace Vis.Forms
         {
 	        _agent.Draw();
             //_renderer.Agent = _agent;
-	        _renderer.Invalidate();
+            _control.Invalidate();
         }
     }
 }

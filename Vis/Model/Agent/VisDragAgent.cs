@@ -61,7 +61,8 @@ namespace Vis.Model.Agent
 
             _renderer.Pads = new List<IPad>(){ WorkingPad, FocusPad, ViewPad };
 
-            _hoverRender = new SkiaRenderer(_renderer.Width, _renderer.Height);
+            _hoverRender = new SkiaRenderer();
+            _hoverRender.GenerateBitmap(_renderer.Width, _renderer.Height);
             _hoverRender.Pads = new List<IPad>(){ ViewPad };
         }
 

@@ -27,6 +27,7 @@ namespace Vis.Model.Agent
             WorkingPad = new VisPad<VisPoint>(250, 250);
             FocusPad = new VisPad<VisPoint>(250, 250);
             ViewPad = new VisPad<VisStroke>(250, 250);
+            _renderer.Pads = new List<IPad>() { WorkingPad, FocusPad, ViewPad };
             _renderer.DrawingComplete += _renderer_DrawingComplete;
         }
 

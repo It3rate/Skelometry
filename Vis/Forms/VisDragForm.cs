@@ -17,8 +17,9 @@ namespace Vis.Forms
 {
     public partial class VisDragForm : Form
     {
-        VisDragAgent _agent;
-        IRenderer _renderer;
+        private VisDragAgent _agent;
+        private IRenderer _renderer;
+        private Control _control;
 
         public VisDragForm()
         {
@@ -26,12 +27,15 @@ namespace Vis.Forms
             InitializeComponent();
 
             //_renderer = (IRenderer)visPanel;// new VisRenderer();
-            var skia = new SkiaRenderer(visPanel);
-            skia.MouseDown += OnMouseDown;
-            skia.MouseMove += OnMouseMove;
-            skia.MouseUp += OnMouseUp;
-            skia.KeyDown += OnKeyDown;
-            skia.KeyUp += OnKeyUp;
+            var skia = new SkiaRenderer();
+            _control = skia.AddAsControl(visPanel, false);
+            _control.MouseDown += OnMouseDown;
+            _control.MouseDown += OnMouseDown;
+            _control.MouseMove += OnMouseMove;
+            _control.MouseUp += OnMouseUp;
+            _control.KeyDown += OnKeyDown;
+            _control.KeyUp += OnKeyUp;
+            
             _renderer = skia;
             _agent = new VisDragAgent(_renderer);
         }
@@ -78,7 +82,7 @@ namespace Vis.Forms
         private void Redraw()
         {
 	        //_renderer.Agent = _agent;
-	        _renderer.Invalidate();
+	        _control.Invalidate();
         }
 
         private void btNext_Click(object sender, EventArgs e)

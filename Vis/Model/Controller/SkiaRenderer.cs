@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,28 +15,40 @@ namespace Vis.Model.Controller
     public class SkiaRenderer : RendererBase
     {
 	    private SkiaPens Pens;
-	    public SkiaRenderer(Control parent, int width = -1, int height = -1) : base(parent, width, height)
-	    {
-        }
-	    public SkiaRenderer(int width, int height) : base(width, height)
+	    public SkiaRenderer()
 	    {
 	    }
 
-        protected override Control CreateControl()
+        public override Control AddAsControl(Control parent, bool useGL = false)
         {
-            var result = new SKControl();
-            result.PaintSurface += SkiaRenderer_PaintSurface;
-            //var result = new SKGLControl();
-            //result.PaintSurface += GL_PaintSurface;
-            return result;
+	        Control result;
+	        if (useGL)
+	        {
+                result = new SKGLControl();
+                ((SKGLControl)result).PaintSurface += GL_PaintSurface;
+            }
+	        else
+	        {
+	            result = new SKControl();
+	            ((SKControl)result).PaintSurface += SkiaRenderer_PaintSurface;
+	        }
+	        result.Width = parent.Width;
+	        result.Height = parent.Height;
+	        Width = result.Width;
+	        Height = result.Height;
+	        parent.Controls.Add(result);
+            result.BackColor = Color.Bisque;
+	        return result;
+        }
+
+        public SKBitmap GenerateBitmap(int width, int height)
+        {
+	        Bitmap = new SKBitmap(width, height);
+	        return Bitmap;
         }
 
         public SKBitmap Bitmap { get; private set; }
 
-        protected override void GenerateBitmap(int width, int height)
-        {
-	        Bitmap = new SKBitmap(width, height);
-        }
 
         public override void DrawOnBitmap()
         {
@@ -103,6 +116,8 @@ namespace Vis.Model.Controller
 	        var pen = Pens.GetPenForUIType(UIType.MeasureTick);
 	        var r = pen.StrokeWidth * scale;
 	        _canvas.DrawCircle(pos.X, pos.Y, r, pen);
+            //SKPath path = new SKPath();
+            //path.AddCircle(pos.X, pos.Y, r);
         }
         public override void DrawCircle(VisCircle circ, PadAttributes attributes = null)
         {

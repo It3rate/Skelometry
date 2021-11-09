@@ -21,12 +21,9 @@ namespace Vis.Model.Controller
         float UnitPixels { get; set; }
         int PenIndex { get; set; }
 
-        void Invalidate();
+        Control AddAsControl(Control parent, bool useGL = false);
         //void GenerateBitmap(int width, int height);
         event EventHandler DrawingComplete;
-        event MouseEventHandler MouseDown;
-        event MouseEventHandler MouseMove;
-        event MouseEventHandler MouseUp;
     }
 
     public abstract class RendererBase : IRenderer
@@ -35,8 +32,6 @@ namespace Vis.Model.Controller
 
 	    public List<IPad> Pads { get; set; }
 
-        public Control Control;
-	    //public IAgent Agent { get; set; }
 	    public int PenIndex { get; set; }
 	    private float _unitPixels = 220;
 	    public float UnitPixels
@@ -49,32 +44,17 @@ namespace Vis.Model.Controller
             }
 	    }
 
-	    //protected readonly Control Control;
-	    //public int Width { get => Control.Width; set => Control.Width = value; }
-	    //public int Height { get => Control.Height; set => Control.Height = value; }
         public int Width { get; protected set; }
 	    public int Height { get; protected set; }
+        public bool HasBackingBitmap { get; }
 
-	    protected RendererBase(Control parent, int width = -1, int height = -1)
+	    protected RendererBase()
 	    {
-		    Control = CreateControl();
-		    Control.Width = parent.Width;
-		    Control.Height = parent.Height;
-		    Width = Control.Width;
-		    Height = Control.Height;
-		    parent.Controls.Add(Control);
-            GeneratePens();
-	    }
-	    protected RendererBase(int width, int height)
-	    {
-		    Width = width;
-		    Height = height;
-		    GenerateBitmap(width, height);
 		    GeneratePens();
 	    }
 
-        protected abstract Control CreateControl();
-        protected abstract void GenerateBitmap(int width, int height);
+	    public abstract Control AddAsControl(Control parent, bool useGL = false);
+
 	    public abstract void GeneratePens();
 
         public abstract void DrawOnBitmap();
@@ -90,38 +70,7 @@ namespace Vis.Model.Controller
 	    public abstract void DrawLine(VisPoint p0, VisPoint p1, PadAttributes attributes = null);
 	    public abstract void DrawPolyline(VisPoint[] points, PadAttributes attributes = null);
 
-	    public event MouseEventHandler MouseDown
-	    {
-		    add => Control.MouseDown += value;
-		    remove => Control.MouseDown -= value;
-	    }
-	    public event MouseEventHandler MouseMove
-	    {
-		    add => Control.MouseMove += value;
-		    remove => Control.MouseMove -= value;
-	    }
-	    public event MouseEventHandler MouseUp
-	    {
-		    add => Control.MouseUp += value;
-		    remove => Control.MouseUp -= value;
-        }
-	    public event KeyEventHandler KeyDown
-	    {
-		    add => Control.KeyDown += value;
-		    remove => Control.KeyDown -= value;
-	    }
-	    public event KeyEventHandler KeyUp
-        {
-		    add => Control.KeyUp += value;
-		    remove => Control.KeyUp -= value;
-	    }
-
-        public void Invalidate()
-	    {
-		    Control.Invalidate();
-	    }
-
-        protected void OnDrawingComplete()
+	    protected void OnDrawingComplete()
 	    {
 		    DrawingComplete?.Invoke(this, EventArgs.Empty);
         }
