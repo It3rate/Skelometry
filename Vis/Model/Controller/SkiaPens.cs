@@ -20,6 +20,9 @@ namespace Vis.Model.Controller
         public float DefaultWidth { get; }
         public bool IsHoverMap { get; set; }
 
+        private SKPaint highlightPen;
+        private SKPaint grayPen;
+
         public SkiaPens(float scale, float defaultWidth = 8f)
 	    {
 		    Scale = scale;
@@ -32,7 +35,7 @@ namespace Vis.Model.Controller
 		    SKPaint result;
 		    if (attributes.PadKind == PadKind.Focus)
 		    {
-			    result = Pens[0];
+			    result = grayPen;
 		    }
 		    else if (IsHoverMap)
 		    {
@@ -74,13 +77,12 @@ namespace Vis.Model.Controller
 		    return result;
 	    }
 
-	    private SKPaint highlightPen;
 	    private void GenPens()
 	    {
 		    highlightPen = GetPen(SKColors.Red, DefaultWidth * 2);
+		    grayPen = GetPen(SKColors.LightGray, DefaultWidth);
 
             Pens.Clear();
-		    Pens.Add(GetPen(SKColors.LightGray, DefaultWidth));
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));
 		    Pens.Add(GetPen(SKColors.DarkRed, DefaultWidth));
 		    Pens.Add(GetPen(SKColors.DarkOrange, DefaultWidth));

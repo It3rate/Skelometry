@@ -124,7 +124,7 @@ namespace Vis.Model.Agent
 
 	            if (_hoverRender.Pens.IndexOfColor.TryGetValue((uint)col, out var index))
 	            {
-                    if (index > 0 && index < ViewPad.Paths.Count)
+                    if (index >= 0 && index < ViewPad.Paths.Count)
 		            {
 			            if (selectedPath != null)
 			            {

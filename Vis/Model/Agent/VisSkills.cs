@@ -23,13 +23,13 @@ namespace Vis.Model.Agent
         // Feedback - back to step 1
 
         public float halfM = 0.5f;
-        public float offsetX = 0f;
-        public float offsetY = 0f;
+        public float offsetX = 0.01f;
+        public float offsetY = 0.1f;
 
         public void ResetFocus()
         {
-	        offsetX = 0f;
-	        offsetY = 0f;
+	        offsetX = 0.01f;
+	        offsetY = 0.1f;
         }
 
         public void TranslateFocus(float x, float y)
@@ -151,8 +151,8 @@ namespace Vis.Model.Agent
             var loopStroke = new VisStroke(seenLeftStroke.StartNode, circleNode, midNode);
             viewPad.Add(loopStroke);
 
-            var brLine = VisLine.ByEndpoints(midLine.EndPoint, rightLine.EndPoint);
-            var botCircle = VisCircle.CircleFromLineAndPoint(midLine, rightLine.NodeAt(brLine.MidPoint.Y), ClockDirection.CCW);
+            var botLine = letterbox.GetLine(CompassDirection.S);
+            var botCircle = VisCircle.CircleFromLineAndPoint(rightLine, botLine.NodeAt(.538f), ClockDirection.CW);
             focusPad.Add(botCircle);
             circleNode = new TangentNode(botCircle);
             loopStroke = new VisStroke(midNode, circleNode, seenLeftStroke.EndNode);
