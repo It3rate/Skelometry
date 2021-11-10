@@ -41,7 +41,7 @@ namespace Vis.Model.Agent
             AutoIndex = autoIndex;
         }
 
-        private int _indexCounter = 1;
+        private int _indexCounter = 0;
         public PadAttributes<T> Add(T item)
         {
             var element = AutoIndex ? new PadAttributes<T>(item, _indexCounter++) : new PadAttributes<T>(item);
@@ -55,7 +55,7 @@ namespace Vis.Model.Agent
         }
         public void Clear()
         {
-	        _indexCounter = 1;
+	        _indexCounter = 0;
 	        Paths.Clear();
         }
 

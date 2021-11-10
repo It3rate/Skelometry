@@ -111,6 +111,8 @@ namespace Vis.Model.Agent
             return true;
         }
 
+        private PadAttributes<VisStroke> selectedPath;
+
         public bool MouseMove(MouseEventArgs e)
         {
             var result = false;
@@ -118,8 +120,22 @@ namespace Vis.Model.Agent
 
             if (_hoverRender != null)
             {
-	            var col =_hoverRender.Bitmap.GetPixel(e.X, e.Y);
-	            Console.WriteLine(col);
+	            var col = _hoverRender.Bitmap.GetPixel(e.X, e.Y);
+
+	            if (_hoverRender.Pens.IndexOfColor.TryGetValue((uint)col, out var index))
+	            {
+                    if (index > 0 && index < ViewPad.Paths.Count)
+		            {
+			            if (selectedPath != null)
+			            {
+				            selectedPath.DisplayState = DisplayState.None;
+			            }
+			            selectedPath = ViewPad.Paths[index];
+                        selectedPath.DisplayState = DisplayState.Selected; 
+                        result = true;
+
+                    }
+	            }
             }
 
             if (_isDown)

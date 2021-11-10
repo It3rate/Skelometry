@@ -38,7 +38,11 @@ namespace Vis.Model.Controller
 		    {
 			    result = GetPenByOrder(attributes.Index, 4f, false);
 		    }
-		    else
+		    else if (attributes.DisplayState == DisplayState.Selected)
+		    {
+			    result = highlightPen;  
+		    }
+            else
 		    {
 			    result = GetPenForIndex(attributes.Index);
 		    }
@@ -70,9 +74,12 @@ namespace Vis.Model.Controller
 		    return result;
 	    }
 
+	    private SKPaint highlightPen;
 	    private void GenPens()
 	    {
-		    Pens.Clear();
+		    highlightPen = GetPen(SKColors.Red, DefaultWidth * 2);
+
+            Pens.Clear();
 		    Pens.Add(GetPen(SKColors.LightGray, DefaultWidth));
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));
 		    Pens.Add(GetPen(SKColors.DarkRed, DefaultWidth));
