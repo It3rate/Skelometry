@@ -41,14 +41,14 @@ namespace Vis.Model.Agent
         public VisPad<VisPoint> WorkingPad { get; private set; }
         public VisPad<VisPoint> FocusPad { get; private set; }
         public VisPad<VisStroke> ViewPad { get; private set; }
-        private IRenderer _renderer;
+        private SkiaRenderer _renderer;
         private SkiaRenderer _hoverRender;
         private VisMeasureSkills _skills;
         private IPath unit;
 
         public int _unitPixels = 220;
 
-        public VisDragAgent(IRenderer renderer)
+        public VisDragAgent(SkiaRenderer renderer)
         {
             _renderer = renderer;
             _renderer.UnitPixels = _unitPixels;
@@ -64,6 +64,10 @@ namespace Vis.Model.Agent
             _hoverRender = new SkiaRenderer();
             _hoverRender.GenerateBitmap(_renderer.Width, _renderer.Height);
             _hoverRender.Pads = new List<IPad>(){ ViewPad };
+            _hoverRender.DrawTicks = false;
+            _hoverRender.Pens.IsHoverMap = true;
+
+            _renderer.Bitmap = _hoverRender.Bitmap;
         }
 
         bool _isDown = false;
@@ -196,13 +200,19 @@ namespace Vis.Model.Agent
 		        _drawCircle = true;
 		        result = true;
 	        }
-	        return result;
+            else if (_keyDown == Keys.H)
+	        {
+		        _renderer.ShowBitmap = true;
+		        result = true;
+	        }
+            return result;
         }
         public bool KeyUp(KeyEventArgs e)
         {
 	        _keyDown = Keys.None;
 	        _drawCircle = false;
-	        return true;
+	        _renderer.ShowBitmap = false;
+            return true;
         }
 
         public void Clear()

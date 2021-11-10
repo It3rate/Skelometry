@@ -14,11 +14,15 @@ namespace Vis.Model.Controller
 {
     public class SkiaRenderer : RendererBase
     {
-	    private SkiaPens Pens;
-	    public SkiaRenderer()
+	    public SkiaPens Pens { get; set; }
+	    public SKBitmap Bitmap { get; set; }
+	    public bool ShowBitmap { get; set; }
+
+        public SkiaRenderer()
 	    {
 	    }
 
+        private bool hasControl = false;
         public override Control AddAsControl(Control parent, bool useGL = false)
         {
 	        Control result;
@@ -37,8 +41,9 @@ namespace Vis.Model.Controller
 	        Width = result.Width;
 	        Height = result.Height;
 	        parent.Controls.Add(result);
-            result.BackColor = Color.Bisque;
-	        return result;
+	        hasControl = true;
+
+            return result;
         }
 
         public SKBitmap GenerateBitmap(int width, int height)
@@ -46,9 +51,6 @@ namespace Vis.Model.Controller
 	        Bitmap = new SKBitmap(width, height);
 	        return Bitmap;
         }
-
-        public SKBitmap Bitmap { get; private set; }
-
 
         public override void DrawOnBitmap()
         {
@@ -91,11 +93,23 @@ namespace Vis.Model.Controller
         {
 	        _canvas.Save();
             _canvas.Scale(UnitPixels, UnitPixels);
-	        _canvas.Clear(SKColors.WhiteSmoke); 
+            if (hasControl == false)
+            {
+	            _canvas.Clear(SKColors.White);
+            }
+            else
+            {
+	            _canvas.Clear(SKColors.Beige);
+            }
+				
         }
         public override void EndDraw()
         {
             _canvas.Restore();
+	        if (ShowBitmap && Bitmap != null)
+	        {
+                DrawBitmap(Bitmap);
+	        }
             _canvas = null;
             OnDrawingComplete();
         }
@@ -103,6 +117,11 @@ namespace Vis.Model.Controller
         public override void Flush()
         {
             _canvas.Flush();
+        }
+
+        public void DrawBitmap(SKBitmap bitmap)
+        {
+            _canvas.DrawBitmap(bitmap, new SKRect(0,0, Width, Height));
         }
 
         public override void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f)

@@ -17,9 +17,10 @@ namespace Vis.Model.Controller
 	    private Dictionary<UIType, SKPaint> UIPens;
 
         public float Scale { get; }
-	    public float DefaultWidth { get; }
+        public float DefaultWidth { get; }
+        public bool IsHoverMap { get; set; }
 
-	    public SkiaPens(float scale, float defaultWidth = 8f)
+        public SkiaPens(float scale, float defaultWidth = 8f)
 	    {
 		    Scale = scale;
 		    DefaultWidth = defaultWidth;
@@ -33,12 +34,17 @@ namespace Vis.Model.Controller
 		    {
 			    result = Pens[0];
 		    }
+		    else if (IsHoverMap)
+		    {
+			    result = GetPenByOrder(attributes.Index, 4f, false);
+		    }
 		    else
 		    {
 			   result = GetPenForIndex(attributes.Index);
             }
-		    //result.Color.WithAlpha()
-		    return result;
+		    
+                //result.Color.WithAlpha()
+                return result;
 	    }
 
 	    public SKPaint GetPenForUIType(UIType uiType)
@@ -102,21 +108,22 @@ namespace Vis.Model.Controller
 
 	    }
 
-	    public SKPaint GetPenByOrder(int index)
+	    public SKPaint GetPenByOrder(int index, float widthScale = 1, bool antiAlias = true)
 	    {
 		    uint col = (uint) ((index + 3) * 0x110D05);
 		    var color = new SKColor((byte) (col & 0xFF), (byte) ((col >> 8) & 0xFF), (byte) ((col >> 16) & 0xFF));
-		    return GetPen(color, DefaultWidth);
+		    return GetPen(color, DefaultWidth * widthScale, antiAlias);
 	    }
 
-	    public SKPaint GetPen(SKColor color, float width)
+	    public SKPaint GetPen(SKColor color, float width, bool antiAlias = true)
 	    {
 		    SKPaint pen = new SKPaint()
 		    {
 			    Style = SKPaintStyle.Stroke,
 			    Color = color,
 			    StrokeWidth = width / Scale,
-			    IsAntialias = true,
+			    IsAntialias = antiAlias,
+                StrokeCap = SKStrokeCap.Round,
 		    };
 		    return pen;
 	    }

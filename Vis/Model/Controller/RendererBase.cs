@@ -46,9 +46,9 @@ namespace Vis.Model.Controller
 
         public int Width { get; protected set; }
 	    public int Height { get; protected set; }
-        public bool HasBackingBitmap { get; }
+	    public bool DrawTicks { get; set; } = true;
 
-	    protected RendererBase()
+        protected RendererBase()
 	    {
 		    GeneratePens();
 	    }
@@ -61,6 +61,7 @@ namespace Vis.Model.Controller
 	    public abstract void BeginDraw();
 	    public abstract void EndDraw();
 	    public abstract void Flush();
+	    //public abstract void DrawBitmap(SKBitmap bitmap);
 	    public abstract void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f);
 	    public abstract void DrawTick(VisPoint pos, PadAttributes attributes = null, float scale = 1f);
 	    public abstract void DrawCircle(VisCircle circ, PadAttributes attributes = null);
@@ -183,19 +184,23 @@ namespace Vis.Model.Controller
 
 	    public void DrawRulerTicks(IPath path, float unitLength, int penIndex = 0)
 	    {
-		    if (unitLength > 0 && path.Length > 0)
+		    if (DrawTicks)
 		    {
-			    var strokeLen = path.Length;
-	            if (unitLength > 0 && strokeLen > unitLength)
-	            {
-		            for (var total = 0f; total <= strokeLen; total += unitLength)
-		            {
-			            var pt = path.GetPoint(total / strokeLen);
-	                    DrawTick(pt, null, 0.7f);
-		            }
-	            }
+			    if (unitLength > 0 && path.Length > 0)
+			    {
+				    var strokeLen = path.Length;
+				    if (unitLength > 0 && strokeLen > unitLength)
+				    {
+					    for (var total = 0f; total <= strokeLen; total += unitLength)
+					    {
+						    var pt = path.GetPoint(total / strokeLen);
+						    DrawTick(pt, null, 0.7f);
+					    }
+				    }
+			    }
+
+			    Flush();
 		    }
-		    Flush();
 	    }
     }
 }

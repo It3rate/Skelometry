@@ -18,7 +18,7 @@ namespace Vis.Forms
     public partial class VisDragForm : Form
     {
         private VisDragAgent _agent;
-        private IRenderer _renderer;
+        private SkiaRenderer _renderer;
         private Control _control;
 
         public VisDragForm()

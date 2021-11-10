@@ -105,7 +105,6 @@ namespace Vis.Forms
             // 
             // visPanel
             // 
-            this.visPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.visPanel.Location = new System.Drawing.Point(37, 52);
             this.visPanel.Name = "visPanel";
             this.visPanel.Size = new System.Drawing.Size(1036, 508);
