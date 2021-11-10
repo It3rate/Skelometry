@@ -102,7 +102,7 @@ namespace Vis.Model.Agent
             
             if(!_isHighlighting)
             {
-	            _pivotPoint = _isDraggingExisting ? _highlightingPoint.Clone() : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+	            _pivotPoint = _isDraggingExisting && (_highlightingPoint != null) ? _highlightingPoint.Clone() : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
 	            _skills.Point(this, _pivotPoint);
             }
 

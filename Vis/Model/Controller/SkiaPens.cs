@@ -40,11 +40,10 @@ namespace Vis.Model.Controller
 		    }
 		    else
 		    {
-			   result = GetPenForIndex(attributes.Index);
-            }
-		    
-                //result.Color.WithAlpha()
-                return result;
+			    result = GetPenForIndex(attributes.Index);
+		    }
+
+		    return result;
 	    }
 
 	    public SKPaint GetPenForUIType(UIType uiType)
@@ -108,10 +107,20 @@ namespace Vis.Model.Controller
 
 	    }
 
+        public Dictionary<uint, int> IndexOfColor { get; } = new Dictionary<uint, int>();
 	    public SKPaint GetPenByOrder(int index, float widthScale = 1, bool antiAlias = true)
 	    {
-		    uint col = (uint) ((index + 3) * 0x110D05);
-		    var color = new SKColor((byte) (col & 0xFF), (byte) ((col >> 8) & 0xFF), (byte) ((col >> 16) & 0xFF));
+		    uint col = (uint) ((index + 3) * 0x110D05) | 0xFF000000;
+            if(IndexOfColor.ContainsKey(col))
+            {
+	            IndexOfColor[col] = index;
+            }
+            else
+            {
+	            IndexOfColor.Add(col, index);
+            }
+
+            var color = new SKColor(col);
 		    return GetPen(color, DefaultWidth * widthScale, antiAlias);
 	    }
 
