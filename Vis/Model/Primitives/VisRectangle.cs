@@ -12,7 +12,7 @@ namespace Vis.Model.Primitives
     /// </summary>
     public class VisRectangle : VisPoint
     {
-        public VisPoint TopLeft { get; private set; }
+	    public VisPoint TopLeft { get; private set; }
         public VisPoint Size => HalfSize.Multiply(2f);
         public VisPoint HalfSize { get; private set; }
         public VisPoint Center => this;
@@ -23,16 +23,21 @@ namespace Vis.Model.Primitives
         public float Width => HalfSize.X * 2;
         public float Height => HalfSize.Y * 2;
 
+        protected float _cornerX;
+        protected float _cornerY;
+
         public VisRectangle(float cx, float cy, float cornerX, float cornerY) : base(cx, cy)
         {
+	        _cornerX = cornerX;
+	        _cornerY = cornerY;
             Initialize(cornerX, cornerY);
         }
         public VisRectangle(VisPoint center, VisPoint corner) : this(center.X, center.Y, corner.X, corner.Y) { }
-        public VisRectangle(VisRectangle r) : this(r.Center, r.TopLeft) { }
+        public VisRectangle(VisRectangle r) : this(r.Center.X, r.Center.Y, r._cornerX, r._cornerY) {  }
 
         private void Initialize(float cornerX, float cornerY)
         {
-            // todo: this orients rect by throwing away information, adjust to universal math
+            // todo: this orients rect by throwing away information, adjust to universal math. Saving _corner for now.
             TopLeft = new VisPoint(X - Math.Abs(X - cornerX), Y - Math.Abs(Y - cornerY));
             HalfSize = this.Subtract(TopLeft).Abs();
         }

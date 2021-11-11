@@ -72,6 +72,7 @@
     <Compile Include="Model\Controller\RenderPoint.cs" />
     <Compile Include="Model\Controller\SkiaPens.cs" />
     <Compile Include="Model\Controller\SkiaRenderer.cs" />
+    <Compile Include="Model\UI\Modes\ModeData.cs" />
     <Compile Include="Model\UI\UIMode.cs" />
     <Compile Include="Model\Primitives\IPath.cs" />
     <Compile Include="Model\Primitives\VisShape.cs" />

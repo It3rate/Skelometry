@@ -55,15 +55,38 @@ namespace Vis.Model.Controller
         Connect,
         Disconnect,
     }
+    public enum UIState
+    {
+	    None,
+    }
+    public enum UIDebugState
+    {
+	    None,
+        ShowHoverBitmap,
+    }
 
     public class UIStatus
     {
 	    public UIMode UIMode { get; set; }
+	    public UIState UIState { get; set; }
+	    public UIDebugState UIDebugState { get; set; }
         public Keys CurrentKey { get; set; }
 	    public MouseButtons CurrentMouse { get; set; }
         public PadKind CurrentPadKind { get; set; }
-        public VisPoint Position { get; } = new VisPoint(0, 0);
-        public VisPoint PreviousPosition { get; } = new VisPoint(0, 0);
+
+        public int ClickSequenceIndex { get; set; } = 0;
+        public List<VisPoint> ClickSequencePoints { get;} = new List<VisPoint>();
+
+        public bool IsHighlightingPoint { get; set; }
+        public VisPoint HighlightingPoint { get; set; }
+
+        public bool IsDraggingPoint { get; set; }
+        public VisPoint DraggingPoint { get; set; }
+
+        public VisPoint PositionNorm { get; } = new VisPoint(0, 0);
+        public VisPoint PreviousPositionNorm { get; } = new VisPoint(0, 0);
+
+        public bool IsMouseDown => CurrentMouse == MouseButtons.Left;
     }
 
     public class UIModeData
