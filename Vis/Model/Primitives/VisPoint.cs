@@ -31,12 +31,17 @@ namespace Vis.Model.Primitives
             Y = y;
             Index = _index++;
         }
+        public VisPoint(VisPoint p):this(p.X, p.Y) { }
 
-        public VisPoint(VisPoint p)
+        public void SetWith(VisPoint p)
         {
-            X = p.X;
-            Y = p.Y;
-            Index = _index++;
+	        X = p.X;
+	        Y = p.Y;
+        }
+        public void SetWith(float x, float y)
+        {
+	        X = x;
+	        Y = y;
         }
 
         public void SetIndex()
@@ -169,9 +174,13 @@ namespace Vis.Model.Primitives
             return line.ProjectPointOnto(this);
         }
 
-        public VisPoint Clone()
+        public VisPoint ClonePoint()
         {
-            return new VisPoint(this.X, this.Y);
+	        return new VisPoint(this.X, this.Y);
+        }
+        public virtual object Clone()
+        {
+	        return new VisPoint(this.X, this.Y);
         }
         public override string ToString()
         {

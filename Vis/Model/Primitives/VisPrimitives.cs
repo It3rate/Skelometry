@@ -13,7 +13,7 @@ namespace Vis.Model.Primitives
 	/// <summary>
 	/// The mental map primitives when we conceptualize things at a high level. These are meant to be (ideally) what we use, not what is mathematically possible or even simple.
 	/// </summary>
-	public interface IPrimitive
+	public interface IPrimitive : ICloneable
 	{
 		float X { get; }
 		float Y { get; }

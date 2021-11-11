@@ -1,4 +1,5 @@
-﻿using Microsoft.ML.Probabilistic.Distributions;
+﻿using System;
+using Microsoft.ML.Probabilistic.Distributions;
 using Vis.Model.Primitives;
 
 namespace Vis.Model.Connections
@@ -41,6 +42,14 @@ namespace Vis.Model.Connections
         public float Similarity(IPrimitive p) => 0;
         public VisPoint Sample(Gaussian g) => null;
 
+        public VisNode CloneNode()
+        {
+	        return new VisNode(Reference, Position);
+        }
+        public virtual object Clone()
+        {
+	        return new VisNode(Reference, Position);
+        }
         public override string ToString()
         {
             return Anchor.ToString();
@@ -89,6 +98,14 @@ namespace Vis.Model.Connections
             _end = CircleRef.FindTangentInDirection(node.Start, Direction.Counter());
             return _end;
         }
+        public TangentNode CloneTangentNode()
+        {
+	        return new TangentNode(CircleRef, Direction);
+        }
+        public override object Clone()
+        {
+	        return new TangentNode(CircleRef, Direction);
+        }
         public override string ToString()
         {
             return string.Format("tanNode:{0:0.##},{1:0.##} e{2:0.##},{3:0.##}", Start.X, Start.Y, End.X, End.Y);
@@ -112,6 +129,15 @@ namespace Vis.Model.Connections
         //	Offset = offset;
         //	Length = length;
         //}
+
+        public TipNode CloneTipNode()
+        {
+	        return new TipNode(Reference, Position, Offset);
+        }
+        public override object Clone()
+        {
+	        return new TipNode(Reference, Position, Offset);
+        }
         public override string ToString()
         {
             return string.Format("tipNode:{0:0.##},{1:0.##} o{2:0.##}", Anchor.X, Anchor.Y, Offset);

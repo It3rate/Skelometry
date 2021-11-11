@@ -38,19 +38,17 @@ namespace Vis.Model.Primitives
         //	Radius = radius;
         //	PerimeterOrigin = new Point(X, Y - radius); // default north
         //}
-        public VisCircle(VisPoint center, VisPoint perimeterOrigin, ClockDirection direction = ClockDirection.CW) : base(center.X, center.Y)
-        {
-            PerimeterOrigin = perimeterOrigin;
-            Direction = direction;
-            Initialize();
-        }
         public VisCircle(float cx, float cy, float perimeterX, float perimeterY, ClockDirection direction = ClockDirection.CW) : base(cx, cy)
         {
             PerimeterOrigin = new VisPoint(perimeterX, perimeterY);
             Direction = direction;
             Initialize();
         }
+        public VisCircle(VisPoint center, VisPoint perimeterOrigin, ClockDirection direction = ClockDirection.CW) : this(center.X, center.Y, perimeterOrigin.X, perimeterOrigin.Y, direction)
+        {
+        }
         public VisCircle(VisNode center, VisNode perimeterOrigin, ClockDirection direction = ClockDirection.CW) : this(center.Anchor, perimeterOrigin.Anchor, direction) { }
+        public VisCircle(VisCircle circle) : this(circle.Center, circle.PerimeterOrigin, circle.Direction) { }
 
         /// <summary>
         /// Radius is origin to line, CW or CCW determines if it winds right or left to the line.
@@ -227,6 +225,14 @@ namespace Vis.Model.Primitives
             yield return EndPoint;
             yield return Center;
 
+        }
+        public VisCircle CloneCircle()
+        {
+	        return new VisCircle(this);
+        }
+        public override object Clone()
+        {
+	        return new VisCircle(this);
         }
         public override string ToString()
         {

@@ -38,13 +38,15 @@ namespace Vis.Model.Agent
 
     public class VisDragAgent : IAgent
     {
-        public VisPad<VisPoint> WorkingPad { get; private set; }
+	    public VisPad<VisPoint> WorkingPad { get; private set; }
         public VisPad<VisPoint> FocusPad { get; private set; }
         public VisPad<VisStroke> ViewPad { get; private set; }
         private SkiaRenderer _renderer;
         private SkiaRenderer _hoverRender;
         private VisMeasureSkills _skills;
         private IPath unit;
+
+	    private UIStatus Status { get; } = new UIStatus();
 
         public int _unitPixels = 220;
 
@@ -102,7 +104,7 @@ namespace Vis.Model.Agent
             
             if(!_isHighlighting)
             {
-	            _pivotPoint = _isDraggingExisting && (_highlightingPoint != null) ? _highlightingPoint.Clone() : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+	            _pivotPoint = _isDraggingExisting && (_highlightingPoint != null) ? _highlightingPoint.ClonePoint() : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
 	            _skills.Point(this, _pivotPoint);
             }
 
@@ -113,10 +115,16 @@ namespace Vis.Model.Agent
 
         private PadAttributes<VisStroke> selectedPath;
 
+        private void SetMouseStatus(MouseEventArgs e)
+        {
+            Status.PreviousPosition.SetWith(Status.PreviousPosition);
+            Status.Position.SetWith(e.X / (float) _unitPixels, e.Y / (float) _unitPixels);
+        }
         public bool MouseMove(MouseEventArgs e)
         {
             var result = false;
-            var p = new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+            SetMouseStatus(e);
+            var p = Status.Position; //new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
 
             if (_hoverRender != null)
             {
@@ -184,8 +192,11 @@ namespace Vis.Model.Agent
 
         public bool MouseUp(MouseEventArgs e)
         {
+	        SetMouseStatus(e);
+	        var p = Status.Position; //
+
             _isDown = false;
-            var endPoint = _isHighlighting ? _highlightingPoint : new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+            var endPoint = _isHighlighting ? _highlightingPoint : p;// new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
 
             var path = _drawCircle ? 
 	            _skills.Circle(this, _pivotPoint, endPoint, true) :

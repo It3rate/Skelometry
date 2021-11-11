@@ -41,10 +41,8 @@ namespace Vis.Model.Primitives
         {
             EndPoint = new VisPoint(endX, endY);
         }
-        private VisLine(VisPoint start, VisPoint endPoint) : base(start.X, start.Y)
-        {
-            EndPoint = endPoint;
-        }
+        private VisLine(VisPoint start, VisPoint endPoint) : this(start.X, start.Y, endPoint.X, endPoint.Y) { }
+        private VisLine(VisLine line) : this(line.StartPoint, line.EndPoint) { }
 
         public static VisLine ByCenter(float centerX, float centerY, float originX, float originY)
         {
@@ -163,6 +161,14 @@ namespace Vis.Model.Primitives
             yield return EndPoint;
         }
 
+        public VisLine CloneLine()
+        {
+	        return new VisLine(this);
+        }
+        public override object Clone()
+        {
+	        return new VisLine(this);
+        }
         public override string ToString()
         {
 	        return String.Format("Ln:{0:0.##},{1:0.##} {2:0.##},{3:0.##}", X, Y, EndPoint.X, EndPoint.Y);

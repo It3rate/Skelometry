@@ -23,19 +23,18 @@ namespace Vis.Model.Primitives
         public float Width => HalfSize.X * 2;
         public float Height => HalfSize.Y * 2;
 
-
-        public VisRectangle(VisPoint center, VisPoint corner) : base(center.X, center.Y)
-        {
-            Initialize(corner.X, corner.Y);
-        }
         public VisRectangle(float cx, float cy, float cornerX, float cornerY) : base(cx, cy)
         {
             Initialize(cornerX, cornerY);
         }
+        public VisRectangle(VisPoint center, VisPoint corner) : this(center.X, center.Y, corner.X, corner.Y) { }
+        public VisRectangle(VisRectangle r) : this(r.Center, r.TopLeft) { }
+
         private void Initialize(float cornerX, float cornerY)
         {
+            // todo: this orients rect by throwing away information, adjust to universal math
             TopLeft = new VisPoint(X - Math.Abs(X - cornerX), Y - Math.Abs(Y - cornerY));
-            HalfSize = Subtract(TopLeft).Abs();
+            HalfSize = this.Subtract(TopLeft).Abs();
         }
 
         public VisPoint GetPoint(float xRatio, float yRatio)
@@ -63,8 +62,15 @@ namespace Vis.Model.Primitives
         public bool Contains(VisLine line) => false;
         public bool Contains(VisRectangle rect) => Math.Abs(Center.X - rect.Center.X) + rect.HalfSize.X <= HalfSize.X && Math.Abs(Center.Y - rect.Center.Y) + rect.HalfSize.Y <= HalfSize.Y;
 
+        public VisRectangle CloneRectangle()
+        {
+	        return new VisRectangle(this);
+        }
 
-
+        public override object Clone()
+        {
+	        return new VisRectangle(this);
+        }
         public override string ToString()
         {
             return $"Rect:{TopLeft.X:0.##},{TopLeft.Y:0.##} {Size.X:0.##},{Size.Y:0.##}";

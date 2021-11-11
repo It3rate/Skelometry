@@ -64,12 +64,15 @@
     <Compile Include="Model\Agent\IAgent.cs" />
     <Compile Include="Model\Agent\VisDragAgent.cs" />
     <Compile Include="Model\Agent\VisMeasureSkills.cs" />
+    <Compile Include="Model\Commands\CommandStack.cs" />
+    <Compile Include="Model\Commands\ICommand.cs" />
     <Compile Include="Model\Connections\VisCorrelations.cs" />
     <Compile Include="Model\Controller\RendererBase.cs" />
     <Compile Include="Model\Controller\PadElement.cs" />
     <Compile Include="Model\Controller\RenderPoint.cs" />
     <Compile Include="Model\Controller\SkiaPens.cs" />
     <Compile Include="Model\Controller\SkiaRenderer.cs" />
+    <Compile Include="Model\UI\UIMode.cs" />
     <Compile Include="Model\Primitives\IPath.cs" />
     <Compile Include="Model\Primitives\VisShape.cs" />
     <Compile Include="Program.cs" />
