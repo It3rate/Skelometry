@@ -33,12 +33,12 @@ namespace Vis.Model.Primitives
         }
         public VisPoint(VisPoint p):this(p.X, p.Y) { }
 
-        public void SetWith(VisPoint p)
+        public void UpdateWith(VisPoint p)
         {
 	        X = p.X;
 	        Y = p.Y;
         }
-        public void SetWith(float x, float y)
+        public void UpdateWith(float x, float y)
         {
 	        X = x;
 	        Y = y;

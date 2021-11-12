@@ -80,6 +80,9 @@ namespace Vis.Model.Controller
         public bool IsHighlightingPoint { get; set; }
         public VisPoint HighlightingPoint { get; set; }
 
+        public bool IsHighlightingPath { get; set; }
+        public PadAttributes<VisStroke> HighlightingPath { get; set; }
+
         public bool IsDraggingPoint { get; set; }
         public VisPoint DraggingPoint { get; set; }
 

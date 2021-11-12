@@ -11,7 +11,7 @@ namespace Vis.Model.Primitives
 {
     public class VisStroke : IPath
     {
-        private List<VisNode> Nodes { get; } = new List<VisNode>();
+        public List<VisNode> Nodes { get; } = new List<VisNode>();
 
         public VisPoint Anchor => StartNode.Anchor;
         private float _length;

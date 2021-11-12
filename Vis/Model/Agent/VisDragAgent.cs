@@ -76,35 +76,60 @@ namespace Vis.Model.Agent
             _renderer.Bitmap = _hoverRender.Bitmap;
         }
 
-        private void SetMouseData(MouseEventArgs e)
+        private bool SetMouseData(MouseEventArgs e)
         {
+	        var result = false;
 	        Status.CurrentMouse = e.Button;
-            Status.PreviousPositionNorm.SetWith(Status.PreviousPositionNorm);
-	        Status.PositionNorm.SetWith(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
-        }
-        private void SetMode(MouseEventArgs e)
-        {
-	        Status.PreviousPositionNorm.SetWith(Status.PreviousPositionNorm);
-	        Status.PositionNorm.SetWith(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+            Status.PreviousPositionNorm.UpdateWith(Status.PreviousPositionNorm);
+	        Status.PositionNorm.UpdateWith(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+
+	        if (_hoverRender != null)
+	        {
+		        var col = _hoverRender.Bitmap.GetPixel(e.X, e.Y);
+
+		        if (_hoverRender.Pens.IndexOfColor.TryGetValue((uint)col, out var index))
+		        {
+			        if (index >= 0 && index < ViewPad.Paths.Count)
+			        {
+				        if (Status.IsHighlightingPath)
+				        {
+					        Status.HighlightingPath.DisplayState = DisplayState.None;
+				        }
+				        Status.HighlightingPath = ViewPad.Paths[index];
+				        Status.HighlightingPath.DisplayState = DisplayState.Selected;
+				        Status.IsHighlightingPath = true;
+				        result = true;
+			        }
+		        }
+	        }
+	        return result;
         }
 
         public bool MouseDown(MouseEventArgs e)
         {
             SetMouseData(e);
+            switch (Status.UIMode)
+            {
+	            case UIMode.Select:
+		            break;
+	            case UIMode.Line:
+		            break;
+	            case UIMode.Circle:
+		            break;
+	            case UIMode.SelectUnit:
+		            break;
+            }
             if (Status.IsHighlightingPoint)
             {
-	            var path = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
+	            var (path, pt) = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
 	            if (path != null)
 	            {
-		            bool isOnStartPoint = path.StartPoint.IsNear(Status.HighlightingPoint);
 		            Status.ClickSequenceIndex = 1;
-                    Status.ClickSequencePoints.Add(isOnStartPoint ? path.EndPoint : path.StartPoint);
-		            //_pivotPoint = isOnStartPoint ? path.EndPoint : path.StartPoint;
-		            //_skills.Point(this, _pivotPoint, true);
+                    Status.ClickSequencePoints.Add((path.StartPoint == pt) ? path.EndPoint : path.StartPoint);
 		            if (path is VisStroke stroke)
 		            {
 			            Status.IsDraggingPoint = true;
-			            Status.DraggingPoint = Status.HighlightingPoint;
+			            Status.DraggingPoint = pt;//Status.HighlightingPoint;
 			            Status.IsHighlightingPoint = false;
 		            }
                 }
@@ -126,43 +151,20 @@ namespace Vis.Model.Agent
 
             Status.IsHighlightingPoint = false;
             Status.HighlightingPoint = null;
-            return true;
-        }
 
-        private PadAttributes<VisStroke> selectedPath;
+            return true; // always redraw on mouse down
+        }
 
         public bool MouseMove(MouseEventArgs e)
         {
-            var result = false;
-            SetMouseData(e);
+            var result = SetMouseData(e);
             var p = Status.PositionNorm; //new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
-
-            if (_hoverRender != null)
-            {
-	            var col = _hoverRender.Bitmap.GetPixel(e.X, e.Y);
-
-	            if (_hoverRender.Pens.IndexOfColor.TryGetValue((uint)col, out var index))
-	            {
-                    if (index >= 0 && index < ViewPad.Paths.Count)
-		            {
-			            if (selectedPath != null)
-			            {
-				            selectedPath.DisplayState = DisplayState.None;
-			            }
-			            selectedPath = ViewPad.Paths[index];
-                        selectedPath.DisplayState = DisplayState.Selected; 
-                        result = true;
-
-                    }
-	            }
-            }
 
             if (Status.IsMouseDown)
             {
 	            if (Status.IsDraggingPoint)
 	            {
-		            Status.DraggingPoint.X = p.X;
-		            Status.DraggingPoint.Y = p.Y;
+		            Status.DraggingPoint.UpdateWith(p);
 		            _skills.Line(this, Status.ClickSequencePoints[0], p);
                 }
 	            else
@@ -204,25 +206,45 @@ namespace Vis.Model.Agent
         public bool MouseUp(MouseEventArgs e)
         {
 	        SetMouseData(e);
-	        var p = Status.PositionNorm;
-	        var endPoint = Status.IsHighlightingPoint ? Status.HighlightingPoint : p;// new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
-	        var path = (Status.UIMode == UIMode.Circle) ? 
-	            _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :
-	            _skills.Line(this, Status.ClickSequencePoints[0], endPoint, true);
-
-            if (unit == null)
+            // if dragging point from node, update node to show new value and same reference. Means moving will drag along node path.
+            if (Status.UIMode == UIMode.SelectUnit)
             {
-	            unit = path;
+	            if (Status.IsHighlightingPath)
+	            {
+		            unit = Status.HighlightingPath.Element;
+		            foreach (var padAttr in ViewPad.Paths)
+		            {
+			            if(padAttr.Element is VisStroke stroke)
+			            {
+				            stroke.UnitReference = unit;
+			            }
+		            }
+	            }
             }
             else
             {
-	            path.UnitReference = unit;
+		        var endPoint = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;// new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+		        var path = (Status.UIMode == UIMode.Circle) ? 
+		            _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :
+		            _skills.Line(this, Status.ClickSequencePoints[0], endPoint, true);
+
+	            if (unit == null)
+	            {
+		            unit = path;
+	            }
+	            else
+	            {
+		            path.UnitReference = unit;
+	            }
             }
+
 
             Status.ClickSequenceIndex = 0;
             Status.ClickSequencePoints.Clear();
             Status.IsDraggingPoint = false;
             Status.DraggingPoint = null;
+            //Status.IsHighlightingPath = false;
+            //Status.HighlightingPath = null;
             return true;
         }
 
@@ -249,10 +271,14 @@ namespace Vis.Model.Agent
 		        Status.UIDebugState = UIDebugState.ShowHoverBitmap;
                 result = true;
 	        }
-            else if (_keyDown == Keys.Escape)
+	        else if (_keyDown == Keys.Escape)
 	        {
 		        Status.UIMode = UIMode.Select;
-            }
+	        }
+	        else if (_keyDown == Keys.U)
+	        {
+		        Status.UIMode = UIMode.SelectUnit;
+	        }
             return result;
         }
         public bool KeyUp(KeyEventArgs e)
