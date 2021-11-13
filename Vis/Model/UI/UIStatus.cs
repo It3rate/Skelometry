@@ -25,13 +25,14 @@ namespace Vis.Model.UI
 	    public int ClickSequenceIndex { get; set; } = 0;
 	    public List<VisPoint> ClickSequencePoints { get; } = new List<VisPoint>();
 
-	    public bool IsHighlightingPoint { get; set; }
+	    public bool IsHighlightingPoint => HighlightingPoint != null;
 	    public VisPoint HighlightingPoint { get; set; }
 
-	    public bool IsHighlightingPath { get; set; }
+	    public bool IsHighlightingPath => HighlightingPath != null;
 	    public PadAttributes<VisStroke> HighlightingPath { get; set; }
+	    public PadAttributes<VisStroke> SelectedPath { get; set; }
 
-	    public bool IsDraggingPoint { get; set; }
+	    public bool IsDraggingPoint => DraggingPoint != null;
 	    public VisPoint DraggingPoint { get; set; }
 
 	    public VisPoint PositionNorm { get; } = new VisPoint(0, 0);

@@ -20,6 +20,7 @@ namespace Vis.Model.Controller
         public float DefaultWidth { get; }
         public bool IsHoverMap { get; set; }
 
+        private SKPaint hoverPen;
         private SKPaint highlightPen;
         private SKPaint grayPen;
 
@@ -41,9 +42,13 @@ namespace Vis.Model.Controller
 		    {
 			    result = GetPenByOrder(attributes.Index, 4f, false);
 		    }
+		    else if (attributes.DisplayState == DisplayState.Hovering)
+		    {
+			    result = hoverPen;
+		    }
 		    else if (attributes.DisplayState == DisplayState.Selected)
 		    {
-			    result = highlightPen;  
+			    result = highlightPen;
 		    }
             else
 		    {
@@ -79,8 +84,9 @@ namespace Vis.Model.Controller
 
 	    private void GenPens()
 	    {
-		    highlightPen = GetPen(SKColors.Red, DefaultWidth * 2);
-		    grayPen = GetPen(SKColors.LightGray, DefaultWidth);
+		    hoverPen = GetPen(SKColors.Black, DefaultWidth * 1.8f);
+		    highlightPen = GetPen(SKColors.Red, DefaultWidth * 1.8f);
+            grayPen = GetPen(SKColors.LightGray, DefaultWidth);
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));

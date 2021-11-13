@@ -96,13 +96,16 @@ namespace Vis.Model.Agent
 		        {
 			        if (index >= 0 && index < ViewPad.Paths.Count)
 			        {
-				        if (Status.IsHighlightingPath)
+				        var newPath = ViewPad.Paths[index];
+				        if (Status.HighlightingPath != null && Status.HighlightingPath != newPath)
 				        {
 					        Status.HighlightingPath.DisplayState = DisplayState.None;
 				        }
-				        Status.HighlightingPath = ViewPad.Paths[index];
-				        Status.HighlightingPath.DisplayState = DisplayState.Selected;
-				        Status.IsHighlightingPath = true;
+
+				        if (newPath.DisplayState != DisplayState.Selected)
+				        {
+					        Status.HighlightingPath = newPath;
+				        }
 				        result = true;
 			        }
 		        }
@@ -121,7 +124,8 @@ namespace Vis.Model.Agent
 		            break;
 	            case UIMode.Line:
 	            case UIMode.Circle:
-		            if (Status.IsHighlightingPoint)
+		            bool isHighlightingPoint = Status.IsHighlightingPoint;
+		            if (isHighlightingPoint)
 		            {
 			            var (path, pt) = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
 			            if (path != null)
@@ -130,22 +134,19 @@ namespace Vis.Model.Agent
 				            Status.ClickSequencePoints.Add((path.StartPoint == pt) ? path.EndPoint : path.StartPoint);
 				            if (path is VisStroke stroke)
 				            {
-					            Status.IsDraggingPoint = true;
 					            Status.DraggingPoint = pt;//Status.HighlightingPoint;
-					            Status.IsHighlightingPoint = false;
+					            isHighlightingPoint = false;
 				            }
 			            }
 			            else
 			            {
-				            Status.IsHighlightingPoint = false;
-			            }
+				            isHighlightingPoint = false;
+                        }
 		            }
 
-		            if (!Status.IsHighlightingPoint)
+		            if (!isHighlightingPoint)
 		            {
-			            var pt = Status.IsDraggingPoint && (Status.HighlightingPoint != null) ?
-				            Status.HighlightingPoint.ClonePoint() :
-				            Status.PositionNorm.ClonePoint();
+			            var pt = Status.IsDraggingPoint && Status.IsHighlightingPoint ? Status.HighlightingPoint.ClonePoint() : Status.PositionNorm.ClonePoint();
 			            Status.ClickSequenceIndex = 1;
 			            Status.ClickSequencePoints.Add(pt);
 			            _skills.Point(this, pt);
@@ -153,7 +154,6 @@ namespace Vis.Model.Agent
                     break;
             }
 
-            Status.IsHighlightingPoint = false;
             Status.HighlightingPoint = null;
 
             return true; // always redraw on mouse down
@@ -171,7 +171,7 @@ namespace Vis.Model.Agent
 		            Status.DraggingPoint.UpdateWith(p);
 		            _skills.Line(this, Status.ClickSequencePoints[0], p);
                 }
-	            else
+	            else if(Status.Mode == UIMode.Line || Status.Mode == UIMode.Circle)
 	            {
 	                var path = (Status.Mode == UIMode.Circle) ?
 		                _skills.Circle(this, Status.ClickSequencePoints[0], p) :
@@ -181,25 +181,27 @@ namespace Vis.Model.Agent
                 result = true;
             }
 
+            if (Status.IsHighlightingPath && Status.HighlightingPath.DisplayState != DisplayState.Selected)
+            {
+				Status.HighlightingPath.DisplayState = DisplayState.Hovering;
+            }
+
             // check if we are over an existing point
             var similarPt = ViewPad.GetSimilar(p);
             if(similarPt is VisPoint sp)
             {
                 var rp = new RenderPoint(sp, 4, 2f);
                 _skills.Point(this, rp);
-                Status.IsHighlightingPoint = true;
                 Status.HighlightingPoint = sp;
                 result = true;
             }
             else
             {
-	            Status.IsHighlightingPoint = false;
 	            Status.HighlightingPoint = null;
             }
 
             if (!result && Status.IsHighlightingPoint)
             {
-                Status.IsHighlightingPoint = false;
                 Status.HighlightingPoint = null;
                 result = true;
             }
@@ -211,11 +213,25 @@ namespace Vis.Model.Agent
         {
 	        SetMouseData(e);
             // if dragging point from node, update node to show new value and same reference. Means moving will drag along node path.
-            if (Status.Mode == UIMode.SelectUnit)
+            if (Status.Mode == UIMode.Select)
+            {
+	            if (Status.SelectedPath != Status.HighlightingPath)
+	            {
+		            if (Status.SelectedPath != null)
+		            {
+			            Status.SelectedPath.DisplayState = DisplayState.None;
+		            }
+		            Status.SelectedPath = Status.HighlightingPath;
+		            Status.HighlightingPath = null;
+                    Status.SelectedPath.DisplayState = DisplayState.Selected;
+	            }
+            }
+            else if (Status.Mode == UIMode.SelectUnit)
             {
 	            if (Status.IsHighlightingPath)
 	            {
-		            unit = Status.HighlightingPath.Element;
+
+                    unit = Status.HighlightingPath.Element;
 		            foreach (var padAttr in ViewPad.Paths)
 		            {
 			            if(padAttr.Element is VisStroke stroke)
@@ -245,7 +261,6 @@ namespace Vis.Model.Agent
 
             Status.ClickSequenceIndex = 0;
             Status.ClickSequencePoints.Clear();
-            Status.IsDraggingPoint = false;
             Status.DraggingPoint = null;
             //Status.IsHighlightingPath = false;
             //Status.HighlightingPath = null;
