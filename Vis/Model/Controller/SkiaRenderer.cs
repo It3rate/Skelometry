@@ -65,7 +65,7 @@ namespace Vis.Model.Controller
 
         private void GL_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
         {
-	        if (Pads != null)
+	        if (Status != null)
 	        {
 		        DrawOnCanvas(e.Surface.Canvas);
             }
@@ -73,7 +73,7 @@ namespace Vis.Model.Controller
 
         private void SkiaRenderer_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
         {
-	        if (Pads != null)
+	        if (Status != null)
 	        {
 		        DrawOnCanvas(e.Surface.Canvas);
 	        }
@@ -135,8 +135,6 @@ namespace Vis.Model.Controller
 	        var pen = Pens.GetPenForUIType(UIType.MeasureTick);
 	        var r = pen.StrokeWidth * scale;
 	        _canvas.DrawCircle(pos.X, pos.Y, r, pen);
-            //SKPath path = new SKPath();
-            //path.AddCircle(pos.X, pos.Y, r);
         }
         public override void DrawCircle(VisCircle circ, PadAttributes attributes = null)
         {
@@ -178,18 +176,6 @@ namespace Vis.Model.Controller
         {
 	        Pens = new SkiaPens(UnitPixels * 4);
         }
-
-        //public void Draw(Graphics IAgent agent, int penIndex = 0)
-        //{
-        //    //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(-1f, 0), new PointF(1f, 0));
-        //    //g.DrawLine(Pens[(int)PenTypes.LightGray], new PointF(0, -1f), new PointF(0, 1f));
-
-        //    foreach (var prim in agent.FocusPad.Paths)
-        //    {
-        //        DrawPrimitive(prim, penIndex);
-        //    }
-
-        //}
     }
     public static class SkiaExtensions
     {

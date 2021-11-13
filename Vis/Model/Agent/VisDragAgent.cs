@@ -9,6 +9,7 @@ using Microsoft.ML.Probabilistic.Factors;
 using OpenTK.Input;
 using Vis.Model.Controller;
 using Vis.Model.Primitives;
+using Vis.Model.UI;
 using Vis.Model.UI.Modes;
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
@@ -49,8 +50,8 @@ namespace Vis.Model.Agent
         private VisMeasureSkills _skills;
         private IPath unit;
 
-        private List<ModeData> Modes = ModeData.Modes();
-	    private UIStatus Status { get; } = new UIStatus();
+        private List<ModeData> ModeMap = ModeData.Modes();
+	    private UIStatus Status { get; }
 
         public int _unitPixels = 220;
 
@@ -60,20 +61,24 @@ namespace Vis.Model.Agent
             _renderer.UnitPixels = _unitPixels;
             _renderer.DrawingComplete += _renderer_DrawingComplete;
 
-            _skills = new VisMeasureSkills();
             WorkingPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height, PadKind.Working, false);
             FocusPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height, PadKind.Focus);
             ViewPad = new VisPad<VisStroke>(_renderer.Width, _renderer.Height, PadKind.View);
+            Status = new UIStatus(WorkingPad, FocusPad, ViewPad);
+            _renderer.Status = Status;
 
-            _renderer.Pads = new List<IPad>(){ WorkingPad, FocusPad, ViewPad };
+            _skills = new VisMeasureSkills();
 
             _hoverRender = new SkiaRenderer();
+            _hoverRender.Status = new UIStatus(ViewPad);
             _hoverRender.GenerateBitmap(_renderer.Width, _renderer.Height);
-            _hoverRender.Pads = new List<IPad>(){ ViewPad };
             _hoverRender.DrawTicks = false;
             _hoverRender.Pens.IsHoverMap = true;
 
             _renderer.Bitmap = _hoverRender.Bitmap;
+
+            Status.Mode = UIMode.Line;
+            //Status.PreviousMode = UIMode.Line;
         }
 
         private bool SetMouseData(MouseEventArgs e)
@@ -108,45 +113,44 @@ namespace Vis.Model.Agent
         public bool MouseDown(MouseEventArgs e)
         {
             SetMouseData(e);
-            switch (Status.UIMode)
+            switch (Status.Mode)
             {
 	            case UIMode.Select:
 		            break;
-	            case UIMode.Line:
-		            break;
-	            case UIMode.Circle:
-		            break;
 	            case UIMode.SelectUnit:
 		            break;
-            }
-            if (Status.IsHighlightingPoint)
-            {
-	            var (path, pt) = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
-	            if (path != null)
-	            {
-		            Status.ClickSequenceIndex = 1;
-                    Status.ClickSequencePoints.Add((path.StartPoint == pt) ? path.EndPoint : path.StartPoint);
-		            if (path is VisStroke stroke)
+	            case UIMode.Line:
+	            case UIMode.Circle:
+		            if (Status.IsHighlightingPoint)
 		            {
-			            Status.IsDraggingPoint = true;
-			            Status.DraggingPoint = pt;//Status.HighlightingPoint;
-			            Status.IsHighlightingPoint = false;
+			            var (path, pt) = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
+			            if (path != null)
+			            {
+				            Status.ClickSequenceIndex = 1;
+				            Status.ClickSequencePoints.Add((path.StartPoint == pt) ? path.EndPoint : path.StartPoint);
+				            if (path is VisStroke stroke)
+				            {
+					            Status.IsDraggingPoint = true;
+					            Status.DraggingPoint = pt;//Status.HighlightingPoint;
+					            Status.IsHighlightingPoint = false;
+				            }
+			            }
+			            else
+			            {
+				            Status.IsHighlightingPoint = false;
+			            }
 		            }
-                }
-                else
-	            {
-		            Status.IsHighlightingPoint = false;
-	            }
-            }
-            
-            if(!Status.IsHighlightingPoint)
-            {
-                var pt = Status.IsDraggingPoint && (Status.HighlightingPoint != null) ? 
-		            Status.HighlightingPoint.ClonePoint() :
-		            Status.PositionNorm.ClonePoint();
-	            Status.ClickSequenceIndex = 1;
-	            Status.ClickSequencePoints.Add(pt);
-	            _skills.Point(this, pt);
+
+		            if (!Status.IsHighlightingPoint)
+		            {
+			            var pt = Status.IsDraggingPoint && (Status.HighlightingPoint != null) ?
+				            Status.HighlightingPoint.ClonePoint() :
+				            Status.PositionNorm.ClonePoint();
+			            Status.ClickSequenceIndex = 1;
+			            Status.ClickSequencePoints.Add(pt);
+			            _skills.Point(this, pt);
+		            }
+                    break;
             }
 
             Status.IsHighlightingPoint = false;
@@ -169,7 +173,7 @@ namespace Vis.Model.Agent
                 }
 	            else
 	            {
-	                var path = (Status.UIMode == UIMode.Circle) ?
+	                var path = (Status.Mode == UIMode.Circle) ?
 		                _skills.Circle(this, Status.ClickSequencePoints[0], p) :
 		                _skills.Line(this, Status.ClickSequencePoints[0], p);
 					path.UnitReference = unit;
@@ -207,7 +211,7 @@ namespace Vis.Model.Agent
         {
 	        SetMouseData(e);
             // if dragging point from node, update node to show new value and same reference. Means moving will drag along node path.
-            if (Status.UIMode == UIMode.SelectUnit)
+            if (Status.Mode == UIMode.SelectUnit)
             {
 	            if (Status.IsHighlightingPath)
 	            {
@@ -224,7 +228,7 @@ namespace Vis.Model.Agent
             else
             {
 		        var endPoint = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;// new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
-		        var path = (Status.UIMode == UIMode.Circle) ? 
+		        var path = (Status.Mode == UIMode.Circle) ? 
 		            _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :
 		            _skills.Line(this, Status.ClickSequencePoints[0], endPoint, true);
 
@@ -248,45 +252,57 @@ namespace Vis.Model.Agent
             return true;
         }
 
-        private Keys _keyDown = Keys.None;
         public bool KeyDown(KeyEventArgs e)
         {
 	        bool result = false;
 	        Status.CurrentKey = e.KeyCode;
-	        _keyDown = e.KeyCode;
-	        
-	        if (_keyDown == Keys.L && Status.UIMode != UIMode.Line)
+            foreach (var modeData in ModeMap)
 	        {
-		        Status.UIMode = UIMode.Line;
-		        result = true;
+		        if (modeData.Keys == Status.CurrentKey)
+		        {
+			        if (Status.Mode != modeData.ModeChange && modeData.ModeChange != UIMode.None)
+			        {
+				        Status.PreviousMode = Status.Mode;  
+				        Status.Mode = modeData.ModeChange;
+				        result = true;
+			        }
+
+			        if (Status.State != modeData.StateChange && modeData.StateChange != UIState.None)
+			        {
+				        if (modeData.ActiveAfterPress)
+				        {
+					        Status.State ^= modeData.StateChange;
+                        }
+				        else
+				        {
+					        Status.State |= modeData.StateChange;
+                        } 
+				        result = true;
+			        }
+			        break;
+		        }
 	        }
-	        else if (_keyDown == Keys.C && Status.UIMode != UIMode.Circle)
-	        {
-		        Status.UIMode = UIMode.Circle;
-                result = true;
-	        }
-            else if (_keyDown == Keys.H)
-	        {
-		        _renderer.ShowBitmap = true;
-		        Status.UIDebugState = UIDebugState.ShowHoverBitmap;
-                result = true;
-	        }
-	        else if (_keyDown == Keys.Escape)
-	        {
-		        Status.UIMode = UIMode.Select;
-	        }
-	        else if (_keyDown == Keys.U)
-	        {
-		        Status.UIMode = UIMode.SelectUnit;
-	        }
+
+	        _renderer.ShowBitmap = (Status.State & UIState.ShowDebugInfo) > 0;
             return result;
         }
         public bool KeyUp(KeyEventArgs e)
         {
+	        foreach (var modeData in ModeMap)
+	        {
+		        if (modeData.StateChange != UIState.None && !modeData.ActiveAfterPress)
+		        {
+			        Status.State &= ~modeData.StateChange;
+		        }
+
+		        if (Status.Mode == modeData.ModeChange && !modeData.ActiveAfterPress)
+		        {
+			        Status.Mode = Status.PreviousMode;
+					Status.PreviousMode = UIMode.None;
+		        }
+            }
+
 	        Status.CurrentKey = Keys.None;
-	        Status.UIDebugState = UIDebugState.None;
-	        Status.UIState = UIState.None;
-			_keyDown = Keys.None;
 	        _renderer.ShowBitmap = false;
             return true;
         }

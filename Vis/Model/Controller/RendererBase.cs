@@ -9,20 +9,19 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Vis.Model.Agent;
 using Vis.Model.Primitives;
+using Vis.Model.UI;
 
 namespace Vis.Model.Controller
 {
     public interface IRenderer
     {
-        //IAgent Agent { get; set; }
-        List<IPad> Pads { get; set; }
+        UIStatus Status { get; set; }
         int Width { get; }
         int Height { get; }
         float UnitPixels { get; set; }
         int PenIndex { get; set; }
 
         Control AddAsControl(Control parent, bool useGL = false);
-        //void GenerateBitmap(int width, int height);
         event EventHandler DrawingComplete;
     }
 
@@ -30,9 +29,9 @@ namespace Vis.Model.Controller
     {
 	    public event EventHandler DrawingComplete;
 
-	    public List<IPad> Pads { get; set; }
+	    public UIStatus Status { get; set; }
 
-	    public int PenIndex { get; set; }
+        public int PenIndex { get; set; }
 	    private float _unitPixels = 220;
 	    public float UnitPixels
 	    {
@@ -49,7 +48,7 @@ namespace Vis.Model.Controller
 	    public bool DrawTicks { get; set; } = true;
 
         protected RendererBase()
-	    {
+        {
 		    GeneratePens();
 	    }
 
@@ -61,7 +60,7 @@ namespace Vis.Model.Controller
 	    public abstract void BeginDraw();
 	    public abstract void EndDraw();
 	    public abstract void Flush();
-	    //public abstract void DrawBitmap(SKBitmap bitmap);
+
 	    public abstract void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f);
 	    public abstract void DrawTick(VisPoint pos, PadAttributes attributes = null, float scale = 1f);
 	    public abstract void DrawCircle(VisCircle circ, PadAttributes attributes = null);
@@ -78,7 +77,7 @@ namespace Vis.Model.Controller
 
 	    public void Draw()
 	    {
-		    foreach (var pad in Pads)
+		    foreach (var pad in Status.Pads)
 		    {
 			    if (pad is VisPad<VisPoint> ppad)
 			    {
@@ -123,12 +122,11 @@ namespace Vis.Model.Controller
 		    }
 		    else if (path is RenderPoint rp)
 		    {
-			    //DrawSpot(rp, rp.PenIndex, rp.Scale); // penIndex);
-			    DrawSpot(rp, padAttributes, rp.Scale); // penIndex);
+			    DrawSpot(rp, padAttributes, rp.Scale);
             }
 		    else if (path is VisPoint p)
 		    {
-			    DrawSpot(p, padAttributes); // penIndex);
+			    DrawSpot(p, padAttributes);
 		    }
 	    }
 
@@ -154,24 +152,6 @@ namespace Vis.Model.Controller
 
 		    Flush();
 	    }
-
-	    //public void DrawIPath(IPath path, int penIndex = 0)
-	    //{
-		   // if (path is IPrimitive primitive)
-		   // {
-     //           DrawPrimitive(primitive, penIndex);
-		   // }
-     //       else if (path is VisStroke stroke)
-		   // {
-     //           DrawStroke(stroke, penIndex);
-		   // }
-
-		   // if (path.UnitReference != null)
-		   // {
-			  //  DrawRulerTicks(path, path.UnitReference);
-		   // }
-	    //}
-    
 
 	    public void DrawShape(VisStroke shape, int penIndex = 0)
 	    {

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vis.Model.Controller;
 using Vis.Model.Primitives;
+using Vis.Model.UI;
 
 namespace Vis.Model.Agent
 {
@@ -27,7 +28,7 @@ namespace Vis.Model.Agent
             WorkingPad = new VisPad<VisPoint>(250, 250, PadKind.Working);
             FocusPad = new VisPad<VisPoint>(250, 250, PadKind.Focus);
             ViewPad = new VisPad<VisStroke>(250, 250, PadKind.View);
-            _renderer.Pads = new List<IPad>() { WorkingPad, FocusPad, ViewPad };
+            _renderer.Status = new UIStatus(WorkingPad, FocusPad, ViewPad);
             _renderer.DrawingComplete += _renderer_DrawingComplete;
         }
 

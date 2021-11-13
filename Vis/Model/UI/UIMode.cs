@@ -55,54 +55,21 @@ namespace Vis.Model.Controller
         Connect,
         Disconnect,
     }
+    [Flags]
     public enum UIState
     {
-	    None,
+	    None = 0,
+        FocusPad,
+        ViewPad,
+        WorkingPad,
+
+        SnapToPoint,
+        SnapToPath,
+        SnapToPathExtend,
+        ConstrainAngle,
+
+        ShowTicks,
+        ShowValues,
+        ShowDebugInfo,
     }
-    public enum UIDebugState
-    {
-	    None,
-        ShowHoverBitmap,
-    }
-
-    public class UIStatus
-    {
-	    public UIMode UIMode { get; set; }
-	    public UIState UIState { get; set; }
-	    public UIDebugState UIDebugState { get; set; }
-        public Keys CurrentKey { get; set; }
-	    public MouseButtons CurrentMouse { get; set; }
-        public PadKind CurrentPadKind { get; set; }
-
-        public int ClickSequenceIndex { get; set; } = 0;
-        public List<VisPoint> ClickSequencePoints { get;} = new List<VisPoint>();
-
-        public bool IsHighlightingPoint { get; set; }
-        public VisPoint HighlightingPoint { get; set; }
-
-        public bool IsHighlightingPath { get; set; }
-        public PadAttributes<VisStroke> HighlightingPath { get; set; }
-
-        public bool IsDraggingPoint { get; set; }
-        public VisPoint DraggingPoint { get; set; }
-
-        public VisPoint PositionNorm { get; } = new VisPoint(0, 0);
-        public VisPoint PreviousPositionNorm { get; } = new VisPoint(0, 0);
-
-        public bool IsMouseDown => CurrentMouse == MouseButtons.Left;
-    }
-
-    public class UIModeData
-    {
-	    public UIMode UIMode { get; }
-	    public Keys ActivationKey { get; }
-	    public bool IsActive { get; private set; }
-	    public PadKind[] AllowedPadKinds { get; }
-
-        public bool CanActivate(UIStatus status)
-        {
-	        return true;
-        }
-    }
-
 }

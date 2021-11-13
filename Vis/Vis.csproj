@@ -76,6 +76,7 @@
     <Compile Include="Model\UI\UIMode.cs" />
     <Compile Include="Model\Primitives\IPath.cs" />
     <Compile Include="Model\Primitives\VisShape.cs" />
+    <Compile Include="Model\UI\UIStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\Agent\VisAgent.cs" />
