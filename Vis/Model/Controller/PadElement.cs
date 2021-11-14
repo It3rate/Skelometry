@@ -17,7 +17,7 @@ namespace Vis.Model.Controller
 	    public UIType DisplayType { get; set; } = UIType.None;
         public DisplayStyle DisplayStyle { get; set; } = DisplayStyle.None;
 	    public DisplayState DisplayState { get; set; } = DisplayState.None;
-	    public CorrelationState CorrelationState { get; set; } = CorrelationState.None;
+	    public CorrelationState CorrelationState { get; set; } = CorrelationState.HasUnit;
 
 	    public PadAttributes(int index = -1)
 	    {

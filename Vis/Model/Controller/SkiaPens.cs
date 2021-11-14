@@ -22,6 +22,8 @@ namespace Vis.Model.Controller
 
         private SKPaint hoverPen;
         private SKPaint highlightPen;
+        private SKPaint unitPen;
+        private SKPaint darkPen;
         private SKPaint grayPen;
 
         public SkiaPens(float scale, float defaultWidth = 8f)
@@ -42,18 +44,23 @@ namespace Vis.Model.Controller
 		    {
 			    result = GetPenByOrder(attributes.Index, 4f, false);
 		    }
-		    else if (attributes.DisplayState == DisplayState.Hovering)
+		    else if (attributes.CorrelationState == CorrelationState.IsUnit)
 		    {
-			    result = hoverPen;
+			    result = unitPen;
 		    }
 		    else if (attributes.DisplayState == DisplayState.Selected)
 		    {
 			    result = highlightPen;
 		    }
+		    else if (attributes.DisplayState == DisplayState.Hovering)
+		    {
+			    result = hoverPen;
+		    }
             else
 		    {
-			    result = GetPenForIndex(attributes.Index);
-		    }
+			    //result = GetPenForIndex(attributes.Index);
+			    result = darkPen;
+            }
 
 		    return result;
 	    }
@@ -84,9 +91,11 @@ namespace Vis.Model.Controller
 
 	    private void GenPens()
 	    {
-		    hoverPen = GetPen(SKColors.Black, DefaultWidth * 1.8f);
+		    hoverPen = GetPen(SKColors.DarkRed, DefaultWidth * 1.5f);
 		    highlightPen = GetPen(SKColors.Red, DefaultWidth * 1.8f);
-            grayPen = GetPen(SKColors.LightGray, DefaultWidth);
+		    unitPen = GetPen(SKColors.Blue, DefaultWidth * 3f);
+		    grayPen = GetPen(SKColors.LightGray, DefaultWidth);
+		    darkPen = GetPen(SKColors.DarkGray, DefaultWidth);
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));
@@ -115,7 +124,7 @@ namespace Vis.Model.Controller
 			    {UIType.Node, GetPen(SKColors.DarkBlue, DefaultWidth)},
 			    {UIType.Joint, GetPen(SKColors.DarkGreen, DefaultWidth)},
 			    {UIType.Edge, GetPen(SKColors.Black, DefaultWidth)},
-                {UIType.HighlightSpot, GetPen(SKColors.MediumSlateBlue, DefaultWidth * 2f)},
+                {UIType.HighlightSpot, GetPen(SKColors.LightSteelBlue, DefaultWidth * 2f)},
                 {UIType.HighlightPath, GetPen(SKColors.DarkViolet, DefaultWidth * 2f)},
                 {UIType.MeasureTick, GetPen(SKColors.DarkSlateGray, DefaultWidth)},
             };

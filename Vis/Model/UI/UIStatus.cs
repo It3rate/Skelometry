@@ -32,7 +32,10 @@ namespace Vis.Model.UI
 	    public PadAttributes<VisStroke> HighlightingPath { get; set; }
 	    public PadAttributes<VisStroke> SelectedPath { get; set; }
 
-	    public bool IsDraggingPoint => DraggingPoint != null;
+	    public bool HasUnitPath => UnitPath != null;
+	    public PadAttributes<VisStroke> UnitPath { get; set; }
+
+        public bool IsDraggingPoint => DraggingPoint != null;
 	    public VisPoint DraggingPoint { get; set; }
 
 	    public VisPoint PositionNorm { get; } = new VisPoint(0, 0);

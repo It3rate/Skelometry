@@ -59,6 +59,21 @@ namespace Vis.Model.Agent
 	        Paths.Clear();
         }
 
+        public PadAttributes<T> GetPadAttributesFor(IPath item)
+        {
+	        PadAttributes<T> result = null;
+	        foreach (var padAttributes in Paths)
+	        {
+		        // todo: implement all comparator methods for elements
+		        if (padAttributes.Element.GetHashCode() == item.GetHashCode())
+		        {
+			        result = padAttributes;
+			        break;
+		        }
+	        }
+	        return result;
+        }
+
         //public VisElement GetByLocation(VisElement reference, VisLocator locator) => null;
         //   public VisElement GetNearby(Node node, VisElementType elementType = VisElementType.Any) => null;
 

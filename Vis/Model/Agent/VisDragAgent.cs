@@ -48,7 +48,6 @@ namespace Vis.Model.Agent
         private SkiaRenderer _renderer;
         private SkiaRenderer _hoverRender;
         private VisMeasureSkills _skills;
-        private IPath unit;
 
         private List<ModeData> ModeMap = ModeData.Modes();
 	    private UIStatus Status { get; }
@@ -101,11 +100,7 @@ namespace Vis.Model.Agent
 				        {
 					        Status.HighlightingPath.DisplayState = DisplayState.None;
 				        }
-
-				        if (newPath.DisplayState != DisplayState.Selected)
-				        {
-					        Status.HighlightingPath = newPath;
-				        }
+				        Status.HighlightingPath = newPath;
 				        result = true;
 			        }
 		        }
@@ -119,7 +114,18 @@ namespace Vis.Model.Agent
             switch (Status.Mode)
             {
 	            case UIMode.Select:
-		            break;
+		            if (Status.IsHighlightingPath)
+		            {
+			            if (Status.SelectedPath != null)
+			            {
+				            Status.SelectedPath.DisplayState = DisplayState.None;
+			            }
+			            Status.SelectedPath = Status.HighlightingPath;
+			            Status.HighlightingPath = null;
+			            Status.SelectedPath.DisplayState = DisplayState.Selected;
+		            }
+
+                    break;
 	            case UIMode.SelectUnit:
 		            break;
 	            case UIMode.Line:
@@ -176,7 +182,7 @@ namespace Vis.Model.Agent
 	                var path = (Status.Mode == UIMode.Circle) ?
 		                _skills.Circle(this, Status.ClickSequencePoints[0], p) :
 		                _skills.Line(this, Status.ClickSequencePoints[0], p);
-					path.UnitReference = unit;
+					path.UnitReference = Status.UnitPath?.Element;
                 }
                 result = true;
             }
@@ -206,64 +212,79 @@ namespace Vis.Model.Agent
                 result = true;
             }
 
-	        return result;
+            if(Status.SelectedPath != null)
+            {
+	            Status.SelectedPath.DisplayState = DisplayState.Selected;
+            }	            
+            return result;
         }
 
         public bool MouseUp(MouseEventArgs e)
         {
 	        SetMouseData(e);
             // if dragging point from node, update node to show new value and same reference. Means moving will drag along node path.
-            if (Status.Mode == UIMode.Select)
+            switch (Status.Mode)
             {
-	            if (Status.SelectedPath != Status.HighlightingPath)
-	            {
-		            if (Status.SelectedPath != null)
+                case UIMode.SelectUnit:
+		            if (Status.IsHighlightingPath)
 		            {
-			            Status.SelectedPath.DisplayState = DisplayState.None;
-		            }
-		            Status.SelectedPath = Status.HighlightingPath;
-		            Status.HighlightingPath = null;
-                    Status.SelectedPath.DisplayState = DisplayState.Selected;
-	            }
-            }
-            else if (Status.Mode == UIMode.SelectUnit)
-            {
-	            if (Status.IsHighlightingPath)
-	            {
-
-                    unit = Status.HighlightingPath.Element;
-		            foreach (var padAttr in ViewPad.Paths)
-		            {
-			            if(padAttr.Element is VisStroke stroke)
+			            if (Status.UnitPath != null)
 			            {
-				            stroke.UnitReference = unit;
+				            Status.UnitPath.CorrelationState = CorrelationState.HasUnit;
+			            }
+			            Status.UnitPath = Status.HighlightingPath;
+			            Status.UnitPath.CorrelationState = CorrelationState.IsUnit;
+
+                        foreach (var padAttr in ViewPad.Paths)
+			            {
+				            if(padAttr.Element is VisStroke stroke)
+				            {
+					            stroke.UnitReference = Status.UnitPath.Element;
+				            }
 			            }
 		            }
-	            }
+		            break;
+                case UIMode.Select:
+	                break;
+                case UIMode.Line:
+                case UIMode.Circle:
+	                var endPoint = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;// new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+	                var path = (Status.Mode == UIMode.Circle) ?
+		                _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :
+		                _skills.Line(this, Status.ClickSequencePoints[0], endPoint, true);
+
+	                var attr = ViewPad.GetPadAttributesFor(path);
+	                if (Status.UnitPath == null)
+	                {
+		                if (attr != null)
+		                {
+			                Status.UnitPath = attr;
+							attr.CorrelationState = CorrelationState.IsUnit;
+		                }
+
+	                }
+	                else
+	                {
+		                path.UnitReference = Status.UnitPath.Element;
+	                }
+
+	                if (Status.SelectedPath != null)
+	                {
+		                Status.SelectedPath.DisplayState = DisplayState.None;
+	                }
+                    Status.SelectedPath = attr;
+                    break;
             }
-            else
+
+            if (Status.SelectedPath != null)
             {
-		        var endPoint = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;// new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
-		        var path = (Status.Mode == UIMode.Circle) ? 
-		            _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :
-		            _skills.Line(this, Status.ClickSequencePoints[0], endPoint, true);
-
-	            if (unit == null)
-	            {
-		            unit = path;
-	            }
-	            else
-	            {
-		            path.UnitReference = unit;
-	            }
+	            Status.SelectedPath.DisplayState = DisplayState.Selected;
             }
-
+            Status.HighlightingPath = null;
 
             Status.ClickSequenceIndex = 0;
             Status.ClickSequencePoints.Clear();
             Status.DraggingPoint = null;
-            //Status.IsHighlightingPath = false;
-            //Status.HighlightingPath = null;
             return true;
         }
 
