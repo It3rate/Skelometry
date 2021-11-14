@@ -87,7 +87,7 @@ namespace Vis.Model.Agent
             Status.PreviousPositionNorm.UpdateWith(Status.PreviousPositionNorm);
 	        Status.PositionNorm.UpdateWith(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
 
-	        if (_hoverRender != null)
+	        if (_hoverRender != null && e.Y >= 0  && e.Y < _hoverRender.Bitmap.Height && e.X >= 0 && e.X < _hoverRender.Bitmap.Width)
 	        {
 		        var col = _hoverRender.Bitmap.GetPixel(e.X, e.Y);
 
@@ -249,30 +249,35 @@ namespace Vis.Model.Agent
                 case UIMode.Line:
                 case UIMode.Circle:
 	                var endPoint = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;// new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
-	                var path = (Status.Mode == UIMode.Circle) ?
-		                _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :
-		                _skills.Line(this, Status.ClickSequencePoints[0], endPoint, true);
-
-	                var attr = ViewPad.GetPadAttributesFor(path);
-	                if (Status.UnitPath == null)
+	                var startPoint = Status.ClickSequencePoints[0];
+	                var dist = startPoint.SquaredDistanceTo(endPoint);
+	                if (dist > 0.0001)
 	                {
-		                if (attr != null)
+	                    var path = (Status.Mode == UIMode.Circle) ?
+			                _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :
+			                _skills.Line(this, Status.ClickSequencePoints[0], endPoint, true);
+
+		                var attr = ViewPad.GetPadAttributesFor(path);
+		                if (Status.UnitPath == null)
 		                {
-			                Status.UnitPath = attr;
-							attr.CorrelationState = CorrelationState.IsUnit;
+			                if (attr != null)
+			                {
+				                Status.UnitPath = attr;
+								attr.CorrelationState = CorrelationState.IsUnit;
+			                }
+
+		                }
+		                else
+		                {
+			                path.UnitReference = Status.UnitPath.Element;
 		                }
 
+		                if (Status.SelectedPath != null)
+		                {
+			                Status.SelectedPath.DisplayState = DisplayState.None;
+		                }
+	                    Status.SelectedPath = attr;
 	                }
-	                else
-	                {
-		                path.UnitReference = Status.UnitPath.Element;
-	                }
-
-	                if (Status.SelectedPath != null)
-	                {
-		                Status.SelectedPath.DisplayState = DisplayState.None;
-	                }
-                    Status.SelectedPath = attr;
                     break;
             }
 

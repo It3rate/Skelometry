@@ -91,7 +91,7 @@ namespace Vis.Model.Controller
 
 	    private void GenPens()
 	    {
-		    hoverPen = GetPen(SKColors.DarkRed, DefaultWidth * 1.5f);
+		    hoverPen = GetPen(SKColors.LightCoral, DefaultWidth * 1.5f);
 		    highlightPen = GetPen(SKColors.Red, DefaultWidth * 1.8f);
 		    unitPen = GetPen(SKColors.Blue, DefaultWidth * 3f);
 		    grayPen = GetPen(SKColors.LightGray, DefaultWidth);
