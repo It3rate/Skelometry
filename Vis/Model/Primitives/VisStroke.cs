@@ -121,6 +121,10 @@ namespace Vis.Model.Primitives
             Nodes.AddRange(nodes);
             GenerateSegments();
         }
+        public void Recalculate()
+        {
+            GenerateSegments();
+        }
 
         public void Flip() { }
         public VisStroke OrientedClone() => null;

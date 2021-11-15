@@ -114,7 +114,35 @@ namespace Vis.Model.Agent
             switch (Status.Mode)
             {
 	            case UIMode.Select:
-		            if (Status.IsHighlightingPath)
+					bool isHighlightingPoint = Status.IsHighlightingPoint;
+					if (isHighlightingPoint)
+					{
+						var (nearPath, nearPt) = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
+						if (nearPath != null)
+						{
+							bool isStartPoint = nearPath.StartPoint == nearPt;
+							Status.ClickSequencePoints.Add(isStartPoint ? nearPath.EndPoint : nearPath.StartPoint);
+							if (nearPath is VisStroke stroke)
+							{
+								Status.DraggingNode = isStartPoint ? stroke.StartNode : stroke.EndNode;
+								Status.DraggingPoint = nearPt;//Status.HighlightingPoint;
+								isHighlightingPoint = false;
+							}
+						}
+						else
+						{
+							isHighlightingPoint = false;
+						}
+					}
+
+					//if (!isHighlightingPoint)
+					//{
+					//	var pt = Status.IsDraggingPoint && Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm.ClonePoint();
+					//	Status.ClickSequencePoints.Add(pt);
+					//	_skills.Point(this, pt);
+					//}
+
+					if (Status.IsHighlightingPath)
 		            {
 			            if (Status.SelectedPath != null)
 			            {
@@ -130,32 +158,10 @@ namespace Vis.Model.Agent
 		            break;
 	            case UIMode.Line:
 	            case UIMode.Circle:
-		            bool isHighlightingPoint = Status.IsHighlightingPoint;
-		            if (isHighlightingPoint)
-		            {
-			            var (path, pt) = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
-			            if (path != null)
-			            {
-				            Status.ClickSequencePoints.Add((path.StartPoint == pt) ? path.EndPoint : path.StartPoint);
-				            if (path is VisStroke stroke)
-				            {
-					            Status.DraggingPoint = pt;//Status.HighlightingPoint;
-					            isHighlightingPoint = false;
-				            }
-			            }
-			            else
-			            {
-				            isHighlightingPoint = false;
-                        }
-		            }
-
-		            if (!isHighlightingPoint)
-		            {
-			            var pt = Status.IsDraggingPoint && Status.IsHighlightingPoint ? Status.HighlightingPoint.ClonePoint() : Status.PositionNorm.ClonePoint();
-			            Status.ClickSequencePoints.Add(pt);
-			            _skills.Point(this, pt);
-		            }
-                    break;
+					var pt = Status.IsHighlightingPoint ? Status.HighlightingPoint.ClonePoint() : Status.PositionNorm.ClonePoint();
+					Status.ClickSequencePoints.Add(pt);
+					_skills.Point(this, pt);
+					break;
             }
 
             Status.HighlightingPoint = null;
@@ -243,6 +249,16 @@ namespace Vis.Model.Agent
 		            }
 		            break;
                 case UIMode.Select:
+                    if (Status.IsDraggingPoint)
+					{
+						var nodeRef = Status.DraggingNode.Reference;
+						bool isDraggingStartPoint = Status.ClickSequencePoints[0].IsNear(nodeRef.EndPoint);
+						var pt = isDraggingStartPoint ? nodeRef.StartPoint : nodeRef.EndPoint;
+						var targPt = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;
+						pt.UpdateWith(targPt);
+						ViewPad.RecalculateAll();
+						//Status.SelectedPath.Element.Recalculate();
+					}
 	                break;
                 case UIMode.Line:
                 case UIMode.Circle:

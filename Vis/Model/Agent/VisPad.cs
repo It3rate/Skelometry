@@ -58,7 +58,16 @@ namespace Vis.Model.Agent
 	        _indexCounter = 0;
 	        Paths.Clear();
         }
-
+        public void RecalculateAll()
+        {
+            foreach (var path in Paths)
+            {
+                if(path.Element is VisStroke stroke)
+                {
+                    stroke.Recalculate();
+                }
+            }
+        }
         public PadAttributes<T> GetPadAttributesFor(IPath item)
         {
 	        PadAttributes<T> result = null;

@@ -59,7 +59,7 @@ namespace Vis.Model.Connections
         //public override int GetHashCode() => this.GetHashCode();
         public override string ToString()
         {
-            return Anchor.ToString();
+            return "Node:" + Anchor.ToString();
         }
     }
 

@@ -210,7 +210,7 @@ namespace Vis.Model.Primitives
 
         public override string ToString()
         {
-            return string.Format("Pt_{0}: {1:0.##},{2:0.##}", Index, X, Y);
+            return string.Format("p:{0:0.##},{1:0.##}", X, Y);
         }
     }
 

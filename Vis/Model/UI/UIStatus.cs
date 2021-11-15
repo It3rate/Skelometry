@@ -10,6 +10,7 @@ namespace Vis.Model.UI
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Vis.Model.Connections;
 
     public class UIStatus
     {
@@ -26,9 +27,9 @@ namespace Vis.Model.UI
 	    public List<VisPoint> ClickSequencePoints { get; } = new List<VisPoint>();
 
 	    public bool IsHighlightingPoint => HighlightingPoint != null;
-	    public VisPoint HighlightingPoint { get; set; }
+		public VisPoint HighlightingPoint { get; set; }
 
-	    public bool IsHighlightingPath => HighlightingPath != null;
+		public bool IsHighlightingPath => HighlightingPath != null;
 	    public PadAttributes<VisStroke> HighlightingPath { get; set; }
 	    public PadAttributes<VisStroke> SelectedPath { get; set; }
 
@@ -37,6 +38,7 @@ namespace Vis.Model.UI
 
         public bool IsDraggingPoint => DraggingPoint != null;
 	    public VisPoint DraggingPoint { get; set; }
+		public VisNode DraggingNode { get; set; }
 
 	    public VisPoint PositionNorm { get; } = new VisPoint(0, 0);
 	    public VisPoint PreviousPositionNorm { get; } = new VisPoint(0, 0);
