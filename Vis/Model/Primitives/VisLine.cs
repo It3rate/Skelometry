@@ -169,6 +169,34 @@ namespace Vis.Model.Primitives
         {
 	        return new VisLine(this);
         }
+
+        public override bool Equals(IPrimitive other)
+        {
+            bool result = false;
+            if (other != null && other is VisLine line)
+            {
+                result = (StartPoint == line.StartPoint) && (EndPoint == line.EndPoint);
+            }
+            return result;
+        }
+        public static bool operator ==(VisLine lhs, VisLine rhs)
+        {
+            bool result = false;
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    result = true;
+                }
+            }
+            else
+            {
+                result = lhs.Equals(rhs);
+            }
+            return result;
+        }
+        public static bool operator !=(VisLine lhs, VisLine rhs) => !(lhs == rhs);
+        public override int GetHashCode() => (StartPoint, EndPoint).GetHashCode();
         public override string ToString()
         {
 	        return String.Format("Ln:{0:0.##},{1:0.##} {2:0.##},{3:0.##}", X, Y, EndPoint.X, EndPoint.Y);

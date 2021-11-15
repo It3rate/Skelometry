@@ -50,6 +50,13 @@ namespace Vis.Model.Connections
         {
 	        return new VisNode(Reference, Position);
         }
+
+        //public override bool Equals(object obj) => this.Equals(obj as IPrimitive);
+        public virtual bool Equals(IPrimitive other)
+        {
+            return Object.ReferenceEquals(this, other);
+        }
+        //public override int GetHashCode() => this.GetHashCode();
         public override string ToString()
         {
             return Anchor.ToString();

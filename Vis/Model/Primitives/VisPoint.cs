@@ -182,6 +182,32 @@ namespace Vis.Model.Primitives
         {
 	        return new VisPoint(this.X, this.Y);
         }
+
+        public override bool Equals(object obj) => this.Equals(obj as IPrimitive);
+        public virtual bool Equals(IPrimitive other)
+        {
+            return other != null && X == other.X && Y == other.Y;
+        }
+
+        public static bool operator ==(VisPoint lhs, VisPoint rhs)
+        {
+            bool result = false;
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    result = true;
+                }
+            }
+            else
+            {
+                result = lhs.Equals(rhs);
+            }
+            return result;
+        }
+        public static bool operator !=(VisPoint lhs, VisPoint rhs) => !(lhs == rhs);
+        public override int GetHashCode() => (X, Y).GetHashCode();
+
         public override string ToString()
         {
             return string.Format("Pt_{0}: {1:0.##},{2:0.##}", Index, X, Y);

@@ -136,7 +136,6 @@ namespace Vis.Model.Agent
 			            var (path, pt) = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
 			            if (path != null)
 			            {
-				            Status.ClickSequenceIndex = 1;
 				            Status.ClickSequencePoints.Add((path.StartPoint == pt) ? path.EndPoint : path.StartPoint);
 				            if (path is VisStroke stroke)
 				            {
@@ -153,7 +152,6 @@ namespace Vis.Model.Agent
 		            if (!isHighlightingPoint)
 		            {
 			            var pt = Status.IsDraggingPoint && Status.IsHighlightingPoint ? Status.HighlightingPoint.ClonePoint() : Status.PositionNorm.ClonePoint();
-			            Status.ClickSequenceIndex = 1;
 			            Status.ClickSequencePoints.Add(pt);
 			            _skills.Point(this, pt);
 		            }
@@ -287,7 +285,6 @@ namespace Vis.Model.Agent
             }
             Status.HighlightingPath = null;
 
-            Status.ClickSequenceIndex = 0;
             Status.ClickSequencePoints.Clear();
             Status.DraggingPoint = null;
             return true;

@@ -22,7 +22,7 @@ namespace Vis.Model.UI
 	    public MouseButtons CurrentMouse { get; set; }
 	    public PadKind CurrentPadKind { get; set; }
 
-	    public int ClickSequenceIndex { get; set; } = 0;
+	    public int ClickSequenceIndex => ClickSequencePoints.Count;
 	    public List<VisPoint> ClickSequencePoints { get; } = new List<VisPoint>();
 
 	    public bool IsHighlightingPoint => HighlightingPoint != null;

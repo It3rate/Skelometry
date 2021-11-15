@@ -76,6 +76,33 @@ namespace Vis.Model.Primitives
         {
 	        return new VisRectangle(this);
         }
+        public override bool Equals(IPrimitive other)
+        {
+            bool result = false;
+            if (other != null && other is VisRectangle rect)
+            {
+                result = (Center == rect.Center) && (TopLeft == rect.TopLeft) && (HalfSize == rect.HalfSize);
+            }
+            return result;
+        }
+        public static bool operator ==(VisRectangle lhs, VisRectangle rhs)
+        {
+            bool result = false;
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    result = true;
+                }
+            }
+            else
+            {
+                result = lhs.Equals(rhs);
+            }
+            return result;
+        }
+        public static bool operator !=(VisRectangle lhs, VisRectangle rhs) => !(lhs == rhs);
+        public override int GetHashCode() => (Center, TopLeft, HalfSize).GetHashCode();
         public override string ToString()
         {
             return $"Rect:{TopLeft.X:0.##},{TopLeft.Y:0.##} {Size.X:0.##},{Size.Y:0.##}";

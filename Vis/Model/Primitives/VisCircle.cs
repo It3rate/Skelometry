@@ -234,6 +234,35 @@ namespace Vis.Model.Primitives
         {
 	        return new VisCircle(this);
         }
+        public override bool Equals(IPrimitive other)
+        {
+            bool result = false;
+            if (other != null && other is VisCircle circ)
+            {
+                result = (Center == circ.Center) && 
+                    (PerimeterOrigin == circ.PerimeterOrigin) && 
+                    (Direction == circ.Direction);
+            }
+            return result;
+        }
+        public static bool operator ==(VisCircle lhs, VisCircle rhs)
+        {
+            bool result = false;
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    result = true;
+                }
+            }
+            else
+            {
+                result = lhs.Equals(rhs);
+            }
+            return result;
+        }
+        public static bool operator !=(VisCircle lhs, VisCircle rhs) => !(lhs == rhs);
+        public override int GetHashCode() => (Center, PerimeterOrigin, Direction).GetHashCode();
         public override string ToString()
         {
             return $"Circ:{X:0.##},{Y:0.##} r{Radius:0.##}";

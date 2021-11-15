@@ -122,6 +122,35 @@ namespace Vis.Model.Primitives
             yield return Center;
         }
 
+        public override bool Equals(IPrimitive other)
+        {
+            bool result = false;
+            if (other != null && other is VisArc arc)
+            {
+                result = Object.ReferenceEquals(Reference, arc.Reference) &&
+                    (EndPoint == arc.EndPoint) &&
+                    (Direction == arc.Direction);
+            }
+            return result;
+        }
+        public static bool operator ==(VisArc lhs, VisArc rhs)
+        {
+            bool result = false;
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    result = true;
+                }
+            }
+            else
+            {
+                result = lhs.Equals(rhs);
+            }
+            return result;
+        }
+        public static bool operator !=(VisArc lhs, VisArc rhs) => !(lhs == rhs);
+        public override int GetHashCode() => (Reference, EndPoint, Direction).GetHashCode();
         public override string ToString()
         {
 	        return $"Arc:{X:0.##},{Y:0.##} r{Radius:0.##}";
