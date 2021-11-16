@@ -117,7 +117,7 @@ namespace Vis.Model.UI
 		}
 		public void HighlightedPathToUnit()
 		{
-			var unitPath = UnitPath;
+			var unitPath = HighlightingPath;
 			HighlightingPath = null;
 			UnitPath = unitPath;
 			_needsUpdate = true;
