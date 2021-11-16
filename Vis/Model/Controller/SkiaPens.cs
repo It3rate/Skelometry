@@ -52,7 +52,7 @@ namespace Vis.Model.Controller
 		    {
 			    result = highlightPen;
 		    }
-		    else if (attributes.DisplayState == DisplayState.Hovering)
+		    else if (attributes.DisplayState == DisplayState.Highlighting)
 		    {
 			    result = hoverPen;
 		    }

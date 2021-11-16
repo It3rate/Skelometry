@@ -60,7 +60,7 @@ namespace Vis.Model.Controller
     {
         None,
         Hidden,
-        Hovering,
+        Highlighting,
         Selected,
         Dragging,
         ConnectedToHovered,
