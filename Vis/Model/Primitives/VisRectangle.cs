@@ -76,6 +76,7 @@ namespace Vis.Model.Primitives
         {
 	        return new VisRectangle(this);
         }
+        public override bool Equals(object obj) => this.Equals(obj as IPrimitive);
         public override bool Equals(IPrimitive other)
         {
             bool result = false;

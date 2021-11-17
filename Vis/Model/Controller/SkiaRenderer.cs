@@ -166,10 +166,15 @@ namespace Vis.Model.Controller
             _canvas.DrawLine(p0.X, p0.Y, p1.X, p1.Y, pen);
         }
 
-        public override void DrawPolyline(VisPoint[] points, PadAttributes attributes = null)
+        public override void DrawLines(VisPoint[] points, PadAttributes attributes = null)
         {
 	        var pen = Pens.GetPenForElement(attributes);
-            _canvas.DrawPoints(SKPointMode.Polygon, points.SKPoints(), pen);
+	        _canvas.DrawPoints(SKPointMode.Polygon, points.SKPoints(), pen);
+        }
+        public override void DrawPolyline(VisPolyline polyline, PadAttributes attributes = null)
+        {
+	        var pen = Pens.GetPenForElement(attributes);
+	        _canvas.DrawPoints(SKPointMode.Polygon, polyline.Points.SKPoints(), pen);
         }
 
         public override void GeneratePens()
@@ -179,13 +184,14 @@ namespace Vis.Model.Controller
     }
     public static class SkiaExtensions
     {
-	    public static SKPoint[] SKPoints(this VisPoint[] points)
+	    public static SKPoint[] SKPoints(this IEnumerable<VisPoint> points)
 	    {
-		    var result = new SKPoint[points.Length];
-		    for (int i = 0; i < points.Length; i++)
+		    var result = new SKPoint[points.Count()];
+		    int index = 0;
+		    foreach (var visPoint in points)
 		    {
-			    result[i] = points[i].SKPoint();
-		    }
+			    result[index++] = visPoint.SKPoint();
+            }
 		    return result;
 	    }
 	    public static SKPoint SKPoint(this VisPoint point) => new SKPoint(point.X, point.Y);

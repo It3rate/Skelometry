@@ -129,6 +129,10 @@ namespace Vis.Model.Primitives
 	        //return new Point(StartPoint.X + (dp * e1.X) / len2, StartPoint.Y + (dp * e1.Y) / len2);
         }
 
+        public VisPolyline GetPolyline()
+        {
+            return new VisPolyline(StartPoint, EndPoint);
+        }
         public VisPoint[] GetPolylinePoints(int pointCount = 24)
         {
 	        var result = new List<VisPoint>() {StartPoint, EndPoint};
@@ -170,6 +174,7 @@ namespace Vis.Model.Primitives
 	        return new VisLine(this);
         }
 
+        public override bool Equals(object obj) => this.Equals(obj as IPrimitive);
         public override bool Equals(IPrimitive other)
         {
             bool result = false;

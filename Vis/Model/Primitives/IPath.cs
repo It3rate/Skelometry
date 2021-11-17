@@ -21,6 +21,8 @@ namespace Vis.Model.Primitives
 	    VisNode MidNode { get; }
 	    VisNode EndNode { get; }
 
+	    VisPolyline GetPolyline();
+
         IPath UnitReference { get; set; }
     }
 }

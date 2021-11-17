@@ -38,6 +38,15 @@ namespace Vis.Model.Primitives
             GenerateSegments();
         }
 
+        public VisPolyline GetPolyline()
+        {
+            List<VisPoint> pts = new List<VisPoint>();
+            foreach (var segment in Segments)
+            {
+	            pts.AddRange(segment.GetPolylinePoints());
+            }
+	        return new VisPolyline(pts);
+        }
         private void GenerateSegments()
         {
             Segments.Clear();

@@ -68,9 +68,10 @@ namespace Vis.Model.Controller
 	    public abstract void DrawRect(VisRectangle rect, PadAttributes attributes = null);
 	    public abstract void DrawLine(VisLine line, PadAttributes attributes = null);
 	    public abstract void DrawLine(VisPoint p0, VisPoint p1, PadAttributes attributes = null);
-	    public abstract void DrawPolyline(VisPoint[] points, PadAttributes attributes = null);
+	    public abstract void DrawLines(VisPoint[] points, PadAttributes attributes = null);
+	    public abstract void DrawPolyline(VisPolyline polyline, PadAttributes attributes = null);
 
-	    protected void OnDrawingComplete()
+        protected void OnDrawingComplete()
 	    {
 		    DrawingComplete?.Invoke(this, EventArgs.Empty);
         }
@@ -120,7 +121,11 @@ namespace Vis.Model.Controller
 		    {
 			    DrawRect(rect, padAttributes);
 		    }
-		    else if (path is RenderPoint rp)
+		    else if (path is VisPolyline poly)
+		    {
+			    DrawPolyline(poly, padAttributes);
+		    }
+            else if (path is RenderPoint rp)
 		    {
 			    DrawSpot(rp, padAttributes, rp.Scale);
             }
@@ -141,7 +146,7 @@ namespace Vis.Model.Controller
 			    }
 			    else if (segment is VisArc arc)
 			    {
-				    DrawPolyline(arc.GetPolylinePoints(), padAttributes);
+				    DrawLines(arc.GetPolylinePoints(), padAttributes);
                 }
             }
 

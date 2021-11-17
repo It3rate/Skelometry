@@ -27,7 +27,7 @@ namespace Vis.Model.UI
 		public bool NeedsUpdate => _needsUpdate;
 
 		public VisPoint PositionNorm { get; } = new VisPoint(0, 0);
-		public VisPoint PreviousPositionNorm { get; } = new VisPoint(0, 0);
+        public VisPoint PreviousPositionNorm { get; } = new VisPoint(0, 0);
 
 		public int ClickSequenceIndex => ClickSequencePoints.Count;
 	    public List<VisPoint> ClickSequencePoints { get; } = new List<VisPoint>();
@@ -102,8 +102,9 @@ namespace Vis.Model.UI
 
 
 	    public bool IsMouseDown => CurrentMouse == MouseButtons.Left;
+	    public VisPoint PositionMouseDown { get; set; }
 
-	    public UIStatus(params IPad[] pads)
+        public UIStatus(params IPad[] pads)
 	    {
 		    Pads = pads.ToList();
 	    }

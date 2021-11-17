@@ -64,5 +64,25 @@ namespace Vis.Model.Agent
 
 	        return result;
         }
+        public VisPolyline Polyline(IAgent agent, VisPolyline polyline, bool permanent = false)
+        {
+	        VisPolyline result = null;
+	        if (permanent)
+	        {
+		        //agent.FocusPad.Add(line);
+		        //var nodeStart = new VisNode(line, 0);
+		        //var nodeEnd = new VisNode(line, 1);
+		        //var stroke = new VisStroke(nodeStart, nodeEnd);
+		        //agent.ViewPad.Add(stroke);
+		        //result = stroke;
+	        }
+	        else
+	        {
+		        var pad = agent.WorkingPad;
+		        pad.Add(polyline);
+		        result = polyline;
+	        }
+	        return result;
+        }
     }
 }

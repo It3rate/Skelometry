@@ -124,6 +124,7 @@ namespace Vis.Model.Agent
 		public bool MouseDown(MouseEventArgs e)
         {
             SetMouseData(e);
+            Status.PositionMouseDown = Status.PositionNorm.ClonePoint();
             switch (Status.Mode)
             {
 	            case UIMode.Select:
@@ -141,8 +142,7 @@ namespace Vis.Model.Agent
 							}
 						}
 					}
-
-					if (Status.IsHighlightingPath)
+					else if (Status.IsHighlightingPath)
 		            {
 						Status.HighlightedPathToSelected();
 		            }
@@ -176,6 +176,15 @@ namespace Vis.Model.Agent
 					{
 						Status.DraggingPoint.UpdateWith(Status.PositionNorm);
 						_skills.Line(this, Status.ClickSequencePoints[0], Status.PositionNorm);
+						result = true;
+					}
+                    else if (Status.PositionMouseDown != null && Status.HasSelectedPath)
+					{
+						var poly = Status.SelectedPath.Element.GetPolyline();
+						var dif = Status.PositionNorm.Subtract(Status.PositionMouseDown);
+						Console.WriteLine(dif);
+						poly.AddOffset(dif);
+						_skills.Polyline(this, poly);
 						result = true;
 					}
 					break;
@@ -262,6 +271,7 @@ namespace Vis.Model.Agent
 	                }
                     break;
             }
+            Status.PositionMouseDown = null;
             Status.ClickSequencePoints.Clear();
             Status.DraggingPoint = null;
             return true;
