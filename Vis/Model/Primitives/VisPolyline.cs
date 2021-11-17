@@ -38,16 +38,18 @@ namespace Vis.Model.Primitives
 
 	    public void AddOffset(VisPoint offset)
 	    {
-		    foreach (var visPoint in Points)
+		    base.AddOffset(offset.X, offset.Y);
+            foreach (var point in Points)
 		    {
-			    visPoint.UpdateWith(new VisPoint(visPoint.X + offset.X, visPoint.Y + offset.Y));
+			    point.AddOffset(offset.X, offset.Y);
 		    }
 	    }
-	    public void AddOffset(float offsetX, float offsetY)
+	    public void AddOffset(float x, float y)
 	    {
-		    foreach (var visPoint in Points)
+		    base.AddOffset(x, y);
+            foreach (var visPoint in Points)
 		    {
-			    visPoint.UpdateWith(visPoint.X + offsetX, visPoint.Y + offsetY);
+			    visPoint.UpdateWith(visPoint.X + x, visPoint.Y + y);
 		    }
 	    }
 
@@ -63,8 +65,8 @@ namespace Vis.Model.Primitives
 	    public override bool Equals(object obj) => this.Equals(obj as IPrimitive);
 	    public override bool Equals(IPrimitive other)
 	    {
-		    bool result = false;
-		    if (other is VisPolyline polyline && polyline.Points.Count() == Points.Count())
+		    bool result = Object.ReferenceEquals(this, other);
+		    if (!result && other is VisPolyline polyline && polyline.Points.Count() == Points.Count())
 		    {
 			    for (int i = 0; i < Points.Count(); i++)
 			    {

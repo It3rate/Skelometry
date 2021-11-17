@@ -33,6 +33,11 @@ namespace Vis.Model.Primitives
         }
         public VisPoint(VisPoint p):this(p.X, p.Y) { }
 
+        public virtual void AddOffset(float x, float y)
+        {
+	        UpdateWith(X + x, Y + y);
+        }
+
         public void UpdateWith(VisPoint p)
         {
 	        X = p.X;

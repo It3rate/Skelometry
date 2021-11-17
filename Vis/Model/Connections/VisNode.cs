@@ -34,6 +34,18 @@ namespace Vis.Model.Connections
             //Anchor = reference.GetPoint(position);
         }
 
+        public void AddOffset(float x, float y)
+        {
+	        if (Reference is IPrimitive primitive)
+	        {
+                primitive.AddOffset(x, y);
+            }
+            else if (Reference is VisNode node)
+	        {
+                node.AddOffset(x, y);
+	        }
+        }
+
         public VisPoint GetPoint(float position, float offset = 0)
         {
             return Reference.GetPoint(position, offset);

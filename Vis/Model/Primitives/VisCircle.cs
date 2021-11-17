@@ -181,6 +181,12 @@ namespace Vis.Model.Primitives
             }
         }
 
+        public override void AddOffset(float x, float y)
+        {
+	        base.AddOffset(x, y);
+            PerimeterOrigin.AddOffset(x, y);
+            Initialize();
+        }
         public VisPolyline GetPolyline()
         {
 	        return new VisPolyline(GetPolylinePoints());
@@ -241,8 +247,8 @@ namespace Vis.Model.Primitives
         public override bool Equals(object obj) => this.Equals(obj as IPrimitive);
         public override bool Equals(IPrimitive other)
         {
-            bool result = false;
-            if (other != null && other is VisCircle circ)
+	        bool result = Object.ReferenceEquals(this, other);
+	        if (!result && other != null && other is VisCircle circ)
             {
                 result = (Center == circ.Center) && 
                     (PerimeterOrigin == circ.PerimeterOrigin) && 

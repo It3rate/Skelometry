@@ -20,11 +20,11 @@ namespace Vis.Model.Controller
         public float DefaultWidth { get; }
         public bool IsHoverMap { get; set; }
 
-        private SKPaint hoverPen;
-        private SKPaint highlightPen;
-        private SKPaint unitPen;
-        private SKPaint darkPen;
-        private SKPaint grayPen;
+        public SKPaint HoverPen { get; private set; }
+        public SKPaint HighlightPen { get; private set; }
+        public SKPaint UnitPen { get; private set; }
+        public SKPaint DarkPen { get; private set; }
+        public SKPaint GrayPen { get; private set; }
 
         public SkiaPens(float scale, float defaultWidth = 8f)
 	    {
@@ -38,7 +38,7 @@ namespace Vis.Model.Controller
 		    SKPaint result;
 		    if (attributes.PadKind == PadKind.Focus)
 		    {
-			    result = grayPen;
+			    result = GrayPen;
 		    }
 		    else if (IsHoverMap)
 		    {
@@ -46,20 +46,20 @@ namespace Vis.Model.Controller
 		    }
 		    else if (attributes.CorrelationState == CorrelationState.IsUnit)
 		    {
-			    result = unitPen;
+			    result = UnitPen;
 		    }
 		    else if (attributes.DisplayState == DisplayState.Selected)
 		    {
-			    result = highlightPen;
+			    result = HighlightPen;
 		    }
 		    else if (attributes.DisplayState == DisplayState.Highlighting)
 		    {
-			    result = hoverPen;
+			    result = HoverPen;
 		    }
             else
 		    {
 			    //result = GetPenForIndex(attributes.Index);
-			    result = darkPen;
+			    result = DarkPen;
             }
 
 		    return result;
@@ -91,11 +91,11 @@ namespace Vis.Model.Controller
 
 	    private void GenPens()
 	    {
-		    hoverPen = GetPen(SKColors.LightCoral, DefaultWidth * 1.5f);
-		    highlightPen = GetPen(SKColors.Red, DefaultWidth * 1.8f);
-		    unitPen = GetPen(SKColors.Blue, DefaultWidth * 3f);
-		    grayPen = GetPen(SKColors.LightGray, DefaultWidth);
-		    darkPen = GetPen(SKColors.DarkGray, DefaultWidth);
+		    HoverPen = GetPen(SKColors.LightCoral, DefaultWidth * 1.5f);
+		    HighlightPen = GetPen(SKColors.Red, DefaultWidth * 1.8f);
+		    UnitPen = GetPen(SKColors.Blue, DefaultWidth * 3f);
+		    GrayPen = GetPen(SKColors.LightGray, DefaultWidth);
+		    DarkPen = GetPen(SKColors.DarkGray, DefaultWidth);
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));

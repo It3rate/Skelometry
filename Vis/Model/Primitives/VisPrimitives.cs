@@ -19,6 +19,7 @@ namespace Vis.Model.Primitives
 		float Y { get; }
 		float Similarity(IPrimitive p);
 		VisPoint Sample(Gaussian g);
+		void AddOffset(float x, float y);
 	}
 	public interface IPrimitivePath : IPath
 	{

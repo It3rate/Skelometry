@@ -24,5 +24,7 @@ namespace Vis.Model.Primitives
 	    VisPolyline GetPolyline();
 
         IPath UnitReference { get; set; }
+
+        void AddOffset(float x, float y);
     }
 }

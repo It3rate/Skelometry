@@ -182,7 +182,6 @@ namespace Vis.Model.Agent
 					{
 						var poly = Status.SelectedPath.Element.GetPolyline();
 						var dif = Status.PositionNorm.Subtract(Status.PositionMouseDown);
-						Console.WriteLine(dif);
 						poly.AddOffset(dif);
 						_skills.Polyline(this, poly);
 						result = true;
@@ -234,9 +233,16 @@ namespace Vis.Model.Agent
 						var targPt = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;
 						pt.UpdateWith(targPt);
 						ViewPad.RecalculateAll();
-						//Status.SelectedPath.Element.Recalculate();
-					}
-	                break;
+                        //Status.SelectedPath.Element.Recalculate();
+                    }
+                    else if (Status.PositionMouseDown != null && Status.HasSelectedPath)
+                    {
+	                    var dif = Status.PositionNorm.Subtract(Status.PositionMouseDown);
+	                    var stroke = Status.SelectedPath.Element;
+	                    stroke.AddOffset(dif.X, dif.Y);
+	                    ViewPad.RecalculateAll();
+                    }
+                    break;
                 case UIMode.Line:
                 case UIMode.Circle:
 	                var endPoint = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;// new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);

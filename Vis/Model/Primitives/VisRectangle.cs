@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -47,6 +48,11 @@ namespace Vis.Model.Primitives
             return new VisPoint(TopLeft.X + HalfSize.X * xRatio, TopLeft.Y + HalfSize.Y * yRatio);
         }
 
+        public override void AddOffset(float x, float y)
+        {
+	        base.AddOffset(x, y);
+            TopLeft.AddOffset(x, y);
+        }
 
         public VisLine GetLine(CompassDirection direction, float offset = 0)
         {
@@ -79,8 +85,8 @@ namespace Vis.Model.Primitives
         public override bool Equals(object obj) => this.Equals(obj as IPrimitive);
         public override bool Equals(IPrimitive other)
         {
-            bool result = false;
-            if (other != null && other is VisRectangle rect)
+	        bool result = Object.ReferenceEquals(this, other);
+	        if (!result && other != null && other is VisRectangle rect)
             {
                 result = (Center == rect.Center) && (TopLeft == rect.TopLeft) && (HalfSize == rect.HalfSize);
             }

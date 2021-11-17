@@ -175,6 +175,8 @@ namespace Vis.Model.Controller
         {
 	        var pen = Pens.GetPenForElement(attributes);
 	        _canvas.DrawPoints(SKPointMode.Polygon, polyline.Points.SKPoints(), pen);
+			_canvas.DrawLine(polyline.Points[0].X, polyline.Points[0].Y, polyline.Points[1].X, polyline.Points[1].Y, Pens.HighlightPen);
+	        //DrawLine(polyline.Points[0], polyline.Points[1], Pens.HighlightPen);
         }
 
         public override void GeneratePens()

@@ -38,12 +38,24 @@ namespace Vis.Model.Primitives
             GenerateSegments();
         }
 
+        public void AddOffset(float x, float y)
+        {
+            List<IPath> refs = new List<IPath>();
+	        foreach (var node in Nodes)
+	        {
+		        if (!refs.Contains(node.Reference))
+		        {
+			        node.Reference.AddOffset(x, y);
+                    refs.Add(node.Reference);
+		        }
+	        }
+        }
         public VisPolyline GetPolyline()
         {
             List<VisPoint> pts = new List<VisPoint>();
-            foreach (var segment in Segments)
+            foreach (var anchor in Anchors)
             {
-	            pts.AddRange(segment.GetPolylinePoints());
+	            pts.Add(anchor);
             }
 	        return new VisPolyline(pts);
         }

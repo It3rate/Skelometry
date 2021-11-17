@@ -59,6 +59,11 @@ namespace Vis.Model.Primitives
             return new VisLine(start, end);
         }
 
+        public override void AddOffset(float x, float y)
+        {
+	        base.AddOffset(x, y);
+            EndPoint.AddOffset(x, y);
+        }
         public VisPoint GetPoint(float position, float offset = 0)
         {
 	        var xOffset = 0f;
@@ -177,8 +182,8 @@ namespace Vis.Model.Primitives
         public override bool Equals(object obj) => this.Equals(obj as IPrimitive);
         public override bool Equals(IPrimitive other)
         {
-            bool result = false;
-            if (other != null && other is VisLine line)
+            bool result = Object.ReferenceEquals(this, other);
+            if (!result && other != null && other is VisLine line)
             {
                 result = (StartPoint == line.StartPoint) && (EndPoint == line.EndPoint);
             }
