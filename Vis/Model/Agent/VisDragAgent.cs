@@ -102,6 +102,11 @@ namespace Vis.Model.Agent
 			        }
 		        }
 	        }
+
+	        if (!result)
+	        {
+		        Status.HighlightingPath = null;
+	        }
 	        return result;
 		}
 
@@ -193,9 +198,25 @@ namespace Vis.Model.Agent
 				case UIMode.Circle:
 					if (Status.IsMouseDown)
 					{
-						var path = (Status.Mode == UIMode.Circle) ?
-						_skills.Circle(this, Status.ClickSequencePoints[0], Status.PositionNorm) :
-						_skills.Line(this, Status.ClickSequencePoints[0], Status.PositionNorm);
+						var endPoint = Status.PositionNorm;
+						if (Status.IsHighlightingPoint)
+						{
+							endPoint = Status.HighlightingPoint;
+						}
+						else if (Status.IsHighlightingPath)
+						{
+							if (Status.HighlightingPath.Element is VisStroke stroke)
+							{
+								if (stroke.Segments[0] is VisLine line)
+								{
+									endPoint = line.ProjectPointOnto(Status.PositionNorm); // todo: Generalize point onto path
+								}
+							}
+						}
+
+                        var path = (Status.Mode == UIMode.Circle) ?
+						_skills.Circle(this, Status.ClickSequencePoints[0], endPoint) :
+						_skills.Line(this, Status.ClickSequencePoints[0], endPoint);
 						path.UnitReference = Status.UnitPath?.Element;
 						result = true;
 					}
@@ -245,10 +266,25 @@ namespace Vis.Model.Agent
                     break;
                 case UIMode.Line:
                 case UIMode.Circle:
-	                var endPoint = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;// new VisPoint(e.X / (float)_unitPixels, e.Y / (float)_unitPixels);
+	                var endPoint = Status.PositionNorm;
+	                if (Status.IsHighlightingPoint)
+	                {
+		                endPoint = Status.HighlightingPoint;
+	                }
+	                else if (Status.IsHighlightingPath)
+	                {
+		                if (Status.HighlightingPath.Element is VisStroke stroke)
+		                {
+			                if (stroke.Segments[0] is VisLine line)
+			                {
+				                endPoint = line.ProjectPointOnto(Status.PositionNorm);
+			                }
+		                }
+	                }
+
 	                var startPoint = Status.ClickSequencePoints[0];
 	                var dist = startPoint.SquaredDistanceTo(endPoint);
-	                if (dist > 0.0001)
+	                if (dist > startPoint.NearThreshold)
 	                {
 	                    var path = (Status.Mode == UIMode.Circle) ?
 			                _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :

@@ -42,7 +42,7 @@ namespace Vis.Model.Controller
 		    }
 		    else if (IsHoverMap)
 		    {
-			    result = GetPenByOrder(attributes.Index, 4f, false);
+			    result = GetPenByOrder(attributes.Index, 8f, false);
 		    }
 		    else if (attributes.CorrelationState == CorrelationState.IsUnit)
 		    {
