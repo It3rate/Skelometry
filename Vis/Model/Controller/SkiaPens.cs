@@ -44,6 +44,10 @@ namespace Vis.Model.Controller
 		    {
 			    result = GetPenByOrder(attributes.Index, 8f, false);
 		    }
+		    else if (attributes.DisplayState == DisplayState.Highlighting)
+		    {
+			    result = HoverPen;
+		    }
 		    else if (attributes.CorrelationState == CorrelationState.IsUnit)
 		    {
 			    result = UnitPen;
@@ -52,12 +56,8 @@ namespace Vis.Model.Controller
 		    {
 			    result = HighlightPen;
 		    }
-		    else if (attributes.DisplayState == DisplayState.Highlighting)
-		    {
-			    result = HoverPen;
-		    }
             else
-		    {
+		    { 
 			    //result = GetPenForIndex(attributes.Index);
 			    result = DarkPen;
             }
