@@ -11,6 +11,7 @@ namespace Vis.Model.Agent
 {
 	public enum PadGrid { Rectangle, Oval, Hexagon }
 	public enum PadKind { None, Bitmap, Working, Focus, View }
+    public enum PadStyle {None, Hidden, Disabled, Normal, Enhanced, Offset, Zoomed}
 
     public interface IPad
     {
@@ -18,6 +19,7 @@ namespace Vis.Model.Agent
 	   bool AutoIndex { get; set; }
 	   int Width { get; }
 	   int Height { get; }
+	   PadStyle PadStyle { get; set;  }
     }
 
     public class VisPad<T> : IPad //where T : IPrimitive
@@ -26,6 +28,7 @@ namespace Vis.Model.Agent
 	    public int Index;
 	    public PadGrid Grid { get; }
 	    public PadKind PadKind { get; }
+	    public PadStyle PadStyle { get; set; } = PadStyle.Normal;
         public bool AutoIndex { get; set; }
 
         public List<PadAttributes<T>> Paths { get; } = new List<PadAttributes<T>>();

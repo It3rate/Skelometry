@@ -43,33 +43,33 @@ namespace Vis.Model.Controller
 
     public enum UIMode
     {
-        None,
-        Line,
-        Polygon,
-        Circle,
-        Oval,
-        Curve,
-        Select,
-        MultiSelect,
-        SelectUnit,
-        Connect,
-        Disconnect,
+        None = 0,
+        Line = 1,
+        Polygon = 2,
+        Circle = 3,
+        Oval = 4,
+        Curve = 5,
+        Select = 6,
+        MultiSelect = 7,
+        SelectUnit = 8,
+        Connect = 9,
+        Disconnect = 10,
     }
     [Flags]
     public enum UIState
     {
 	    None = 0,
-        FocusPad,
-        ViewPad,
-        WorkingPad,
+        FocusPad = 1,
+        ViewPad = 2,
+        WorkingPad = 4,
 
-        SnapToPoint,
-        SnapToPath,
-        SnapToPathExtend,
-        ConstrainAngle,
+        SnapToPoint = 8,
+        SnapToPath = 16,
+        SnapToPathExtend = 32,
+        ConstrainAngle = 64,
 
-        ShowTicks,
-        ShowValues,
-        ShowDebugInfo,
+        ShowTicks = 128,
+        ShowValues = 256,
+        ShowDebugInfo = 512,
     }
 }

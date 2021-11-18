@@ -62,6 +62,8 @@ namespace Vis.Model.UI.Modes
                 new ModeData("Show Ticks", UIMode.None, UIState.ShowTicks, Keys.R, true, true),
                 new ModeData("Show Values", UIMode.None, UIState.ShowValues, Keys.V, true, true),
                 new ModeData("Show Debug Info", UIMode.None, UIState.ShowDebugInfo, Keys.OemQuestion, false, false, false),
+                new ModeData("Toggle Focus Pad", UIMode.None, UIState.FocusPad, Keys.D1, true, true),
+                new ModeData("Toggle View Pad", UIMode.None, UIState.ViewPad, Keys.D2, true, true),
             };
 	    }
     }

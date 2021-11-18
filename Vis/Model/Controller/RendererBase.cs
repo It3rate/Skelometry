@@ -80,20 +80,23 @@ namespace Vis.Model.Controller
 	    {
 		    foreach (var pad in Status.Pads)
 		    {
-			    if (pad is VisPad<VisPoint> ppad)
+			    if (pad.PadStyle != PadStyle.Hidden)
 			    {
-				    foreach (var prim in ppad.Paths)
+				    if (pad is VisPad<VisPoint> ppad)
 				    {
-					    DrawPrimitive(prim);
+					    foreach (var prim in ppad.Paths)
+					    {
+						    DrawPrimitive(prim);
+					    }
 				    }
-                }
-			    else if (pad is VisPad<VisStroke> spad)
-			    {
-				    foreach (var prim in spad.Paths)
+				    else if (pad is VisPad<VisStroke> spad)
 				    {
-					    DrawStroke(prim);
+					    foreach (var prim in spad.Paths)
+					    {
+						    DrawStroke(prim);
+					    }
 				    }
-                }
+			    }
 		    }
 	    }
 

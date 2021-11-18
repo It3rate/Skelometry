@@ -298,13 +298,13 @@ namespace Vis.Model.Agent
 				        result = true;
 			        }
 
-			        if (Status.State != modeData.StateChange && modeData.StateChange != UIState.None)
+			        if (modeData.StateChange != UIState.None)
 			        {
 				        if (modeData.ActiveAfterPress)
 				        {
 					        Status.State ^= modeData.StateChange;
                         }
-				        else
+				        else if(Status.State != modeData.StateChange)
 				        {
 					        Status.State |= modeData.StateChange;
                         } 
@@ -314,7 +314,9 @@ namespace Vis.Model.Agent
 		        }
 	        }
 
-	        _renderer.ShowBitmap = (Status.State & UIState.ShowDebugInfo) > 0;
+            FocusPad.PadStyle = (Status.State & UIState.FocusPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
+            ViewPad.PadStyle = (Status.State & UIState.ViewPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
+            _renderer.ShowBitmap = (Status.State & UIState.ShowDebugInfo) != 0;
             return result;
         }
         public bool KeyUp(KeyEventArgs e)
@@ -333,7 +335,9 @@ namespace Vis.Model.Agent
 		        }
             }
 
-	        Status.CurrentKey = Keys.None;
+	        FocusPad.PadStyle = (Status.State & UIState.FocusPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
+	        ViewPad.PadStyle = (Status.State & UIState.ViewPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
+            Status.CurrentKey = Keys.None;
 	        _renderer.ShowBitmap = false;
             return true;
         }
@@ -347,7 +351,7 @@ namespace Vis.Model.Agent
 
         public void Draw()
         {
-	        _renderer.PenIndex = Status.IsMouseDown ? 3 : 2;
+            _renderer.PenIndex = Status.IsMouseDown ? 3 : 2;
         }
 
         private void _renderer_DrawingComplete(object sender, EventArgs e)
