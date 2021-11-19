@@ -51,7 +51,7 @@ namespace Vis.Model.Agent
         private VisMeasureSkills _skills;
 
         private List<ModeData> ModeMap = ModeData.Modes();
-	    private UIStatus Status { get; }
+	    public UIStatus Status { get; }
 
         public int _unitPixels = 220;
 
@@ -292,22 +292,25 @@ namespace Vis.Model.Agent
 			                _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :
 			                _skills.Line(this, Status.ClickSequencePoints[0], endPoint, true);
 
-		                var attr = ViewPad.GetPadAttributesFor(path);
-		                if (Status.UnitPath == null)
-		                {
-			                if (attr != null)
-			                {
-				                Status.UnitPath = attr;
-								attr.ElementLinkage = ElementLinkage.IsUnit;
-			                }
+	                    if (path != null)
+	                    {
+		                    var attr = ViewPad.GetPadAttributesFor(path);
+		                    if (Status.UnitPath == null)
+		                    {
+			                    if (attr != null)
+			                    {
+				                    Status.UnitPath = attr;
+				                    attr.ElementLinkage = ElementLinkage.IsUnit;
+			                    }
 
-		                }
-		                else
-		                {
-			                path.UnitReference = Status.UnitPath.Element;
-		                }
+		                    }
+		                    else
+		                    {
+			                    path.UnitReference = Status.UnitPath.Element;
+		                    }
 
-	                    Status.SelectedPath = attr;
+		                    Status.SelectedPath = attr;
+	                    }
 	                }
                     break;
             }
@@ -337,19 +340,32 @@ namespace Vis.Model.Agent
 				        if (modeData.ActiveAfterPress)
 				        {
 					        Status.State ^= modeData.UIStateChange;
-                        }
-				        else if(Status.State != modeData.UIStateChange)
+				        }
+				        else if (Status.State != modeData.UIStateChange)
 				        {
 					        Status.State |= modeData.UIStateChange;
-                        } 
+				        }
 				        result = true;
 			        }
-			        break;
+
+			        if (modeData.UIDisplayChange != UIDisplay.None)
+			        {
+				        if (modeData.ActiveAfterPress)
+				        {
+					        Status.Display ^= modeData.UIDisplayChange;
+				        }
+				        else if (Status.Display != modeData.UIDisplayChange)
+				        {
+					        Status.Display |= modeData.UIDisplayChange;
+				        }
+				        result = true;
+			        }
+                    break;
 		        }
 	        }
 
-            FocusPad.PadStyle = (Status.State & UIState.FocusPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
-            ViewPad.PadStyle = (Status.State & UIState.ViewPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
+            FocusPad.PadStyle = (Status.Display & UIDisplay.ShowFocusPad) != 0 ? PadStyle.Normal : PadStyle.Hidden;
+            ViewPad.PadStyle = (Status.Display & UIDisplay.ShowViewPad) != 0 ? PadStyle.Normal : PadStyle.Hidden;
             _renderer.ShowBitmap = (Status.Display & UIDisplay.ShowDebugInfo) != 0;
             return result;
         }
@@ -357,20 +373,25 @@ namespace Vis.Model.Agent
         {
 	        foreach (var modeData in ModeMap)
 	        {
+		        if (Status.Mode == modeData.UIModeChange && !modeData.ActiveAfterPress)
+		        {
+			        Status.Mode = Status.PreviousMode;
+			        Status.PreviousMode = UIMode.None;
+		        }
+
 		        if (modeData.UIStateChange != UIState.None && !modeData.ActiveAfterPress)
 		        {
 			        Status.State &= ~modeData.UIStateChange;
 		        }
 
-		        if (Status.Mode == modeData.UIModeChange && !modeData.ActiveAfterPress)
+		        if (Status.Display != UIDisplay.None && !modeData.ActiveAfterPress)
 		        {
-			        Status.Mode = Status.PreviousMode;
-					Status.PreviousMode = UIMode.None;
+			        Status.Display &= ~modeData.UIDisplayChange;
 		        }
             }
 
-	        FocusPad.PadStyle = (Status.State & UIState.FocusPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
-	        ViewPad.PadStyle = (Status.State & UIState.ViewPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
+	        FocusPad.PadStyle = (Status.Display & UIDisplay.ShowFocusPad) != 0 ? PadStyle.Normal : PadStyle.Hidden;
+	        ViewPad.PadStyle = (Status.Display & UIDisplay.ShowViewPad) != 0 ? PadStyle.Normal : PadStyle.Hidden;
             Status.CurrentKey = Keys.None;
 	        _renderer.ShowBitmap = false;
             return true;

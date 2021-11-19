@@ -20,7 +20,7 @@ namespace Vis.Model.UI
         public UIMode Mode { get; set; }
 	    public UIMode PreviousMode { get; set; }
 	    public UIState State { get; set; }
-	    public UIDisplay Display { get; set; }
+        public UIDisplay Display { get; set; }
         public Keys CurrentKey { get; set; }
 	    public MouseButtons CurrentMouse { get; set; }
 	    public PadKind CurrentPadKind { get; set; }
@@ -109,7 +109,9 @@ namespace Vis.Model.UI
         public UIStatus(params IPad[] pads)
 	    {
 		    Pads = pads.ToList();
-	    }
+		    State = UIState.FocusPad | UIState.ViewPad;
+		    Display = UIDisplay.ShowFocusPad | UIDisplay.ShowViewPad;
+        }
 
 		public void HighlightedPathToSelected()
 		{

@@ -16,6 +16,8 @@ namespace Vis.Model.Agent
         public VisPad<VisPoint> FocusPad { get; private set; }
         public VisPad<VisStroke> ViewPad { get; private set; }
 
+        public UIStatus Status { get; }
+
         private IRenderer _renderer;
 
         public VisSkills Skills { get; }

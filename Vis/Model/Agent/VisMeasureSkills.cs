@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vis.Model.Connections;
+using Vis.Model.Controller;
 using Vis.Model.Primitives;
 
 namespace Vis.Model.Agent
@@ -22,12 +23,15 @@ namespace Vis.Model.Agent
 	        if (permanent)
 	        {
 		        agent.FocusPad.Add(line);
-		        var nodeStart = new VisNode(line, 0);
-		        var nodeEnd = new VisNode(line, 1);
-		        var stroke = new VisStroke(nodeStart, nodeEnd);
-                agent.ViewPad.Add(stroke);
-		        result = stroke;
-            }
+		        if ((agent.Status.State & UIState.ViewPad) != 0)
+		        {
+			        var nodeStart = new VisNode(line, 0);
+			        var nodeEnd = new VisNode(line, 1);
+			        var stroke = new VisStroke(nodeStart, nodeEnd);
+			        agent.ViewPad.Add(stroke);
+			        result = stroke;
+		        }
+	        }
 	        else
 	        {
 		        var pad = agent.WorkingPad;
@@ -46,10 +50,13 @@ namespace Vis.Model.Agent
 	        {
 		        agent.FocusPad.Add(circ);
                 //agent.ViewPad.Paths.Add(new VisStroke());
-                var tn = new TangentNode(circ, ClockDirection.CW);
-                var stroke = new VisStroke(circ.StartNode, tn, circ.StartNode);
-                agent.ViewPad.Add(stroke);
-                result = stroke;
+                if ((agent.Status.State & UIState.ViewPad) != 0)
+                {
+	                var tn = new TangentNode(circ, ClockDirection.CW);
+	                var stroke = new VisStroke(circ.StartNode, tn, circ.StartNode);
+	                agent.ViewPad.Add(stroke);
+	                result = stroke;
+                }
 	        }
             else
 	        {

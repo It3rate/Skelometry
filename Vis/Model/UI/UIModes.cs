@@ -59,33 +59,29 @@ namespace Vis.Model.Controller
     public enum UIState
     {
 	    None = 0,
-        FocusPad = 1,
-        ViewPad = 2,
-        WorkingPad = 4,
+        FocusPad = 1 << 0,
+        ViewPad = 1 << 1,
+        WorkingPad = 1 << 2,
 
-        SnapToPoint = 8,
-        SnapToPath = 16,
-        SnapToPathExtend = 32,
-        ConstrainAngle = 64,
-
-        //ShowTicks = 128,
-        //ShowValues = 256,
-        //ShowDebugInfo = 512,
+        SnapToPoint = 1 << 3,
+        SnapToPath = 1 << 4,
+        SnapToPathExtend = 1 << 5,
+        ConstrainAngle = 1 << 6,
     }
 
     [Flags]
     public enum UIDisplay
     {
-        None,
-	    ShowFocusPad,
-	    ShowViewPad,
+        None = 0,
+	    ShowFocusPad = 1 << 0,
+	    ShowViewPad = 1 << 1,
 
-	    ShowTicks,
-	    ShowValues,
-	    ShowGrid,
-	    ShowRulers,
+	    ShowTicks = 1 << 2,
+	    ShowValues = 1 << 3,
+	    ShowGrid = 1 << 4,
+	    ShowRulers = 1 << 5,
 
-	    ShowDebugInfo,
+	    ShowDebugInfo = 1 << 6,
 
     }
 }

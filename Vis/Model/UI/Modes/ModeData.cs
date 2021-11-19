@@ -75,9 +75,9 @@ namespace Vis.Model.UI.Modes
 	                Keys.V, true, true),
                 new ModeData("Show Debug Info", UIMode.None, UIState.None, UIDisplay.ShowDebugInfo,
 	                Keys.OemQuestion, false, false, false),
-                new ModeData("Toggle Focus Pad", UIMode.None, UIState.FocusPad, UIDisplay.None,
+                new ModeData("Toggle Focus Pad", UIMode.None, UIState.None, UIDisplay.ShowFocusPad,
 	                Keys.D1, true, true),
-                new ModeData("Toggle View Pad", UIMode.None, UIState.ViewPad, UIDisplay.None,
+                new ModeData("Toggle View Pad", UIMode.None, UIState.None, UIDisplay.ShowViewPad,
 	                Keys.D2, true, true),
             };
 	    }
