@@ -2,6 +2,7 @@
 using System.Drawing.Drawing2D;
 using SkiaSharp;
 using Vis.Model.Agent;
+using Vis.Model.Render;
 
 namespace Vis.Model.Controller
 {
@@ -14,7 +15,7 @@ namespace Vis.Model.Controller
     public class SkiaPens
     {
 	    public List<SKPaint> Pens = new List<SKPaint>();
-	    private Dictionary<UIType, SKPaint> UIPens;
+	    private Dictionary<ElementType, SKPaint> UIPens;
 
         public float Scale { get; }
         public float DefaultWidth { get; }
@@ -37,7 +38,7 @@ namespace Vis.Model.Controller
 	    {
 		    SKPaint[] result = new SKPaint[2];
 		    
-		    if (attributes.DisplayStyle == DisplayStyle.Highlighting)
+		    if (attributes.ElementStyle == ElementStyle.Highlighting)
 		    {
 			    result[0] = HoverPen;
 		    }
@@ -50,11 +51,11 @@ namespace Vis.Model.Controller
 		    {
 			    result[1] = GetPenByOrder(attributes.Index, 8f, false);
 		    }
-		    else if (attributes.DisplayState == DisplayState.Selected)
+		    else if (attributes.ElementState == ElementState.Selected)
 		    {
 			    result[1] = SelectedPen;
 		    }
-		    else if (attributes.CorrelationState == CorrelationState.IsUnit)
+		    else if (attributes.ElementLinkage == ElementLinkage.IsUnit)
 		    {
 			    result[1] = UnitPen;
 		    }
@@ -67,7 +68,7 @@ namespace Vis.Model.Controller
 		    return result;
 	    }
 
-	    public SKPaint GetPenForUIType(UIType uiType)
+	    public SKPaint GetPenForUIType(ElementType uiType)
 	    {
 		    SKPaint result = UIPens[uiType];
 		    return result;
@@ -120,15 +121,15 @@ namespace Vis.Model.Controller
             Pens.Add(GetPen(SKColors.Orchid, DefaultWidth));
             Pens.Add(GetPen(SKColors.Magenta, DefaultWidth));
 
-            UIPens = new Dictionary<UIType, SKPaint>()
+            UIPens = new Dictionary<ElementType, SKPaint>()
 		    {
-			    {UIType.None, GetPen(SKColors.Empty, DefaultWidth)},
-			    {UIType.Node, GetPen(SKColors.DarkBlue, DefaultWidth)},
-			    {UIType.Joint, GetPen(SKColors.DarkGreen, DefaultWidth)},
-			    {UIType.Edge, GetPen(SKColors.Black, DefaultWidth)},
-                {UIType.HighlightSpot, GetPen(SKColors.LightSteelBlue, DefaultWidth * 2f)},
-                {UIType.HighlightPath, GetPen(SKColors.DarkViolet, DefaultWidth * 2f)},
-                {UIType.MeasureTick, GetPen(SKColors.DarkSlateGray, DefaultWidth)},
+			    {ElementType.None, GetPen(SKColors.Empty, DefaultWidth)},
+			    {ElementType.Node, GetPen(SKColors.DarkBlue, DefaultWidth)},
+			    {ElementType.Joint, GetPen(SKColors.DarkGreen, DefaultWidth)},
+			    {ElementType.Edge, GetPen(SKColors.Black, DefaultWidth)},
+                {ElementType.HighlightSpot, GetPen(SKColors.LightSteelBlue, DefaultWidth * 2f)},
+                {ElementType.HighlightPath, GetPen(SKColors.DarkViolet, DefaultWidth * 2f)},
+                {ElementType.MeasureTick, GetPen(SKColors.DarkSlateGray, DefaultWidth)},
             };
 
 	    }

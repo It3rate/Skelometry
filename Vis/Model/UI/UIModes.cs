@@ -68,8 +68,24 @@ namespace Vis.Model.Controller
         SnapToPathExtend = 32,
         ConstrainAngle = 64,
 
-        ShowTicks = 128,
-        ShowValues = 256,
-        ShowDebugInfo = 512,
+        //ShowTicks = 128,
+        //ShowValues = 256,
+        //ShowDebugInfo = 512,
+    }
+
+    [Flags]
+    public enum UIDisplay
+    {
+        None,
+	    ShowFocusPad,
+	    ShowViewPad,
+
+	    ShowTicks,
+	    ShowValues,
+	    ShowGrid,
+	    ShowRulers,
+
+	    ShowDebugInfo,
+
     }
 }

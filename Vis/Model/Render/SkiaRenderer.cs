@@ -9,6 +9,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Vis.Model.Agent;
 using Vis.Model.Primitives;
+using Vis.Model.Render;
 
 namespace Vis.Model.Controller
 {
@@ -126,13 +127,13 @@ namespace Vis.Model.Controller
 
         public override void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f)
         {
-	        var pen = Pens.GetPenForUIType(UIType.HighlightSpot);
+	        var pen = Pens.GetPenForUIType(ElementType.HighlightSpot);
 	        var r = pen.StrokeWidth * scale;
 	        _canvas.DrawCircle(pos.X, pos.Y, r, pen);
         }
         public override void DrawTick(VisPoint pos, PadAttributes attributes = null, float scale = 1f)
         {
-	        var pen = Pens.GetPenForUIType(UIType.MeasureTick);
+	        var pen = Pens.GetPenForUIType(ElementType.MeasureTick);
 	        var r = pen.StrokeWidth * scale;
 	        _canvas.DrawCircle(pos.X, pos.Y, r, pen);
         }

@@ -2,6 +2,7 @@
 using Vis.Model.Agent;
 using Vis.Model.Controller;
 using Vis.Model.Primitives;
+using Vis.Model.Render;
 
 namespace Vis.Model.UI
 {
@@ -18,8 +19,9 @@ namespace Vis.Model.UI
 
         public UIMode Mode { get; set; }
 	    public UIMode PreviousMode { get; set; }
-        public UIState State { get; set; }
-	    public Keys CurrentKey { get; set; }
+	    public UIState State { get; set; }
+	    public UIDisplay Display { get; set; }
+        public Keys CurrentKey { get; set; }
 	    public MouseButtons CurrentMouse { get; set; }
 	    public PadKind CurrentPadKind { get; set; }
 
@@ -45,12 +47,12 @@ namespace Vis.Model.UI
 			{
 				if(_highlightingPath != null)
                 {
-					_highlightingPath.DisplayStyle &= ~DisplayStyle.Highlighting;
+					_highlightingPath.ElementStyle &= ~ElementStyle.Highlighting;
                 }
 				_highlightingPath = value;
-				if (_highlightingPath != null)// && _highlightingPath.DisplayState != DisplayState.Selected)
+				if (_highlightingPath != null)// && _highlightingPath.ElementState != ElementState.Selected)
 				{
-					_highlightingPath.DisplayStyle |= DisplayStyle.Highlighting;
+					_highlightingPath.ElementStyle |= ElementStyle.Highlighting;
 				}
 				_needsUpdate = true;
 			}
@@ -65,12 +67,12 @@ namespace Vis.Model.UI
 			{
 				if (_selectedPath != null)
 				{
-					_selectedPath.DisplayState = DisplayState.None;
+					_selectedPath.ElementState = ElementState.None;
 				}
 				_selectedPath = value;
 				if (_selectedPath != null)
 				{
-					_selectedPath.DisplayState |= DisplayState.Selected;
+					_selectedPath.ElementState |= ElementState.Selected;
 				}
 				_needsUpdate = true;
 			}
@@ -85,12 +87,12 @@ namespace Vis.Model.UI
 			{
 				if (_unitPath != null)
 				{
-					_unitPath.CorrelationState = CorrelationState.HasUnit;
+					_unitPath.ElementLinkage = ElementLinkage.HasUnit;
 				}
 				_unitPath = value;
 				if (_unitPath != null)
 				{
-					_unitPath.CorrelationState = CorrelationState.IsUnit;
+					_unitPath.ElementLinkage = ElementLinkage.IsUnit;
 				}
 				_needsUpdate = true;
 			}

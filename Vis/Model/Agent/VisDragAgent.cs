@@ -9,6 +9,7 @@ using Microsoft.ML.Probabilistic.Factors;
 using OpenTK.Input;
 using Vis.Model.Controller;
 using Vis.Model.Primitives;
+using Vis.Model.Render;
 using Vis.Model.UI;
 using Vis.Model.UI.Modes;
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
@@ -77,7 +78,7 @@ namespace Vis.Model.Agent
             _renderer.Bitmap = _hoverRender.Bitmap;
 
             Status.Mode = UIMode.Line;
-            //Status.PreviousMode = UIMode.Line;
+            //Status.PreviousMode = UIModeChange.Line;
         }
 
         private bool SetMouseData(MouseEventArgs e)
@@ -297,7 +298,7 @@ namespace Vis.Model.Agent
 			                if (attr != null)
 			                {
 				                Status.UnitPath = attr;
-								attr.CorrelationState = CorrelationState.IsUnit;
+								attr.ElementLinkage = ElementLinkage.IsUnit;
 			                }
 
 		                }
@@ -324,22 +325,22 @@ namespace Vis.Model.Agent
 	        {
 		        if (modeData.Keys == Status.CurrentKey)
 		        {
-			        if (Status.Mode != modeData.ModeChange && modeData.ModeChange != UIMode.None)
+			        if (Status.Mode != modeData.UIModeChange && modeData.UIModeChange != UIMode.None)
 			        {
 				        Status.PreviousMode = Status.Mode;  
-				        Status.Mode = modeData.ModeChange;
+				        Status.Mode = modeData.UIModeChange;
 				        result = true;
 			        }
 
-			        if (modeData.StateChange != UIState.None)
+			        if (modeData.UIStateChange != UIState.None)
 			        {
 				        if (modeData.ActiveAfterPress)
 				        {
-					        Status.State ^= modeData.StateChange;
+					        Status.State ^= modeData.UIStateChange;
                         }
-				        else if(Status.State != modeData.StateChange)
+				        else if(Status.State != modeData.UIStateChange)
 				        {
-					        Status.State |= modeData.StateChange;
+					        Status.State |= modeData.UIStateChange;
                         } 
 				        result = true;
 			        }
@@ -349,19 +350,19 @@ namespace Vis.Model.Agent
 
             FocusPad.PadStyle = (Status.State & UIState.FocusPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
             ViewPad.PadStyle = (Status.State & UIState.ViewPad) == 0 ? PadStyle.Normal : PadStyle.Hidden;
-            _renderer.ShowBitmap = (Status.State & UIState.ShowDebugInfo) != 0;
+            _renderer.ShowBitmap = (Status.Display & UIDisplay.ShowDebugInfo) != 0;
             return result;
         }
         public bool KeyUp(KeyEventArgs e)
         {
 	        foreach (var modeData in ModeMap)
 	        {
-		        if (modeData.StateChange != UIState.None && !modeData.ActiveAfterPress)
+		        if (modeData.UIStateChange != UIState.None && !modeData.ActiveAfterPress)
 		        {
-			        Status.State &= ~modeData.StateChange;
+			        Status.State &= ~modeData.UIStateChange;
 		        }
 
-		        if (Status.Mode == modeData.ModeChange && !modeData.ActiveAfterPress)
+		        if (Status.Mode == modeData.UIModeChange && !modeData.ActiveAfterPress)
 		        {
 			        Status.Mode = Status.PreviousMode;
 					Status.PreviousMode = UIMode.None;
