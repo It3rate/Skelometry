@@ -44,7 +44,7 @@ namespace Vis.Model.Primitives
 			    point.AddOffset(offset.X, offset.Y);
 		    }
 	    }
-	    public void AddOffset(float x, float y)
+	    public override void AddOffset(float x, float y)
 	    {
 		    base.AddOffset(x, y);
             foreach (var visPoint in Points)

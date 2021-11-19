@@ -50,6 +50,7 @@ namespace Vis.Model.Controller
     public enum DisplayStyle
     {
 	    None,
+        Highlighting,
 	    ShowTicks,
         ShowRuler,
 	    ShowHotspots,
@@ -60,7 +61,6 @@ namespace Vis.Model.Controller
     {
         None,
         Hidden,
-        Highlighting,
         Selected,
         Dragging,
         ConnectedToHovered,

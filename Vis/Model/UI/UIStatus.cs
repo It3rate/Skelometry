@@ -43,14 +43,14 @@ namespace Vis.Model.UI
 			get => _highlightingPath;
 			set
 			{
-				if(_highlightingPath != null && _highlightingPath.DisplayState != DisplayState.Selected)
+				if(_highlightingPath != null)
                 {
-					_highlightingPath.DisplayState = DisplayState.None;
+					_highlightingPath.DisplayStyle &= ~DisplayStyle.Highlighting;
                 }
 				_highlightingPath = value;
-				if (_highlightingPath != null && _highlightingPath.DisplayState != DisplayState.Selected)
+				if (_highlightingPath != null)// && _highlightingPath.DisplayState != DisplayState.Selected)
 				{
-					_highlightingPath.DisplayState = DisplayState.Highlighting;
+					_highlightingPath.DisplayStyle |= DisplayStyle.Highlighting;
 				}
 				_needsUpdate = true;
 			}
@@ -70,7 +70,7 @@ namespace Vis.Model.UI
 				_selectedPath = value;
 				if (_selectedPath != null)
 				{
-					_selectedPath.DisplayState = DisplayState.Selected;
+					_selectedPath.DisplayState |= DisplayState.Selected;
 				}
 				_needsUpdate = true;
 			}

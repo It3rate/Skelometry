@@ -144,7 +144,8 @@ namespace Vis.Model.Agent
 							{
 								Status.DraggingNode = isStartPoint ? stroke.StartNode : stroke.EndNode;
 								Status.DraggingPoint = nearPt;
-							}
+								Status.HighlightedPathToSelected();
+                            }
 						}
 					}
 					else if (Status.IsHighlightingPath)
@@ -305,10 +306,6 @@ namespace Vis.Model.Agent
 			                path.UnitReference = Status.UnitPath.Element;
 		                }
 
-		                if (Status.SelectedPath != null)
-		                {
-			                Status.SelectedPath.DisplayState = DisplayState.None;
-		                }
 	                    Status.SelectedPath = attr;
 	                }
                     break;

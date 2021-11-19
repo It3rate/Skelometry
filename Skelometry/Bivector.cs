@@ -11,11 +11,11 @@ namespace Skelometry
     // When a V shape joins, you do perceive extra matter at the joint, or at least extra weight.
     // It mentally degrades if you see the parts aren't actually joined but just visually touch. This is joined objects.
 
-    public class Bivector : Vector
-    {
-        public Joint Joint;
-        public Vector RefVector;
-        public float UnitArea;// automatic based on vector units { get; }
-        public float Area;
-    }
+    //public class Bivector : Vector
+    //{
+    //    public Joint Joint;
+    //    public Vector RefVector;
+    //    public float UnitArea;// automatic based on vector units { get; }
+    //    public float Area;
+    //}
 }

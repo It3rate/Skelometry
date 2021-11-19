@@ -21,7 +21,7 @@ namespace Vis.Model.Controller
         public bool IsHoverMap { get; set; }
 
         public SKPaint HoverPen { get; private set; }
-        public SKPaint HighlightPen { get; private set; }
+        public SKPaint SelectedPen { get; private set; }
         public SKPaint UnitPen { get; private set; }
         public SKPaint DarkPen { get; private set; }
         public SKPaint GrayPen { get; private set; }
@@ -33,33 +33,35 @@ namespace Vis.Model.Controller
 		    GenPens();
 	    }
 
-	    public SKPaint GetPenForElement(PadAttributes attributes)
+	    public SKPaint[] GetPensForElement(PadAttributes attributes)
 	    {
-		    SKPaint result;
+		    SKPaint[] result = new SKPaint[2];
+		    
+		    if (attributes.DisplayStyle == DisplayStyle.Highlighting)
+		    {
+			    result[0] = HoverPen;
+		    }
+		    
 		    if (attributes.PadKind == PadKind.Focus)
 		    {
-			    result = GrayPen;
+			    result[1] = GrayPen;
 		    }
 		    else if (IsHoverMap)
 		    {
-			    result = GetPenByOrder(attributes.Index, 8f, false);
-		    }
-		    else if (attributes.DisplayState == DisplayState.Highlighting)
-		    {
-			    result = HoverPen;
-		    }
-		    else if (attributes.CorrelationState == CorrelationState.IsUnit)
-		    {
-			    result = UnitPen;
+			    result[1] = GetPenByOrder(attributes.Index, 8f, false);
 		    }
 		    else if (attributes.DisplayState == DisplayState.Selected)
 		    {
-			    result = HighlightPen;
+			    result[1] = SelectedPen;
+		    }
+		    else if (attributes.CorrelationState == CorrelationState.IsUnit)
+		    {
+			    result[1] = UnitPen;
 		    }
             else
 		    { 
 			    //result = GetPenForIndex(attributes.Index);
-			    result = DarkPen;
+			    result[1] = DarkPen;
             }
 
 		    return result;
@@ -91,9 +93,9 @@ namespace Vis.Model.Controller
 
 	    private void GenPens()
 	    {
-		    HoverPen = GetPen(SKColors.LightCoral, DefaultWidth * 1.5f);
-		    HighlightPen = GetPen(SKColors.Red, DefaultWidth * 1.8f);
-		    UnitPen = GetPen(SKColors.Blue, DefaultWidth * 3f);
+		    HoverPen = GetPen(SKColors.LightCyan, DefaultWidth * 4f);
+		    SelectedPen = GetPen(SKColors.LightGreen, DefaultWidth * 1.5f);
+		    UnitPen = GetPen(SKColors.SteelBlue, DefaultWidth * 1.5f);
 		    GrayPen = GetPen(SKColors.LightGray, DefaultWidth);
 		    DarkPen = GetPen(SKColors.DarkGray, DefaultWidth);
 

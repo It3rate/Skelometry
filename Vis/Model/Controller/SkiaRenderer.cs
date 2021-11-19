@@ -138,45 +138,86 @@ namespace Vis.Model.Controller
         }
         public override void DrawCircle(VisCircle circ, PadAttributes attributes = null)
         {
-	        var pen = Pens.GetPenForElement(attributes);
-	        _canvas.DrawCircle(circ.Center.X, circ.Center.Y, circ.Radius, pen);
+	        var pens = Pens.GetPensForElement(attributes);
+            foreach(var pen in pens)
+            {
+	            if (pen != null)
+	            {
+					_canvas.DrawCircle(circ.Center.X, circ.Center.Y, circ.Radius, pen);
+	            }
+            }
         }
 
         public override void DrawOval(VisRectangle rect, PadAttributes attributes = null)
         {
-	        var pen = Pens.GetPenForElement(attributes);
-            _canvas.DrawOval(rect.Center.X, rect.Center.Y, rect.HalfSize.X, rect.HalfSize.Y, pen);
+	        var pens = Pens.GetPensForElement(attributes);
+	        foreach (var pen in pens)
+	        {
+		        if (pen != null)
+		        {
+			        _canvas.DrawOval(rect.Center.X, rect.Center.Y, rect.HalfSize.X, rect.HalfSize.Y, pen);
+                }
+	        }
         }
 
         public override void DrawRect(VisRectangle rect, PadAttributes attributes = null)
         {
-	        var pen = Pens.GetPenForElement(attributes);
-            _canvas.DrawRect(rect.SKRect(), pen);
+	        var pens = Pens.GetPensForElement(attributes);
+	        foreach (var pen in pens)
+	        {
+		        if (pen != null)
+		        {
+			        _canvas.DrawRect(rect.SKRect(), pen);
+                }
+	        }
         }
 
         public override void DrawLine(VisLine line, PadAttributes attributes = null)
         {
-	        var pen = Pens.GetPenForElement(attributes);
-            _canvas.DrawLine(line.X, line.Y, line.EndPoint.X, line.EndPoint.Y, pen);
+	        var pens = Pens.GetPensForElement(attributes);
+	        foreach (var pen in pens)
+	        {
+		        if (pen != null)
+		        {
+			        _canvas.DrawLine(line.X, line.Y, line.EndPoint.X, line.EndPoint.Y, pen);
+                }
+	        }
         }
 
         public override void DrawLine(VisPoint p0, VisPoint p1, PadAttributes attributes = null)
         {
-	        var pen = Pens.GetPenForElement(attributes);
-            _canvas.DrawLine(p0.X, p0.Y, p1.X, p1.Y, pen);
+	        var pens = Pens.GetPensForElement(attributes);
+	        foreach (var pen in pens)
+	        {
+		        if (pen != null)
+		        {
+			        _canvas.DrawLine(p0.X, p0.Y, p1.X, p1.Y, pen);
+                }
+	        }
         }
 
         public override void DrawLines(VisPoint[] points, PadAttributes attributes = null)
         {
-	        var pen = Pens.GetPenForElement(attributes);
-	        _canvas.DrawPoints(SKPointMode.Polygon, points.SKPoints(), pen);
+	        var pens = Pens.GetPensForElement(attributes);
+	        foreach (var pen in pens)
+	        {
+		        if (pen != null)
+		        {
+			        _canvas.DrawPoints(SKPointMode.Polygon, points.SKPoints(), pen);
+                }
+	        }
         }
         public override void DrawPolyline(VisPolyline polyline, PadAttributes attributes = null)
         {
-	        var pen = Pens.GetPenForElement(attributes);
-	        _canvas.DrawPoints(SKPointMode.Polygon, polyline.Points.SKPoints(), pen);
-			_canvas.DrawLine(polyline.Points[0].X, polyline.Points[0].Y, polyline.Points[1].X, polyline.Points[1].Y, Pens.HighlightPen);
-	        //DrawLine(polyline.Points[0], polyline.Points[1], Pens.HighlightPen);
+	        var pens = Pens.GetPensForElement(attributes);
+	        foreach (var pen in pens)
+	        {
+		        if (pen != null)
+		        {
+			        _canvas.DrawPoints(SKPointMode.Polygon, polyline.Points.SKPoints(), pen);
+			        //_canvas.DrawLine(polyline.Points[0].X, polyline.Points[0].Y, polyline.Points[1].X, polyline.Points[1].Y, Pens.SelectedPen);
+                }
+	        }
         }
 
         public override void GeneratePens()
