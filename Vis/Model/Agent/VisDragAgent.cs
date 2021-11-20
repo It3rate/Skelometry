@@ -64,7 +64,7 @@ namespace Vis.Model.Agent
             WorkingPad = new VisPad(typeof(VisPoint), _renderer.Width, _renderer.Height, PadKind.Working, false);
             FocusPad = new VisPad(typeof(VisPoint), _renderer.Width, _renderer.Height, PadKind.Focus);
             ViewPad = new VisPad(typeof(VisStroke), _renderer.Width, _renderer.Height, PadKind.View);
-            Status = new UIStatus(WorkingPad, FocusPad, ViewPad);
+            Status = new UIStatus(FocusPad, ViewPad, WorkingPad);
             _renderer.Status = Status;
 
             _skills = new VisMeasureSkills();
@@ -207,13 +207,7 @@ namespace Vis.Model.Agent
 						}
 						else if (Status.IsHighlightingPath)
 						{
-							if (Status.HighlightingPath.Element is VisStroke stroke)
-							{
-								if (stroke.Segments[0] is VisLine line)
-								{
-									endPoint = line.ProjectPointOnto(Status.PositionNorm); // todo: Generalize point onto path
-								}
-							}
+							endPoint = Status.HighlightingPath.Element.ProjectPointOnto(Status.PositionNorm);
 						}
 
                         var path = (Status.Mode == UIMode.Circle) ?
@@ -275,13 +269,7 @@ namespace Vis.Model.Agent
 	                }
 	                else if (Status.IsHighlightingPath)
 	                {
-		                if (Status.HighlightingPath.Element is VisStroke stroke)
-		                {
-			                if (stroke.Segments[0] is VisLine line)
-			                {
-				                endPoint = line.ProjectPointOnto(Status.PositionNorm);
-			                }
-		                }
+		                endPoint = Status.HighlightingPath.Element.ProjectPointOnto(Status.PositionNorm);
 	                }
 
 	                var startPoint = Status.ClickSequencePoints[0];

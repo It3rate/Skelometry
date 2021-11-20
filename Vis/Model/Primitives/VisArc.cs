@@ -82,6 +82,10 @@ namespace Vis.Model.Primitives
 	        Center.AddOffset(x, y);
             EndPoint.AddOffset(x, y);
         }
+        public override VisPoint ProjectPointOnto(VisPoint p)
+        {
+	        return Reference.ProjectPointOnto(p);
+        }
         public override VisPolyline GetPolyline()
         {
 	        return new VisPolyline(GetPolylinePoints());

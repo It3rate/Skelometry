@@ -61,6 +61,21 @@ namespace Vis.Model.Primitives
             }
 	        return new VisPolyline(pts);
         }
+
+        public VisPoint ProjectPointOnto(VisPoint p)
+        {
+	        var result = p;
+	        if (Segments.Count > 1 && Segments[1] is VisArc arc)
+	        {
+		        result = arc.ProjectPointOnto(p);
+	        }
+            else if (Segments[0] is VisLine line)
+	        {
+		        result = line.ProjectPointOnto(p);
+	        }
+	        return result;
+        }
+
         private void GenerateSegments()
         {
             Segments.Clear();

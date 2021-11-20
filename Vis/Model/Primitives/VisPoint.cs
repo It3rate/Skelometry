@@ -58,6 +58,10 @@ namespace Vis.Model.Primitives
         {
 	        return this.SquaredDistanceTo(p) < NearThreshold;
         }
+        public virtual VisPoint ProjectPointOnto(VisPoint p)
+        {
+	        return ClonePoint();
+        }
 
         public VisPoint Sample(Gaussian g) => new VisPoint(X + (float)g.Sample(), Y + (float)g.Sample());
         public virtual float Similarity(IPrimitive p) => 0;

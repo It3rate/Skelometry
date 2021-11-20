@@ -121,18 +121,13 @@ namespace Vis.Model.Primitives
             }
             return result;
         }
-        public VisPoint ProjectPointOnto(VisPoint p)
+        public override VisPoint ProjectPointOnto(VisPoint p)
         {
 	        var e1 = EndPoint.Subtract(this);
 	        var e2 = p.Subtract(this);
 	        var dp = e1.DotProduct(e2);
 	        var len2 = e1.VectorSquaredLength();
 	        return new VisPoint(X + (dp * e1.X) / len2, Y + (dp * e1.Y) / len2);
-         //   var e1 = EndPoint.Subtract(StartPoint);
-	        //var e2 = p.Subtract(StartPoint);
-	        //var dp = e1.DotProduct(e2);
-	        //var len2 = e1.VectorSquaredLength();
-	        //return new Point(StartPoint.X + (dp * e1.X) / len2, StartPoint.Y + (dp * e1.Y) / len2);
         }
 
         public override VisPolyline GetPolyline()

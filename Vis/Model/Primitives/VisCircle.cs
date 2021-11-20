@@ -189,6 +189,12 @@ namespace Vis.Model.Primitives
             PerimeterOrigin.AddOffset(x, y);
             Initialize();
         }
+        public override VisPoint ProjectPointOnto(VisPoint p)
+        {
+	        var dif = p.Subtract(Center);
+	        var result = dif.DivideBy(dif.VectorLength()).Multiply(Radius).Add(Center);
+	        return result;
+        }
         public override VisPolyline GetPolyline()
         {
 	        return new VisPolyline(GetPolylinePoints());

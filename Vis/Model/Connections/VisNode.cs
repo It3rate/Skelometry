@@ -54,6 +54,11 @@ namespace Vis.Model.Connections
 	        throw new NotImplementedException();
         }
 
+        public VisPoint ProjectPointOnto(VisPoint p)
+        {
+	        throw new NotImplementedException();
+        }
+
         public VisPoint GetPoint(float position, float offset = 0)
         {
             return Reference.GetPoint(position, offset);

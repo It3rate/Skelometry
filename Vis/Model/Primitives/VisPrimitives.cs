@@ -15,6 +15,8 @@ namespace Vis.Model.Primitives
         bool IsPath { get; }
         void AddOffset(float x, float y);
         VisPolyline GetPolyline();
+        VisPoint ProjectPointOnto(VisPoint p);
+
 	}
 	/// <summary>
 	/// The mental map primitives when we conceptualize things at a high level. These are meant to be (ideally) what we use, not what is mathematically possible or even simple.
