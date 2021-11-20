@@ -5,7 +5,7 @@ namespace Vis.Model.Primitives
     using System;
     using System.Collections.Generic;
 
-    public interface IPath : IEnumerable<VisPoint>
+    public interface IPath : IElement, IEnumerable<VisPoint>
     {
 	    float Length { get; }
 	    VisPoint StartPoint { get; }
@@ -21,10 +21,7 @@ namespace Vis.Model.Primitives
 	    VisNode MidNode { get; }
 	    VisNode EndNode { get; }
 
-	    VisPolyline GetPolyline();
-
         IPath UnitReference { get; set; }
 
-        void AddOffset(float x, float y);
     }
 }

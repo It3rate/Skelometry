@@ -13,6 +13,8 @@ namespace Vis.Model.Primitives
     {
         public List<VisNode> Nodes { get; } = new List<VisNode>();
 
+        public bool IsPath => true;
+
         public VisPoint Anchor => StartNode.Anchor;
         private float _length;
         public float Length => _length;

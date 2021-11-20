@@ -17,6 +17,9 @@ namespace Vis.Model.Primitives
         public VisPoint Size => HalfSize.Multiply(2f);
         public VisPoint HalfSize { get; private set; }
         public VisPoint Center => this;
+
+        public override bool IsPath => true;
+
         public float Left => TopLeft.X;
         public float Top => TopLeft.Y;
         public float Right => Center.X + HalfSize.X;
@@ -72,6 +75,11 @@ namespace Vis.Model.Primitives
         public bool Contains(VisPoint p) => false;
         public bool Contains(VisLine line) => false;
         public bool Contains(VisRectangle rect) => Math.Abs(Center.X - rect.Center.X) + rect.HalfSize.X <= HalfSize.X && Math.Abs(Center.Y - rect.Center.Y) + rect.HalfSize.Y <= HalfSize.Y;
+
+        public override VisPolyline GetPolyline()
+        {
+	        return new VisPolyline(Left, Top, Right, Top, Right, Bottom, Right, Left);
+        }
 
         public VisRectangle CloneRectangle()
         {

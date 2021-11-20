@@ -38,9 +38,9 @@ namespace Vis.Model.UI
 	    public bool IsHighlightingPoint => _highlightingPoint != null;
 		public VisPoint HighlightingPoint { get => _highlightingPoint; set => _highlightingPoint = value; }
 
-		private PadAttributes<VisStroke> _highlightingPath;
+		private PadAttributes _highlightingPath;
 		public bool IsHighlightingPath => _highlightingPath != null;
-		public PadAttributes<VisStroke> HighlightingPath
+		public PadAttributes HighlightingPath
 		{
 			get => _highlightingPath;
 			set
@@ -58,9 +58,9 @@ namespace Vis.Model.UI
 			}
 		}
 
-		private PadAttributes<VisStroke> _selectedPath;
+		private PadAttributes _selectedPath;
 		public bool HasSelectedPath => _selectedPath != null;
-		public PadAttributes<VisStroke> SelectedPath
+		public PadAttributes SelectedPath
 		{
 			get => _selectedPath;
 			set
@@ -78,9 +78,9 @@ namespace Vis.Model.UI
 			}
 		}
 
-		private PadAttributes<VisStroke> _unitPath;
+		private PadAttributes _unitPath;
 		public bool HasUnitPath => _unitPath != null;
-		public PadAttributes<VisStroke> UnitPath
+		public PadAttributes UnitPath
 		{
 			get => _unitPath;
 			set

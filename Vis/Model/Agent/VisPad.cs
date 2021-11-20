@@ -20,24 +20,28 @@ namespace Vis.Model.Agent
 	   int Width { get; }
 	   int Height { get; }
 	   PadStyle PadStyle { get; set;  }
+	   List<PadAttributes> Paths { get; }
     }
 
-    public class VisPad<T> : IPad //where T : IPrimitive
+    public class VisPad : IPad
     {
 	    private static int _padIndexCounter;
 	    public int Index;
-	    public PadGrid Grid { get; }
+	    private Type _minimumElementType;
+
+        public PadGrid Grid { get; }
 	    public PadKind PadKind { get; }
 	    public PadStyle PadStyle { get; set; } = PadStyle.Normal;
         public bool AutoIndex { get; set; }
 
-        public List<PadAttributes<T>> Paths { get; } = new List<PadAttributes<T>>();
+        public List<PadAttributes> Paths { get; } = new List<PadAttributes>();
         public int Width { get; }
         public int Height { get; }
 
-        public VisPad(int width, int height, PadKind padKind, bool autoIndex = true, PadGrid padGrid = PadGrid.Rectangle)
+        public VisPad(Type minimumElementType, int width, int height, PadKind padKind, bool autoIndex = true, PadGrid padGrid = PadGrid.Rectangle)
         {
-	        Index = _padIndexCounter++;
+	        _minimumElementType = minimumElementType;
+            Index = _padIndexCounter++;
 	        PadKind = padKind;
             Width = width;
             Height = height;
@@ -45,14 +49,14 @@ namespace Vis.Model.Agent
         }
 
         private int _indexCounter = 0;
-        public PadAttributes<T> Add(T item)
+        public PadAttributes Add(IElement item)
         {
-            var element = AutoIndex ? new PadAttributes<T>(item, _indexCounter++) : new PadAttributes<T>(item);
+            var element = AutoIndex ? new PadAttributes(item, _indexCounter++) : new PadAttributes(item);
             element.PadKind = PadKind;
             Paths.Add(element);
             return element;
         }
-        public void Remove(PadAttributes<T> item)
+        public void Remove(PadAttributes item)
         {
 	        Paths.Remove(item);
         }
@@ -71,9 +75,9 @@ namespace Vis.Model.Agent
                 }
             }
         }
-        public PadAttributes<T> GetPadAttributesFor(IPath item)
+        public PadAttributes GetPadAttributesFor(IPath item)
         {
-	        PadAttributes<T> result = null;
+	        PadAttributes result = null;
 	        foreach (var padAttributes in Paths)
 	        {
 		        // todo: implement all comparator methods for elements

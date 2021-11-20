@@ -82,28 +82,23 @@ namespace Vis.Model.Controller
 		    {
 			    if (pad.PadStyle != PadStyle.Hidden)
 			    {
-				    if (pad is VisPad<VisPoint> ppad)
+				    foreach (var path in pad.Paths)
 				    {
-					    foreach (var prim in ppad.Paths)
-					    {
-						    DrawPrimitive(prim);
-					    }
-				    }
-				    else if (pad is VisPad<VisStroke> spad)
-				    {
-					    foreach (var prim in spad.Paths)
-					    {
-						    DrawStroke(prim);
-					    }
+					    DrawElement(path);
 				    }
 			    }
 		    }
 	    }
 
-        public void DrawPrimitive(PadAttributes<VisPoint> padAttributes)
+	    public void DrawElement(PadAttributes padAttributes)
 	    {
 		    var path = padAttributes.Element;
-		    if (path is VisLine line)
+
+		    if (path is VisStroke stroke)
+		    {
+                DrawStroke(padAttributes);
+		    }
+		    else if (path is VisLine line)
 		    {
                 DrawLine(line.StartPoint, line.EndPoint, padAttributes);
                 if (line.UnitReference != null)
@@ -138,28 +133,30 @@ namespace Vis.Model.Controller
 		    }
 	    }
 
-        public void DrawStroke(PadAttributes<VisStroke> padAttributes)
+        public void DrawStroke(PadAttributes padAttributes)
         {
-	        var stroke = padAttributes.Element;
-		    foreach (var segment in stroke.Segments)
-		    {
-			    if (segment is VisLine line)
-			    {
-				    DrawLine(line, padAttributes);
-			    }
-			    else if (segment is VisArc arc)
-			    {
-				    DrawLines(arc.GetPolylinePoints(), padAttributes);
-                }
-            }
+	        if (padAttributes.Element is VisStroke stroke)
+	        {
+		        foreach (var segment in stroke.Segments)
+		        {
+			        if (segment is VisLine line)
+			        {
+				        DrawLine(line, padAttributes);
+			        }
+			        else if (segment is VisArc arc)
+			        {
+				        DrawLines(arc.GetPolylinePoints(), padAttributes);
+			        }
+		        }
 
-		    if (stroke.UnitReference != null)
-		    {
-			    DrawRulerTicks(stroke, stroke.UnitReference);
-		    }
+		        if (stroke.UnitReference != null)
+		        {
+			        DrawRulerTicks(stroke, stroke.UnitReference);
+		        }
 
-		    Flush();
-	    }
+		        Flush();
+	        }
+        }
 
 	    public void DrawShape(VisStroke shape, int penIndex = 0)
 	    {

@@ -12,9 +12,9 @@ namespace Vis.Model.Agent
 {
     public class VisAgent : IAgent
     {
-        public VisPad<VisPoint> WorkingPad { get; private set; }
-        public VisPad<VisPoint> FocusPad { get; private set; }
-        public VisPad<VisStroke> ViewPad { get; private set; }
+        public VisPad WorkingPad { get; private set; }
+        public VisPad FocusPad { get; private set; }
+        public VisPad ViewPad { get; private set; }
 
         public UIStatus Status { get; }
 
@@ -27,9 +27,9 @@ namespace Vis.Model.Agent
             _renderer = renderer;
 
             Skills = new VisSkills();
-            WorkingPad = new VisPad<VisPoint>(250, 250, PadKind.Working);
-            FocusPad = new VisPad<VisPoint>(250, 250, PadKind.Focus);
-            ViewPad = new VisPad<VisStroke>(250, 250, PadKind.View);
+            WorkingPad = new VisPad(typeof(VisPoint), 250, 250, PadKind.Working);
+            FocusPad = new VisPad(typeof(VisPoint), 250, 250, PadKind.Focus);
+            ViewPad = new VisPad(typeof(VisPoint), 250, 250, PadKind.View);
             _renderer.Status = new UIStatus(WorkingPad, FocusPad, ViewPad);
             _renderer.DrawingComplete += _renderer_DrawingComplete;
         }

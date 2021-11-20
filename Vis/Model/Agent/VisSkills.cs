@@ -42,7 +42,7 @@ namespace Vis.Model.Agent
         {
             return new VisRectangle(cx + offsetX, cy + offsetY, cornerX + offsetX, cornerY + offsetY);
         }
-        public VisRectangle LetterA(VisPad<VisPoint> focusPad, VisPad<VisStroke> viewPad)
+        public VisRectangle LetterA(VisPad focusPad, VisPad viewPad)
         {
             var letterbox = GetLetterbox(halfM * .9f, 0.5f, 0f, 0f);
             focusPad.Add(letterbox);
@@ -61,7 +61,7 @@ namespace Vis.Model.Agent
 
             return letterbox;
         }
-        public VisRectangle LetterR(VisPad<VisPoint> focusPad, VisPad<VisStroke> viewPad)
+        public VisRectangle LetterR(VisPad focusPad, VisPad viewPad)
         {
             // LB: imagine letterbox
             // LB0: find left vertical line (need to find sub pieces of imagined elements - if using the whole rect can just reference it)
@@ -109,7 +109,7 @@ namespace Vis.Model.Agent
 
         public float rTailStart = 0.80f;
 
-        public VisRectangle LetterC(VisPad<VisPoint> focusPad, VisPad<VisStroke> viewPad)
+        public VisRectangle LetterC(VisPad focusPad, VisPad viewPad)
         {
             var letterbox = GetLetterbox(0.5f, 0.5f, 0f, 0f);
             focusPad.Add(letterbox);
@@ -126,7 +126,7 @@ namespace Vis.Model.Agent
 
             return letterbox;
         }
-        public VisRectangle LetterB(VisPad<VisPoint> focusPad, VisPad<VisStroke> viewPad)
+        public VisRectangle LetterB(VisPad focusPad, VisPad viewPad)
         {
             var letterbox = GetLetterbox(0.30f, 0.5f, 0f, 0f);
             focusPad.Add(letterbox);

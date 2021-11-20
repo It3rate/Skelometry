@@ -43,13 +43,13 @@ namespace Vis.Model.Controller
 			    result[0] = HoverPen;
 		    }
 		    
-		    if (attributes.PadKind == PadKind.Focus)
-		    {
-			    result[1] = GrayPen;
-		    }
-		    else if (IsHoverMap)
+		    if (IsHoverMap)
 		    {
 			    result[1] = GetPenByOrder(attributes.Index, 8f, false);
+		    }
+		    else if (attributes.PadKind == PadKind.Focus)
+		    {
+			    result[1] = GrayPen;
 		    }
 		    else if (attributes.ElementState == ElementState.Selected)
 		    {

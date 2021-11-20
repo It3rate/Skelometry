@@ -12,7 +12,9 @@ namespace Vis.Model.Primitives
     {
         public List<VisPoint> Points { get; } = new List<VisPoint>();
 
-	    public VisPolyline(float x, float y, params float[] remainingPoints) : base(x, y)
+        public override bool IsPath => true;
+
+        public VisPolyline(float x, float y, params float[] remainingPoints) : base(x, y)
 	    {
             Points.Add(new VisPoint(X, Y));
 		    for (int i = 0; i < remainingPoints.Length; i += 2)
@@ -53,7 +55,12 @@ namespace Vis.Model.Primitives
 		    }
 	    }
 
-        public VisPoint ClonePolyline()
+	    public override VisPolyline GetPolyline()
+	    {
+		    return ClonePolyline();
+        }
+
+	    public VisPolyline ClonePolyline()
 	    {
 		    return new VisPolyline(Points);
 	    }

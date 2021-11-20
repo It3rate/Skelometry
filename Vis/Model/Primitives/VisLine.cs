@@ -18,8 +18,9 @@ namespace Vis.Model.Primitives
 	    public VisPoint StartPoint => this;
 	    public VisPoint MidPoint => GetPoint(0.5f, 0);
         public VisPoint EndPoint { get; private set; }
-
         public VisPoint Center => GetPoint(0.5f, 0);
+
+        public override bool IsPath => true;
 
         public IPath UnitReference { get; set; }
 
@@ -134,7 +135,7 @@ namespace Vis.Model.Primitives
 	        //return new Point(StartPoint.X + (dp * e1.X) / len2, StartPoint.Y + (dp * e1.Y) / len2);
         }
 
-        public VisPolyline GetPolyline()
+        public override VisPolyline GetPolyline()
         {
             return new VisPolyline(StartPoint, EndPoint);
         }

@@ -43,9 +43,9 @@ namespace Vis.Model.Agent
 
     public class VisDragAgent : IAgent
     {
-	    public VisPad<VisPoint> WorkingPad { get; private set; }
-        public VisPad<VisPoint> FocusPad { get; private set; }
-        public VisPad<VisStroke> ViewPad { get; private set; }
+	    public VisPad WorkingPad { get; private set; }
+        public VisPad FocusPad { get; private set; }
+        public VisPad ViewPad { get; private set; }
         private SkiaRenderer _renderer;
         private SkiaRenderer _hoverRender;
         private VisMeasureSkills _skills;
@@ -61,9 +61,9 @@ namespace Vis.Model.Agent
             _renderer.UnitPixels = _unitPixels;
             _renderer.DrawingComplete += _renderer_DrawingComplete;
 
-            WorkingPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height, PadKind.Working, false);
-            FocusPad = new VisPad<VisPoint>(_renderer.Width, _renderer.Height, PadKind.Focus);
-            ViewPad = new VisPad<VisStroke>(_renderer.Width, _renderer.Height, PadKind.View);
+            WorkingPad = new VisPad(typeof(VisPoint), _renderer.Width, _renderer.Height, PadKind.Working, false);
+            FocusPad = new VisPad(typeof(VisPoint), _renderer.Width, _renderer.Height, PadKind.Focus);
+            ViewPad = new VisPad(typeof(VisStroke), _renderer.Width, _renderer.Height, PadKind.View);
             Status = new UIStatus(WorkingPad, FocusPad, ViewPad);
             _renderer.Status = Status;
 
@@ -95,10 +95,10 @@ namespace Vis.Model.Agent
 
 		        if (_hoverRender.Pens.IndexOfColor.TryGetValue((uint)col, out var index))
 		        {
-			        if (index >= 0 && index < ViewPad.Paths.Count)
+			        var pad = _hoverRender.Status.Pads[0];
+			        if (index >= 0 && index < pad.Paths.Count && pad.Paths[index] is PadAttributes padAttrs)
 			        {
-				        var newPath = ViewPad.Paths[index];
-				        Status.HighlightingPath = newPath;
+				        Status.HighlightingPath = padAttrs;
 				        result = true;
 			        }
 		        }
@@ -219,7 +219,7 @@ namespace Vis.Model.Agent
                         var path = (Status.Mode == UIMode.Circle) ?
 						_skills.Circle(this, Status.ClickSequencePoints[0], endPoint) :
 						_skills.Line(this, Status.ClickSequencePoints[0], endPoint);
-						path.UnitReference = Status.UnitPath?.Element;
+						path.UnitReference = (IPath)Status.UnitPath?.Element;
 						result = true;
 					}
 					break;
@@ -242,7 +242,7 @@ namespace Vis.Model.Agent
 			            {
 				            if(padAttr.Element is VisStroke stroke)
 				            {
-					            stroke.UnitReference = Status.UnitPath.Element;
+					            stroke.UnitReference = (IPath)Status.UnitPath.Element;
 				            }
 			            }
 		            }
@@ -306,7 +306,7 @@ namespace Vis.Model.Agent
 		                    }
 		                    else
 		                    {
-			                    path.UnitReference = Status.UnitPath.Element;
+			                    path.UnitReference = (IPath)Status.UnitPath.Element;
 		                    }
 
 		                    Status.SelectedPath = attr;

@@ -21,6 +21,8 @@ namespace Vis.Model.Primitives
         public VisPoint PerimeterOrigin { get; }
         public float Radius { get; private set; }
 
+        public override bool IsPath => true;
+
         public float OriginAngle { get; private set; }
         public float Length => (float)(2f * Radius * Math.PI);
 
@@ -187,7 +189,7 @@ namespace Vis.Model.Primitives
             PerimeterOrigin.AddOffset(x, y);
             Initialize();
         }
-        public VisPolyline GetPolyline()
+        public override VisPolyline GetPolyline()
         {
 	        return new VisPolyline(GetPolylinePoints());
         }

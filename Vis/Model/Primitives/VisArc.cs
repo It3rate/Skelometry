@@ -14,6 +14,8 @@ namespace Vis.Model.Primitives
         public VisCircle Reference { get; }
         public ClockDirection Direction { get; }
 
+        public override bool IsPath => true;
+
         private float _startAngle;
         private float _endAngle;
         private float _arcLength; // 0 to 2PI
@@ -80,7 +82,7 @@ namespace Vis.Model.Primitives
 	        Center.AddOffset(x, y);
             EndPoint.AddOffset(x, y);
         }
-        public VisPolyline GetPolyline()
+        public override VisPolyline GetPolyline()
         {
 	        return new VisPolyline(GetPolylinePoints());
         }

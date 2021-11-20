@@ -27,12 +27,15 @@ namespace Vis.Model.Connections
         public virtual VisPoint Start => Anchor;
         public virtual VisPoint End => Anchor;
 
+        public bool IsPath => true;
+
         public VisNode(IPath reference, float position)
         {
             Reference = reference;
             Position = position;
             //Anchor = reference.GetPoint(position);
         }
+
 
         public void AddOffset(float x, float y)
         {
@@ -44,6 +47,11 @@ namespace Vis.Model.Connections
 	        {
                 node.AddOffset(x, y);
 	        }
+        }
+
+        public VisPolyline GetPolyline()
+        {
+	        throw new NotImplementedException();
         }
 
         public VisPoint GetPoint(float position, float offset = 0)

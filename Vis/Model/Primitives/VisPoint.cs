@@ -18,6 +18,7 @@ namespace Vis.Model.Primitives
     {
         public float X { get; set; }
         public float Y { get; set; }
+        public virtual bool IsPath => false;
 
         public static int _index = 0;
         public int Index;
@@ -177,6 +178,11 @@ namespace Vis.Model.Primitives
         public VisPoint ProjectedOntoLine(VisLine line)
         {
             return line.ProjectPointOnto(this);
+        }
+
+        public virtual VisPolyline GetPolyline()
+        {
+            return new VisPolyline(X, Y, X, Y);
         }
 
         public VisPoint ClonePoint()

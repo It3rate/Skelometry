@@ -10,16 +10,21 @@ namespace Vis.Model.Primitives
 {
 	//public enum VisElementType { Any, Point, Node, Circle, Square, Rectangle, Oval, Joint, Stroke, Shape }
 
+	public interface IElement
+	{
+        bool IsPath { get; }
+        void AddOffset(float x, float y);
+        VisPolyline GetPolyline();
+	}
 	/// <summary>
 	/// The mental map primitives when we conceptualize things at a high level. These are meant to be (ideally) what we use, not what is mathematically possible or even simple.
 	/// </summary>
-	public interface IPrimitive : ICloneable, IEquatable<IPrimitive>
+	public interface IPrimitive : IElement, ICloneable, IEquatable<IPrimitive>
 	{
 		float X { get; }
 		float Y { get; }
 		float Similarity(IPrimitive p);
 		VisPoint Sample(Gaussian g);
-		void AddOffset(float x, float y);
 	}
 	public interface IPrimitivePath : IPath
 	{

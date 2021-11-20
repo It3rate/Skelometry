@@ -11,9 +11,9 @@ namespace Vis.Model.Agent
 {
     public interface IAgent
     {
-        VisPad<VisPoint> WorkingPad { get; }
-        VisPad<VisPoint> FocusPad { get; }
-        VisPad<VisStroke> ViewPad { get; }
+        VisPad WorkingPad { get; }
+        VisPad FocusPad { get; }
+        VisPad ViewPad { get; }
         UIStatus Status { get; }
 
         void Clear();
