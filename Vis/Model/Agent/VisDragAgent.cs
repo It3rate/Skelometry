@@ -117,7 +117,7 @@ namespace Vis.Model.Agent
 	        return result;
 		}
 
-		private void SetHighlighting()
+		private void SetHighlightingPoint()
 		{
 			// check if we are over an existing point
 			var similarPt = ViewPad.GetSimilar(Status.PositionNorm);
@@ -136,6 +136,20 @@ namespace Vis.Model.Agent
 			{
 				Status.HighlightingPoint = null;
 			}
+		}
+
+		private VisPoint GetSnapPoint(VisPoint pt)
+		{
+			var result = pt.ClonePoint();
+			if (Status.IsHighlightingPoint)
+			{
+				result = Status.HighlightingPoint.ClonePoint();
+			}
+			else if (Status.IsHighlightingPath)
+			{
+				result = Status.HighlightingPath.Element.ProjectPointOnto(Status.PositionNorm);
+			}
+			return result;
 		}
 
 		public bool MouseDown(MouseEventArgs e)
@@ -172,7 +186,7 @@ namespace Vis.Model.Agent
 	            case UIMode.Line:
 	            case UIMode.Circle:
 	            case UIMode.ParallelLines:
-                    var pt = Status.IsHighlightingPoint ? Status.HighlightingPoint.ClonePoint() : Status.PositionNorm.ClonePoint();
+		            var pt = GetSnapPoint(Status.PositionNorm);
 					Status.ClickSequencePoints.Add(pt);
 					_skills.Point(this, pt);
 					break;
@@ -180,21 +194,22 @@ namespace Vis.Model.Agent
 
             Status.HighlightingPoint = null;
 
-			SetHighlighting();
+			SetHighlightingPoint();
 			return true; // always redraw on mouse down
         }
 
         public bool MouseMove(MouseEventArgs e)
         {
             var result = SetMouseData(e);
-			SetHighlighting();
+			SetHighlightingPoint();
 			switch (Status.Mode)
 			{
 				case UIMode.Select:
 					if (Status.IsDraggingPoint)
 					{
-						Status.DraggingPoint.UpdateWith(Status.PositionNorm);
-						_skills.Line(this, Status.ClickSequencePoints[0], Status.PositionNorm);
+						var targPt = GetSnapPoint(Status.PositionNorm);
+                        Status.DraggingPoint.UpdateWith(targPt);
+						_skills.Line(this, Status.ClickSequencePoints[0], targPt);
 						result = true;
 					}
                     else if (Status.PositionMouseDown != null && Status.HasSelectedPath)
@@ -213,15 +228,7 @@ namespace Vis.Model.Agent
 				case UIMode.ParallelLines:
 					if (Status.IsMouseDown)
 					{
-						var endPoint = Status.PositionNorm;
-						if (Status.IsHighlightingPoint)
-						{
-							endPoint = Status.HighlightingPoint;
-						}
-						else if (Status.IsHighlightingPath)
-						{
-							endPoint = Status.HighlightingPath.Element.ProjectPointOnto(Status.PositionNorm);
-						}
+						var endPoint = GetSnapPoint(Status.PositionNorm);
 
 						var paths = _skills.AddElements(Status.Mode, this, Status.ClickSequencePoints[0], endPoint);
 						if (Status.Mode != UIMode.ParallelLines)
@@ -264,8 +271,9 @@ namespace Vis.Model.Agent
 						var nodeRef = Status.DraggingNode.Reference;
 						bool isDraggingStartPoint = Status.ClickSequencePoints[0].IsNear(nodeRef.EndPoint);
 						var pt = isDraggingStartPoint ? nodeRef.StartPoint : nodeRef.EndPoint;
-						var targPt = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;
-						pt.UpdateWith(targPt);
+						//var targPt = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;
+						var targPt = GetSnapPoint(Status.PositionNorm);
+                        pt.UpdateWith(targPt);
 						ViewPad.RecalculateAll();
                         //Status.SelectedPath.Element.Recalculate();
                     }
@@ -280,15 +288,7 @@ namespace Vis.Model.Agent
                 case UIMode.Line:
                 case UIMode.Circle:
                 case UIMode.ParallelLines:
-                    var endPoint = Status.PositionNorm;
-	                if (Status.IsHighlightingPoint)
-	                {
-		                endPoint = Status.HighlightingPoint;
-	                }
-	                else if (Status.IsHighlightingPath)
-	                {
-		                endPoint = Status.HighlightingPath.Element.ProjectPointOnto(Status.PositionNorm);
-	                }
+	                var endPoint = GetSnapPoint(Status.PositionNorm);
 
 	                var startPoint = Status.ClickSequencePoints[0];
 	                var dist = startPoint.SquaredDistanceTo(endPoint);
