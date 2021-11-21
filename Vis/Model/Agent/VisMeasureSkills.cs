@@ -24,16 +24,17 @@ namespace Vis.Model.Agent
 		            break;
 	            case UIMode.ParallelLines:
 		            int lineCount = 4;
+		            float midX = start.X + (end.X - start.X) / 2f;
+		            float step = -0.08f;
                     for (int i = 0; i < lineCount; i++)
                     {
-	                    var offset = -0.08f * i;
+	                    var offset = step * i;
 	                    var line = Line(agent, new VisPoint(start.X, start.Y + offset), new VisPoint(end.X, start.Y + offset), permanent, true);
-	                    if (line != null)
-	                    {
-		                    result.Add(line);
-	                    }
+	                    var centerLine = Line(agent, new VisPoint(midX, start.Y + offset), new VisPoint(midX, start.Y + offset + step), permanent, true);
+	                    result.Add(line);
+	                    result.Add(centerLine);
                     }
-		            break;
+                    break;
             }
 
             return result.ToArray();
@@ -60,6 +61,10 @@ namespace Vis.Model.Agent
 			        var stroke = new VisStroke(nodeStart, nodeEnd);
 			        agent.ViewPad.Add(stroke);
 			        result = stroke;
+		        }
+		        else
+		        {
+			        result = line;
 		        }
 	        }
 	        else

@@ -116,6 +116,11 @@ namespace Vis.Model.Agent
 		{
 			// check if we are over an existing point
 			var similarPt = ViewPad.GetSimilar(Status.PositionNorm);
+			if (similarPt == null)
+			{
+				similarPt = FocusPad.GetSimilar(Status.PositionNorm);
+            }
+
 			if (similarPt is VisPoint sp)
 			{
 				var rp = new RenderPoint(sp, 4, 2f);
@@ -214,10 +219,13 @@ namespace Vis.Model.Agent
 						}
 
 						var paths = _skills.AddElements(Status.Mode, this, Status.ClickSequencePoints[0], endPoint);
-						foreach (var path in paths)
+						if (Status.Mode != UIMode.ParallelLines)
 						{
-							path.UnitReference = (IPath)Status.UnitPath?.Element;
-                        }
+							foreach (var path in paths)
+							{
+								path.UnitReference = (IPath)Status.UnitPath?.Element;
+	                        }
+						}
 						result = true;
 					}
 					break;
@@ -292,7 +300,8 @@ namespace Vis.Model.Agent
 				                Status.SelectedPath = attr;
                             }
                         }
-		                else
+
+		                if(Status.Mode != UIMode.ParallelLines) // add this flag to mode data
 		                {
 			                foreach (var path in paths)
 			                {
