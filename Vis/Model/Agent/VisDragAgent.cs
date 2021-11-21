@@ -163,6 +163,11 @@ namespace Vis.Model.Agent
 					if (Status.IsHighlightingPoint)
 					{
 						var (nearPath, nearPt) = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
+						if (nearPath == null)
+						{
+							(nearPath, nearPt) = FocusPad.PathWithNodeNear(Status.HighlightingPoint);
+                        }
+
 						if (nearPath != null)
 						{
 							bool isStartPoint = nearPath.StartPoint == nearPt;
@@ -170,9 +175,13 @@ namespace Vis.Model.Agent
 							if (nearPath is VisStroke stroke)
 							{
 								Status.DraggingNode = isStartPoint ? stroke.StartNode : stroke.EndNode;
-								Status.DraggingPoint = nearPt;
-								Status.HighlightedPathToSelected();
                             }
+							else
+							{
+								//Status.DraggingNode = isStartPoint ? nearPath.StartNode : nearPath.EndNode;
+                            }
+							Status.DraggingPoint = nearPt;
+							Status.HighlightedPathToSelected();
 						}
 					}
 					else if (Status.IsHighlightingPath)
@@ -277,14 +286,14 @@ namespace Vis.Model.Agent
                 case UIMode.Select:
                     if (Status.IsDraggingPoint)
 					{
-						var nodeRef = Status.DraggingNode.Reference;
-						bool isDraggingStartPoint = Status.ClickSequencePoints[0].IsNear(nodeRef.EndPoint);
-						var pt = isDraggingStartPoint ? nodeRef.EndPoint : nodeRef.StartPoint;
-						//var targPt = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;
+						//var nodeRef = Status.DraggingNode.Reference;
+						//bool isDraggingStartPoint = Status.ClickSequencePoints[0].IsNear(nodeRef.EndPoint);
+						//var pt = isDraggingStartPoint ? nodeRef.EndPoint : nodeRef.StartPoint;
+
+						var pt = Status.DraggingPoint;
 						var targPt = GetSnapPoint(Status.PositionNorm);
                         pt.UpdateWith(targPt);
 						ViewPad.RecalculateAll();
-                        //Status.SelectedPath.Element.Recalculate();
                     }
                     else if (Status.PositionMouseDown != null && Status.HasSelectedPath)
                     {

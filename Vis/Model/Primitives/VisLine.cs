@@ -63,16 +63,16 @@ namespace Vis.Model.Primitives
         }
         public static VisLine PointPath(VisPoint startAndEnd)
         {
-	        var result = new VisLine(startAndEnd, startAndEnd);
+	        // Need to figure out a better system for floating locations as landmarks.
+            var result = new VisLine(startAndEnd, startAndEnd);
 	        result.IsPointPath = true;
-	        result.EndPoint = result.StartPoint;
 	        return result;
         }
 
         public override void AddOffset(float x, float y)
         {
 	        base.AddOffset(x, y);
-            EndPoint.AddOffset(x, y);
+	        EndPoint.AddOffset(x, y);
         }
         public VisPoint GetPoint(float position, float offset = 0)
         {
