@@ -18,15 +18,16 @@ namespace Vis.Model.Controller
         public IElement Element { get; }
         public bool IsStroke => Element is VisStroke;
 
-        public PadKind PadKind { get; set; } = PadKind.None;
+        public PadKind PadKind { get; set; }
 	    public ElementType ElementType { get; set; } = ElementType.None;
         public ElementStyle ElementStyle { get; set; } = ElementStyle.None;
 	    public ElementState ElementState { get; set; } = ElementState.None;
 	    public ElementLinkage ElementLinkage { get; set; } = ElementLinkage.HasUnit;
 
-	    public PadAttributes(IElement element, int index = -1)
+	    public PadAttributes(IElement element, PadKind padKind, int index = -1)
 	    {
 		    Element = element;
+		    PadKind = padKind;
 		    Index = index;
 	    }
     }

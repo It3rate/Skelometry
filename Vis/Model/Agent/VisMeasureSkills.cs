@@ -29,10 +29,10 @@ namespace Vis.Model.Agent
                     for (int i = 0; i < lineCount; i++)
                     {
 	                    var offset = step * i;
-	                    var line = Line(agent, new VisPoint(start.X, start.Y + offset), new VisPoint(end.X, start.Y + offset), permanent, true);
-	                    var centerLine = Line(agent, new VisPoint(midX, start.Y + offset), new VisPoint(midX, start.Y + offset + step), permanent, true);
-	                    result.Add(line);
+						var centerLine = Line(agent, new VisPoint(midX, start.Y + offset), new VisPoint(midX, start.Y + offset + step), permanent, true);
 	                    result.Add(centerLine);
+	                    var line = Line(agent, new VisPoint(start.X, start.Y + offset), new VisPoint(end.X, start.Y + offset), permanent, true);
+	                    result.Add(line);
                     }
                     break;
             }

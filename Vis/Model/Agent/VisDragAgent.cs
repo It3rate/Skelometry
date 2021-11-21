@@ -96,11 +96,16 @@ namespace Vis.Model.Agent
 
 		        if (_hoverRender.Pens.IndexOfColor.TryGetValue((uint)col, out var index))
 		        {
-			        var pad = _hoverRender.Status.Pads[0];
-			        if (index >= 0 && index < pad.Paths.Count && pad.Paths[index] is PadAttributes padAttrs)
+			        for (int i = _hoverRender.Status.Pads.Count - 1; i >= 0; i--)
 			        {
-				        Status.HighlightingPath = padAttrs;
-				        result = true;
+				        var pad = _hoverRender.Status.Pads[i];
+				        var normIndex = pad.GetNormalizedIndex(index);
+				        if (normIndex != -1 && pad.Paths[normIndex] is PadAttributes padAttrs)
+				        {
+					        Status.HighlightingPath = padAttrs;
+					        result = true;
+					        break;
+				        }
 			        }
 		        }
 	        }
@@ -290,16 +295,22 @@ namespace Vis.Model.Agent
 	                if (dist > startPoint.NearThreshold)
 	                {
 		                var paths = _skills.AddElements(Status.Mode, this, Status.ClickSequencePoints[0], endPoint, true);
-		                if (Status.UnitPath == null && paths.Length == 1)
+		                if (paths.Length == 1)
 		                {
 			                var attr = ViewPad.GetPadAttributesFor(paths[0]);
 			                if (attr != null)
 			                {
-				                Status.UnitPath = attr;
-				                attr.ElementLinkage = ElementLinkage.IsUnit;
-				                Status.SelectedPath = attr;
-                            }
-                        }
+				                if (Status.UnitPath == null)
+				                {
+					                Status.UnitPath = attr;
+					                attr.ElementLinkage = ElementLinkage.IsUnit;
+				                }
+				                else
+				                {
+					                Status.SelectedPath = attr;
+				                }
+			                }
+		                }
 
 		                if(Status.Mode != UIMode.ParallelLines) // add this flag to mode data
 		                {

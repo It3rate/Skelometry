@@ -10,29 +10,35 @@ using Vis.Model.Primitives;
 namespace Vis.Model.Agent
 {
 	public enum PadGrid { Rectangle, Oval, Hexagon }
-	public enum PadKind { None, Bitmap, Working, Focus, View }
+	public enum PadKind { View, Focus, Working, Bitmap }
     public enum PadStyle {None, Hidden, Disabled, Normal, Enhanced, Offset, Zoomed}
 
     public interface IPad
     {
 	   PadGrid Grid { get; }
 	   bool AutoIndex { get; set; }
-	   int Width { get; }
-	   int Height { get; }
+	   int Index { get; }
+	   int StartIndex { get; }
+        int Width { get; }
+        int Height { get; }
 	   PadStyle PadStyle { get; set;  }
 	   List<PadAttributes> Paths { get; }
+
+	   int GetNormalizedIndex(int index);
     }
 
     public class VisPad : IPad
     {
 	    private static int _padIndexCounter;
-	    public int Index;
-	    private Type _minimumElementType;
+	    public int Index { get; }
+	    public int StartIndex { get; }
+        private Type _minimumElementType;
 
         public PadGrid Grid { get; }
 	    public PadKind PadKind { get; }
 	    public PadStyle PadStyle { get; set; } = PadStyle.Normal;
         public bool AutoIndex { get; set; }
+        private int _indexCounter;
 
         public List<PadAttributes> Paths { get; } = new List<PadAttributes>();
         public int Width { get; }
@@ -46,13 +52,23 @@ namespace Vis.Model.Agent
             Width = width;
             Height = height;
             AutoIndex = autoIndex;
+            StartIndex = (int)PadKind * 10000;
+            _indexCounter = StartIndex;
         }
 
-        private int _indexCounter = 0;
+        public int GetNormalizedIndex(int index)
+        {
+	        int result = index - StartIndex;
+	        if (result < 0 || result >= Paths.Count)
+	        {
+		        result = -1;
+	        }
+	        return result;
+        }
+
         public PadAttributes Add(IElement item)
         {
-            var element = AutoIndex ? new PadAttributes(item, _indexCounter++) : new PadAttributes(item);
-            element.PadKind = PadKind;
+            var element = AutoIndex ? new PadAttributes(item, PadKind, _indexCounter++) : new PadAttributes(item, PadKind);
             Paths.Add(element);
             return element;
         }
@@ -62,7 +78,7 @@ namespace Vis.Model.Agent
         }
         public void Clear()
         {
-	        _indexCounter = 0;
+	        _indexCounter = StartIndex;
 	        Paths.Clear();
         }
         public void RecalculateAll()

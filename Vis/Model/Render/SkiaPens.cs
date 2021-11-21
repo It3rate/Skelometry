@@ -26,6 +26,7 @@ namespace Vis.Model.Controller
         public SKPaint UnitPen { get; private set; }
         public SKPaint DarkPen { get; private set; }
         public SKPaint GrayPen { get; private set; }
+        public SKPaint WorkingPen { get; private set; }
 
         public SkiaPens(float scale, float defaultWidth = 8f)
 	    {
@@ -45,13 +46,17 @@ namespace Vis.Model.Controller
 		    
 		    if (IsHoverMap)
 		    {
-			    result[1] = GetPenByOrder(attributes.Index, 8f, false);
+			    result[1] = GetPenByOrder(attributes.Index, 3f, false);
+		    }
+		    else if (attributes.PadKind == PadKind.Working)
+		    {
+			    result[1] = WorkingPen;
 		    }
 		    else if (attributes.PadKind == PadKind.Focus)
 		    {
 			    result[1] = GrayPen;
 		    }
-		    else if (attributes.ElementState == ElementState.Selected)
+            else if (attributes.ElementState == ElementState.Selected)
 		    {
 			    result[1] = SelectedPen;
 		    }
@@ -97,8 +102,9 @@ namespace Vis.Model.Controller
 		    HoverPen = GetPen(SKColors.LightCyan, DefaultWidth * 4f);
 		    SelectedPen = GetPen(SKColors.LightGreen, DefaultWidth * 1.5f);
 		    UnitPen = GetPen(SKColors.SteelBlue, DefaultWidth * 1.5f);
-		    GrayPen = GetPen(SKColors.LightGray, DefaultWidth);
-		    DarkPen = GetPen(SKColors.DarkGray, DefaultWidth);
+		    GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
+		    DarkPen = GetPen(SKColors.Black, DefaultWidth);
+		    WorkingPen = GetPen(SKColors.DarkGray, DefaultWidth);
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));
@@ -137,8 +143,9 @@ namespace Vis.Model.Controller
         public Dictionary<uint, int> IndexOfColor { get; } = new Dictionary<uint, int>();
 	    public SKPaint GetPenByOrder(int index, float widthScale = 1, bool antiAlias = true)
 	    {
-		    uint col = (uint) ((index + 3) * 0x110D05) | 0xFF000000;
-            if(IndexOfColor.ContainsKey(col))
+		    //uint col = (uint)((index + 3) | 0xFF000000);
+		    uint col = (uint)((index + 3) * 0x110D05) | 0xFF000000;
+            if (IndexOfColor.ContainsKey(col))
             {
 	            IndexOfColor[col] = index;
             }
