@@ -32,9 +32,24 @@ namespace Vis.Model.UI
         public VisPoint PreviousPositionNorm { get; } = new VisPoint(0, 0);
 
 		public int ClickSequenceIndex => ClickSequencePoints.Count;
-	    public List<VisPoint> ClickSequencePoints { get; } = new List<VisPoint>();
+		public List<VisPoint> ClickSequencePoints { get; } = new List<VisPoint>();
+		public List<VisNode> ClickNodes { get; } = new List<VisNode>();
 
-		private VisPoint _highlightingPoint;
+		public bool HasValidClickNodes()
+		{
+			bool result = false;
+			foreach (var clickNode in ClickNodes)
+			{
+				if (!clickNode.IsEmpty)
+				{
+					result = true;
+					break;
+				}
+			}
+			return result;
+		}
+
+        private VisPoint _highlightingPoint;
 	    public bool IsHighlightingPoint => _highlightingPoint != null;
 		public VisPoint HighlightingPoint { get => _highlightingPoint; set => _highlightingPoint = value; }
 

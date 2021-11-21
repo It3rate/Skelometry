@@ -30,7 +30,6 @@ namespace Vis.Forms
             var skia = new SkiaRenderer();
             _control = skia.AddAsControl(visPanel, false);
             _control.MouseDown += OnMouseDown;
-            _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;
             _control.MouseUp += OnMouseUp;
             _control.KeyDown += OnKeyDown;

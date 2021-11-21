@@ -20,6 +20,7 @@ namespace Vis.Model.Primitives
 	    VisNode StartNode { get; }
 	    VisNode MidNode { get; }
 	    VisNode EndNode { get; }
+	    VisNode BestNodeForPoint(VisPoint pt);
 
         IPath UnitReference { get; set; }
 

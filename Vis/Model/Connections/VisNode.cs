@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms.VisualStyles;
 using Microsoft.ML.Probabilistic.Distributions;
 using Vis.Model.Primitives;
 
@@ -13,6 +14,8 @@ namespace Vis.Model.Connections
     /// </summary>
     public class VisNode : IPrimitive
     {
+	    public static readonly VisNode Empty = new VisNode(null, -1);
+
         public IPath Reference { get; } // if reference is a stroke, this must be a joint
         public float Position { get; }
 
@@ -28,6 +31,7 @@ namespace Vis.Model.Connections
         public virtual VisPoint End => Anchor;
 
         public bool IsPath => true;
+        public bool IsEmpty => Object.ReferenceEquals(this, Empty);
 
         public VisNode(IPath reference, float position)
         {

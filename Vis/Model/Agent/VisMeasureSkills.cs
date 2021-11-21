@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Vis.Model.Connections;
 using Vis.Model.Controller;
 using Vis.Model.Primitives;
+using Vis.Model.UI;
 
 namespace Vis.Model.Agent
 {
@@ -46,31 +47,74 @@ namespace Vis.Model.Agent
             pad.Add(p);
         }
 
+        private VisNode[] GetNodes(IAgent agent, VisPoint end)
+        {
+            List<VisNode> nodes = new List<VisNode>();
+            for (int i = 0; i < agent.Status.ClickSequencePoints.Count; i++)
+            {
+	            var pt = agent.Status.ClickSequencePoints[i];
+	            var node = agent.Status.ClickNodes[i];
+	            if (!node.IsEmpty)
+	            {
+                    nodes.Add(node);
+	            }
+	            else
+	            {
+		            var pointLine = VisLine.PointPath(pt);
+		            agent.FocusPad.Add(pointLine);
+		            nodes.Add(new VisNode(pointLine, 0));
+	            }
+            }
+            // last node
+            var ePath = agent.Status.IsHighlightingPath ? ((IPath)agent.Status.HighlightingPath.Element) : null;
+            VisNode lastNode = ePath?.BestNodeForPoint(end);
+            if (lastNode == null)
+            {
+	            var pointLine = VisLine.PointPath(end);
+                agent.FocusPad.Add(pointLine);
+	            nodes.Add(new VisNode(pointLine, 0));
+            }
+            else
+            {
+	            nodes.Add(lastNode);
+            }
+
+            return nodes.ToArray();
+        }
 
         public IPath Line(IAgent agent, VisPoint start, VisPoint end, bool permanent = false, bool focusOnly = false)
         {
 	        IPath result = null;
-            VisLine line = VisLine.ByEndpoints(start, end);
 	        if (permanent)
 	        {
-		        agent.FocusPad.Add(line);
+		        var nodes = GetNodes(agent, end);
 		        if (!focusOnly && (agent.Status.State & UIState.ViewPad) != 0)
 		        {
-			        var nodeStart = new VisNode(line, 0);
-			        var nodeEnd = new VisNode(line, 1);
-			        var stroke = new VisStroke(nodeStart, nodeEnd);
+                    var stroke = new VisStroke(nodes[0], nodes[1]);
 			        agent.ViewPad.Add(stroke);
 			        result = stroke;
 		        }
 		        else
 		        {
-			        result = line;
+			        if (agent.Status.HasValidClickNodes())
+			        {
+				        var stroke = new VisStroke(nodes[0], nodes[1]);
+				        agent.ViewPad.Add(stroke);
+				        result = stroke;
+			        }
+			        else
+			        {
+				        IPath line = VisLine.ByEndpoints(start, end);
+	                    agent.FocusPad.Add(line);
+	                    result = line;
+			        }
 		        }
 	        }
 	        else
 	        {
 		        var pad = agent.WorkingPad;
-		        pad.Add(line);
+		        IPath line = VisLine.ByEndpoints(start, end);
+                pad.Add(line);
 		        pad.Add(start);
 		        pad.Add(end);
 		        result = line;

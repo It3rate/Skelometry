@@ -49,6 +49,10 @@ namespace Vis.Model.Primitives
             }
         }
 
+        public VisNode BestNodeForPoint(VisPoint pt)
+        {
+	        throw new NotImplementedException();
+        }
         public VisPoint GetPoint(float position, float offset = 0)
         {
             var len = _arcLength * position;

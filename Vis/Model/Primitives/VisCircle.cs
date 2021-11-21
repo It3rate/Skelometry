@@ -33,6 +33,11 @@ namespace Vis.Model.Primitives
         public VisPoint Center => this;
         public VisNode CenterNode;
 
+        public VisNode BestNodeForPoint(VisPoint pt)
+        {
+	        throw new NotImplementedException();
+        }
+
         public IPath UnitReference { get; set; }
 
         //public CircleRef(Point center, float radius) : base(center.X, center.Y)

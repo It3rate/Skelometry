@@ -40,6 +40,10 @@ namespace Vis.Model.Primitives
             GenerateSegments();
         }
 
+        public VisNode BestNodeForPoint(VisPoint pt)
+        {
+	        throw new NotImplementedException();
+        }
         public void AddOffset(float x, float y)
         {
             List<IPath> refs = new List<IPath>();

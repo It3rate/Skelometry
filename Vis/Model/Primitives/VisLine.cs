@@ -21,6 +21,7 @@ namespace Vis.Model.Primitives
         public VisPoint Center => GetPoint(0.5f, 0);
 
         public override bool IsPath => true;
+        public bool IsPointPath { get; private set; }
 
         public IPath UnitReference { get; set; }
 
@@ -41,6 +42,7 @@ namespace Vis.Model.Primitives
         private VisLine(float startX, float startY, float endX, float endY) : base(startX, startY)
         {
             EndPoint = new VisPoint(endX, endY);
+            IsPointPath = false;
         }
         private VisLine(VisPoint start, VisPoint endPoint) : this(start.X, start.Y, endPoint.X, endPoint.Y) { }
         private VisLine(VisLine line) : this(line.StartPoint, line.EndPoint) { }
@@ -58,6 +60,13 @@ namespace Vis.Model.Primitives
             var start = new VisPoint(startX, startY);
             var end = new VisPoint(endX, endY);
             return new VisLine(start, end);
+        }
+        public static VisLine PointPath(VisPoint startAndEnd)
+        {
+	        var result = new VisLine(startAndEnd, startAndEnd);
+	        result.IsPointPath = true;
+	        result.EndPoint = result.StartPoint;
+	        return result;
         }
 
         public override void AddOffset(float x, float y)
@@ -120,6 +129,13 @@ namespace Vis.Model.Primitives
 	            result = new VisPoint(x, y);
             }
             return result;
+        }
+
+        public VisNode BestNodeForPoint(VisPoint pt)
+        {
+	        var nearest = ProjectPointOnto(pt);
+            var ratio = (pt.X - StartPoint.X) / (EndPoint.X - StartPoint.X);
+            return new VisNode(this, ratio);
         }
         public override VisPoint ProjectPointOnto(VisPoint p)
         {

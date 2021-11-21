@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ML.Probabilistic.Distributions;
+using Vis.Model.Connections;
 
 namespace Vis.Model.Primitives
 {

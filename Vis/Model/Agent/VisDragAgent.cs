@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Microsoft.ML.Probabilistic.Factors;
 using OpenTK.Input;
+using Vis.Model.Connections;
 using Vis.Model.Controller;
 using Vis.Model.Primitives;
 using Vis.Model.Render;
@@ -188,6 +189,14 @@ namespace Vis.Model.Agent
 	            case UIMode.ParallelLines:
 		            var pt = GetSnapPoint(Status.PositionNorm);
 					Status.ClickSequencePoints.Add(pt);
+		            if (Status.IsHighlightingPath)
+		            {
+                        Status.ClickNodes.Add(((IPath)Status.HighlightingPath.Element).BestNodeForPoint(pt));
+		            }
+		            else
+		            {
+			            Status.ClickNodes.Add(VisNode.Empty);
+		            }
 					_skills.Point(this, pt);
 					break;
             }
@@ -270,7 +279,7 @@ namespace Vis.Model.Agent
 					{
 						var nodeRef = Status.DraggingNode.Reference;
 						bool isDraggingStartPoint = Status.ClickSequencePoints[0].IsNear(nodeRef.EndPoint);
-						var pt = isDraggingStartPoint ? nodeRef.StartPoint : nodeRef.EndPoint;
+						var pt = isDraggingStartPoint ? nodeRef.EndPoint : nodeRef.StartPoint;
 						//var targPt = Status.IsHighlightingPoint ? Status.HighlightingPoint : Status.PositionNorm;
 						var targPt = GetSnapPoint(Status.PositionNorm);
                         pt.UpdateWith(targPt);
@@ -324,6 +333,7 @@ namespace Vis.Model.Agent
             }
             Status.PositionMouseDown = null;
             Status.ClickSequencePoints.Clear();
+            Status.ClickNodes.Clear();
             Status.DraggingPoint = null;
             return true;
         }
