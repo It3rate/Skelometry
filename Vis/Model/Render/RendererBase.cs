@@ -165,7 +165,7 @@ namespace Vis.Model.Controller
 	    public void DrawRulerTicks(IPath stroke, IPath unitPath, int penIndex = 0)
 	    {
 		    DrawRulerTicks(stroke, unitPath.Length, penIndex);
-        }
+	    }
 
 	    public void DrawRulerTicks(IPath path, float unitLength, int penIndex = 0)
 	    {
@@ -174,12 +174,15 @@ namespace Vis.Model.Controller
 			    if (unitLength > 0 && path.Length > 0)
 			    {
 				    var strokeLen = path.Length;
+				    float scale = 1.0f; // first tick larger
 				    if (unitLength > 0 && strokeLen > unitLength)
 				    {
 					    for (var total = 0f; total <= strokeLen; total += unitLength)
 					    {
 						    var pt = path.GetPoint(total / strokeLen);
-						    DrawTick(pt, null, 0.7f);
+						    DrawTick(pt, null, scale);
+						    scale = 0.6f;
+
 					    }
 				    }
 			    }

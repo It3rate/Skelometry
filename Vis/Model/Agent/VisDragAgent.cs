@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using Microsoft.ML.Probabilistic.Factors;
 using OpenTK.Input;
 using Vis.Model.Controller;
@@ -70,7 +71,7 @@ namespace Vis.Model.Agent
             _skills = new VisMeasureSkills();
 
             _hoverRender = new SkiaRenderer();
-            _hoverRender.Status = new UIStatus(ViewPad);
+            _hoverRender.Status = new UIStatus(FocusPad,ViewPad);
             _hoverRender.GenerateBitmap(_renderer.Width, _renderer.Height);
             _hoverRender.DrawTicks = false;
             _hoverRender.Pens.IsHoverMap = true;
@@ -160,7 +161,8 @@ namespace Vis.Model.Agent
 
 	            case UIMode.Line:
 	            case UIMode.Circle:
-					var pt = Status.IsHighlightingPoint ? Status.HighlightingPoint.ClonePoint() : Status.PositionNorm.ClonePoint();
+	            case UIMode.ParallelLines:
+                    var pt = Status.IsHighlightingPoint ? Status.HighlightingPoint.ClonePoint() : Status.PositionNorm.ClonePoint();
 					Status.ClickSequencePoints.Add(pt);
 					_skills.Point(this, pt);
 					break;
@@ -198,6 +200,7 @@ namespace Vis.Model.Agent
 					break;
 				case UIMode.Line:
 				case UIMode.Circle:
+				case UIMode.ParallelLines:
 					if (Status.IsMouseDown)
 					{
 						var endPoint = Status.PositionNorm;
@@ -210,14 +213,15 @@ namespace Vis.Model.Agent
 							endPoint = Status.HighlightingPath.Element.ProjectPointOnto(Status.PositionNorm);
 						}
 
-                        var path = (Status.Mode == UIMode.Circle) ?
-						_skills.Circle(this, Status.ClickSequencePoints[0], endPoint) :
-						_skills.Line(this, Status.ClickSequencePoints[0], endPoint);
-						path.UnitReference = (IPath)Status.UnitPath?.Element;
+						var paths = _skills.AddElements(Status.Mode, this, Status.ClickSequencePoints[0], endPoint);
+						foreach (var path in paths)
+						{
+							path.UnitReference = (IPath)Status.UnitPath?.Element;
+                        }
 						result = true;
 					}
 					break;
-			}
+            }
    
             return result | Status.NeedsUpdate;
         }
@@ -262,7 +266,8 @@ namespace Vis.Model.Agent
                     break;
                 case UIMode.Line:
                 case UIMode.Circle:
-	                var endPoint = Status.PositionNorm;
+                case UIMode.ParallelLines:
+                    var endPoint = Status.PositionNorm;
 	                if (Status.IsHighlightingPoint)
 	                {
 		                endPoint = Status.HighlightingPoint;
@@ -276,29 +281,24 @@ namespace Vis.Model.Agent
 	                var dist = startPoint.SquaredDistanceTo(endPoint);
 	                if (dist > startPoint.NearThreshold)
 	                {
-	                    var path = (Status.Mode == UIMode.Circle) ?
-			                _skills.Circle(this, Status.ClickSequencePoints[0], endPoint, true) :
-			                _skills.Line(this, Status.ClickSequencePoints[0], endPoint, true);
-
-	                    if (path != null)
-	                    {
-		                    var attr = ViewPad.GetPadAttributesFor(path);
-		                    if (Status.UnitPath == null)
-		                    {
-			                    if (attr != null)
-			                    {
-				                    Status.UnitPath = attr;
-				                    attr.ElementLinkage = ElementLinkage.IsUnit;
-			                    }
-
-		                    }
-		                    else
-		                    {
-			                    path.UnitReference = (IPath)Status.UnitPath.Element;
-		                    }
-
-		                    Status.SelectedPath = attr;
-	                    }
+		                var paths = _skills.AddElements(Status.Mode, this, Status.ClickSequencePoints[0], endPoint, true);
+		                if (Status.UnitPath == null && paths.Length == 1)
+		                {
+			                var attr = ViewPad.GetPadAttributesFor(paths[0]);
+			                if (attr != null)
+			                {
+				                Status.UnitPath = attr;
+				                attr.ElementLinkage = ElementLinkage.IsUnit;
+				                Status.SelectedPath = attr;
+                            }
+                        }
+		                else
+		                {
+			                foreach (var path in paths)
+			                {
+				                path.UnitReference = (IPath)Status.UnitPath?.Element;
+			                }
+		                }
 	                }
                     break;
             }

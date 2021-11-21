@@ -62,6 +62,8 @@ namespace Vis.Model.UI.Modes
                     Keys.C, true, true),
                 new ModeData("Select Unit", UIMode.SelectUnit, UIState.None, UIDisplay.None, 
 	                Keys.U, false, false, false),
+                new ModeData("Parallel Lines", UIMode.ParallelLines, UIState.None, UIDisplay.None,
+	                Keys.P, true, true),
 
                 new ModeData("Snap To Point", UIMode.None, UIState.SnapToPoint, UIDisplay.None, 
 	                Keys.S, true, true),

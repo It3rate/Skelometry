@@ -43,18 +43,28 @@ namespace Vis.Model.Controller
 
     public enum UIMode
     {
-        None = 0,
-        Line = 1,
-        Polygon = 2,
-        Circle = 3,
-        Oval = 4,
-        Curve = 5,
-        Select = 6,
-        MultiSelect = 7,
-        SelectUnit = 8,
-        Connect = 9,
-        Disconnect = 10,
+        None,
+        Line,
+        Polygon,
+        Circle,
+        Oval,
+        Curve,
+        ParallelLines,
+
+        Select,
+        MultiSelect,
+        SelectUnit,
+        Connect,
+        Disconnect,
     }
+    public static class Extensions
+    {
+	    public static bool IsDrawable(this UIMode mode)
+	    {
+		    return (mode < UIMode.Select);
+	    }
+    }
+
     [Flags]
     public enum UIState
     {
