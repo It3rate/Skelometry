@@ -65,7 +65,7 @@ namespace Vis.Model.Primitives
         {
 	        // Need to figure out a better system for floating locations as landmarks.
             var result = new VisLine(startAndEnd, startAndEnd);
-	        result.IsPointPath = true;
+	        //result.IsPointPath = true;
 	        return result;
         }
 
@@ -197,7 +197,7 @@ namespace Vis.Model.Primitives
             bool result = Object.ReferenceEquals(this, other);
             if (!result && other != null && other is VisLine line)
             {
-                result = (StartPoint == line.StartPoint) && (EndPoint == line.EndPoint);
+                result = (X == line.X) && (Y == line.Y) && (EndPoint == line.EndPoint);
             }
             return result;
         }

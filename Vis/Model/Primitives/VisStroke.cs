@@ -40,10 +40,6 @@ namespace Vis.Model.Primitives
             GenerateSegments();
         }
 
-        public VisNode BestNodeForPoint(VisPoint pt)
-        {
-	        throw new NotImplementedException();
-        }
         public void AddOffset(float x, float y)
         {
             List<IPath> refs = new List<IPath>();
@@ -64,6 +60,28 @@ namespace Vis.Model.Primitives
 	            pts.Add(anchor);
             }
 	        return new VisPolyline(pts);
+        }
+
+        public VisNode BestNodeForPoint(VisPoint pt)
+        {
+	        VisNode result = null;
+            IPath seg = null;
+	        if (Segments.Count > 1 && Segments[1] is VisArc arc)
+	        {
+		        seg = arc;
+	        }
+	        else if (Segments[0] is VisLine line)
+	        {
+		        seg = line;
+	        }
+
+	        if (seg != null)
+	        {
+		        var nearest = ProjectPointOnto(pt);
+		        var ratio = (pt.X - StartPoint.X) / (EndPoint.X - StartPoint.X);
+		        return new VisNode(this, ratio);
+            }
+	        return result;
         }
 
         public VisPoint ProjectPointOnto(VisPoint p)
