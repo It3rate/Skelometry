@@ -11,7 +11,7 @@ namespace Vis.Model.Controller
     using System.Text;
     using System.Threading.Tasks;
 
-    public class PadAttributes
+    public class ElementRecord
     {
 	    public int Index { get; }
 
@@ -24,7 +24,7 @@ namespace Vis.Model.Controller
 	    public ElementState ElementState { get; set; } = ElementState.None;
 	    public ElementLinkage ElementLinkage { get; set; } = ElementLinkage.HasUnit;
 
-	    public PadAttributes(IElement element, PadKind padKind, int index = -1)
+	    public ElementRecord(IElement element, PadKind padKind, int index = -1)
 	    {
 		    Element = element;
 		    PadKind = padKind;

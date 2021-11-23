@@ -69,7 +69,7 @@
     <Compile Include="Model\Connections\VisCorrelations.cs" />
     <Compile Include="Model\UI\ElementModes.cs" />
     <Compile Include="Model\Render\RendererBase.cs" />
-    <Compile Include="Model\Render\PadAttributes.cs" />
+    <Compile Include="Model\Render\ElementRecord.cs" />
     <Compile Include="Model\Render\RenderPoint.cs" />
     <Compile Include="Model\Render\SkiaPens.cs" />
     <Compile Include="Model\Render\SkiaRenderer.cs" />

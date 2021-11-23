@@ -61,15 +61,15 @@ namespace Vis.Model.Controller
 	    public abstract void EndDraw();
 	    public abstract void Flush();
 
-	    public abstract void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f);
-	    public abstract void DrawTick(VisPoint pos, PadAttributes attributes = null, float scale = 1f);
-	    public abstract void DrawCircle(VisCircle circ, PadAttributes attributes = null);
-	    public abstract void DrawOval(VisRectangle rect, PadAttributes attributes = null);
-	    public abstract void DrawRect(VisRectangle rect, PadAttributes attributes = null);
-	    public abstract void DrawLine(VisLine line, PadAttributes attributes = null);
-	    public abstract void DrawLine(VisPoint p0, VisPoint p1, PadAttributes attributes = null);
-	    public abstract void DrawLines(VisPoint[] points, PadAttributes attributes = null);
-	    public abstract void DrawPolyline(VisPolyline polyline, PadAttributes attributes = null);
+	    public abstract void DrawSpot(VisPoint pos, ElementRecord attributes = null, float scale = 1f);
+	    public abstract void DrawTick(VisPoint pos, ElementRecord attributes = null, float scale = 1f);
+	    public abstract void DrawCircle(VisCircle circ, ElementRecord attributes = null);
+	    public abstract void DrawOval(VisRectangle rect, ElementRecord attributes = null);
+	    public abstract void DrawRect(VisRectangle rect, ElementRecord attributes = null);
+	    public abstract void DrawLine(VisLine line, ElementRecord attributes = null);
+	    public abstract void DrawLine(VisPoint p0, VisPoint p1, ElementRecord attributes = null);
+	    public abstract void DrawLines(VisPoint[] points, ElementRecord attributes = null);
+	    public abstract void DrawPolyline(VisPolyline polyline, ElementRecord attributes = null);
 
         protected void OnDrawingComplete()
 	    {
@@ -90,17 +90,17 @@ namespace Vis.Model.Controller
 		    }
 	    }
 
-	    public void DrawElement(PadAttributes padAttributes)
+	    public void DrawElement(ElementRecord elementRecord)
 	    {
-		    var path = padAttributes.Element;
+		    var path = elementRecord.Element;
 
 		    if (path is VisStroke stroke)
 		    {
-                DrawStroke(padAttributes);
+                DrawStroke(elementRecord);
 		    }
 		    else if (path is VisLine line)
 		    {
-                DrawLine(line.StartPoint, line.EndPoint, padAttributes);
+                DrawLine(line.StartPoint, line.EndPoint, elementRecord);
                 if (line.UnitReference != null)
                 {
 	                DrawRulerTicks(line, line.UnitReference);
@@ -108,8 +108,8 @@ namespace Vis.Model.Controller
 		    }
 		    else if (path is VisCircle circ)
 		    {
-			    DrawSpot(circ.Center, padAttributes);
-			    DrawCircle(circ, padAttributes);
+			    DrawSpot(circ.Center, elementRecord);
+			    DrawCircle(circ, elementRecord);
 			    if (circ.UnitReference != null)
 			    {
 				    DrawRulerTicks(circ, circ.UnitReference);
@@ -117,35 +117,35 @@ namespace Vis.Model.Controller
 		    }
 		    else if (path is VisRectangle rect)
 		    {
-			    DrawRect(rect, padAttributes);
+			    DrawRect(rect, elementRecord);
 		    }
 		    else if (path is VisPolyline poly)
 		    {
-			    DrawPolyline(poly, padAttributes);
+			    DrawPolyline(poly, elementRecord);
 		    }
             else if (path is RenderPoint rp)
 		    {
-			    DrawSpot(rp, padAttributes, rp.Scale);
+			    DrawSpot(rp, elementRecord, rp.Scale);
             }
 		    else if (path is VisPoint p)
 		    {
-			    DrawSpot(p, padAttributes);
+			    DrawSpot(p, elementRecord);
 		    }
 	    }
 
-        public void DrawStroke(PadAttributes padAttributes)
+        public void DrawStroke(ElementRecord elementRecord)
         {
-	        if (padAttributes.Element is VisStroke stroke)
+	        if (elementRecord.Element is VisStroke stroke)
 	        {
 		        foreach (var segment in stroke.Segments)
 		        {
 			        if (segment is VisLine line)
 			        {
-				        DrawLine(line, padAttributes);
+				        DrawLine(line, elementRecord);
 			        }
 			        else if (segment is VisArc arc)
 			        {
-				        DrawLines(arc.GetPolylinePoints(), padAttributes);
+				        DrawLines(arc.GetPolylinePoints(), elementRecord);
 			        }
 		        }
 

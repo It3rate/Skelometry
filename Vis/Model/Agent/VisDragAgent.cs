@@ -101,7 +101,7 @@ namespace Vis.Model.Agent
 			        {
 				        var pad = _hoverRender.Status.Pads[i];
 				        var normIndex = pad.GetNormalizedIndex(index);
-				        if (normIndex != -1 && pad.Paths[normIndex] is PadAttributes padAttrs)
+				        if (normIndex != -1 && pad.Paths[normIndex] is ElementRecord padAttrs)
 				        {
 					        Status.HighlightingPath = padAttrs;
 					        result = true;

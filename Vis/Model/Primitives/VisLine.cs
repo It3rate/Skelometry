@@ -197,7 +197,7 @@ namespace Vis.Model.Primitives
             bool result = Object.ReferenceEquals(this, other);
             if (!result && other != null && other is VisLine line)
             {
-                result = (X == line.X) && (Y == line.Y) && (EndPoint == line.EndPoint);
+                result = (X == line.X) && (Y == line.Y ) && (EndPoint == line.EndPoint);
             }
             return result;
         }

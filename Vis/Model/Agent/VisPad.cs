@@ -22,7 +22,7 @@ namespace Vis.Model.Agent
         int Width { get; }
         int Height { get; }
 	   PadStyle PadStyle { get; set;  }
-	   List<PadAttributes> Paths { get; }
+	   List<ElementRecord> Paths { get; }
 
 	   int GetNormalizedIndex(int index);
     }
@@ -40,7 +40,7 @@ namespace Vis.Model.Agent
         public bool AutoIndex { get; set; }
         private int _indexCounter;
 
-        public List<PadAttributes> Paths { get; } = new List<PadAttributes>();
+        public List<ElementRecord> Paths { get; } = new List<ElementRecord>();
         public int Width { get; }
         public int Height { get; }
 
@@ -66,13 +66,13 @@ namespace Vis.Model.Agent
 	        return result;
         }
 
-        public PadAttributes Add(IElement item)
+        public ElementRecord Add(IElement item)
         {
-            var element = AutoIndex ? new PadAttributes(item, PadKind, _indexCounter++) : new PadAttributes(item, PadKind);
+            var element = AutoIndex ? new ElementRecord(item, PadKind, _indexCounter++) : new ElementRecord(item, PadKind);
             Paths.Add(element);
             return element;
         }
-        public void Remove(PadAttributes item)
+        public void Remove(ElementRecord item)
         {
 	        Paths.Remove(item);
         }
@@ -91,9 +91,9 @@ namespace Vis.Model.Agent
                 }
             }
         }
-        public PadAttributes GetPadAttributesFor(IPath item)
+        public ElementRecord GetPadAttributesFor(IPath item)
         {
-	        PadAttributes result = null;
+	        ElementRecord result = null;
 	        foreach (var padAttributes in Paths)
 	        {
 		        // todo: implement all comparator methods for elements

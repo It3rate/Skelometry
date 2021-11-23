@@ -35,7 +35,7 @@ namespace Vis.Model.Controller
 		    GenPens();
 	    }
 
-	    public SKPaint[] GetPensForElement(PadAttributes attributes)
+	    public SKPaint[] GetPensForElement(ElementRecord attributes)
 	    {
 		    SKPaint[] result = new SKPaint[2];
 		    

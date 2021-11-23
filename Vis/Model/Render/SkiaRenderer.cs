@@ -125,19 +125,19 @@ namespace Vis.Model.Controller
             _canvas.DrawBitmap(bitmap, new SKRect(0,0, Width, Height));
         }
 
-        public override void DrawSpot(VisPoint pos, PadAttributes attributes = null, float scale = 1f)
+        public override void DrawSpot(VisPoint pos, ElementRecord attributes = null, float scale = 1f)
         {
 	        var pen = Pens.GetPenForUIType(ElementType.HighlightSpot);
 	        var r = pen.StrokeWidth * scale;
 	        _canvas.DrawCircle(pos.X, pos.Y, r, pen);
         }
-        public override void DrawTick(VisPoint pos, PadAttributes attributes = null, float scale = 1f)
+        public override void DrawTick(VisPoint pos, ElementRecord attributes = null, float scale = 1f)
         {
 	        var pen = Pens.GetPenForUIType(ElementType.MeasureTick);
 	        var r = pen.StrokeWidth * scale;
 	        _canvas.DrawCircle(pos.X, pos.Y, r, pen);
         }
-        public override void DrawCircle(VisCircle circ, PadAttributes attributes = null)
+        public override void DrawCircle(VisCircle circ, ElementRecord attributes = null)
         {
 	        var pens = Pens.GetPensForElement(attributes);
             foreach(var pen in pens)
@@ -149,7 +149,7 @@ namespace Vis.Model.Controller
             }
         }
 
-        public override void DrawOval(VisRectangle rect, PadAttributes attributes = null)
+        public override void DrawOval(VisRectangle rect, ElementRecord attributes = null)
         {
 	        var pens = Pens.GetPensForElement(attributes);
 	        foreach (var pen in pens)
@@ -161,7 +161,7 @@ namespace Vis.Model.Controller
 	        }
         }
 
-        public override void DrawRect(VisRectangle rect, PadAttributes attributes = null)
+        public override void DrawRect(VisRectangle rect, ElementRecord attributes = null)
         {
 	        var pens = Pens.GetPensForElement(attributes);
 	        foreach (var pen in pens)
@@ -173,7 +173,7 @@ namespace Vis.Model.Controller
 	        }
         }
 
-        public override void DrawLine(VisLine line, PadAttributes attributes = null)
+        public override void DrawLine(VisLine line, ElementRecord attributes = null)
         {
 	        var pens = Pens.GetPensForElement(attributes);
 	        foreach (var pen in pens)
@@ -185,7 +185,7 @@ namespace Vis.Model.Controller
 	        }
         }
 
-        public override void DrawLine(VisPoint p0, VisPoint p1, PadAttributes attributes = null)
+        public override void DrawLine(VisPoint p0, VisPoint p1, ElementRecord attributes = null)
         {
 	        var pens = Pens.GetPensForElement(attributes);
 	        foreach (var pen in pens)
@@ -197,7 +197,7 @@ namespace Vis.Model.Controller
 	        }
         }
 
-        public override void DrawLines(VisPoint[] points, PadAttributes attributes = null)
+        public override void DrawLines(VisPoint[] points, ElementRecord attributes = null)
         {
 	        var pens = Pens.GetPensForElement(attributes);
 	        foreach (var pen in pens)
@@ -208,7 +208,7 @@ namespace Vis.Model.Controller
                 }
 	        }
         }
-        public override void DrawPolyline(VisPolyline polyline, PadAttributes attributes = null)
+        public override void DrawPolyline(VisPolyline polyline, ElementRecord attributes = null)
         {
 	        var pens = Pens.GetPensForElement(attributes);
 	        foreach (var pen in pens)
