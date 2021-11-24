@@ -115,7 +115,8 @@ namespace Vis.Model.UI
 
 		public bool IsDraggingPoint => DraggingPoint != null;
 	    public VisPoint DraggingPoint { get; set; }
-		public VisNode DraggingNode { get; set; }
+	    public bool IsDraggingNode => DraggingNode != null;
+        public VisNode DraggingNode { get; set; }
 
 
 	    public bool IsMouseDown => CurrentMouse == MouseButtons.Left;

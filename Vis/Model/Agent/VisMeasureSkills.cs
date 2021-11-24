@@ -60,9 +60,7 @@ namespace Vis.Model.Agent
 	            }
 	            else
 	            {
-		            var pointLine = VisLine.PointPath(pt);
-		            agent.FocusPad.Add(pointLine);
-		            nodes.Add(new VisNode(pointLine, 0));
+                    nodes.Add(agent.AnchorLine.NodeFor(pt));
 	            }
             }
             // last node
@@ -70,9 +68,7 @@ namespace Vis.Model.Agent
             VisNode lastNode = ePath?.BestNodeForPoint(end);
             if (lastNode == null)
             {
-	            var pointLine = VisLine.PointPath(end);
-                agent.FocusPad.Add(pointLine);
-	            nodes.Add(new VisNode(pointLine, 0));
+	            nodes.Add(agent.AnchorLine.NodeFor(end));
             }
             else
             {

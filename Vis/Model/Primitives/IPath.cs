@@ -8,18 +8,24 @@ namespace Vis.Model.Primitives
     public interface IPath : IElement, IEnumerable<VisPoint>
     {
 	    float Length { get; }
-	    VisPoint StartPoint { get; }
+	    bool IsFixed { get; set; }
+        VisPoint StartPoint { get; }
 	    VisPoint MidPoint { get; }
 	    VisPoint EndPoint { get; }
 
-	    VisPoint GetPoint(float position, float offset = 0);
-	    VisPoint GetPointFromCenter(float centeredPosition, float offset = 0);
+	    VisPoint GetPoint(float shift, float offset = 0);
+	    VisPoint GetPointFromCenter(float centeredShift, float offset = 0);
 
-	    VisNode NodeAt(float position, float offset = 0);
+	    int AnchorCount { get; }
+	    VisPoint ClosestAnchor(float shift);
+	    VisPoint ClosestAnchor(VisPoint point);
+
+        VisNode CreateNodeAt(float shift, float offset = 0);
 	    VisNode NodeNear(VisPoint point);
 	    VisNode StartNode { get; }
 	    VisNode MidNode { get; }
 	    VisNode EndNode { get; }
+	    OffsetNode NodeFor(VisPoint pt);
 	    VisNode BestNodeForPoint(VisPoint pt);
 
         IPath UnitReference { get; set; }

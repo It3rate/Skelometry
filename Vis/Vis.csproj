@@ -66,6 +66,7 @@
     <Compile Include="Model\Agent\VisMeasureSkills.cs" />
     <Compile Include="Model\Commands\CommandStack.cs" />
     <Compile Include="Model\Commands\ICommand.cs" />
+    <Compile Include="Model\Connections\OffsetNode.cs" />
     <Compile Include="Model\Connections\VisCorrelations.cs" />
     <Compile Include="Model\UI\ElementModes.cs" />
     <Compile Include="Model\Render\RendererBase.cs" />

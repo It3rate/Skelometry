@@ -81,6 +81,11 @@ namespace Vis.Model.Primitives
         public float SquaredDistanceTo(VisPoint pt) => (pt.X - X) * (pt.X - X) + (pt.Y - Y) * (pt.Y - Y);
         public float DotProduct(VisPoint pt) => X * pt.X + Y * pt.Y; // negative because inverted Y
         public float Atan2(VisPoint pt) => (float)Math.Atan2(pt.Y - Y, pt.X - X);
+        public float SignedDistanceTo(VisPoint pt)
+        {
+	        var sDist = SquaredDistanceTo(pt);
+	        return (float)Math.Sqrt(sDist) * (sDist >= 0 ? 1f : -1f);
+        } 
         public (float, float, float) ABCLine(VisPoint pt)
         {
 	        var a = pt.Y - Y;

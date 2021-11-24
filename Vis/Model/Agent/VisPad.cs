@@ -131,10 +131,10 @@ namespace Vis.Model.Agent
 	        }
 	        return result;
         }
-        public (IPath, VisPoint) PathWithNodeNear(VisPoint query)
+
+        public VisNode ClosestNode(VisPoint query)
         {
-	        IPath pathResult = null;
-	        VisPoint pointResult = null;
+	        VisNode result = null;
             foreach (var item in Paths)
 	        {
 		        if (item.Element is IPath path)
@@ -144,14 +144,13 @@ namespace Vis.Model.Agent
 				        var dist = p.SquaredDistanceTo(query);
 				        if (dist < query.NearThreshold)
 				        {
-					        pathResult = path;
-					        pointResult = p;
+					        result = path.BestNodeForPoint(p);
 					        break;
 				        }
 			        }
 		        }
 	        }
-	        return (pathResult, pointResult);
+	        return result;
         }
 
         public IPrimitive GetSimilar(IPrimitive query)
@@ -173,14 +172,12 @@ namespace Vis.Model.Agent
                     }
                     else if (item.Element is IPath path)
                     {
-                        foreach (VisPoint pp in path)
+	                    var pp = path.ClosestAnchor(qp);
+                        dist = pp.SquaredDistanceTo(qp);
+                        if (dist < qp.NearThreshold)
                         {
-                            dist = pp.SquaredDistanceTo(qp);
-                            if (dist < qp.NearThreshold)
-                            {
-                                result = pp;
-                                break;
-                            }
+                            result = pp;
+                            break;
                         }
                     }
                 }

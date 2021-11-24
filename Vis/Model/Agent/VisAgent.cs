@@ -21,6 +21,7 @@ namespace Vis.Model.Agent
         private IRenderer _renderer;
 
         public VisSkills Skills { get; }
+        public IPath AnchorLine { get; private set; }
 
         public VisAgent(IRenderer renderer)
         {

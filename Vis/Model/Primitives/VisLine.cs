@@ -21,7 +21,7 @@ namespace Vis.Model.Primitives
         public VisPoint Center => GetPoint(0.5f, 0);
 
         public override bool IsPath => true;
-        public bool IsPointPath { get; private set; }
+        public bool IsFixed { get; set; } = false;
 
         public IPath UnitReference { get; set; }
 
@@ -38,11 +38,18 @@ namespace Vis.Model.Primitives
                 return _length;
             }
         }
+        public int AnchorCount => 2;
+        public VisPoint ClosestAnchor(float shift) => shift <= 0.5f ? StartPoint : EndPoint;
+        public VisPoint ClosestAnchor(VisPoint point)
+        {
+	        var len0 = Math.Abs(point.SquaredDistanceTo(StartPoint));
+	        var len1 = Math.Abs(point.SquaredDistanceTo(EndPoint));
+	        return len0 > len1 ? EndPoint.ClonePoint() : StartPoint.ClonePoint();
+        }
 
         private VisLine(float startX, float startY, float endX, float endY) : base(startX, startY)
         {
             EndPoint = new VisPoint(endX, endY);
-            IsPointPath = false;
         }
         private VisLine(VisPoint start, VisPoint endPoint) : this(start.X, start.Y, endPoint.X, endPoint.Y) { }
         private VisLine(VisLine line) : this(line.StartPoint, line.EndPoint) { }
@@ -61,20 +68,20 @@ namespace Vis.Model.Primitives
             var end = new VisPoint(endX, endY);
             return new VisLine(start, end);
         }
-        public static VisLine PointPath(VisPoint startAndEnd)
-        {
-	        // Need to figure out a better system for floating locations as landmarks.
-            var result = new VisLine(startAndEnd, startAndEnd);
-	        //result.IsPointPath = true;
-	        return result;
-        }
+
 
         public override void AddOffset(float x, float y)
         {
-	        base.AddOffset(x, y);
-	        EndPoint.AddOffset(x, y);
+	        if (!IsFixed)
+	        {
+		        base.AddOffset(x, y);
+		        EndPoint.AddOffset(x, y);
+	        }
+	        else
+	        {
+	        }
         }
-        public VisPoint GetPoint(float position, float offset = 0)
+        public VisPoint GetPoint(float shift, float offset = 0)
         {
 	        var xOffset = 0f;
 	        var yOffset = 0f;
@@ -86,16 +93,17 @@ namespace Vis.Model.Primitives
 		        xOffset = (float)(-Math.Sin(ang) * Math.Abs(offset) * Math.Sign(-offset));
 		        yOffset = (float)(Math.Cos(ang) * Math.Abs(offset) * Math.Sign(-offset));
 	        }
-	        return new VisPoint(X + xDif * position + xOffset, Y + yDif * position - yOffset);
+	        return new VisPoint(X + xDif * shift + xOffset, Y + yDif * shift - yOffset);
         }
 
-        public VisPoint GetPointFromCenter(float centeredPosition, float offset = 0)
+        public VisPoint GetPointFromCenter(float centeredShift, float offset = 0)
         {
-            return GetPoint(centeredPosition * 2f - 1f, offset);
+            return GetPoint(centeredShift * 2f - 1f, offset);
         }
 
-        public VisNode NodeAt(float position) => new VisNode(this, position);
-        public VisNode NodeAt(float position, float offset) => new TipNode(this, position, offset);
+        public VisNode CreateNodeAt(float shift) => new VisNode(this, shift);
+
+        public VisNode CreateNodeAt(float shift, float offset) => new OffsetNode(this, shift, offset);
         public VisNode StartNode => new VisNode(this, 0f);
         public VisNode MidNode => new VisNode(this, 0.5f);
         public VisNode EndNode => new VisNode(this, 1f);
@@ -129,6 +137,13 @@ namespace Vis.Model.Primitives
 	            result = new VisPoint(x, y);
             }
             return result;
+        }
+
+        public OffsetNode NodeFor(VisPoint pt)
+        {
+	        var onLine = BestNodeForPoint(pt);
+	        var dist = -pt.SignedDistanceTo(onLine.Location);
+            return new OffsetNode(onLine.Reference, onLine.Shift, dist);
         }
 
         public VisNode BestNodeForPoint(VisPoint pt)

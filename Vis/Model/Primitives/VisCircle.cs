@@ -22,6 +22,7 @@ namespace Vis.Model.Primitives
         public float Radius { get; private set; }
 
         public override bool IsPath => true;
+        public bool IsFixed { get; set; } = false;
 
         public float OriginAngle { get; private set; }
         public float Length => (float)(2f * Radius * Math.PI);
@@ -32,6 +33,10 @@ namespace Vis.Model.Primitives
 
         public VisPoint Center => this;
         public VisNode CenterNode;
+
+        public int AnchorCount => 2;
+        public VisPoint ClosestAnchor(float shift) => PerimeterOrigin;
+        public VisPoint ClosestAnchor(VisPoint point) => PerimeterOrigin;
 
         public VisNode BestNodeForPoint(VisPoint pt)
         {
@@ -54,7 +59,7 @@ namespace Vis.Model.Primitives
         public VisCircle(VisPoint center, VisPoint perimeterOrigin, ClockDirection direction = ClockDirection.CW) : this(center.X, center.Y, perimeterOrigin.X, perimeterOrigin.Y, direction)
         {
         }
-        public VisCircle(VisNode center, VisNode perimeterOrigin, ClockDirection direction = ClockDirection.CW) : this(center.Anchor, perimeterOrigin.Anchor, direction) { }
+        public VisCircle(VisNode center, VisNode perimeterOrigin, ClockDirection direction = ClockDirection.CW) : this(center.Location, perimeterOrigin.Location, direction) { }
         public VisCircle(VisCircle circle) : this(circle.Center, circle.PerimeterOrigin, circle.Direction) { }
 
         /// <summary>
@@ -62,7 +67,7 @@ namespace Vis.Model.Primitives
         /// </summary>
 		public static VisCircle CircleFromLineAndPoint(VisLine line, VisNode perimeterOrigin, ClockDirection direction = ClockDirection.CW)
         {
-            var p0 = perimeterOrigin.Anchor;
+            var p0 = perimeterOrigin.Location;
             var onLine = p0.ProjectedOntoLine(line);
             var diff = p0.Subtract(onLine);
             var radius = diff.VectorLength();
@@ -77,21 +82,21 @@ namespace Vis.Model.Primitives
         }
 
         /// <summary>
-        /// Gets point along circumference of this circle using position and offset.
+        /// Gets point along circumference of this circle using shift and offset.
         /// </summary>
-        /// <param name="position">Normalized (0-1) amount along the circle (0 is north, positive is clockwise, negative is counter clockwise). </param>
+        /// <param name="shift">Normalized (0-1) amount along the circle (0 is north, positive is clockwise, negative is counter clockwise). </param>
         /// <param name="offset">Offset from circumference. Negative is inside, positive is outside. Zero is default, -1 is start.</param>
         /// <returns></returns>
-        public VisPoint GetPoint(float position, float offset = 0)
+        public VisPoint GetPoint(float shift, float offset = 0)
         {
-            var len = pi2 * position;
+            var len = pi2 * shift;
             var pos = OriginAngle + (Direction == ClockDirection.CW ? len : -len);
             return new VisPoint(X + (float)Math.Cos(pos) * (Radius + offset), Y + (float)Math.Sin(pos) * (Radius + offset));
         }
 
-        public VisPoint GetPointFromCenter(float centeredPosition, float offset = 0)
+        public VisPoint GetPointFromCenter(float centeredShift, float offset = 0)
         {
-            return GetPoint(centeredPosition * 2f - 1f, offset);
+            return GetPoint(centeredShift * 2f - 1f, offset);
         }
         public VisPoint GetPoint(CompassDirection direction, float offset = 0)
         {
@@ -101,18 +106,22 @@ namespace Vis.Model.Primitives
 
         public VisStroke GetTangentArc(VisPoint leftPoint, VisPoint rightPoint) => null;
 
-        public VisNode NodeAt(float position) => new VisNode(this, position);
-        public VisNode NodeAt(float position, float offset) => new TipNode(this, position, offset);
+        public OffsetNode NodeFor(VisPoint pt)
+        {
+	        throw new NotImplementedException();
+        }
+        public VisNode CreateNodeAt(float shift) => new VisNode(this, shift);
+        public VisNode CreateNodeAt(float shift, float offset) => new OffsetNode(this, shift, offset);
 
         public VisNode StartNode => new VisNode(this, 0f);
         public VisNode MidNode => new VisNode(this, 0.5f);
         public VisNode EndNode => new VisNode(this, 1f);
 
-        public TipNode NodeAt(CompassDirection direction, float offset = 0)
+        public OffsetNode CreateNodeAt(CompassDirection direction, float offset = 0)
         {
             var rads = direction.Radians() - OriginAngle;
             rads = (rads + pi2) % pi2;
-            return new TipNode(this, rads / pi2, offset);
+            return new OffsetNode(this, rads / pi2, offset);
         }
 
         public ClockDirection CounterDirection => Direction.Counter();

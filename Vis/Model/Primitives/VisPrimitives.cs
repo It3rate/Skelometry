@@ -28,7 +28,7 @@ namespace Vis.Model.Primitives
 		float Similarity(IPrimitive p);
 		VisPoint Sample(Gaussian g);
 	}
-	public interface IPrimitivePath : IPath
+	public interface IPrimitivePath : IElement, IPath
 	{
 		VisPoint[] GetPolylinePoints(int pointCount = 24);
 	}
@@ -56,13 +56,13 @@ namespace Vis.Model.Primitives
     //    public VisOval(Node center, Node perimeterOrigin, Node perimeterSide) : base(center, perimeterOrigin)
     //    {
     //	    PerimeterSide = perimeterSide;
-    //	    RadiusSide = center.Anchor.DistanceTo(PerimeterSide.Anchor);
+    //	    RadiusSide = center.Location.DistanceTo(PerimeterSide.Location);
     //       }
 
     //    public override Point GetPoint(float position, float offset)
     //    {
     //	    var rads = Utils.NormToRadians(position);
-    //	    return new Point(Anchor.X + (float)Math.Sin(rads) * (Radius + offset), Anchor.Y + (float)Math.Cos(rads) * (Radius + offset));
+    //	    return new Point(Location.X + (float)Math.Sin(rads) * (Radius + offset), Location.Y + (float)Math.Cos(rads) * (Radius + offset));
     //    }
     //       public Stroke GetElement(CompassDirection direction) => null;
     //   }
@@ -71,16 +71,16 @@ namespace Vis.Model.Primitives
     //	public override VisElementType ElementType => VisElementType.Square;
 
     //	public Stroke Reference { get; }
-    //	public float Position => Val0;
+    //	public float Shift => Val0;
     //	public float Radius => Val1;
 
 
-    //	public override Point Anchor { get; }
+    //	public override Point Location { get; }
 
     //	public VisSquare(Stroke reference, float position, float offset) : base(position, offset * reference.Length())
     //	{
     //		Reference = reference;
-    //		Anchor = Reference.GetPoint(Position, 0); // start
+    //		Location = Reference.GetPoint(Shift, 0); // start
     //	}
 
     //	public Stroke GetElement(CompassDirection direction) => null;
@@ -88,7 +88,7 @@ namespace Vis.Model.Primitives
     //	public override Point GetPoint(float position, float offset)
     //	{
     //		var rads = Utils.NormToRadians(position);
-    //		return new Point(Anchor.X + (float)Math.Sin(rads) * (Radius + offset), Anchor.Y + (float)Math.Cos(rads) * (Radius + offset));
+    //		return new Point(Location.X + (float)Math.Sin(rads) * (Radius + offset), Location.Y + (float)Math.Cos(rads) * (Radius + offset));
     //	}
     //   }
 

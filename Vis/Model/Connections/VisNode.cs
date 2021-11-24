@@ -17,31 +17,35 @@ namespace Vis.Model.Connections
 	    public static readonly VisNode Empty = new VisNode(null, -1);
 
         public IPath Reference { get; } // if reference is a stroke, this must be a joint
-        public float Position { get; }
+        public float Shift { get; protected set; } // 0f is beginning, 1f is end
 
         public VisNode PreviousNode { get; private set; }
         public VisNode NextNode { get; private set; }
 
         // calculated
-        public VisPoint Anchor => Reference.GetPoint(Position); //; protected set; }
-        public float X => Anchor.X;
-        public float Y => Anchor.Y;
+        public virtual VisPoint Location => Reference.GetPoint(Shift);
+        public float X => Location.X;
+        public float Y => Location.Y;
 
-        public virtual VisPoint Start => Anchor;
-        public virtual VisPoint End => Anchor;
+        public virtual VisPoint Start => Location;
+        public virtual VisPoint End => Location;
 
         public bool IsPath => true;
         public bool IsEmpty => Object.ReferenceEquals(this, Empty);
 
-        public VisNode(IPath reference, float position)
+        public VisNode(IPath reference, float shift)
         {
             Reference = reference;
-            Position = position;
-            //Anchor = reference.GetPoint(position);
+            Shift = shift;
+            //Location = reference.GetPoint(shift);
         }
 
+        public VisPoint ClosestAnchor()
+        {
+	        return Reference.ClosestAnchor(Shift);
+        }
 
-        public void AddOffset(float x, float y)
+        public virtual void AddOffset(float x, float y)
         {
 	        if (Reference is IPrimitive primitive)
 	        {
@@ -63,9 +67,9 @@ namespace Vis.Model.Connections
 	        throw new NotImplementedException();
         }
 
-        public VisPoint GetPoint(float position, float offset = 0)
+        public VisPoint GetPoint(float shift, float offset = 0)
         {
-            return Reference.GetPoint(position, offset);
+            return Reference.GetPoint(shift, offset);
         }
 
         public float Similarity(IPrimitive p) => 0;
@@ -73,11 +77,11 @@ namespace Vis.Model.Connections
 
         public VisNode CloneNode()
         {
-	        return new VisNode(Reference, Position);
+	        return new VisNode(Reference, Shift);
         }
         public virtual object Clone()
         {
-	        return new VisNode(Reference, Position);
+	        return new VisNode(Reference, Shift);
         }
 
         //public override bool Equals(object obj) => this.Equals(obj as IPrimitive);
@@ -88,7 +92,7 @@ namespace Vis.Model.Connections
         //public override int GetHashCode() => this.GetHashCode();
         public override string ToString()
         {
-            return "Node:" + Anchor.ToString();
+            return "Node:" + Location.ToString();
         }
     }
 
@@ -122,14 +126,14 @@ namespace Vis.Model.Connections
 
         public VisPoint GetTangentFromPoint(VisNode node)
         {
-            // if node is null, get point on circumference using position. 
+            // if node is null, get point on circumference using shift. 
             // if it is another Tangent node use circleRef tangents
             _start = CircleRef.FindTangentInDirection(node.End, Direction);
             return _start;
         }
         public VisPoint GetTangentToPoint(VisNode node)
         {
-            // if p is null, get point on circumference using position.
+            // if p is null, get point on circumference using shift.
             // if it is another Tangent node use circleRef tangents
             _end = CircleRef.FindTangentInDirection(node.Start, Direction.Counter());
             return _end;
@@ -145,38 +149,6 @@ namespace Vis.Model.Connections
         public override string ToString()
         {
             return string.Format("tanNode:{0:0.##},{1:0.##} e{2:0.##},{3:0.##}", Start.X, Start.Y, End.X, End.Y);
-        }
-    }
-
-    public class TipNode : VisNode
-    {
-        // Offset can't be zero in a middle node, as it causes overlap on lines that are tangent to each other. 
-        // The corner of a P is part of the shape with potential overlap on the serif.
-        // Maybe X could be a V with overlap.H would be a half U with 0.5 overlap. Maybe this is too obfuscated. Yes it is. Might work for serifs though.
-        public float Offset { get; }
-
-        public TipNode(IPath reference, float position, float offset) : base(reference, position)
-        {
-            Offset = offset;
-            //Anchor = reference.GetPoint(position, offset);
-        }
-        //public TipNode(IPath reference, float position, float offset, float length) : base(reference, position)
-        //{
-        //	Offset = offset;
-        //	Length = length;
-        //}
-
-        public TipNode CloneTipNode()
-        {
-	        return new TipNode(Reference, Position, Offset);
-        }
-        public override object Clone()
-        {
-	        return new TipNode(Reference, Position, Offset);
-        }
-        public override string ToString()
-        {
-            return string.Format("tipNode:{0:0.##},{1:0.##} o{2:0.##}", Anchor.X, Anchor.Y, Offset);
         }
     }
 

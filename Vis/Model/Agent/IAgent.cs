@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vis.Model.Controller;
 using Vis.Model.Primitives;
 using Vis.Model.UI;
 
@@ -15,6 +16,7 @@ namespace Vis.Model.Agent
         VisPad FocusPad { get; }
         VisPad ViewPad { get; }
         UIStatus Status { get; }
+        IPath AnchorLine { get; }
 
         void Clear();
         void Draw();

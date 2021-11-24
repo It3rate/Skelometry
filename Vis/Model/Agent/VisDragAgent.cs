@@ -56,11 +56,17 @@ namespace Vis.Model.Agent
 	    public UIStatus Status { get; }
 
         public int _unitPixels = 220;
+        private float _normWidth;
+        private float _normHeight;
+        public IPath AnchorLine { get; private set; }
 
         public VisDragAgent(SkiaRenderer renderer)
         {
             _renderer = renderer;
             _renderer.UnitPixels = _unitPixels;
+            _normWidth = _renderer.Width / (float)_renderer.UnitPixels;
+            _normHeight = _renderer.Height / (float)_renderer.UnitPixels;
+
             _renderer.DrawingComplete += _renderer_DrawingComplete;
 
             WorkingPad = new VisPad(typeof(VisPoint), _renderer.Width, _renderer.Height, PadKind.Working, false);
@@ -81,6 +87,10 @@ namespace Vis.Model.Agent
 
             Status.Mode = UIMode.Line;
             //Status.PreviousMode = UIModeChange.Line;
+
+            AnchorLine = VisLine.ByEndpoints(0, _normHeight / 2f, _normWidth, _normHeight / 2f);
+            AnchorLine.IsFixed = true;
+            FocusPad.Add(AnchorLine);
         }
 
         private bool SetMouseData(MouseEventArgs e)
@@ -162,25 +172,13 @@ namespace Vis.Model.Agent
 	            case UIMode.Select:
 					if (Status.IsHighlightingPoint)
 					{
-						var (nearPath, nearPt) = ViewPad.PathWithNodeNear(Status.HighlightingPoint);
-						if (nearPath == null)
-						{
-							(nearPath, nearPt) = FocusPad.PathWithNodeNear(Status.HighlightingPoint);
-                        }
-
-						if (nearPath != null)
-						{
-							bool isStartPoint = nearPath.StartPoint == nearPt;
-							Status.ClickSequencePoints.Add(isStartPoint ? nearPath.EndPoint : nearPath.StartPoint);
-							if (nearPath is VisStroke stroke)
-							{
-								Status.DraggingNode = isStartPoint ? stroke.StartNode : stroke.EndNode;
-                            }
-							else
-							{
-								//Status.DraggingNode = isStartPoint ? nearPath.StartNode : nearPath.EndNode;
-                            }
-							Status.DraggingPoint = nearPt;
+                        var nearNode = ViewPad.ClosestNode(Status.HighlightingPoint) ?? FocusPad.ClosestNode(Status.HighlightingPoint);
+                        if(nearNode != null)
+                        {
+	                        Status.DraggingNode = nearNode;
+	                        var opposite = nearNode.GetPoint(1f - nearNode.Shift); // should be previous node
+	                        Status.ClickSequencePoints.Add(opposite);
+							Status.DraggingPoint = nearNode.Location;
 							Status.HighlightedPathToSelected();
 						}
 					}
@@ -270,6 +268,28 @@ namespace Vis.Model.Agent
             // if dragging point from node, update node to show new value and same reference. Means moving will drag along node path.
             switch (Status.Mode)
             {
+                case UIMode.Select:
+                    if (Status.IsDraggingNode)
+					{
+						//var nodeRef = Status.DraggingNode.Reference;
+						//bool isDraggingStartPoint = Status.ClickSequencePoints[0].IsNear(nodeRef.EndPoint);
+						//var pt = isDraggingStartPoint ? nodeRef.EndPoint : nodeRef.StartPoint;
+
+						//var pt = Status.DraggingPoint; 
+						var drag = Status.DraggingNode;
+						var pt = drag.Reference.ClosestAnchor(drag.Shift);
+						var targPt = GetSnapPoint(Status.PositionNorm);
+                        pt.UpdateWith(targPt);
+						ViewPad.RecalculateAll();
+                    }
+                    else if (Status.PositionMouseDown != null && Status.HasSelectedPath)
+                    {
+	                    var dif = Status.PositionNorm.Subtract(Status.PositionMouseDown);
+	                    var stroke = Status.SelectedPath.Element;
+	                    stroke.AddOffset(dif.X, dif.Y);
+	                    ViewPad.RecalculateAll();
+                    }
+                    break;
                 case UIMode.SelectUnit:
 		            if (Status.IsHighlightingPath)
 		            {
@@ -283,26 +303,6 @@ namespace Vis.Model.Agent
 			            }
 		            }
 		            break;
-                case UIMode.Select:
-                    if (Status.IsDraggingPoint)
-					{
-						//var nodeRef = Status.DraggingNode.Reference;
-						//bool isDraggingStartPoint = Status.ClickSequencePoints[0].IsNear(nodeRef.EndPoint);
-						//var pt = isDraggingStartPoint ? nodeRef.EndPoint : nodeRef.StartPoint;
-
-						var pt = Status.DraggingPoint;
-						var targPt = GetSnapPoint(Status.PositionNorm);
-                        pt.UpdateWith(targPt);
-						ViewPad.RecalculateAll();
-                    }
-                    else if (Status.PositionMouseDown != null && Status.HasSelectedPath)
-                    {
-	                    var dif = Status.PositionNorm.Subtract(Status.PositionMouseDown);
-	                    var stroke = Status.SelectedPath.Element;
-	                    stroke.AddOffset(dif.X, dif.Y);
-	                    ViewPad.RecalculateAll();
-                    }
-                    break;
                 case UIMode.Line:
                 case UIMode.Circle:
                 case UIMode.ParallelLines:

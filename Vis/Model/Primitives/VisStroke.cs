@@ -14,23 +14,46 @@ namespace Vis.Model.Primitives
         public List<VisNode> Nodes { get; } = new List<VisNode>();
 
         public bool IsPath => true;
+        public bool IsFixed { get; set; } = false;
 
-        public VisPoint Anchor => StartNode.Anchor;
+        public VisPoint Anchor => StartNode.Location;
         private float _length;
         public float Length => _length;
-        public VisPoint StartPoint => StartNode.Anchor;
+        public VisPoint StartPoint => StartNode.Location;
         public VisPoint MidPoint => GetPoint(0.5f, 0);
-        public VisPoint EndPoint => EndNode.Anchor;
+        public VisPoint EndPoint => EndNode.Location;
         public VisPoint Center => MidPoint; // Will be the center of the bounds once that is calculated
 
         public VisNode StartNode => Nodes[0];
         public VisNode MidNode => new VisNode(this, 0.5f);
         public VisNode EndNode => Nodes[Nodes.Count - 1];
 
-        private List<VisPoint> Anchors = new List<VisPoint>();
+        private List<VisPoint> GenPoints = new List<VisPoint>();
         public List<IPrimitivePath> Segments = new List<IPrimitivePath>();
         public IPath UnitReference { get; set; }
 
+        public int AnchorCount => Segments.Sum(seg => seg.AnchorCount);
+        public VisPoint ClosestAnchor(float shift)
+        {
+	        var subNode = SubNodeAt(shift);
+	        return subNode.Reference.ClosestAnchor(subNode.Shift);
+        }
+        public VisPoint ClosestAnchor(VisPoint point)
+        {
+	        VisPoint result = null;
+	        var shortest = float.MaxValue;
+	        foreach (var node in Nodes)
+	        {
+		        var closest = node.Location;
+		        var dist = Math.Abs(point.SquaredDistanceTo(closest));
+		        if(dist < shortest)
+		        {
+			        shortest = dist;
+			        result = closest;
+		        }
+	        }
+	        return result;
+        }
 
         public VisStroke(VisNode first, VisNode second, params VisNode[] remaining)
         {
@@ -40,28 +63,39 @@ namespace Vis.Model.Primitives
             GenerateSegments();
         }
 
-        public void AddOffset(float x, float y)
+        public virtual void AddOffset(float x, float y)
         {
             List<IPath> refs = new List<IPath>();
 	        foreach (var node in Nodes)
 	        {
 		        if (!refs.Contains(node.Reference))
 		        {
-			        node.Reference.AddOffset(x, y);
-                    refs.Add(node.Reference);
+			        if (!node.Reference.IsFixed)
+			        {
+				        node.Reference.AddOffset(x, y);
+						refs.Add(node.Reference);
+			        }
+			        else
+			        {
+                        node.AddOffset(x, y);
+			        }
 		        }
 	        }
         }
         public VisPolyline GetPolyline()
         {
             List<VisPoint> pts = new List<VisPoint>();
-            foreach (var anchor in Anchors)
+            foreach (var pt in GenPoints)
             {
-	            pts.Add(anchor);
+	            pts.Add(pt);
             }
 	        return new VisPolyline(pts);
         }
 
+        public OffsetNode NodeFor(VisPoint pt)
+        {
+	        throw new NotImplementedException();
+        }
         public VisNode BestNodeForPoint(VisPoint pt)
         {
 	        VisNode result = null;
@@ -101,10 +135,11 @@ namespace Vis.Model.Primitives
         private void GenerateSegments()
         {
             Segments.Clear();
-            Anchors.Clear();
+            GenPoints.Clear();
             VisPoint curPoint = Nodes[0].Start;
-            Anchors.Add(Nodes[0].Start);
+            GenPoints.Add(Nodes[0].Start);
 
+            int genPointIndex = 0;
             for (var i = 0; i < Nodes.Count; i++)
             {
                 var curNode = Nodes[i];
@@ -119,20 +154,24 @@ namespace Vis.Model.Primitives
                             var arc = new VisArc(tanNode.CircleRef, p0, p1, tanNode.Direction);
                             Segments.Add(VisLine.ByEndpoints(curPoint, p0));
                             Segments.Add(arc);
-                            Anchors.AddRange(arc.GetPolylinePoints());
+                            GenPoints.AddRange(arc.GetPolylinePoints());
                             curPoint = p1;
                             break;
                         }
-                    case TipNode tipNode:
-                        Anchors.Add(curNode.Start);
-                        Segments.Add(VisLine.ByEndpoints(curPoint, curNode.End));
-                        curPoint = curNode.End;
-                        break;
+                    case OffsetNode tipNode:
+	                    if (i > 0)
+	                    {
+		                    GenPoints.Add(curNode.Start);
+		                    Segments.Add(VisLine.ByEndpoints(curPoint, curNode.End));
+		                    curPoint = curNode.End;
+	                    }
+
+	                    break;
                     default:
                         {
                             if (i > 0)
                             {
-                                Anchors.Add(curNode.Start);
+                                GenPoints.Add(curNode.Start);
                                 Segments.Add(VisLine.ByEndpoints(curPoint, curNode.Start));
                                 curPoint = curNode.End;
                             }
@@ -149,9 +188,9 @@ namespace Vis.Model.Primitives
             }
         }
 
-        public VisPoint GetPoint(float position, float offset = 0)
+        public VisPoint GetPoint(float shift, float offset = 0)
         {
-            var pos = Length * position;
+            var pos = Length * shift;
             var len = 0f;
             var targetSegment = Segments[0];
             foreach (var segment in Segments)
@@ -171,9 +210,9 @@ namespace Vis.Model.Primitives
             return targetSegment.GetPoint(targetPosition, offset);
         }
 
-        public VisPoint GetPointFromCenter(float centeredPosition, float offset = 0)
+        public VisPoint GetPointFromCenter(float centeredShift, float offset = 0)
         {
-            return GetPoint(centeredPosition * 2f - 1f, offset);
+            return GetPoint(centeredShift * 2f - 1f, offset);
         }
 
         public void AddNodes(params VisNode[] nodes)
@@ -192,10 +231,10 @@ namespace Vis.Model.Primitives
         public float CompareTo(IPath element) => 0;
 
         public bool IntersectsWith(VisStroke stroke) => false;
-        public float DistanceTo(VisStroke stroke, out float position, out float targetPosition)
+        public float DistanceTo(VisStroke stroke, out float shift, out float targetShift)
         {
-            position = 0;
-            targetPosition = 0;
+            shift = 0;
+            targetShift = 0;
             return 0;
         }
 
@@ -204,8 +243,30 @@ namespace Vis.Model.Primitives
         public float LikelyDiagonalUp { get; }
         public float LikelyDiagonalDown { get; }
 
-        public VisNode NodeAt(float position) => new VisNode(this, position);
-        public VisNode NodeAt(float position, float offset) => new TipNode(this, position, offset);
+        public VisNode SubNodeAt(float shift)
+        {
+	        float targLen = Length * shift;
+	        float len = 0;
+	        int index = 0;
+	        float subShift = 0;
+            foreach (var segment in Segments)
+	        {
+		        float refLen = segment.Length;
+		        if (len + refLen >= targLen)
+		        {
+			        subShift = (targLen - len) / refLen;
+			        break;
+		        }
+		        else
+		        {
+					index++;
+			        len += refLen;
+		        }
+	        }
+            return new VisNode(Nodes[index].Reference, subShift);
+        }
+        public VisNode CreateNodeAt(float shift) => new VisNode(this, shift);
+        public VisNode CreateNodeAt(float shift, float offset) => new OffsetNode(this, shift, offset);
         public VisNode NodeNear(VisPoint point)
         {
 	        VisNode result = null;

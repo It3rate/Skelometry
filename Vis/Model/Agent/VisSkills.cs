@@ -56,7 +56,7 @@ namespace Vis.Model.Agent
             var rightStroke = new VisStroke(topLine.MidNode, bottomLine.EndNode);
             viewPad.Add(rightStroke);
 
-            var midStroke = new VisStroke(leftStroke.NodeAt(.6f), rightStroke.NodeAt(.6f));
+            var midStroke = new VisStroke(leftStroke.CreateNodeAt(.6f), rightStroke.CreateNodeAt(.6f));
             viewPad.Add(midStroke);
 
             return letterbox;
@@ -82,26 +82,26 @@ namespace Vis.Model.Agent
             var rightLine = letterbox.GetLine(CompassDirection.E);
             var seenLeftStroke = viewPad.GetSimilar((IPath)leftLine);
 
-            //var radius = topLine.NodeAt(0.55f, 0f);
-            //var center = topLine.NodeAt(0.55f, 0.22f);
+            //var radius = topLine.CreateNode(0.55f, 0f);
+            //var center = topLine.CreateNode(0.55f, 0.22f);
             //var topCircle = new Circle(center, radius);
-            var topCircle = VisCircle.CircleFromLineAndPoint(topLine, rightLine.NodeAt(0.25f), ClockDirection.CCW);
+            var topCircle = VisCircle.CircleFromLineAndPoint(topLine, rightLine.CreateNodeAt(0.25f), ClockDirection.CCW);
             focusPad.Add(topCircle);
             var circleNode = new TangentNode(topCircle, ClockDirection.CW);
 
-            var midNode = seenLeftStroke.NodeAt(0.55f);
+            var midNode = seenLeftStroke.CreateNodeAt(0.55f);
 
             //var loopStartJoint = new VisJoint(seenLeftStroke.StartNode, circleNode0, VisJointType.Corner);
             //var circleJoint = new VisJoint(circleNode0, circleNode1, VisJointType.Curve);
-            //var loopEndJoint = new VisJoint(circleNode1, seenLeftStroke.NodeAt(0.5f), VisJointType.Butt);
+            //var loopEndJoint = new VisJoint(circleNode1, seenLeftStroke.CreateNode(0.5f), VisJointType.Butt);
             var loopStroke = new VisStroke(seenLeftStroke.StartNode, circleNode, midNode);
             viewPad.Add(loopStroke);
 
             // Need a way to create a butt joint from a start to end point (or angle) at the first intersection point of a stroke.
             // Joints tell about shapes, but they should also be the way this thinks about and creates shapes.
             var circRefNode = new VisNode(topCircle, 0);
-            var tailStart = loopStroke.NodeAt(rTailStart);// topCircle.NodeAt(CompassDirection.S); 
-            var tailStroke = new VisStroke(tailStart, rightLine.NodeAt(1f));
+            var tailStart = loopStroke.CreateNodeAt(rTailStart);// topCircle.CreateNode(CompassDirection.S); 
+            var tailStroke = new VisStroke(tailStart, rightLine.CreateNodeAt(1f));
             viewPad.Add(tailStroke);
 
             return letterbox;
@@ -117,10 +117,10 @@ namespace Vis.Model.Agent
 
             var circle = new VisCircle(letterbox.Center, letterbox.GetPoint(CompassDirection.E), ClockDirection.CCW);
             focusPad.Add(circle);
-            var startC = circle.NodeAt(0.1f);
-            var endC = circle.NodeAt(0.9f);
+            var startC = circle.CreateNodeAt(0.1f);
+            var endC = circle.CreateNodeAt(0.9f);
             var circleNode = new TangentNode(circle, ClockDirection.CCW);
-            //var loopStroke = new Stroke(rightLine.NodeAt(.4f), circleNode, rightLine.NodeAt(.6f));
+            //var loopStroke = new Stroke(rightLine.CreateNode(.4f), circleNode, rightLine.CreateNode(.6f));
             var loopStroke = new VisStroke(startC, circleNode, endC);
             viewPad.Add(loopStroke);
 
@@ -145,14 +145,14 @@ namespace Vis.Model.Agent
             //var trLine = Line.ByEndpoints(rightLine.StartPoint, midLine.EndPoint);
             var topLine = letterbox.GetLine(CompassDirection.N);
             var trLine = VisLine.ByEndpoints(topLine.GetPoint(bTopCenter), midLine.GetPoint(bTopCenter));
-            var topCircle = VisCircle.CircleFromLineAndPoint(midLine, trLine.MidNode, ClockDirection.CW); //rightLine.NodeAt(trLine.MidPoint.Y), ClockDirection.CW);
+            var topCircle = VisCircle.CircleFromLineAndPoint(midLine, trLine.MidNode, ClockDirection.CW); //rightLine.CreateNode(trLine.MidPoint.Y), ClockDirection.CW);
             focusPad.Add(topCircle);
             var circleNode = new TangentNode(topCircle);
             var loopStroke = new VisStroke(seenLeftStroke.StartNode, circleNode, midNode);
             viewPad.Add(loopStroke);
 
             var botLine = letterbox.GetLine(CompassDirection.S);
-            var botCircle = VisCircle.CircleFromLineAndPoint(rightLine, botLine.NodeAt(.538f), ClockDirection.CW);
+            var botCircle = VisCircle.CircleFromLineAndPoint(rightLine, botLine.CreateNodeAt(.538f), ClockDirection.CW);
             focusPad.Add(botCircle);
             circleNode = new TangentNode(botCircle);
             loopStroke = new VisStroke(midNode, circleNode, seenLeftStroke.EndNode);

@@ -15,6 +15,7 @@ namespace Vis.Model.Primitives
         public ClockDirection Direction { get; }
 
         public override bool IsPath => true;
+        public bool IsFixed { get; set; } = false;
 
         private float _startAngle;
         private float _endAngle;
@@ -27,6 +28,10 @@ namespace Vis.Model.Primitives
         public VisPoint StartPoint => this;
         public VisPoint MidPoint => Reference.GetPoint(0.5f, 0);
         public VisPoint EndPoint { get; }
+
+        public int AnchorCount => 2;
+        public VisPoint ClosestAnchor(float shift) => Reference.PerimeterOrigin;
+        public VisPoint ClosestAnchor(VisPoint point) => Reference.PerimeterOrigin;
 
         public IPath UnitReference { get; set; }
 
@@ -49,20 +54,25 @@ namespace Vis.Model.Primitives
             }
         }
 
+        public OffsetNode NodeFor(VisPoint pt)
+        {
+	        throw new NotImplementedException();
+        }
+
         public VisNode BestNodeForPoint(VisPoint pt)
         {
 	        throw new NotImplementedException();
         }
-        public VisPoint GetPoint(float position, float offset = 0)
+        public VisPoint GetPoint(float shift, float offset = 0)
         {
-            var len = _arcLength * position;
+            var len = _arcLength * shift;
             var pos = _startAngle + (Direction == ClockDirection.CW ? len : -len) + pi2;
             return new VisPoint(Reference.X + (float)Math.Cos(pos) * (Radius + offset), Reference.Y + (float)Math.Sin(pos) * (Radius + offset));
             //return Reference.GetPoint(pos, offset);
         }
-        public VisPoint GetPointFromCenter(float centeredPosition, float offset = 0)
+        public VisPoint GetPointFromCenter(float centeredShift, float offset = 0)
         {
-            return GetPoint(centeredPosition * 2f - 1f, offset);
+            return GetPoint(centeredShift * 2f - 1f, offset);
         }
         public VisPoint GetPoint(CompassDirection direction, float offset = 0)
         {
@@ -71,8 +81,8 @@ namespace Vis.Model.Primitives
             return new VisPoint(X + (float)Math.Cos(rads) * (Radius + offset), Y + (float)Math.Sin(rads) * (Radius + offset));
         }
 
-        public VisNode NodeAt(float position) => new VisNode(this, position);
-        public VisNode NodeAt(float position, float offset) => new TipNode(this, position, offset);
+        public VisNode CreateNodeAt(float shift) => new VisNode(this, shift);
+        public VisNode CreateNodeAt(float shift, float offset) => new OffsetNode(this, shift, offset);
         public VisNode StartNode => new VisNode(this, 0f);
         public VisNode MidNode => new VisNode(this, 0.5f);
         public VisNode EndNode => new VisNode(this, 1f);
