@@ -33,15 +33,16 @@ namespace Vis.Model.Primitives
         public IPath UnitReference { get; set; }
 
         public int AnchorCount => Segments.Sum(seg => seg.AnchorCount);
-        public VisPoint ClosestAnchor(float shift)
+        public VisNode ClosestAnchor(float shift)
         {
 	        var subNode = SubNodeAt(shift);
 	        return subNode.Reference.ClosestAnchor(subNode.Shift);
         }
-        public VisPoint ClosestAnchor(VisPoint point)
+        public VisNode ClosestAnchor(VisPoint point)
         {
 	        VisPoint result = null;
-	        var shortest = float.MaxValue;
+	        VisNode resultNode = null;
+            var shortest = float.MaxValue;
 	        foreach (var node in Nodes)
 	        {
 		        var closest = node.Location;
@@ -50,9 +51,11 @@ namespace Vis.Model.Primitives
 		        {
 			        shortest = dist;
 			        result = closest;
+			        resultNode = node;
+
 		        }
 	        }
-	        return result;
+	        return resultNode;
         }
 
         public VisStroke(VisNode first, VisNode second, params VisNode[] remaining)

@@ -19,11 +19,9 @@ namespace Vis.Model.Connections
         public IPath Reference { get; } // if reference is a stroke, this must be a joint
         public float Shift { get; protected set; } // 0f is beginning, 1f is end
 
-        public VisNode PreviousNode { get; private set; }
-        public VisNode NextNode { get; private set; }
-
         // calculated
-        public virtual VisPoint Location => Reference.GetPoint(Shift);
+        private VisPoint _noRefLocation;
+        public virtual VisPoint Location => Reference != null ? GetPoint(Shift) : _noRefLocation;
         public float X => Location.X;
         public float Y => Location.Y;
 
@@ -37,10 +35,18 @@ namespace Vis.Model.Connections
         {
             Reference = reference;
             Shift = shift;
-            //Location = reference.GetPoint(shift);
+            _noRefLocation = new VisPoint(-1,-1);
+        }
+        public VisNode(VisPoint pt)
+        {
+	        _noRefLocation = pt;
         }
 
-        public VisPoint ClosestAnchor()
+        public virtual VisPoint GetPoint(float shift, float offset = 0)
+        {
+	        return Reference.GetPoint(shift, offset);
+        }
+        public virtual VisNode ClosestAnchor()
         {
 	        return Reference.ClosestAnchor(Shift);
         }
@@ -65,11 +71,6 @@ namespace Vis.Model.Connections
         public VisPoint ProjectPointOnto(VisPoint p)
         {
 	        throw new NotImplementedException();
-        }
-
-        public VisPoint GetPoint(float shift, float offset = 0)
-        {
-            return Reference.GetPoint(shift, offset);
         }
 
         public float Similarity(IPrimitive p) => 0;

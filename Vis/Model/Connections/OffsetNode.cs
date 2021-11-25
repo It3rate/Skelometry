@@ -22,7 +22,21 @@ namespace Vis.Model.Connections
 		    Offset = offset;
 	    }
 
-	    public override void AddOffset(float x, float y)
+	    public override VisPoint GetPoint(float shift, float offset = 0)
+	    {
+		    return Location;
+	    }
+	    public override VisNode ClosestAnchor()
+	    {
+		    return this;
+	    }
+	    public void SetLocation(VisPoint pt)
+	    {
+		    var node = Reference.NodeFor(pt);
+		    Shift = node.Shift;
+		    Offset = node.Offset;
+        }
+        public override void AddOffset(float x, float y)
 	    {
 		    var newPt = Location.ClonePoint();
 		    newPt.AddOffset(x, y);
@@ -30,6 +44,7 @@ namespace Vis.Model.Connections
 		    Shift = node.Shift;
 		    Offset = node.Offset;
 	    }
+
 
         public OffsetNode CloneTipNode()
 	    {

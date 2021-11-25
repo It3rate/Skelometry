@@ -30,8 +30,8 @@ namespace Vis.Model.Primitives
         public VisPoint EndPoint { get; }
 
         public int AnchorCount => 2;
-        public VisPoint ClosestAnchor(float shift) => Reference.PerimeterOrigin;
-        public VisPoint ClosestAnchor(VisPoint point) => Reference.PerimeterOrigin;
+        public VisNode ClosestAnchor(float shift) => StartNode;
+        public VisNode ClosestAnchor(VisPoint point) => StartNode;
 
         public IPath UnitReference { get; set; }
 

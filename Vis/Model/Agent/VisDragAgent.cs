@@ -137,15 +137,15 @@ namespace Vis.Model.Agent
 				similarPt = FocusPad.GetSimilar(Status.PositionNorm);
             }
 
-			if (similarPt is VisPoint sp)
+			if (similarPt is VisNode sn)
 			{
-				var rp = new RenderPoint(sp, 4, 2f);
+				var rp = new RenderPoint(sn.Location, 4, 2f);
 				_skills.Point(this, rp);
-				Status.HighlightingPoint = sp;
+				Status.HighlightingNode = sn;
 			}
 			else if (Status.IsHighlightingPoint)
 			{
-				Status.HighlightingPoint = null;
+				Status.HighlightingNode = null;
 			}
 		}
 
@@ -154,7 +154,7 @@ namespace Vis.Model.Agent
 			var result = pt.ClonePoint();
 			if (Status.IsHighlightingPoint)
 			{
-				result = Status.HighlightingPoint.ClonePoint();
+				result = Status.HighlightingNode.Location;
 			}
 			else if (Status.IsHighlightingPath)
 			{
@@ -172,10 +172,11 @@ namespace Vis.Model.Agent
 	            case UIMode.Select:
 					if (Status.IsHighlightingPoint)
 					{
-                        var nearNode = ViewPad.ClosestNode(Status.HighlightingPoint) ?? FocusPad.ClosestNode(Status.HighlightingPoint);
+                        var nearNode = ViewPad.ClosestNode(Status.HighlightingNode.Location) ?? FocusPad.ClosestNode(Status.HighlightingNode.Location);
                         if(nearNode != null)
                         {
 	                        Status.DraggingNode = nearNode;
+                            // get all paths with node as point
 	                        var opposite = nearNode.GetPoint(1f - nearNode.Shift); // should be previous node
 	                        Status.ClickSequencePoints.Add(opposite);
 							Status.DraggingPoint = nearNode.Location;
@@ -208,7 +209,7 @@ namespace Vis.Model.Agent
 					break;
             }
 
-            Status.HighlightingPoint = null;
+            Status.HighlightingNode = null;
 
 			SetHighlightingPoint();
 			return true; // always redraw on mouse down
@@ -277,9 +278,12 @@ namespace Vis.Model.Agent
 
 						//var pt = Status.DraggingPoint; 
 						var drag = Status.DraggingNode;
-						var pt = drag.Reference.ClosestAnchor(drag.Shift);
+						var closest = drag.Reference.ClosestAnchor(drag.Shift);
 						var targPt = GetSnapPoint(Status.PositionNorm);
-                        pt.UpdateWith(targPt);
+						if (drag is OffsetNode node)
+						{
+                            node.SetLocation(targPt);
+						}
 						ViewPad.RecalculateAll();
                     }
                     else if (Status.PositionMouseDown != null && Status.HasSelectedPath)

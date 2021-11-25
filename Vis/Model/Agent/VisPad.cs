@@ -139,15 +139,21 @@ namespace Vis.Model.Agent
 	        {
 		        if (item.Element is IPath path)
 		        {
-			        foreach (var p in path)
+			        var node = path.ClosestAnchor(query);
+			        if (node.Location.DistanceTo(query) < query.NearThreshold)
 			        {
-				        var dist = p.SquaredDistanceTo(query);
-				        if (dist < query.NearThreshold)
-				        {
-					        result = path.BestNodeForPoint(p);
-					        break;
-				        }
+				        result = node;
+				        break;
 			        }
+			        //foreach (var p in path)
+			        //{
+				       // var dist = p.SquaredDistanceTo(query);
+				       // if (dist < query.NearThreshold)
+				       // {
+					      //  result = path.BestNodeForPoint(p);
+					      //  break;
+				       // }
+			        //}
 		        }
 	        }
 	        return result;
@@ -173,7 +179,7 @@ namespace Vis.Model.Agent
                     else if (item.Element is IPath path)
                     {
 	                    var pp = path.ClosestAnchor(qp);
-                        dist = pp.SquaredDistanceTo(qp);
+                        dist = pp.Location.SquaredDistanceTo(qp);
                         if (dist < qp.NearThreshold)
                         {
                             result = pp;

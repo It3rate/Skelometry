@@ -17,8 +17,8 @@ namespace Vis.Model.Primitives
 	    VisPoint GetPointFromCenter(float centeredShift, float offset = 0);
 
 	    int AnchorCount { get; }
-	    VisPoint ClosestAnchor(float shift);
-	    VisPoint ClosestAnchor(VisPoint point);
+	    VisNode ClosestAnchor(float shift);
+	    VisNode ClosestAnchor(VisPoint point);
 
         VisNode CreateNodeAt(float shift, float offset = 0);
 	    VisNode NodeNear(VisPoint point);

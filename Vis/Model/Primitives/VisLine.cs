@@ -39,12 +39,12 @@ namespace Vis.Model.Primitives
             }
         }
         public int AnchorCount => 2;
-        public VisPoint ClosestAnchor(float shift) => shift <= 0.5f ? StartPoint : EndPoint;
-        public VisPoint ClosestAnchor(VisPoint point)
+        public VisNode ClosestAnchor(float shift) => shift <= 0.5f ? StartNode : EndNode;
+        public VisNode ClosestAnchor(VisPoint point)
         {
 	        var len0 = Math.Abs(point.SquaredDistanceTo(StartPoint));
 	        var len1 = Math.Abs(point.SquaredDistanceTo(EndPoint));
-	        return len0 > len1 ? EndPoint.ClonePoint() : StartPoint.ClonePoint();
+	        return len0 > len1 ? StartNode : EndNode;
         }
 
         private VisLine(float startX, float startY, float endX, float endY) : base(startX, startY)
@@ -76,9 +76,6 @@ namespace Vis.Model.Primitives
 	        {
 		        base.AddOffset(x, y);
 		        EndPoint.AddOffset(x, y);
-	        }
-	        else
-	        {
 	        }
         }
         public VisPoint GetPoint(float shift, float offset = 0)
@@ -163,11 +160,11 @@ namespace Vis.Model.Primitives
 
         public override VisPolyline GetPolyline()
         {
-            return new VisPolyline(StartPoint, EndPoint);
+            return new VisPolyline(StartPoint.ClonePoint(), EndPoint.ClonePoint());
         }
         public VisPoint[] GetPolylinePoints(int pointCount = 24)
         {
-	        var result = new List<VisPoint>() {StartPoint, EndPoint};
+	        var result = new List<VisPoint>() {StartPoint.ClonePoint(), EndPoint.ClonePoint() };
 	        return result.ToArray();
         }
 

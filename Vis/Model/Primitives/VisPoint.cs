@@ -17,8 +17,8 @@ namespace Vis.Model.Primitives
 
     public class VisPoint : IPrimitive
     {
-        public float X { get; set; }
-        public float Y { get; set; }
+        public float X { get; protected set; }
+        public float Y { get; protected set; }
         public virtual bool IsPath => false;
 
         public static int _index = 0;
@@ -78,12 +78,12 @@ namespace Vis.Model.Primitives
         public float VectorLength() => (float)Math.Sqrt(X * X + Y * Y);
         public float VectorSquaredLength() => X * X + Y * Y;
         public float DistanceTo(VisPoint pt) => (float)Math.Sqrt((pt.X - X) * (pt.X - X) + (pt.Y - Y) * (pt.Y - Y));
-        public float SquaredDistanceTo(VisPoint pt) => (pt.X - X) * (pt.X - X) + (pt.Y - Y) * (pt.Y - Y);
+        public float SquaredDistanceTo(VisPoint pt) => (float)Math.Abs((pt.X - X) * (pt.X - X) + (pt.Y - Y) * (pt.Y - Y));
         public float DotProduct(VisPoint pt) => X * pt.X + Y * pt.Y; // negative because inverted Y
         public float Atan2(VisPoint pt) => (float)Math.Atan2(pt.Y - Y, pt.X - X);
         public float SignedDistanceTo(VisPoint pt)
         {
-	        var sDist = SquaredDistanceTo(pt);
+	        var sDist = (pt.X - X) * (pt.X - X) + (pt.Y - Y) * (pt.Y - Y);
 	        return (float)Math.Sqrt(sDist) * (sDist >= 0 ? 1f : -1f);
         } 
         public (float, float, float) ABCLine(VisPoint pt)

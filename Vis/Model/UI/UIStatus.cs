@@ -49,9 +49,9 @@ namespace Vis.Model.UI
 			return result;
 		}
 
-        private VisPoint _highlightingPoint;
-	    public bool IsHighlightingPoint => _highlightingPoint != null;
-		public VisPoint HighlightingPoint { get => _highlightingPoint; set => _highlightingPoint = value; }
+        private VisNode _highlightingNode;
+	    public bool IsHighlightingPoint => _highlightingNode != null;
+		public VisNode HighlightingNode { get => _highlightingNode; set => _highlightingNode = value; }
 
 		private ElementRecord _highlightingPath;
 		public bool IsHighlightingPath => _highlightingPath != null;

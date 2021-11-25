@@ -35,8 +35,8 @@ namespace Vis.Model.Primitives
         public VisNode CenterNode;
 
         public int AnchorCount => 2;
-        public VisPoint ClosestAnchor(float shift) => PerimeterOrigin;
-        public VisPoint ClosestAnchor(VisPoint point) => PerimeterOrigin;
+        public VisNode ClosestAnchor(float shift) => StartNode;
+        public VisNode ClosestAnchor(VisPoint point) => StartNode;
 
         public VisNode BestNodeForPoint(VisPoint pt)
         {
