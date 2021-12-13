@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InformationalGeometry", "In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vis", "Vis\Vis.csproj", "{863A8EEA-967B-4A28-8D2E-B7412651314D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slugs", "Slugs\Slugs.csproj", "{7E674AB2-F60B-46A5-8151-E3A2BF71F393}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{863A8EEA-967B-4A28-8D2E-B7412651314D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{863A8EEA-967B-4A28-8D2E-B7412651314D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{863A8EEA-967B-4A28-8D2E-B7412651314D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E674AB2-F60B-46A5-8151-E3A2BF71F393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E674AB2-F60B-46A5-8151-E3A2BF71F393}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E674AB2-F60B-46A5-8151-E3A2BF71F393}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E674AB2-F60B-46A5-8151-E3A2BF71F393}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
