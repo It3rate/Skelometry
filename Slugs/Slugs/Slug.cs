@@ -42,11 +42,18 @@ namespace Slugs.Slugs
 	    }
 	    public Slug Clone() => new Slug(Pull, Push);
 
+	    public double Length() => Slug.Length(this);
+        public double AbsLength() => Slug.AbsLength(this);
+        public Slug Conjugate() => Slug.Conjugate(this);
+        public Slug Reciprocal() => Slug.Reciprocal(this);
+        public Slug Square() => Slug.Square(this);
+        public Slug Normalize() => Slug.Normalize(this);
+        public Slug NormalizeTo(Slug value) => Slug.NormalizeTo(this, value);
 
-	    public bool IsZero => Push == 0 && Pull == 0;
+        public bool IsZero => Push == 0 && Pull == 0;
 	    public bool IsZeroLength => Push - Pull == 0;
-        public double Length() => Push - Pull;
-        public double AbsLength() => Math.Abs(Push - Pull);
+	    public bool IsForward => Push >= Pull;
+	    public double Direction => Push >= Pull ? 1.0 : -1.0;
 
         // because everything is segments, can add 'prepositions' (before, after, between, entering, leaving, near etc)
         public bool IsWithin(Slug value) => Pull >= value.Pull && Push <= value.Push; // todo: account for line direction
@@ -57,6 +64,7 @@ namespace Slugs.Slugs
         public bool IsEnding(Slug value) => Pull >= value.Push && Push > value.Push;
         public bool IsTouching(Slug value) => (Pull >= value.Pull && Pull <= value.Push) || (Push >= value.Pull && Push <= value.Push);
         public bool IsNotTouching(Slug value) => !IsTouching(value);
+
 
 
         public static Slug operator -(Slug value) => new Slug(-value.Pull, -value.Push);
@@ -83,17 +91,6 @@ namespace Slugs.Slugs
         public static Slug Reciprocal(Slug value) => value.Push == 0.0 && value.Pull == 0.0 ? Slug.Zero : Slug.Unit / value;
         public static Slug Square(Slug a) => new Slug(a.Pull * a.Pull + (a.Push * a.Push) * -1, 0); // value * value;
         
-        public Slug NormalizeTo(Slug value)
-        {
-	        return this / value;
-	        //var norm = Normalize(value);
-	        //var scale = value.Length();
-	        //var result = new Slug(norm.Pull * scale, norm.Push * scale);
-
-	        //var offset = value.Pull - result.Pull;
-	        //result.Offset((int)offset); // not sure if measure needs to be offset or multiplied here, probably everything needs to be wedged etc.
-	        //return result;
-        }
         public static Slug Normalize(Slug value)
         {
 	        Slug result;
@@ -103,12 +100,23 @@ namespace Slugs.Slugs
 	        }
 	        else
 	        {
-		        double scale = 1.0 / (value.Push - value.Pull);
+		        double scale = 1.0 / value.AbsLength();
 		        var offset = value.Pull * scale;
 		        result = new Slug(value.Pull * scale, value.Push * scale);
 	        }
 
 	        return result;
+        }
+        public static Slug NormalizeTo(Slug from, Slug to)
+        {
+	        return from / to;
+	        //var norm = Normalize(value);
+	        //var scale = value.Length();
+	        //var result = new Slug(norm.Pull * scale, norm.Push * scale);
+
+	        //var offset = value.Pull - result.Pull;
+	        //result.Offset((int)offset); // not sure if measure needs to be offset or multiplied here, probably everything needs to be wedged etc.
+	        //return result;
         }
 
         public static bool operator ==(Slug left, Slug right) => left.Push == right.Push && left.Pull == right.Pull;

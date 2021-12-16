@@ -10,12 +10,11 @@ namespace Slugs.Renderer
     using System.Text;
     using System.Threading.Tasks;
 
-    public class SkiaPens
+    public class SlugPens
     {
 	    public List<SKPaint> Pens = new List<SKPaint>();
 	    private Dictionary<ElementType, SKPaint> UIPens;
 
-        public float Scale { get; }
         public float DefaultWidth { get; }
         public bool IsHoverMap { get; set; }
 
@@ -25,10 +24,10 @@ namespace Slugs.Renderer
         public SKPaint DarkPen { get; private set; }
         public SKPaint GrayPen { get; private set; }
         public SKPaint WorkingPen { get; private set; }
+        public SKPaint DrawPen { get; private set; }
 
-        public SkiaPens(float scale, float defaultWidth = 8f)
+        public SlugPens(float defaultWidth = 1f)
 	    {
-		    Scale = scale;
 		    DefaultWidth = defaultWidth;
 		    GenPens();
 	    }
@@ -103,6 +102,7 @@ namespace Slugs.Renderer
 		    GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
 		    DarkPen = GetPen(SKColors.Black, DefaultWidth);
 		    WorkingPen = GetPen(SKColors.DarkGray, DefaultWidth);
+		    DrawPen = GetPen(SKColors.OrangeRed, DefaultWidth * 4);
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));
@@ -162,7 +162,7 @@ namespace Slugs.Renderer
 		    {
 			    Style = SKPaintStyle.Stroke,
 			    Color = color,
-			    StrokeWidth = width / Scale,
+			    StrokeWidth = width,
 			    IsAntialias = antiAlias,
                 StrokeCap = SKStrokeCap.Round,
 		    };

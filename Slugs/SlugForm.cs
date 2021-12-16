@@ -14,7 +14,7 @@ namespace Slugs
 {
     public partial class SlugForm : Form
     {
-	    private SkiaRenderer _renderer;
+	    private SlugRenderer _renderer;
 	    private Control _control;
 
 	    private IAgent _agent;
@@ -24,15 +24,15 @@ namespace Slugs
 			DoubleBuffered = true;
             InitializeComponent();
 
-            var skia = new SkiaRenderer();
-            _control = skia.AddAsControl(slugPanel, false);
+            _renderer = new SlugRenderer();
+            _control = _renderer.AddAsControl(slugPanel, false);
             _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;
             _control.MouseUp += OnMouseUp;
             _control.KeyDown += OnKeyDown;
             _control.KeyUp += OnKeyUp;
 
-            _renderer = skia;
+            _agent = new SlugAgent(_renderer);
         }
         private void OnMouseDown(object sender, MouseEventArgs e)
         {

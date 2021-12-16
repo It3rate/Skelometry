@@ -7,34 +7,43 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using Slugs.Slugs;
 
 namespace Slugs.Renderer
 {
-    public class SkiaRenderer
+	public struct Seg2D
+	{
+		public PointF Start { get; }
+		public PointF End { get; }
+
+		public Seg2D(PointF start, PointF end)
+		{
+			Start = start;
+			End = end;
+		}
+
+		public double Length => Math.Sqrt((End.X - Start.X) * (End.X - Start.X) + (End.Y - Start.Y) * (End.Y - Start.Y));
+        public PointF PointAlongLine(float t) => new PointF((End.X - Start.X) * t + Start.X, (End.Y - Start.Y) * t + Start.Y);
+	}
+
+    public class SlugRenderer
     {
         public RenderStatus Status { get; set; }
         public int Width { get; protected set; }
         public int Height { get; protected set; }
 	    public event EventHandler DrawingComplete;
 
-	    public int PenIndex { get; set; }
-	    private float _unitPixels = 220;
-	    public float UnitPixels
-	    {
-		    get => _unitPixels;
-		    set
-		    {
-			    _unitPixels = value;
-			    GeneratePens();
-		    }
-	    }
+	    public List<Seg2D> Segs = new List<Seg2D>() { new Seg2D(new PointF(300, 150), new PointF(400, 200)) };
 
-        public SkiaPens Pens { get; set; }
+        public int PenIndex { get; set; }
+
+        public SlugPens Pens { get; set; }
 	    public SKBitmap Bitmap { get; set; }
 	    public bool ShowBitmap { get; set; }
 
-        public SkiaRenderer()
+        public SlugRenderer()
 	    {
+            GeneratePens();
 	    }
 
         private bool hasControl = false;
@@ -88,7 +97,7 @@ namespace Slugs.Renderer
 
         private void SkiaRenderer_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
         {
-	        if (Status != null)
+	        if (true || Status != null)
 	        {
 		        DrawOnCanvas(e.Surface.Canvas);
 	        }
@@ -104,23 +113,34 @@ namespace Slugs.Renderer
 
         public void Draw()
         {
-	        //foreach (var pad in Status.Pads)
-	        //{
-		       // if (pad.PadStyle != PadStyle.Hidden)
-		       // {
-			      //  foreach (var path in pad.Paths)
-			      //  {
-				     //   DrawElement(path);
-			      //  }
-		       // }
-	        //}
+            var slug = new Slug(-1, 0);
+	        foreach (var seg in Segs)
+	        {
+		        DrawWithSlug(seg, slug);
+		        Flush();
+	        }
+        }
+        public void DrawWithSlug(Seg2D seg, Slug unit)
+        {
+	        var norm = unit.Normalize();
+	        var multStart = seg.PointAlongLine(norm.IsForward ? (float)norm.Pull : (float)-norm.Push);
+	        var multEnd = seg.PointAlongLine(norm.IsForward ? (float)norm.Push : (float)-norm.Pull);
+	        DrawDirectedLine(multStart, multEnd, Pens.DrawPen);
+
+	        DrawDirectedLine(seg.Start, seg.End, Pens.DarkPen);
+        }
+
+        public void DrawDirectedLine(PointF start, PointF end, SKPaint paint)
+        {
+	        _canvas.DrawLine(start.ToSKPoint(), end.ToSKPoint(), paint);
+	        _canvas.DrawCircle(start.ToSKPoint(), 2, paint);
+	        _canvas.DrawCircle(end.ToSKPoint(), 6, paint);
         }
 
         private SKCanvas _canvas;
         public void BeginDraw()
         {
 	        _canvas.Save();
-            _canvas.Scale(UnitPixels, UnitPixels);
             if (hasControl == false)
             {
 	            _canvas.Clear(SKColors.White);
@@ -256,7 +276,7 @@ namespace Slugs.Renderer
 
         public void GeneratePens()
         {
-	        Pens = new SkiaPens(UnitPixels * 4);
+	        Pens = new SlugPens(1);
         }
     }
     public static class SkiaExtensions

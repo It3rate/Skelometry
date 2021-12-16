@@ -41,6 +41,7 @@
     <Reference Include="OpenTK.GLControl, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>F:\packages\OpenTK.GLControl.3.1.0\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="SkiaSharp, Version=2.80.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>F:\packages\SkiaSharp.2.80.3\lib\net462\SkiaSharp.dll</HintPath>
     </Reference>
@@ -89,10 +90,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Agent\IAgent.cs" />
+    <Compile Include="Agent\SlugAgent.cs" />
     <Compile Include="Renderer\RenderFlags.cs" />
     <Compile Include="Renderer\RenderStatus.cs" />
-    <Compile Include="Renderer\SkiaPens.cs" />
-    <Compile Include="Renderer\SkiaRenderer.cs" />
+    <Compile Include="Renderer\SlugPens.cs" />
+    <Compile Include="Renderer\SlugRenderer.cs" />
     <Compile Include="SlugForm.cs">
       <SubType>Form</SubType>
     </Compile>
