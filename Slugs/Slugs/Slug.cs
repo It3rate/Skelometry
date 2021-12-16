@@ -85,8 +85,9 @@ namespace Slugs.Slugs
             return new Slug(acbd/c2d2, bc_ad/c2d2);
         }
 
-        public static double Length(Slug value) => value.Push - value.Pull;
-        public static double AbsLength(Slug value) => Math.Abs(value.Push - value.Pull);
+        // Need to decide if pull's positive points left or not. Probably does, but this will affect other calculations.
+        public static double Length(Slug value) => value.Push - -value.Pull;
+        public static double AbsLength(Slug value) => Math.Abs(value.Push - -value.Pull);
         public static Slug Conjugate(Slug a) => new Slug(a.Push, -a.Pull);
         public static Slug Reciprocal(Slug value) => value.Push == 0.0 && value.Pull == 0.0 ? Slug.Zero : Slug.Unit / value;
         public static Slug Square(Slug a) => new Slug(a.Pull * a.Pull + (a.Push * a.Push) * -1, 0); // value * value;
@@ -101,7 +102,6 @@ namespace Slugs.Slugs
 	        else
 	        {
 		        double scale = 1.0 / value.AbsLength();
-		        var offset = value.Pull * scale;
 		        result = new Slug(value.Pull * scale, value.Push * scale);
 	        }
 

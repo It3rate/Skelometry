@@ -33,14 +33,35 @@ namespace Slugs
             _control.KeyUp += OnKeyUp;
 
             _agent = new SlugAgent(_renderer);
+            scTop.Value = (int)_renderer.unitPull;
+            lbTop.Text = (scTop.Value).ToString();
+            scBottom.Value = (int)_renderer.unitPush;
+            lbBottom.Text = (scBottom.Value).ToString();
+            scTop.Scroll += ScTop_Scroll;
+            scBottom.Scroll += ScBottom_Scroll;
         }
+
+
+        private void ScTop_Scroll(object sender, ScrollEventArgs e)
+        {
+	        _renderer.unitPull = scTop.Value;
+	        lbTop.Text = (scTop.Value).ToString();
+	        Redraw();
+        }
+        private void ScBottom_Scroll(object sender, ScrollEventArgs e)
+        {
+	        _renderer.unitPush = scBottom.Value;
+	        lbBottom.Text = (scBottom.Value).ToString();
+            Redraw();
+        }
+
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
 	        if (_agent.MouseDown(e))
 	        {
 		        Redraw();
 	        }
-        }
+        } 
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {

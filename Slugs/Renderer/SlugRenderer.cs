@@ -28,6 +28,8 @@ namespace Slugs.Renderer
 
     public class SlugRenderer
     {
+	    public double unitPull = -10;
+	    public double unitPush = -5;
         public RenderStatus Status { get; set; }
         public int Width { get; protected set; }
         public int Height { get; protected set; }
@@ -113,7 +115,7 @@ namespace Slugs.Renderer
 
         public void Draw()
         {
-            var slug = new Slug(-1, 0);
+            var slug = new Slug(unitPull, unitPush);
 	        foreach (var seg in Segs)
 	        {
 		        DrawWithSlug(seg, slug);
@@ -123,7 +125,7 @@ namespace Slugs.Renderer
         public void DrawWithSlug(Seg2D seg, Slug unit)
         {
 	        var norm = unit.Normalize();
-	        var multStart = seg.PointAlongLine(norm.IsForward ? (float)norm.Pull : (float)-norm.Push);
+	        var multStart = seg.PointAlongLine(norm.IsForward ? (float)-norm.Pull : (float)norm.Push);
 	        var multEnd = seg.PointAlongLine(norm.IsForward ? (float)norm.Push : (float)-norm.Pull);
 	        DrawDirectedLine(multStart, multEnd, Pens.DrawPen);
 
