@@ -17,7 +17,7 @@ namespace Slugs
 	    private SlugRenderer _renderer;
 	    private Control _control;
 
-	    private IAgent _agent;
+	    private SlugAgent _agent;
 
         public SlugForm()
         {
@@ -33,9 +33,9 @@ namespace Slugs
             _control.KeyUp += OnKeyUp;
 
             _agent = new SlugAgent(_renderer);
-            scTop.Value = (int)_renderer.unitPull;
+            scTop.Value = (int)_agent.UnitPull;
             lbTop.Text = (scTop.Value).ToString();
-            scBottom.Value = (int)_renderer.unitPush;
+            scBottom.Value = (int)_agent.UnitPush;
             lbBottom.Text = (scBottom.Value).ToString();
             scTop.Scroll += ScTop_Scroll;
             scBottom.Scroll += ScBottom_Scroll;
@@ -44,13 +44,13 @@ namespace Slugs
 
         private void ScTop_Scroll(object sender, ScrollEventArgs e)
         {
-	        _renderer.unitPull = scTop.Value;
+	        _agent.UnitPull = scTop.Value;
 	        lbTop.Text = (scTop.Value).ToString();
 	        Redraw();
         }
         private void ScBottom_Scroll(object sender, ScrollEventArgs e)
         {
-	        _renderer.unitPush = scBottom.Value;
+	        _agent.UnitPush = scBottom.Value;
 	        lbBottom.Text = (scBottom.Value).ToString();
             Redraw();
         }

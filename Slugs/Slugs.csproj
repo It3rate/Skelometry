@@ -91,6 +91,8 @@
   <ItemGroup>
     <Compile Include="Agent\IAgent.cs" />
     <Compile Include="Agent\SlugAgent.cs" />
+    <Compile Include="Input\SkiaPolyline.cs" />
+    <Compile Include="Pads\SlugPad.cs" />
     <Compile Include="Renderer\RenderFlags.cs" />
     <Compile Include="Renderer\RenderStatus.cs" />
     <Compile Include="Renderer\SlugPens.cs" />
@@ -104,6 +106,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Slugs\Slug.cs" />
+    <Compile Include="Slugs\IElement.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

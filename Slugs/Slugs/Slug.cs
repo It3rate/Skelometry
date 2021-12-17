@@ -11,7 +11,7 @@ namespace Slugs.Slugs
     using System.Threading.Tasks;
     using System.Numerics;
 
-    public struct Slug : IEquatable<Slug>
+    public struct Slug : IElement, IEquatable<Slug>
     {
         // This should all be done with ints, setting a unit size abs(push-pull), and a max value. I think.
 

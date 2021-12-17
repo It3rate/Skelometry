@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using Slugs.Input;
+using Slugs.Pads;
 using Slugs.Slugs;
 
 namespace Slugs.Renderer
@@ -28,14 +30,13 @@ namespace Slugs.Renderer
 
     public class SlugRenderer
     {
-	    public double unitPull = -10;
-	    public double unitPush = -5;
         public RenderStatus Status { get; set; }
         public int Width { get; protected set; }
         public int Height { get; protected set; }
 	    public event EventHandler DrawingComplete;
 
-	    public List<Seg2D> Segs = new List<Seg2D>() { new Seg2D(new PointF(300, 150), new PointF(400, 200)) };
+	    private List<Seg2D> TestSegs = new List<Seg2D>() { new Seg2D(new PointF(300, 150), new PointF(400, 200)) };
+	    public readonly List<SlugPad> Pads = new List<SlugPad>();
 
         public int PenIndex { get; set; }
 
@@ -111,32 +112,56 @@ namespace Slugs.Renderer
 	        BeginDraw();
 	        Draw();
 	        EndDraw();
+	        //Input = null;
         }
 
         public void Draw()
         {
-            var slug = new Slug(unitPull, unitPush);
-	        foreach (var seg in Segs)
+	        foreach (var seg in TestSegs)
 	        {
-		        DrawWithSlug(seg, slug);
+		        DrawWithSlug(seg, Pads[1].Slug);
 		        Flush();
 	        }
+
+	        foreach (var slugPad in Pads)
+	        {
+				var slug = Pads[1].Slug;
+		        foreach (var line in slugPad.Polylines)
+		        {
+			        DrawWithPolyline(line, slug);
+		        }
+	        }
+        }
+        public void DrawWithPolyline(SkiaPolyline line, Slug unit)
+        {
+	        if (unit != null)
+	        {
+		        var norm = unit / 10.0;//.Normalize(); // no need to normalize, just scale to preference for viewing.
+		        var multStart = line.PointAlongLine(0, norm.IsForward ? -(float)norm.Pull : (float)norm.Push);
+		        var multEnd = line.PointAlongLine(0, norm.IsForward ? (float)norm.Push : -(float)norm.Pull);
+		        DrawDirectedLine(multStart, multEnd, Pens.DrawPen);
+	        }
+
+	        DrawDirectedLine(line.Points[0], line.Points[1], Pens.DarkPen);
         }
         public void DrawWithSlug(Seg2D seg, Slug unit)
         {
-	        var norm = unit/10.0;//.Normalize(); // no need to normalize, just scale to preference for viewing.
-	        var multStart = seg.PointAlongLine(norm.IsForward ? -(float)norm.Pull : (float)norm.Push);
-	        var multEnd = seg.PointAlongLine(norm.IsForward ? (float)norm.Push : -(float)norm.Pull);
-	        DrawDirectedLine(multStart, multEnd, Pens.DrawPen);
+	        if (unit != null)
+	        {
+		        var norm = unit / 10.0; //.Normalize(); // no need to normalize, just scale to preference for viewing.
+		        var multStart = seg.PointAlongLine(norm.IsForward ? -(float) norm.Pull : (float) norm.Push);
+		        var multEnd = seg.PointAlongLine(norm.IsForward ? (float) norm.Push : -(float) norm.Pull);
+		        DrawDirectedLine(multStart.ToSKPoint(), multEnd.ToSKPoint(), Pens.DrawPen);
+	        }
 
-	        DrawDirectedLine(seg.Start, seg.End, Pens.DarkPen);
+	        DrawDirectedLine(seg.Start.ToSKPoint(), seg.End.ToSKPoint(), Pens.DarkPen);
         }
 
-        public void DrawDirectedLine(PointF start, PointF end, SKPaint paint)
+        public void DrawDirectedLine(SKPoint start, SKPoint end, SKPaint paint)
         {
-	        _canvas.DrawLine(start.ToSKPoint(), end.ToSKPoint(), paint);
-	        _canvas.DrawCircle(start.ToSKPoint(), 2, paint);
-	        _canvas.DrawCircle(end.ToSKPoint(), 6, paint);
+	        _canvas.DrawLine(start, end, paint);
+	        _canvas.DrawCircle(start, 2, paint);
+	        _canvas.DrawCircle(end, 6, paint);
         }
 
         private SKCanvas _canvas;
