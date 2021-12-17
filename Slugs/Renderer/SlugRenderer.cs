@@ -124,9 +124,9 @@ namespace Slugs.Renderer
         }
         public void DrawWithSlug(Seg2D seg, Slug unit)
         {
-	        var norm = unit.Normalize();
-	        var multStart = seg.PointAlongLine(norm.IsForward ? (float)-norm.Pull : (float)norm.Push);
-	        var multEnd = seg.PointAlongLine(norm.IsForward ? (float)norm.Push : (float)-norm.Pull);
+	        var norm = unit/10.0;//.Normalize(); // no need to normalize, just scale to preference for viewing.
+	        var multStart = seg.PointAlongLine(norm.IsForward ? -(float)norm.Pull : (float)norm.Push);
+	        var multEnd = seg.PointAlongLine(norm.IsForward ? (float)norm.Push : -(float)norm.Pull);
 	        DrawDirectedLine(multStart, multEnd, Pens.DrawPen);
 
 	        DrawDirectedLine(seg.Start, seg.End, Pens.DarkPen);

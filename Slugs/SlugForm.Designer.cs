@@ -55,9 +55,10 @@ namespace Slugs
             // 
             // scBottom
             // 
+            this.scBottom.LargeChange = 1;
             this.scBottom.Location = new System.Drawing.Point(105, 756);
-            this.scBottom.Maximum = 20;
-            this.scBottom.Minimum = -20;
+            this.scBottom.Maximum = 21;
+            this.scBottom.Minimum = -21;
             this.scBottom.Name = "scBottom";
             this.scBottom.Size = new System.Drawing.Size(966, 26);
             this.scBottom.TabIndex = 0;
@@ -65,9 +66,10 @@ namespace Slugs
             // 
             // scTop
             // 
+            this.scTop.LargeChange = 1;
             this.scTop.Location = new System.Drawing.Point(105, 722);
-            this.scTop.Maximum = 20;
-            this.scTop.Minimum = -20;
+            this.scTop.Maximum = 21;
+            this.scTop.Minimum = -21;
             this.scTop.Name = "scTop";
             this.scTop.Size = new System.Drawing.Size(966, 26);
             this.scTop.TabIndex = 1;

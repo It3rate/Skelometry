@@ -51,7 +51,7 @@ namespace Slugs.Slugs
         public Slug NormalizeTo(Slug value) => Slug.NormalizeTo(this, value);
 
         public bool IsZero => Push == 0 && Pull == 0;
-	    public bool IsZeroLength => Push - Pull == 0;
+	    public bool IsZeroLength => AbsLength() == 0;
 	    public bool IsForward => Push >= Pull;
 	    public double Direction => Push >= Pull ? 1.0 : -1.0;
 
@@ -97,7 +97,7 @@ namespace Slugs.Slugs
 	        Slug result;
 	        if (value.IsZeroLength)
 	        {
-		        result = new Slug(value.Pull - 0.5, value.Push + 0.5); // (-0.5, 0.5); // (0, 1.0);
+		        result = value.IsForward ? new Slug(0.5, 0.5) : new Slug(-0.5, -0.5); // (-0.5, 0.5); // (0, 1.0);
 	        }
 	        else
 	        {
