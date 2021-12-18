@@ -16,8 +16,8 @@ namespace Slugs.Agent
 
     public class SlugAgent : IAgent
     {
-	    private double _unitPull = -10;
-	    public double _unitPush = -5;
+	    private double _unitPull = 0;
+	    public double _unitPush = 10;
 
         private SlugRenderer _renderer;
 	    public RenderStatus Status { get; }
@@ -55,6 +55,8 @@ namespace Slugs.Agent
         {
 	        _renderer = renderer;
 	        Output.Slug = new Slug(UnitPull, UnitPush);
+	        Output.Polylines.Add((new SkiaPolyline(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f))));
+	        //Output.Polylines.Add((new SkiaPolyline(new SKPoint(100, 100f), new SKPoint(100,200)) ));
             _renderer.Pads.Add(Input);
 	        _renderer.Pads.Add(Output);
             ClearMouse();

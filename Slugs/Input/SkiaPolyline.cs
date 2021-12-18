@@ -21,29 +21,16 @@ namespace Slugs.Input
 		    Points.AddRange(points);
 	    }
 
-        public double Length(int startIndex)
-	    {
-		    double result = 0;
-		    if (startIndex < Points.Count)
-		    {
-			    var start = Points[startIndex];
-			    var end = Points[startIndex + 1];
-			    result = Math.Sqrt((end.X - start.X) * (end.X - start.X) + (end.Y - start.Y) * (end.Y - start.Y));
-		    }
-		    return result;
-	    }
+	    public SkiaSegment SegmentAt(int index) => 
+		    index < 0 || index > Points.Count - 1 ? SkiaSegment.Empty : new SkiaSegment(Points[index], Points[index + 1]);
 
-	    public SKPoint PointAlongLine(int startIndex, float t)
-        {
-	        var result = SKPoint.Empty;
-	        if (startIndex < Points.Count)
-	        {
-		        var start = Points[startIndex];
-		        var end = Points[startIndex + 1];
-		        result = new SKPoint((end.X - start.X) * t + start.X, (end.Y - start.Y) * t + start.Y);
-	        }
-	        return result;
-        } 
+	    public float Length(int startIndex) => SegmentAt(startIndex).Length();
+	    public SKPoint PointAlongLine(int startIndex, float t) => SegmentAt(startIndex).PointAlongLine(t);
+	    public SKPoint SKPointFromStart(int startIndex, float dist) => SegmentAt(startIndex).SKPointFromStart(dist);
+	    public SKPoint SKPointFromEnd(int startIndex, float dist) => SegmentAt(startIndex).SKPointFromEnd(dist);
+	    public SKPoint OrthogonalPoint(int startIndex, SKPoint pt, float offset) => SegmentAt(startIndex).OrthogonalPoint(pt, offset);
+
+	    public SKPoint[] EndArrow(int startIndex, float dist = 8f) => SegmentAt(startIndex).EndArrow(dist);
 
     }
 }

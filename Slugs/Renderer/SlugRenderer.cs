@@ -13,30 +13,14 @@ using Slugs.Slugs;
 
 namespace Slugs.Renderer
 {
-	public struct Seg2D
-	{
-		public PointF Start { get; }
-		public PointF End { get; }
-
-		public Seg2D(PointF start, PointF end)
-		{
-			Start = start;
-			End = end;
-		}
-
-		public double Length => Math.Sqrt((End.X - Start.X) * (End.X - Start.X) + (End.Y - Start.Y) * (End.Y - Start.Y));
-        public PointF PointAlongLine(float t) => new PointF((End.X - Start.X) * t + Start.X, (End.Y - Start.Y) * t + Start.Y);
-	}
-
-    public class SlugRenderer
+	public class SlugRenderer
     {
         public RenderStatus Status { get; set; }
         public int Width { get; protected set; }
         public int Height { get; protected set; }
 	    public event EventHandler DrawingComplete;
 
-	    private List<Seg2D> TestSegs = new List<Seg2D>() { new Seg2D(new PointF(300, 150), new PointF(400, 200)) };
-	    public readonly List<SlugPad> Pads = new List<SlugPad>();
+        public readonly List<SlugPad> Pads = new List<SlugPad>();
 
         public int PenIndex { get; set; }
 
@@ -69,6 +53,7 @@ namespace Slugs.Renderer
 	        Height = result.Height;
 	        parent.Controls.Add(result);
 	        hasControl = true;
+
 
             return result;
         }
@@ -117,12 +102,6 @@ namespace Slugs.Renderer
 
         public void Draw()
         {
-	        foreach (var seg in TestSegs)
-	        {
-		        DrawWithSlug(seg, Pads[1].Slug);
-		        Flush();
-	        }
-
 	        foreach (var slugPad in Pads)
 	        {
 				var slug = Pads[1].Slug;
@@ -144,24 +123,15 @@ namespace Slugs.Renderer
 
 	        DrawDirectedLine(line.Points[0], line.Points[1], Pens.DarkPen);
         }
-        public void DrawWithSlug(Seg2D seg, Slug unit)
-        {
-	        if (unit != null)
-	        {
-		        var norm = unit / 10.0; //.Normalize(); // no need to normalize, just scale to preference for viewing.
-		        var multStart = seg.PointAlongLine(norm.IsForward ? -(float) norm.Pull : (float) norm.Push);
-		        var multEnd = seg.PointAlongLine(norm.IsForward ? (float) norm.Push : -(float) norm.Pull);
-		        DrawDirectedLine(multStart.ToSKPoint(), multEnd.ToSKPoint(), Pens.DrawPen);
-	        }
-
-	        DrawDirectedLine(seg.Start.ToSKPoint(), seg.End.ToSKPoint(), Pens.DarkPen);
-        }
 
         public void DrawDirectedLine(SKPoint start, SKPoint end, SKPaint paint)
         {
 	        _canvas.DrawLine(start, end, paint);
 	        _canvas.DrawCircle(start, 2, paint);
-	        _canvas.DrawCircle(end, 6, paint);
+            var pl = new SkiaPolyline(start, end);
+            var triPts = pl.EndArrow(0, 12);
+            _canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
+            //_canvas.DrawCircle(end, 6, paint);
         }
 
         private SKCanvas _canvas;

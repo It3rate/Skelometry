@@ -82,7 +82,7 @@ namespace Slugs.Slugs
             var acbd = a.Pull * b.Push + a.Push * b.Pull;
             var bc_ad = a.Push * b.Pull - a.Pull * b.Push;
             var c2d2 = b.Pull * b.Pull + b.Push * b.Push;
-            return new Slug(acbd/c2d2, bc_ad/c2d2);
+            return c2d2 == 0 ? Max : new Slug(acbd/c2d2, bc_ad/c2d2);
         }
 
         // Need to decide if pull's positive points left or not. Probably does, but this will affect other calculations.
@@ -94,22 +94,24 @@ namespace Slugs.Slugs
         
         public static Slug Normalize(Slug value)
         {
+            // should be divide by self?
+            return value.IsZeroLength ? new Slug(0.5, 0.5) : value / value;
 	        Slug result;
-	        if (value.IsZeroLength)
-	        {
-		        result = value.IsForward ? new Slug(0.5, 0.5) : new Slug(-0.5, -0.5); // (-0.5, 0.5); // (0, 1.0);
-	        }
-	        else
-	        {
-		        double scale = 1.0 / value.AbsLength();
-		        result = new Slug(value.Pull * scale, value.Push * scale);
-	        }
+	        //if (value.IsZeroLength)
+	        //{
+		       // result = value.IsForward ? new Slug(0.5, 0.5) : new Slug(-0.5, -0.5); // (-0.5, 0.5); // (0, 1.0);
+	        //}
+	        //else
+	        //{
+		       // double scale = 1.0 / value.AbsLength();
+		       // result = new Slug(value.Pull * scale, value.Push * scale);
+	        //}
 
-	        return result;
+	        //return result;
         }
         public static Slug NormalizeTo(Slug from, Slug to)
         {
-	        return from / to;
+	        return from.Normalize() * to;
 	        //var norm = Normalize(value);
 	        //var scale = value.Length();
 	        //var result = new Slug(norm.Pull * scale, norm.Push * scale);
