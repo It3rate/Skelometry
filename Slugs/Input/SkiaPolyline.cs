@@ -10,7 +10,8 @@ namespace Slugs.Input
 
     public class SkiaPolyline
     {
-	    public readonly List<SKPoint> Points = new List<SKPoint>();
+	    public static readonly SkiaPolyline Empty = new SkiaPolyline(SKPoint.Empty, SKPoint.Empty);
+        public readonly List<SKPoint> Points = new List<SKPoint>();
 
 	    public SkiaPolyline(IEnumerable<SKPoint> points)
 	    {

@@ -22,8 +22,9 @@ namespace Slugs.Agent
         private SlugRenderer _renderer;
 	    public RenderStatus Status { get; }
 
-	    public readonly SlugPad Input = new SlugPad();
-	    public readonly SlugPad Output = new SlugPad();
+	    public readonly SlugPad WorkingPad = new SlugPad();
+	    public readonly SlugPad InputPad = new SlugPad();
+        public readonly SlugPad OutputPad = new SlugPad();
 
         private SKPoint DownPoint;
         private SKPoint CurrentPoint;
@@ -38,7 +39,7 @@ namespace Slugs.Agent
 	        set
 	        {
 		        _unitPull = value;
-		        Output.Slug = new Slug(_unitPull, _unitPush);
+		        OutputPad.PadSlug = new Slug(_unitPull, _unitPush);
 	        }
         }
         public double UnitPush
@@ -47,18 +48,18 @@ namespace Slugs.Agent
 	        set
 	        {
 		        _unitPush = value;
-		        Output.Slug = new Slug(_unitPull, _unitPush);
+		        OutputPad.PadSlug = new Slug(_unitPull, _unitPush);
 	        }
         }
 
         public SlugAgent(SlugRenderer renderer)
         {
 	        _renderer = renderer;
-	        Output.Slug = new Slug(UnitPull, UnitPush);
-	        Output.Polylines.Add((new SkiaPolyline(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f))));
-	        //Output.Polylines.Add((new SkiaPolyline(new SKPoint(100, 100f), new SKPoint(100,200)) ));
-            _renderer.Pads.Add(Input);
-	        _renderer.Pads.Add(Output);
+	        OutputPad.PadSlug = new Slug(UnitPull, UnitPush);
+	        InputPad.Polylines.Add((new SkiaPolyline(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f))));
+	        _renderer.Pads.Add(WorkingPad);
+	        _renderer.Pads.Add(InputPad);
+	        _renderer.Pads.Add(OutputPad);
             ClearMouse();
         }
 
@@ -73,7 +74,7 @@ namespace Slugs.Agent
 	        DragSegment.Clear();
 	        ClickPolyline.Clear();
             DragPath.Clear();
-	        Input.Polylines.Clear();
+	        WorkingPad.Polylines.Clear();
         }
 
         public void Draw()
@@ -93,12 +94,12 @@ namespace Slugs.Agent
 
 	    public bool MouseMove(MouseEventArgs e)
 	    {
-            Input.Polylines.Clear();
+            WorkingPad.Polylines.Clear();
 		    CurrentPoint = e.Location.ToSKPoint();
 		    if (IsDown)
 		    {
 			    DragPath.Add(CurrentPoint);
-                Input.Polylines.Add(new SkiaPolyline(DownPoint, CurrentPoint));
+                WorkingPad.Polylines.Add(new SkiaPolyline(DownPoint, CurrentPoint));
 		    }
             return true;
         }
@@ -109,7 +110,7 @@ namespace Slugs.Agent
 		    DragSegment.Add(e.Location.ToSKPoint());
             ClickPolyline.Add(e.Location.ToSKPoint());
 		    DragPath.Add(CurrentPoint);
-            Output.Polylines.Add(new SkiaPolyline(DragSegment));
+            InputPad.Polylines.Add(new SkiaPolyline(DragSegment));
 		    DownPoint = SKPoint.Empty;
 
             ClearMouse();

@@ -142,7 +142,6 @@ namespace Vis.Model.Primitives
             VisPoint curPoint = Nodes[0].Start;
             GenPoints.Add(Nodes[0].Start);
 
-            int genPointIndex = 0;
             for (var i = 0; i < Nodes.Count; i++)
             {
                 var curNode = Nodes[i];

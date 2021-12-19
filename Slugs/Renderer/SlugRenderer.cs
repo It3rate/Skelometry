@@ -97,20 +97,21 @@ namespace Slugs.Renderer
 	        BeginDraw();
 	        Draw();
 	        EndDraw();
-	        //Input = null;
+	        //WorkingPad = null;
         }
 
         public void Draw()
         {
 	        foreach (var slugPad in Pads)
 	        {
-				var slug = Pads[1].Slug;
+				var slug = Pads[2].PadSlug;
 		        foreach (var line in slugPad.Polylines)
 		        {
 			        DrawWithPolyline(line, slug);
 		        }
 	        }
         }
+
         public void DrawWithPolyline(SkiaPolyline line, Slug unit)
         {
 	        if (unit != null)

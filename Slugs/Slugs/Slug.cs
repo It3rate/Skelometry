@@ -96,7 +96,7 @@ namespace Slugs.Slugs
         {
             // should be divide by self?
             return value.IsZeroLength ? new Slug(0.5, 0.5) : value / value;
-	        Slug result;
+	        //Slug result;
 	        //if (value.IsZeroLength)
 	        //{
 		       // result = value.IsForward ? new Slug(0.5, 0.5) : new Slug(-0.5, -0.5); // (-0.5, 0.5); // (0, 1.0);
