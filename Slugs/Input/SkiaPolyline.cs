@@ -31,6 +31,20 @@ namespace Slugs.Input
 	    public SKPoint SKPointFromEnd(int startIndex, float dist) => SegmentAt(startIndex).SKPointFromEnd(dist);
 	    public SKPoint OrthogonalPoint(int startIndex, SKPoint pt, float offset) => SegmentAt(startIndex).OrthogonalPoint(pt, offset);
 
+	    public SKPoint GetSnapPoint(SKPoint input, float maxDist = 6.0f)
+	    {
+		    var result = SKPoint.Empty;
+		    var dist = maxDist * maxDist;
+		    foreach (var skPoint in Points)
+		    {
+			    if (input.SquaredDistanceTo(skPoint) < dist)
+			    {
+				    result = skPoint;
+				    break;
+			    }
+		    }
+		    return result;
+	    }
 	    public SKPoint[] EndArrow(int startIndex, float dist = 8f) => SegmentAt(startIndex).EndArrow(dist);
 
     }

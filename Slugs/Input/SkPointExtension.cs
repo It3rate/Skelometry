@@ -14,8 +14,10 @@ namespace Slugs.Input
 	    public static SKPoint MaxPoint = new SKPoint(float.MaxValue, float.MaxValue);
 	    public static SKPoint MinPoint = new SKPoint(float.MinValue, float.MinValue);
 
-        public static float Angle(this SKPoint a) => (float)Math.Atan2(a.Y, a.X);
-	    public static float AngleDegrees(this SKPoint a) => a.Angle() * 180f / 2f;
+	    public static float DistanceTo(this SKPoint a, SKPoint b) => (a-b).Length;
+	    public static float SquaredDistanceTo(this SKPoint a, SKPoint b) => (a-b).LengthSquared;
+	    public static float Angle(this SKPoint a) => (float)Math.Atan2(a.Y, a.X);
+        public static float AngleDegrees(this SKPoint a) => a.Angle() * 180f / 2f;
 
 	    public static SKPoint PointAtRadiansAndDistance(this SKPoint a, float angle, float distance) =>
 		    new SKPoint(a.X + (float)Math.Cos(angle) * distance, a.Y + (float)Math.Sin(angle) * distance);

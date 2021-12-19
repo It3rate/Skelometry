@@ -104,35 +104,45 @@ namespace Slugs.Renderer
         {
 	        foreach (var slugPad in Pads)
 	        {
-				var slug = Pads[2].PadSlug;
-		        foreach (var line in slugPad.Polylines)
+                slugPad.Refresh();
+				var slug = SlugPad.ActiveSlug;
+		        foreach (var output in slugPad.Output)
 		        {
-			        DrawWithPolyline(line, slug);
+			        DrawDirectedLine(output, Pens.DrawPen);
 		        }
+				foreach (var input in slugPad.Input)
+				{
+					DrawDirectedLine(input, Pens.DarkPen);
+				}
+
+				if (!slugPad.Highlight.IsEmpty)
+				{
+					DrawRoundBox(slugPad.Highlight, Pens.HoverPen);
+				}
 	        }
         }
 
-        public void DrawWithPolyline(SkiaPolyline line, Slug unit)
+        public void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
         {
-	        if (unit != null)
+	        float round = radius / 3f;
+	        var box = new SKRect(point.X - radius, point.Y - radius, point.X + radius, point.Y + radius);
+	        _canvas.DrawRoundRect(box, round, round, paint);
+        }
+
+        public void DrawPolyline(SkiaPolyline line, SKPaint paint)
+        {
+	        _canvas.DrawPoints(SKPointMode.Polygon, line.Points.ToArray(), paint);
+        }
+
+        public void DrawDirectedLine(SkiaPolyline line, SKPaint paint)
+        {
+	        if (line.Points.Count > 1)
 	        {
-		        var norm = unit / 10.0;//.Normalize(); // no need to normalize, just scale to preference for viewing.
-		        var multStart = line.PointAlongLine(0, norm.IsForward ? -(float)norm.Pull : (float)norm.Push);
-		        var multEnd = line.PointAlongLine(0, norm.IsForward ? (float)norm.Push : -(float)norm.Pull);
-		        DrawDirectedLine(multStart, multEnd, Pens.DrawPen);
+	            DrawPolyline(line, paint);
+		        _canvas.DrawCircle(line.Points[0], 2, paint);
+	            var triPts = line.EndArrow(0, 12);
+	            _canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
 	        }
-
-	        DrawDirectedLine(line.Points[0], line.Points[1], Pens.DarkPen);
-        }
-
-        public void DrawDirectedLine(SKPoint start, SKPoint end, SKPaint paint)
-        {
-	        _canvas.DrawLine(start, end, paint);
-	        _canvas.DrawCircle(start, 2, paint);
-            var pl = new SkiaPolyline(start, end);
-            var triPts = pl.EndArrow(0, 12);
-            _canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
-            //_canvas.DrawCircle(end, 6, paint);
         }
 
         private SKCanvas _canvas;
