@@ -108,7 +108,7 @@ namespace Slugs.Agent
 		    }
 		    else
 		    {
-			    InputPad.Highlight = SKPoint.Empty;
+			    InputPad.Highlight = PointRef.Empty;
 		    }
             return true;
         }

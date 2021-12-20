@@ -22,7 +22,9 @@ namespace Slugs.Input
 		    Points.AddRange(points);
 	    }
 
-	    public SkiaSegment SegmentAt(int index) => 
+	    public SKPoint this[int index] => Points[index];
+
+        public SkiaSegment SegmentAt(int index) => 
 		    index < 0 || index > Points.Count - 1 ? SkiaSegment.Empty : new SkiaSegment(Points[index], Points[index + 1]);
 
 	    public float Length(int startIndex) => SegmentAt(startIndex).Length();
@@ -31,20 +33,23 @@ namespace Slugs.Input
 	    public SKPoint SKPointFromEnd(int startIndex, float dist) => SegmentAt(startIndex).SKPointFromEnd(dist);
 	    public SKPoint OrthogonalPoint(int startIndex, SKPoint pt, float offset) => SegmentAt(startIndex).OrthogonalPoint(pt, offset);
 
-	    public SKPoint GetSnapPoint(SKPoint input, float maxDist = 6.0f)
+	    public int GetSnapPoint(SKPoint input, float maxDist = 6.0f)
 	    {
-		    var result = SKPoint.Empty;
+		    var result = -1;
 		    var dist = maxDist * maxDist;
+		    int index = 0;
 		    foreach (var skPoint in Points)
 		    {
 			    if (input.SquaredDistanceTo(skPoint) < dist)
 			    {
-				    result = skPoint;
+				    result = index;
 				    break;
 			    }
+			    index++;
 		    }
 		    return result;
 	    }
+
 	    public SKPoint[] EndArrow(int startIndex, float dist = 8f) => SegmentAt(startIndex).EndArrow(dist);
 
     }

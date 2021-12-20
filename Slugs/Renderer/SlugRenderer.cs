@@ -117,7 +117,7 @@ namespace Slugs.Renderer
 
 				if (!slugPad.Highlight.IsEmpty)
 				{
-					DrawRoundBox(slugPad.Highlight, Pens.HoverPen);
+					DrawRoundBox(slugPad.GetHighlightPoint(), Pens.HoverPen);
 				}
 	        }
         }
