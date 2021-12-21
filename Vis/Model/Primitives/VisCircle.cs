@@ -70,7 +70,7 @@ namespace Vis.Model.Primitives
             var p0 = perimeterOrigin.Location;
             var onLine = p0.ProjectedOntoLine(line);
             var diff = p0.Subtract(onLine);
-            var radius = diff.VectorLength();
+            var radius = diff.Length();
             var center = direction == ClockDirection.CW ? p0.Add(diff.Transpose()) : p0.Subtract(diff.Transpose());
             VisCircle result = new VisCircle(center, p0, direction);
             return result;
@@ -206,7 +206,7 @@ namespace Vis.Model.Primitives
         public override VisPoint ProjectPointOnto(VisPoint p)
         {
 	        var dif = p.Subtract(Center);
-	        var result = dif.DivideBy(dif.VectorLength()).Multiply(Radius).Add(Center);
+	        var result = dif.DivideBy(dif.Length()).Multiply(Radius).Add(Center);
 	        return result;
         }
         public override VisPolyline GetPolyline()

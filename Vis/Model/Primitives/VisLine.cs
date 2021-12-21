@@ -154,7 +154,7 @@ namespace Vis.Model.Primitives
 	        var e1 = EndPoint.Subtract(this);
 	        var e2 = p.Subtract(this);
 	        var dp = e1.DotProduct(e2);
-	        var len2 = e1.VectorSquaredLength();
+	        var len2 = e1.SquaredLength();
 	        return new VisPoint(X + (dp * e1.X) / len2, Y + (dp * e1.Y) / len2);
         }
 

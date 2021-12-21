@@ -25,6 +25,7 @@ namespace Slugs.Renderer
         public SKPaint GrayPen { get; private set; }
         public SKPaint WorkingPen { get; private set; }
         public SKPaint DrawPen { get; private set; }
+        public SKPaint HighlightPen { get; private set; }
 
         public SlugPens(float defaultWidth = 1f)
 	    {
@@ -103,6 +104,7 @@ namespace Slugs.Renderer
 		    DarkPen = GetPen(SKColors.Black, DefaultWidth);
 		    WorkingPen = GetPen(SKColors.DarkGray, DefaultWidth);
 		    DrawPen = GetPen(SKColors.OrangeRed, DefaultWidth * 4);
+		    HighlightPen = GetPen(SKColors.White, DefaultWidth * 2);
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));

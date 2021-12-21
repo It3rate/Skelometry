@@ -26,8 +26,9 @@ namespace Slugs.Pads
 	    private static int _padIndexCounter = 0;
 	    public readonly int PadIndex;
 	    public PointRef Highlight = PointRef.Empty;
+	    public PointRef HighlightLine = PointRef.Empty;
 
-	    public List<SkiaPolyline> Input = new List<SkiaPolyline>();
+        public List<SkiaPolyline> Input = new List<SkiaPolyline>();
 	    public List<SkiaPolyline> Output = new List<SkiaPolyline>();
         private List<SlugMap> Maps = new List<SlugMap>(); 
 
@@ -65,7 +66,9 @@ namespace Slugs.Pads
 	    }
 
 	    public SKPoint GetHighlightPoint() => Highlight.IsEmpty ? SKPoint.Empty : PolylineFromIndex(Highlight.LineIndex)[Highlight.PointIndex];
-	    public PointRef[] GetSnapPoints(SKPoint input)
+	    public SkiaPolyline GetHighlightLine() => HighlightLine.IsEmpty ? SkiaPolyline.Empty : PolylineFromIndex(HighlightLine.LineIndex);
+
+        public PointRef[] GetSnapPoints(SKPoint input)
 	    {
 		    var result = new List<PointRef>();
 		    int lineIndex = 0;
@@ -82,10 +85,28 @@ namespace Slugs.Pads
 		    return result.ToArray();
 	    }
 
-	    public SlugMap GetSnapLine(SKPoint point)
+	    public PointRef GetSnapLine(SKPoint point)
 	    {
-		    return SlugMap.Empty;
-	    }
+		    var result = PointRef.Empty;
+		    int lineIndex = 0;
+		    foreach (var polyline in Input)
+		    {
+			    for (int i = 0; i < polyline.Points.Count - 1; i++)
+			    {
+				    var seg = new SkiaSegment(polyline, i, i+1);
+				    var closest = seg.ProjectPointOnto(point);
+				    var dist = point.DistanceTo(closest);
+				    if (dist < 8)
+				    {
+                        result = new PointRef(this.PadIndex, lineIndex, i);
+                        goto End;
+				    }
+					lineIndex++;
+			    }
+		    }
+            End:
+		    return result;
+        }
 
         public SkiaPolyline PolylineFromIndex(int index)
 	    {

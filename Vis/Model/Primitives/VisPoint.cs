@@ -75,8 +75,8 @@ namespace Vis.Model.Primitives
         public VisPoint Multiply(float scalar) => new VisPoint(X * scalar, Y * scalar);
         public VisPoint DivideBy(float scalar) => new VisPoint(X / scalar, Y / scalar);
 
-        public float VectorLength() => (float)Math.Sqrt(X * X + Y * Y);
-        public float VectorSquaredLength() => X * X + Y * Y;
+        public float Length() => (float)Math.Sqrt(X * X + Y * Y);
+        public float SquaredLength() => X * X + Y * Y;
         public float DistanceTo(VisPoint pt) => (float)Math.Sqrt((pt.X - X) * (pt.X - X) + (pt.Y - Y) * (pt.Y - Y));
         public float SquaredDistanceTo(VisPoint pt) => (float)Math.Abs((pt.X - X) * (pt.X - X) + (pt.Y - Y) * (pt.Y - Y));
         public float DotProduct(VisPoint pt) => X * pt.X + Y * pt.Y; // negative because inverted Y

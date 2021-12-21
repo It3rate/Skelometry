@@ -119,7 +119,12 @@ namespace Slugs.Renderer
 				{
 					DrawRoundBox(slugPad.GetHighlightPoint(), Pens.HoverPen);
 				}
-	        }
+
+				if (!slugPad.HighlightLine.IsEmpty)
+				{
+					DrawDirectedLine(slugPad.GetHighlightLine(), Pens.HighlightPen);
+				}
+            }
         }
 
         public void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)

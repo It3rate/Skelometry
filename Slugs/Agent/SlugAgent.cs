@@ -55,8 +55,9 @@ namespace Slugs.Agent
         {
 	        _renderer = renderer;
 	        SlugPad.ActiveSlug = new Slug(UnitPull, UnitPush);
-	        var pl =(new SkiaPolyline(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f)));
-	        InputPad.Add(pl);
+	        //var pl = (new SkiaPolyline(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f)));
+	        var pl = (new SkiaPolyline(new SKPoint(200, 100), new SKPoint(400,300)));
+            InputPad.Add(pl);
 	        _renderer.Pads.Add(WorkingPad);
 	        _renderer.Pads.Add(InputPad);
             ClearMouse();
@@ -109,6 +110,15 @@ namespace Slugs.Agent
 		    else
 		    {
 			    InputPad.Highlight = PointRef.Empty;
+                var snapLine = InputPad.GetSnapLine(CurrentPoint);
+			    if (snapLine.IsEmpty)
+			    {
+					InputPad.HighlightLine = PointRef.Empty;
+			    }
+			    else
+			    {
+				    InputPad.HighlightLine = snapLine;
+			    }
 		    }
             return true;
         }
