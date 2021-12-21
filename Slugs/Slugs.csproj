@@ -94,6 +94,7 @@
     <Compile Include="Input\SkPointExtension.cs" />
     <Compile Include="Input\SkiaPolyline.cs" />
     <Compile Include="Input\SkiaSegment.cs" />
+    <Compile Include="Pads\PointRef.cs" />
     <Compile Include="Pads\SlugPad.cs" />
     <Compile Include="Renderer\RenderFlags.cs" />
     <Compile Include="Renderer\RenderStatus.cs" />

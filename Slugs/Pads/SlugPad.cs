@@ -21,6 +21,7 @@ namespace Slugs.Pads
     {
 	    public static Slug ActiveSlug = Slug.Unit;
         private static List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
+        public const float SnapDistance = 10.0f;
 
 	    public PadKind PadKind;
 	    private static int _padIndexCounter = 0;
@@ -65,16 +66,21 @@ namespace Slugs.Pads
             }
 	    }
 
+	    public void UpdatePoint(PointRef pointRef, SKPoint pt)
+	    {
+		    Input[pointRef.LineIndex][pointRef.PointIndex] = pt;
+	    }
+
 	    public SKPoint GetHighlightPoint() => Highlight.IsEmpty ? SKPoint.Empty : PolylineFromIndex(Highlight.LineIndex)[Highlight.PointIndex];
 	    public SkiaPolyline GetHighlightLine() => HighlightLine.IsEmpty ? SkiaPolyline.Empty : PolylineFromIndex(HighlightLine.LineIndex);
 
-        public PointRef[] GetSnapPoints(SKPoint input)
+        public PointRef[] GetSnapPoints(SKPoint input, float maxDist = SnapDistance)
 	    {
 		    var result = new List<PointRef>();
 		    int lineIndex = 0;
 		    foreach (var line in Input)
 		    {
-			    var ptIndex = line.GetSnapPoint(input);
+			    var ptIndex = line.GetSnapPoint(input, maxDist);
 			    if (ptIndex > -1)
 			    {
 				    result.Add(new PointRef(PadIndex, lineIndex, ptIndex));
@@ -85,7 +91,7 @@ namespace Slugs.Pads
 		    return result.ToArray();
 	    }
 
-	    public PointRef GetSnapLine(SKPoint point)
+	    public PointRef GetSnapLine(SKPoint point, float maxDist = SnapDistance)
 	    {
 		    var result = PointRef.Empty;
 		    int lineIndex = 0;
@@ -95,8 +101,8 @@ namespace Slugs.Pads
 			    {
 				    var seg = new SkiaSegment(polyline, i, i+1);
 				    var closest = seg.ProjectPointOnto(point);
-				    var dist = point.DistanceTo(closest);
-				    if (dist < 8)
+				    var dist = point.SquaredDistanceTo(closest);
+				    if (dist < maxDist)
 				    {
                         result = new PointRef(this.PadIndex, lineIndex, i);
                         goto End;
@@ -190,19 +196,4 @@ namespace Slugs.Pads
 	    public bool IsEmpty => PolyIndex == -1 && SlugIndex == -1;
     }
 
-    public readonly struct PointRef
-    {
-	    public static readonly PointRef Empty = new PointRef(-1, -1, -1);
-        public readonly int PadIndex;
-	    public readonly int LineIndex;
-	    public readonly int PointIndex;
-	    public PointRef(int padIndex, int lineIndex, int pointIndex)
-	    {
-		    PadIndex = padIndex;
-		    LineIndex = lineIndex;
-		    PointIndex = pointIndex;
-        }
-
-	    public bool IsEmpty => PadIndex == -1 && LineIndex == -1 && PointIndex == -1;
-    }
 }

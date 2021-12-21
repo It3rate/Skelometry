@@ -103,8 +103,8 @@ namespace Slugs.Renderer
 		    GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
 		    DarkPen = GetPen(SKColors.Black, DefaultWidth);
 		    WorkingPen = GetPen(SKColors.DarkGray, DefaultWidth);
-		    DrawPen = GetPen(SKColors.OrangeRed, DefaultWidth * 4);
-		    HighlightPen = GetPen(SKColors.White, DefaultWidth * 2);
+		    DrawPen = GetPen(SKColors.Blue, DefaultWidth * 4);
+		    HighlightPen = GetPen(SKColors.Red, DefaultWidth * 2);
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));

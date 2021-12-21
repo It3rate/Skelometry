@@ -27,9 +27,12 @@ namespace Slugs.Agent
 
         private SKPoint DownPoint;
         private SKPoint CurrentPoint;
+        private SKPoint SnapPoint;
         private List<SKPoint> DragSegment = new List<SKPoint>();
         private List<SKPoint> ClickPolyline = new List<SKPoint>();
         private List<SKPoint> DragPath = new List<SKPoint>();
+
+        public PointRef DraggingPoint = PointRef.Empty;
 
         private bool IsDown => DownPoint != SKPoint.Empty;
         public double UnitPull
@@ -71,10 +74,14 @@ namespace Slugs.Agent
         {
 	        DownPoint = SKPoint.Empty;
 	        CurrentPoint = SKPoint.Empty;
-	        DragSegment.Clear();
+	        SnapPoint = SKPoint.Empty;
+            DragSegment.Clear();
 	        ClickPolyline.Clear();
             DragPath.Clear();
 	        WorkingPad.Clear();
+
+	        DownPoint = SKPoint.Empty;
+            DraggingPoint = PointRef.Empty;
         }
 
         public void Draw()
@@ -84,10 +91,19 @@ namespace Slugs.Agent
 
 	    public bool MouseDown(MouseEventArgs e)
 	    {
-		    DownPoint = e.Location.ToSKPoint();
-		    CurrentPoint = e.Location.ToSKPoint(); 
-		    DragSegment.Add(DownPoint);
-		    DragPath.Add(CurrentPoint);
+		    CurrentPoint = e.Location.ToSKPoint();
+		    SetHighlight();
+		    DownPoint = SnapPoint;
+            var hasHighlight = SetHighlight();
+		    if (hasHighlight && CurrentKey != Keys.ControlKey)
+		    {
+				DraggingPoint = InputPad.Highlight;
+		    }
+		    else
+		    {
+			    DragSegment.Add(SnapPoint);
+			    DragPath.Add(SnapPoint);
+		    }
 
             return true;
 	    }
@@ -96,54 +112,92 @@ namespace Slugs.Agent
 	    {
             WorkingPad.Clear();
 		    CurrentPoint = e.Location.ToSKPoint();
-		    if (IsDown)
-		    {
-			    DragPath.Add(CurrentPoint);
-                WorkingPad.Add(new SkiaPolyline(DownPoint, CurrentPoint));
-		    }
+            SetHighlight();
+            SetDragging();
+            SetCreating();
 
-		    var snap = InputPad.GetSnapPoints(CurrentPoint);
-		    if (snap.Length > 0)
-		    {
-			    InputPad.Highlight = snap[0];
-		    }
-		    else
-		    {
-			    InputPad.Highlight = PointRef.Empty;
-                var snapLine = InputPad.GetSnapLine(CurrentPoint);
-			    if (snapLine.IsEmpty)
-			    {
-					InputPad.HighlightLine = PointRef.Empty;
-			    }
-			    else
-			    {
-				    InputPad.HighlightLine = snapLine;
-			    }
-		    }
             return true;
         }
 
 	    public bool MouseUp(MouseEventArgs e)
 	    {
 		    CurrentPoint = e.Location.ToSKPoint();
-		    DragSegment.Add(e.Location.ToSKPoint());
-            ClickPolyline.Add(e.Location.ToSKPoint());
-		    DragPath.Add(CurrentPoint);
-            InputPad.Add(new SkiaPolyline(DragSegment));
-		    DownPoint = SKPoint.Empty;
+		    SetDragging();
+		    SetCreating(true);
 
             ClearMouse();
             return true;
         }
 
+	    private Keys CurrentKey;
 	    public bool KeyDown(KeyEventArgs e)
 	    {
+		    CurrentKey = e.KeyCode;
 		    return true;
         }
 
 	    public bool KeyUp(KeyEventArgs e)
 	    {
-		    return true;
+		    CurrentKey = Keys.None;
+            return true;
         }
+
+	    private bool SetHighlight()
+	    {
+		    bool hasChange = false;
+		    var snap = InputPad.GetSnapPoints(CurrentPoint);
+		    if (snap.Length > 0)
+		    {
+			    hasChange = true;
+			    InputPad.Highlight = snap[0];
+			    InputPad.HighlightLine = PointRef.Empty;
+		    }
+		    else
+		    {
+			    InputPad.Highlight = PointRef.Empty;
+			    var snapLine = InputPad.GetSnapLine(CurrentPoint);
+			    if (snapLine.IsEmpty)
+			    {
+				    InputPad.HighlightLine = PointRef.Empty;
+			    }
+			    else
+			    {
+				    hasChange = true;
+				    InputPad.HighlightLine = snapLine;
+			    }
+		    }
+		    SnapPoint = InputPad.Highlight.IsEmpty ? CurrentPoint : InputPad.GetHighlightPoint();
+
+		    return hasChange;
+	    }
+
+	    private bool SetCreating(bool final = false)
+	    {
+		    var result = false;
+		    if (DraggingPoint.IsEmpty && IsDown)
+		    {
+			    DragPath.Add(SnapPoint);
+			    WorkingPad.Add(new SkiaPolyline(DownPoint, SnapPoint));
+			    if (final)
+			    {
+				    DragSegment.Add(SnapPoint);
+				    ClickPolyline.Add(SnapPoint);
+				    DragPath.Add(SnapPoint);
+				    InputPad.Add(new SkiaPolyline(DragSegment));
+                }
+			    result = true;
+		    }
+		    return result;
+	    }
+        private bool SetDragging()
+	    {
+		    var result = false;
+		    if (!DraggingPoint.IsEmpty)
+		    {
+			    InputPad.UpdatePoint(DraggingPoint, SnapPoint);
+			    result = true;
+		    }
+		    return result;
+	    }
     }
 }

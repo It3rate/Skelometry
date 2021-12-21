@@ -22,7 +22,11 @@ namespace Slugs.Input
 		    Points.AddRange(points);
 	    }
 
-	    public SKPoint this[int index] => Points[index];
+	    public SKPoint this[int index]
+	    {
+		    get => Points[index];
+		    set => Points[index] = value;
+	    }
 
         public SkiaSegment SegmentAt(int index) => 
 		    index < 0 || index > Points.Count - 1 ? SkiaSegment.Empty : new SkiaSegment(Points[index], Points[index + 1]);
