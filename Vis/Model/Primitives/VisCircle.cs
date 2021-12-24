@@ -25,7 +25,7 @@ namespace Vis.Model.Primitives
         public bool IsFixed { get; set; } = false;
 
         public float OriginAngle { get; private set; }
-        public float Length => (float)(2f * Radius * Math.PI);
+        public new float Length => (float)(2f * Radius * Math.PI);
 
         public VisPoint StartPoint => PerimeterOrigin;
         public VisPoint MidPoint => GetPoint(0.5f, 0);

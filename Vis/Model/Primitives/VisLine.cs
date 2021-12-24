@@ -26,7 +26,7 @@ namespace Vis.Model.Primitives
         public IPath UnitReference { get; set; }
 
         private float _length;
-        public float Length
+        public new float Length
         {
             get
             {

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Runtime.CompilerServices;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -17,68 +18,106 @@ namespace Slugs.Pads
 
     public enum PadKind{Working, Drawn}
 
-    public class SlugPad : IEnumerable<(SkiaPolyline, Slug)>
+    public class SlugPad : IEnumerable<(InfoSet, Slug)>
     {
+	    private static int _padIndexCounter = 0;
+	    public readonly int PadIndex;
+
 	    public static Slug ActiveSlug = Slug.Unit;
         private static List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
         public const float SnapDistance = 10.0f;
 
 	    public PadKind PadKind;
-	    private static int _padIndexCounter = 0;
-	    public readonly int PadIndex;
 	    public PointRef Highlight = PointRef.Empty;
 	    public PointRef HighlightLine = PointRef.Empty;
 
-        public List<SkiaPolyline> Input = new List<SkiaPolyline>();
-	    public List<SkiaPolyline> Output = new List<SkiaPolyline>();
-        private List<SlugMap> Maps = new List<SlugMap>(); 
+        private readonly List<SlugMap> _maps = new List<SlugMap>(); 
+        private readonly List<InfoSet> _input = new List<InfoSet>();
+        private readonly List<SKSegment> _output = new List<SKSegment>();
+        public IEnumerable<InfoSet> Input => _input;
+        public IEnumerable<SKSegment> Output => _output;
 
-	    public SlugPad(PadKind padKind)
+        public SlugPad(PadKind padKind)
 	    {
 		    PadIndex = _padIndexCounter++;
             PadKind = padKind;
 		    Clear();
 	    }
 
-	    public (SkiaPolyline, Slug) this[int index] => (PolylineFromIndex(index), SlugFromIndex(index));
+	    public (InfoSet, Slug) this[int index] => (InfoSetFromIndex(index), SlugFromIndex(index));
 
-	    public void Clear()
+        public int Add(InfoSet line, Slug slug)
 	    {
-		    Input.Clear();
+		    line.PadIndex = PadIndex;
+		    line.InfoSetIndex = _input.Count;
+		    _input.Add(line);
+		    Slugs.Add(slug);
+		    _maps.Add(new SlugMap(_input.Count - 1, Slugs.Count - 1));
+		    return Slugs.Count - 1;
+	    }
+	    public int Add(InfoSet line, int index)
+	    {
+		    line.PadIndex = PadIndex;
+            line.InfoSetIndex = _input.Count;
+            _input.Add(line);
+            _maps.Add(new SlugMap(_input.Count - 1, index));
+		    return index;
+	    }
+	    public int Add(InfoSet line)
+	    {
+		    line.PadIndex = PadIndex;
+		    line.InfoSetIndex = _input.Count;
+            _input.Add(line);
+		    _maps.Add(new SlugMap(_input.Count - 1, 0));
+		    return -1;
+	    }
+        public void Clear()
+	    {
+		    _input.Clear();
 		    Slugs.Clear();
-		    Maps.Clear();
+		    _maps.Clear();
             Slugs.Add(Slug.Zero); 
         }
 	    public void Refresh()
 	    {
-            Output.Clear();
-            foreach (var slugMap in Maps)
+            _output.Clear();
+            foreach (var slugMap in _maps)
             {
 	            if (slugMap.SlugIndex > -1)
 	            {
 		            var unit = SlugFromIndex(slugMap.SlugIndex);
-		            var line = PolylineFromIndex(slugMap.PolyIndex);
+		            var line = InfoSetFromIndex(slugMap.PolyIndex);
 		            var norm = unit / 10.0;
-		            var multStart = line.PointAlongLine(0, norm.IsForward ? -(float)norm.Pull : (float)norm.Push);
-		            var multEnd = line.PointAlongLine(0, norm.IsForward ? (float)norm.Push : -(float)norm.Pull);
-		            Output.Add(new SkiaPolyline(multStart, multEnd));
+		            var multStart = line.PointAlongLine(0, 1, norm.IsForward ? -(float)norm.Pull : (float)norm.Push);
+		            var multEnd = line.PointAlongLine(0, 1, norm.IsForward ? (float)norm.Push : -(float)norm.Pull);
+		            _output.Add(new SKSegment(multStart, multEnd));
 	            }
             }
 	    }
 
 	    public void UpdatePoint(PointRef pointRef, SKPoint pt)
 	    {
-		    Input[pointRef.LineIndex][pointRef.PointIndex] = pt;
+		    _input[pointRef.InfoSetIndex][pointRef.PointIndex] = pt;
 	    }
 
-	    public SKPoint GetHighlightPoint() => Highlight.IsEmpty ? SKPoint.Empty : PolylineFromIndex(Highlight.LineIndex)[Highlight.PointIndex];
-	    public SkiaPolyline GetHighlightLine() => HighlightLine.IsEmpty ? SkiaPolyline.Empty : PolylineFromIndex(HighlightLine.LineIndex);
+	    public SKPoint GetHighlightPoint() => Highlight.IsEmpty ? SKPoint.Empty : InfoSetFromIndex(Highlight.InfoSetIndex)[Highlight.PointIndex];
+
+	    public SKSegment GetHighlightLine()
+	    {
+		    SKSegment result = SKSegment.Empty;
+		    var infoSet = InfoSetFromIndex(Highlight.InfoSetIndex);
+		    if (!infoSet.IsEmpty)
+		    {
+                result = new SKSegment(infoSet[0], infoSet[1]);
+            }
+		    return result;
+	    } 
 
         public PointRef[] GetSnapPoints(SKPoint input, float maxDist = SnapDistance)
 	    {
 		    var result = new List<PointRef>();
 		    int lineIndex = 0;
-		    foreach (var line in Input)
+		    foreach (var line in _input)
 		    {
 			    var ptIndex = line.GetSnapPoint(input, maxDist);
 			    if (ptIndex > -1)
@@ -95,11 +134,11 @@ namespace Slugs.Pads
 	    {
 		    var result = PointRef.Empty;
 		    int lineIndex = 0;
-		    foreach (var polyline in Input)
+		    foreach (var infoSet in _input)
 		    {
-			    for (int i = 0; i < polyline.Points.Count - 1; i++)
+			    for (int i = 0; i < infoSet.Count - 1; i++)
 			    {
-				    var seg = new SkiaSegment(polyline, i, i+1);
+				    var seg = new SegmentRef(infoSet.PointRefAt(i));
 				    var closest = seg.ProjectPointOnto(point);
 				    var dist = point.SquaredDistanceTo(closest);
 				    if (dist < maxDist)
@@ -114,21 +153,21 @@ namespace Slugs.Pads
 		    return result;
         }
 
-        public SkiaPolyline PolylineFromIndex(int index)
-	    {
-		    SkiaPolyline result;
-		    if (index >= 0 && index < Input.Count)
-		    {
-			    result = Input[index];
-		    }
-		    else
-		    {
-			    result = SkiaPolyline.Empty;
-		    }
-		    return result;
-	    }
+        public InfoSet InfoSetFromIndex(int index)
+        {
+            InfoSet result;
+            if (index >= 0 && index < _input.Count)
+            {
+                result = _input[index];
+            }
+            else
+            {
+                result = InfoSet.Empty;
+            }
+            return result;
+        }
 
-	    public Slug SlugFromIndex(int index)
+        public Slug SlugFromIndex(int index)
 	    {
 		    Slug result;
 		    if(index == 0)
@@ -145,55 +184,21 @@ namespace Slugs.Pads
 		    }
 		    return result;
 	    }
-        public int Add(SkiaPolyline line, Slug slug)
-	    {
-		    Input.Add(line);
-		    Slugs.Add(slug);
-		    Maps.Add(new SlugMap(Input.Count - 1, Slugs.Count - 1));
-		    return Slugs.Count - 1;
-	    }
-	    public int Add(SkiaPolyline line, int index)
-	    {
-		    Input.Add(line);
-		    Maps.Add(new SlugMap(Input.Count - 1, index));
-		    return index;
-	    }
-	    public int Add(SkiaPolyline line)
-	    {
-		    Input.Add(line);
-		    Maps.Add(new SlugMap(Input.Count - 1, 0));
-		    return -1;
-	    }
 
-        public IEnumerator<(SkiaPolyline, Slug)> GetEnumerator()
+        public IEnumerator<(InfoSet, Slug)> GetEnumerator()
 	    {
-		    foreach (var map in Maps)
+		    foreach (var map in _maps)
 		    {
-			    yield return (PolylineFromIndex(map.PolyIndex), SlugFromIndex(map.SlugIndex));
+			    yield return (InfoSetFromIndex(map.PolyIndex), SlugFromIndex(map.SlugIndex));
 		    }
 	    }
 	    IEnumerator IEnumerable.GetEnumerator()
 	    {
-		    foreach (var map in Maps)
+		    foreach (var map in _maps)
 		    {
-			    yield return (PolylineFromIndex(map.PolyIndex), SlugFromIndex(map.SlugIndex));
+			    yield return (InfoSetFromIndex(map.PolyIndex), SlugFromIndex(map.SlugIndex));
 		    }
 	    }
-    }
-
-
-    public readonly struct SlugMap
-    {
-        public static readonly SlugMap Empty = new SlugMap(-1,-1);
-	    public int PolyIndex { get; }
-	    public int SlugIndex { get; }
-
-	    public SlugMap(int polyIndex, int slugIndex)
-	    {
-		    PolyIndex = polyIndex;
-		    SlugIndex = slugIndex;
-	    }
-	    public bool IsEmpty => PolyIndex == -1 && SlugIndex == -1;
     }
 
 }

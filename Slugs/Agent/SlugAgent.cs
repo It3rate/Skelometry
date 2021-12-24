@@ -16,57 +16,80 @@ namespace Slugs.Agent
 
     public class SlugAgent : IAgent
     {
+	    public static SlugAgent ActiveAgent { get; private set; }
+        private static readonly Dictionary<int, SlugPad> Pads = new Dictionary<int, SlugPad>();
+
 	    private double _unitPull = 0;
 	    public double _unitPush = 10;
 
-        private SlugRenderer _renderer;
+	    private SlugRenderer _renderer;
 	    public RenderStatus Status { get; }
 
 	    public readonly SlugPad WorkingPad = new SlugPad(PadKind.Working);
 	    public readonly SlugPad InputPad = new SlugPad(PadKind.Drawn);
 
-        private SKPoint DownPoint;
-        private SKPoint CurrentPoint;
-        private SKPoint SnapPoint;
-        private List<SKPoint> DragSegment = new List<SKPoint>();
-        private List<SKPoint> ClickPolyline = new List<SKPoint>();
-        private List<SKPoint> DragPath = new List<SKPoint>();
+	    private SKPoint DownPoint;
+	    private SKPoint CurrentPoint;
+	    private SKPoint SnapPoint;
+	    private List<SKPoint> DragSegment = new List<SKPoint>();
+	    private List<SKPoint> ClickInfoSet = new List<SKPoint>();
+	    private List<SKPoint> DragPath = new List<SKPoint>();
 
-        public PointRef DraggingPoint = PointRef.Empty;
+	    public PointRef DraggingPoint = PointRef.Empty;
 
-        private bool IsDown => DownPoint != SKPoint.Empty;
-        public double UnitPull
-        {
-	        get => _unitPull;
-	        set
-	        {
-		        _unitPull = value;
-		        SlugPad.ActiveSlug = new Slug(_unitPull, _unitPush);
-	        }
-        }
-        public double UnitPush
-        {
-	        get => _unitPush;
-	        set
-	        {
-		        _unitPush = value;
-		        SlugPad.ActiveSlug = new Slug(_unitPull, _unitPush);
-	        }
-        }
+	    private bool IsDown => DownPoint != SKPoint.Empty;
+	    public double UnitPull
+	    {
+		    get => _unitPull;
+		    set
+		    {
+			    _unitPull = value;
+			    SlugPad.ActiveSlug = new Slug(_unitPull, _unitPush);
+		    }
+	    }
+	    public double UnitPush
+	    {
+		    get => _unitPush;
+		    set
+		    {
+			    _unitPush = value;
+			    SlugPad.ActiveSlug = new Slug(_unitPull, _unitPush);
+		    }
+	    }
 
-        public SlugAgent(SlugRenderer renderer)
-        {
-	        _renderer = renderer;
-	        SlugPad.ActiveSlug = new Slug(UnitPull, UnitPush);
-	        //var pl = (new SkiaPolyline(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f)));
-	        var pl = (new SkiaPolyline(new SKPoint(200, 100), new SKPoint(400,300)));
-            InputPad.Add(pl);
-	        _renderer.Pads.Add(WorkingPad);
-	        _renderer.Pads.Add(InputPad);
-            ClearMouse();
-        }
+	    public SlugAgent(SlugRenderer renderer)
+	    {
+		    ActiveAgent = this;
+		    SlugAgent.Pads[WorkingPad.PadIndex] = WorkingPad;
+		    SlugAgent.Pads[InputPad.PadIndex] = InputPad;
 
-        public void Clear()
+            _renderer = renderer;
+		    SlugPad.ActiveSlug = new Slug(UnitPull, UnitPush);
+		    //var pl = (new InfoSet(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f)));
+		    var pl = (new InfoSet(new[]{new SKPoint(200, 100), new SKPoint(400, 300)} ));
+		    InputPad.Add(pl);
+		    _renderer.Pads.Add(WorkingPad);
+		    _renderer.Pads.Add(InputPad);
+		    ClearMouse();
+	    }
+
+	    public SKPoint this[PointRef pointRef]
+	    {
+		    get
+		    {
+			    var pad = SlugAgent.Pads[pointRef.PadIndex];
+			    var infoSet = pad.InfoSetFromIndex(pointRef.InfoSetIndex);
+			    return infoSet[pointRef.PointIndex];
+		    } 
+		    set
+		    {
+			    var pad = SlugAgent.Pads[pointRef.PadIndex];
+			    var infoSet = pad.InfoSetFromIndex(pointRef.InfoSetIndex);
+			    infoSet[pointRef.PointIndex] = value;
+		    }
+	    }
+
+	    public void Clear()
         {
         }
 
@@ -76,7 +99,7 @@ namespace Slugs.Agent
 	        CurrentPoint = SKPoint.Empty;
 	        SnapPoint = SKPoint.Empty;
             DragSegment.Clear();
-	        ClickPolyline.Clear();
+	        ClickInfoSet.Clear();
             DragPath.Clear();
 	        WorkingPad.Clear();
 
@@ -177,13 +200,13 @@ namespace Slugs.Agent
 		    if (DraggingPoint.IsEmpty && IsDown)
 		    {
 			    DragPath.Add(SnapPoint);
-			    WorkingPad.Add(new SkiaPolyline(DownPoint, SnapPoint));
+			    WorkingPad.Add(new InfoSet(DownPoint, SnapPoint));
 			    if (final)
 			    {
 				    DragSegment.Add(SnapPoint);
-				    ClickPolyline.Add(SnapPoint);
+				    ClickInfoSet.Add(SnapPoint);
 				    DragPath.Add(SnapPoint);
-				    InputPad.Add(new SkiaPolyline(DragSegment));
+				    InputPad.Add(new InfoSet(DragSegment));
                 }
 			    result = true;
 		    }
