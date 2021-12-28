@@ -96,7 +96,6 @@ namespace Vis.Model.Agent
 	        ElementRecord result = null;
 	        foreach (var padAttributes in Paths)
 	        {
-		        // todo: implement all comparator methods for elements
 		        if (padAttributes.Element.GetHashCode() == item.GetHashCode())
 		        {
 			        result = padAttributes;

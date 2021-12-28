@@ -17,12 +17,12 @@ namespace Slugs.Agent
     public class SlugAgent : IAgent
     {
 	    public static SlugAgent ActiveAgent { get; private set; }
-        private static readonly Dictionary<int, SlugPad> Pads = new Dictionary<int, SlugPad>();
+        public static readonly Dictionary<int, SlugPad> Pads = new Dictionary<int, SlugPad>();
 
 	    private double _unitPull = 0;
 	    public double _unitPush = 10;
 
-	    private SlugRenderer _renderer;
+	    private readonly SlugRenderer _renderer;
 	    public RenderStatus Status { get; }
 
 	    public readonly SlugPad WorkingPad = new SlugPad(PadKind.Working);
@@ -31,9 +31,9 @@ namespace Slugs.Agent
 	    private SKPoint DownPoint;
 	    private SKPoint CurrentPoint;
 	    private SKPoint SnapPoint;
-	    private List<SKPoint> DragSegment = new List<SKPoint>();
-	    private List<SKPoint> ClickInfoSet = new List<SKPoint>();
-	    private List<SKPoint> DragPath = new List<SKPoint>();
+	    private readonly List<SKPoint> DragSegment = new List<SKPoint>();
+	    private readonly List<SKPoint> ClickData = new List<SKPoint>();
+	    private readonly List<SKPoint> DragPath = new List<SKPoint>();
 
 	    public PointRef DraggingPoint = PointRef.Empty;
 
@@ -65,9 +65,9 @@ namespace Slugs.Agent
 
             _renderer = renderer;
 		    SlugPad.ActiveSlug = new Slug(UnitPull, UnitPush);
-		    //var pl = (new InfoSet(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f)));
-		    var pl = (new InfoSet(new[]{new SKPoint(200, 100), new SKPoint(400, 300)} ));
-		    InputPad.Add(pl);
+		    //var pl = (new DataPoints(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f)));
+		    var pl = DataMap.CreateIn(InputPad, new SKPoint(200, 100), new SKPoint(400, 300));
+		    //InputPad.Add(pl);
 		    _renderer.Pads.Add(WorkingPad);
 		    _renderer.Pads.Add(InputPad);
 		    ClearMouse();
@@ -78,15 +78,22 @@ namespace Slugs.Agent
 		    get
 		    {
 			    var pad = SlugAgent.Pads[pointRef.PadIndex];
-			    var infoSet = pad.InfoSetFromIndex(pointRef.InfoSetIndex);
-			    return infoSet[pointRef.PointIndex];
+			    var dataMap = pad.InputFromIndex(pointRef.DataMapIndex);
+			    return dataMap[pointRef];
 		    } 
 		    set
 		    {
 			    var pad = SlugAgent.Pads[pointRef.PadIndex];
-			    var infoSet = pad.InfoSetFromIndex(pointRef.InfoSetIndex);
-			    infoSet[pointRef.PointIndex] = value;
+			    var dataMap = pad.InputFromIndex(pointRef.DataMapIndex);
+			    dataMap[pointRef] = value;
 		    }
+	    }
+
+	    public void UpdatePointRef(PointRef target, PointRef value)
+	    {
+		    var pad = SlugAgent.Pads[target.PadIndex];
+		    var dataMap = pad.InputFromIndex(target.DataMapIndex);
+		    dataMap[target.PointIndex] = value;
 	    }
 
 	    public void Clear()
@@ -99,7 +106,7 @@ namespace Slugs.Agent
 	        CurrentPoint = SKPoint.Empty;
 	        SnapPoint = SKPoint.Empty;
             DragSegment.Clear();
-	        ClickInfoSet.Clear();
+	        ClickData.Clear();
             DragPath.Clear();
 	        WorkingPad.Clear();
 
@@ -120,7 +127,7 @@ namespace Slugs.Agent
             var hasHighlight = SetHighlight();
 		    if (hasHighlight && CurrentKey != Keys.ControlKey)
 		    {
-				DraggingPoint = InputPad.Highlight;
+				DraggingPoint = InputPad.HighlightPoint;
 		    }
 		    else
 		    {
@@ -145,7 +152,8 @@ namespace Slugs.Agent
 	    public bool MouseUp(MouseEventArgs e)
 	    {
 		    CurrentPoint = e.Location.ToSKPoint();
-		    SetDragging();
+		    SetHighlight(true);
+            SetDragging();
 		    SetCreating(true);
 
             ClearMouse();
@@ -165,19 +173,19 @@ namespace Slugs.Agent
             return true;
         }
 
-	    private bool SetHighlight()
+	    private bool SetHighlight(bool final = false)
 	    {
 		    bool hasChange = false;
 		    var snap = InputPad.GetSnapPoints(CurrentPoint);
 		    if (snap.Length > 0)
 		    {
 			    hasChange = true;
-			    InputPad.Highlight = snap[0];
+			    InputPad.HighlightPoint = snap[0];
 			    InputPad.HighlightLine = PointRef.Empty;
 		    }
 		    else
 		    {
-			    InputPad.Highlight = PointRef.Empty;
+			    InputPad.HighlightPoint = PointRef.Empty;
 			    var snapLine = InputPad.GetSnapLine(CurrentPoint);
 			    if (snapLine.IsEmpty)
 			    {
@@ -189,7 +197,7 @@ namespace Slugs.Agent
 				    InputPad.HighlightLine = snapLine;
 			    }
 		    }
-		    SnapPoint = InputPad.Highlight.IsEmpty ? CurrentPoint : InputPad.GetHighlightPoint();
+		    SnapPoint = InputPad.HighlightPoint.IsEmpty ? CurrentPoint : InputPad.GetHighlightPoint();
 
 		    return hasChange;
 	    }
@@ -200,15 +208,21 @@ namespace Slugs.Agent
 		    if (DraggingPoint.IsEmpty && IsDown)
 		    {
 			    DragPath.Add(SnapPoint);
-			    WorkingPad.Add(new InfoSet(DownPoint, SnapPoint));
+			    DataMap.CreateIn(WorkingPad, DownPoint, SnapPoint);
 			    if (final)
 			    {
 				    DragSegment.Add(SnapPoint);
-				    ClickInfoSet.Add(SnapPoint);
+				    ClickData.Add(SnapPoint);
 				    DragPath.Add(SnapPoint);
-				    InputPad.Add(new InfoSet(DragSegment));
+					DataMap.CreateIn(InputPad, DragSegment);
                 }
 			    result = true;
+		    }
+            else if (IsDown && final)
+		    {
+			    //DraggingPoint = InputPad.HighlightPoint;
+                UpdatePointRef(DraggingPoint, InputPad.HighlightPoint);
+			    //this[DraggingPoint] = InputPad.HighlightPoint;
 		    }
 		    return result;
 	    }

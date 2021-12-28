@@ -12,7 +12,7 @@ namespace Slugs.Input
     using System.Text;
     using System.Threading.Tasks;
 
-    public readonly struct SegmentRef // todo: make all methods act on points. Maybe covert back to skia point basis
+    public readonly struct SegmentRef
     {
 	    public PointRef StartRef { get; }
 	    public PointRef EndRef { get; }
@@ -29,10 +29,7 @@ namespace Slugs.Input
 	    }
         public SKSegment SKSegment => new SKSegment(StartPoint, EndPoint);
 
-        private static readonly InfoSet _values = new InfoSet(new []{SKPoint.Empty, SkPointExtension.MinPoint, SkPointExtension.MaxPoint});
-        public static SegmentRef Max = new SegmentRef(_values.PointRefAt(2));
-	    public static SegmentRef Min = new SegmentRef(_values.PointRefAt(1));
-	    public static SegmentRef Empty = new SegmentRef(_values.PointRefAt(0));
+	    public static SegmentRef Empty = new SegmentRef(PointRef.Empty);
 
 	    public SegmentRef(PointRef startRef)
 	    {

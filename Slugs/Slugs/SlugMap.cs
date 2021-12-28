@@ -11,15 +11,15 @@
     {
         // pointRef0, pointRef1, Linkages (
 	    public static readonly SlugMap Empty = new SlugMap(-1, -1);
-	    public int PolyIndex { get; }
+	    public int DataMapIndex { get; }
 	    public int SlugIndex { get; }
 
-	    public SlugMap(int polyIndex, int slugIndex)
+	    public SlugMap(int dataMapIndex, int slugIndex)
 	    {
-		    PolyIndex = polyIndex;
+		    DataMapIndex = dataMapIndex;
 		    SlugIndex = slugIndex;
 	    }
-	    public bool IsEmpty => PolyIndex == -1 && SlugIndex == -1;
+	    public bool IsEmpty => DataMapIndex == -1 && SlugIndex == -1;
     }
 
 }

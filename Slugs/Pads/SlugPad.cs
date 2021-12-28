@@ -18,75 +18,90 @@ namespace Slugs.Pads
 
     public enum PadKind{Working, Drawn}
 
-    public class SlugPad : IEnumerable<(InfoSet, Slug)>
+    public class SlugPad : IEnumerable<(DataMap, Slug)>
     {
 	    private static int _padIndexCounter = 0;
 	    public readonly int PadIndex;
 
 	    public static Slug ActiveSlug = Slug.Unit;
-        private static List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
+        private static readonly List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
         public const float SnapDistance = 10.0f;
 
 	    public PadKind PadKind;
-	    public PointRef Highlight = PointRef.Empty;
+	    public PointRef HighlightPoint = PointRef.Empty;
 	    public PointRef HighlightLine = PointRef.Empty;
 
-        private readonly List<SlugMap> _maps = new List<SlugMap>(); 
-        private readonly List<InfoSet> _input = new List<InfoSet>();
+        private readonly List<DataMap> _dataMaps = new List<DataMap>();
+        private readonly List<SlugMap> _slugMaps = new List<SlugMap>();
+        //private readonly List<DataPoints> _dataMaps = new List<DataPoints>(); // todo: move points and map into single file that updates either.
+        //private readonly List<PointRef[]> _dataMapsMap = new List<PointRef[]>();
         private readonly List<SKSegment> _output = new List<SKSegment>();
-        public IEnumerable<InfoSet> Input => _input;
+
+        public IEnumerable<DataMap> Input
+        {
+	        get
+	        {
+		        foreach (var pointRef in _dataMaps)
+		        {
+			        yield return pointRef;
+		        }
+	        }
+        }
         public IEnumerable<SKSegment> Output => _output;
+
+        private readonly DataMap _defaults;
 
         public SlugPad(PadKind padKind)
 	    {
 		    PadIndex = _padIndexCounter++;
             PadKind = padKind;
-		    Clear();
+            Clear();
 	    }
 
-	    public (InfoSet, Slug) this[int index] => (InfoSetFromIndex(index), SlugFromIndex(index));
+	    public (DataMap, Slug) this[int index] => (InputFromIndex(index), SlugFromIndex(index));
 
-        public int Add(InfoSet line, Slug slug)
+        public int Add(DataMap data, Slug slug)
 	    {
-		    line.PadIndex = PadIndex;
-		    line.InfoSetIndex = _input.Count;
-		    _input.Add(line);
+		    data.PadIndex = PadIndex;
+		    data.DataMapIndex = _dataMaps.Count;
+		    _dataMaps.Add(data);
 		    Slugs.Add(slug);
-		    _maps.Add(new SlugMap(_input.Count - 1, Slugs.Count - 1));
+		    _slugMaps.Add(new SlugMap(_dataMaps.Count - 1, Slugs.Count - 1));
 		    return Slugs.Count - 1;
 	    }
-	    public int Add(InfoSet line, int index)
+	    public int Add(DataMap data, int index)
 	    {
-		    line.PadIndex = PadIndex;
-            line.InfoSetIndex = _input.Count;
-            _input.Add(line);
-            _maps.Add(new SlugMap(_input.Count - 1, index));
+		    data.PadIndex = PadIndex;
+            data.DataMapIndex = _dataMaps.Count;
+            _dataMaps.Add(data);
+            _slugMaps.Add(new SlugMap(_dataMaps.Count - 1, index));
 		    return index;
 	    }
-	    public int Add(InfoSet line)
+	    public int Add(DataMap data)
 	    {
-		    line.PadIndex = PadIndex;
-		    line.InfoSetIndex = _input.Count;
-            _input.Add(line);
-		    _maps.Add(new SlugMap(_input.Count - 1, 0));
+		    data.PadIndex = PadIndex;
+		    data.DataMapIndex = _dataMaps.Count;
+            _dataMaps.Add(data);
+            _slugMaps.Add(new SlugMap(_dataMaps.Count - 1, 0));
 		    return -1;
 	    }
         public void Clear()
-	    {
-		    _input.Clear();
-		    Slugs.Clear();
-		    _maps.Clear();
+        {
+	        _dataMaps.Clear();
+            Slugs.Clear();
+		    _slugMaps.Clear();
+
             Slugs.Add(Slug.Zero); 
         }
 	    public void Refresh()
 	    {
             _output.Clear();
-            foreach (var slugMap in _maps)
+            foreach (var slugMap in _slugMaps)
             {
 	            if (slugMap.SlugIndex > -1)
 	            {
 		            var unit = SlugFromIndex(slugMap.SlugIndex);
-		            var line = InfoSetFromIndex(slugMap.PolyIndex);
+		            var line = InputFromIndex(slugMap.DataMapIndex);
 		            var norm = unit / 10.0;
 		            var multStart = line.PointAlongLine(0, 1, norm.IsForward ? -(float)norm.Pull : (float)norm.Push);
 		            var multEnd = line.PointAlongLine(0, 1, norm.IsForward ? (float)norm.Push : -(float)norm.Pull);
@@ -97,18 +112,22 @@ namespace Slugs.Pads
 
 	    public void UpdatePoint(PointRef pointRef, SKPoint pt)
 	    {
-		    _input[pointRef.InfoSetIndex][pointRef.PointIndex] = pt;
+		    _dataMaps[pointRef.DataMapIndex][pointRef] = pt;
+	    }
+	    public void UpdatePointRef(PointRef pointRef, PointRef value)
+	    {
+		    _dataMaps[pointRef.DataMapIndex][pointRef.PointIndex] = value;
 	    }
 
-	    public SKPoint GetHighlightPoint() => Highlight.IsEmpty ? SKPoint.Empty : InfoSetFromIndex(Highlight.InfoSetIndex)[Highlight.PointIndex];
+        public SKPoint GetHighlightPoint() => HighlightPoint.IsEmpty ? SKPoint.Empty : InputFromIndex(HighlightPoint.DataMapIndex)[HighlightPoint];
 
 	    public SKSegment GetHighlightLine()
 	    {
 		    SKSegment result = SKSegment.Empty;
-		    var infoSet = InfoSetFromIndex(Highlight.InfoSetIndex);
-		    if (!infoSet.IsEmpty)
+		    var dataMap = InputFromIndex(HighlightPoint.DataMapIndex);
+		    if (!dataMap.IsEmpty)
 		    {
-                result = new SKSegment(infoSet[0], infoSet[1]);
+                result = new SKSegment(dataMap.PointAt(0), dataMap.PointAt(1));
             }
 		    return result;
 	    } 
@@ -116,15 +135,15 @@ namespace Slugs.Pads
         public PointRef[] GetSnapPoints(SKPoint input, float maxDist = SnapDistance)
 	    {
 		    var result = new List<PointRef>();
-		    int lineIndex = 0;
-		    foreach (var line in _input)
+		    int dataIndex = 0;
+		    foreach (var dataMap in _dataMaps)
 		    {
-			    var ptIndex = line.GetSnapPoint(input, maxDist);
+			    var ptIndex = dataMap.GetSnapPoint(input, maxDist);
 			    if (ptIndex > -1)
 			    {
-				    result.Add(new PointRef(PadIndex, lineIndex, ptIndex));
+				    result.Add(new PointRef(PadIndex, dataIndex, ptIndex));
 			    }
-			    lineIndex++;
+			    dataIndex++;
 
 		    }
 		    return result.ToArray();
@@ -134,11 +153,11 @@ namespace Slugs.Pads
 	    {
 		    var result = PointRef.Empty;
 		    int lineIndex = 0;
-		    foreach (var infoSet in _input)
+		    foreach (var dataMap in _dataMaps)
 		    {
-			    for (int i = 0; i < infoSet.Count - 1; i++)
+			    for (int i = 0; i < dataMap.Count - 1; i++)
 			    {
-				    var seg = new SegmentRef(infoSet.PointRefAt(i));
+				    var seg = new SegmentRef(dataMap[i]);
 				    var closest = seg.ProjectPointOnto(point);
 				    var dist = point.SquaredDistanceTo(closest);
 				    if (dist < maxDist)
@@ -153,16 +172,16 @@ namespace Slugs.Pads
 		    return result;
         }
 
-        public InfoSet InfoSetFromIndex(int index)
+        public DataMap InputFromIndex(int index)
         {
-            InfoSet result;
-            if (index >= 0 && index < _input.Count)
+	        DataMap result;
+            if (index >= 0 && index < _dataMaps.Count)
             {
-                result = _input[index];
+                result = _dataMaps[index];
             }
             else
             {
-                result = InfoSet.Empty;
+	            result = DataMap.Empty;
             }
             return result;
         }
@@ -185,18 +204,18 @@ namespace Slugs.Pads
 		    return result;
 	    }
 
-        public IEnumerator<(InfoSet, Slug)> GetEnumerator()
+        public IEnumerator<(DataMap, Slug)> GetEnumerator()
 	    {
-		    foreach (var map in _maps)
+		    foreach (var map in _slugMaps)
 		    {
-			    yield return (InfoSetFromIndex(map.PolyIndex), SlugFromIndex(map.SlugIndex));
+			    yield return (InputFromIndex(map.DataMapIndex), SlugFromIndex(map.SlugIndex));
 		    }
 	    }
 	    IEnumerator IEnumerable.GetEnumerator()
 	    {
-		    foreach (var map in _maps)
+		    foreach (var map in _slugMaps)
 		    {
-			    yield return (InfoSetFromIndex(map.PolyIndex), SlugFromIndex(map.SlugIndex));
+			    yield return (InputFromIndex(map.DataMapIndex), SlugFromIndex(map.SlugIndex));
 		    }
 	    }
     }

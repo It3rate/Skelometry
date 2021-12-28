@@ -115,7 +115,7 @@ namespace Slugs.Renderer
 					DrawDirectedLine(input.Line, Pens.DarkPen);
 				}
 
-				if (!slugPad.Highlight.IsEmpty)
+				if (!slugPad.HighlightPoint.IsEmpty)
 				{
 					DrawRoundBox(slugPad.GetHighlightPoint(), Pens.HoverPen);
 				}
@@ -139,11 +139,11 @@ namespace Slugs.Renderer
 	        _canvas.DrawPoints(SKPointMode.Polygon, polyline.ToArray(), paint);
         }
 
-        public void DrawDirectedLine(SKSegment line, SKPaint paint)
+        public void DrawDirectedLine(SKSegment seg, SKPaint paint)
         {
-	            DrawPolyline(line.Points, paint);
-		        _canvas.DrawCircle(line.StartPoint, 2, paint);
-	            var triPts = line.EndArrow(12);
+	            DrawPolyline(seg.Points, paint);
+		        _canvas.DrawCircle(seg.StartPoint, 2, paint);
+	            var triPts = seg.EndArrow(12);
 	            _canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
         }
 
@@ -236,14 +236,14 @@ namespace Slugs.Renderer
 	    //    }
      //   }
 
-     //   public override void DrawLine(VisLine line, ElementRecord attributes = null)
+     //   public override void DrawLine(VisLine seg, ElementRecord attributes = null)
      //   {
 	    //    var pens = Pens.GetPensForElement(attributes);
 	    //    foreach (var pen in pens)
 	    //    {
 		   //     if (pen != null)
 		   //     {
-			  //      _canvas.DrawLine(line.X, line.Y, line.EndRef.X, line.EndRef.Y, pen);
+			  //      _canvas.DrawLine(seg.X, seg.Y, seg.EndRef.X, seg.EndRef.Y, pen);
      //           }
 	    //    }
      //   }

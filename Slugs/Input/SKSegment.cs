@@ -15,10 +15,7 @@ namespace Slugs.Input
         public SKPoint StartPoint { get; private set; }
         public SKPoint EndPoint { get; private set; }
 
-        private static readonly InfoSet _values = new InfoSet(new[] { SKPoint.Empty, SkPointExtension.MinPoint, SkPointExtension.MaxPoint });
-        public static SKSegment Max = new SKSegment(new SKPoint(float.MaxValue, float.MaxValue));
-        public static SKSegment Min = new SKSegment(new SKPoint(float.MinValue, float.MinValue));
-        public static SKSegment Empty = new SKSegment(SKPoint.Empty);
+        public static SKSegment Empty = new SKSegment(SKPoint.Empty, SKPoint.Empty);
 
         public SKSegment(SKPoint start)
         {

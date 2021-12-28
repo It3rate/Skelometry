@@ -14,16 +14,16 @@ namespace Slugs.Pads
 		public static PointRef Empty = new PointRef(-1, -1, -1);
 
 		public readonly int PadIndex;
-		public readonly int InfoSetIndex;
+		public readonly int DataMapIndex;
 		public readonly int PointIndex;
 		// pointIndex, endIndex, t -- then everything becomes a place on a line. Perhaps also offset.
 		// Look at 'start index' being referenced from the end (like complex segments)
 		// The output can be two lines as well, esp symmetrical along axis - maybe this is the negative/complex version (see top and bottom of transparent sheet)
 
-		public PointRef(int padIndex, int infoSetIndex, int pointIndex, int endIndex = -1, float t = 0, float offset = 0)
+		public PointRef(int padIndex, int dataMapIndex, int pointIndex, int endIndex = -1, float t = 0, float offset = 0)
 		{
 			PadIndex = padIndex;
-			InfoSetIndex = infoSetIndex;
+			DataMapIndex = dataMapIndex;
 			PointIndex = pointIndex;
 		}
 
@@ -33,13 +33,13 @@ namespace Slugs.Pads
 			set => SlugAgent.ActiveAgent[this] = value;
         } 
 
-		public bool IsEmpty => PadIndex == -1 && InfoSetIndex == -1 && PointIndex == -1;
+		public bool IsEmpty => PadIndex == -1 && DataMapIndex == -1 && PointIndex == -1;
 
-		public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.InfoSetIndex == right.InfoSetIndex && left.PointIndex == right.PointIndex;
-		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.InfoSetIndex != right.InfoSetIndex || left.PointIndex != right.PointIndex;
+		public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.DataMapIndex == right.DataMapIndex && left.PointIndex == right.PointIndex;
+		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.DataMapIndex != right.DataMapIndex || left.PointIndex != right.PointIndex;
 		public override bool Equals(object obj) => obj is PointRef value && this == value;
-		public bool Equals(PointRef value) => this.PadIndex.Equals(value.PadIndex) && this.InfoSetIndex.Equals(value.InfoSetIndex) && this.PointIndex.Equals(value.PointIndex);
-		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + InfoSetIndex.GetHashCode() * 37 + PointIndex.GetHashCode();
+		public bool Equals(PointRef value) => this.PadIndex.Equals(value.PadIndex) && this.DataMapIndex.Equals(value.DataMapIndex) && this.PointIndex.Equals(value.PointIndex);
+		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + DataMapIndex.GetHashCode() * 37 + PointIndex.GetHashCode();
 	}
 
 	public readonly struct VirtualPointRef : IEquatable<VirtualPointRef>
@@ -51,7 +51,7 @@ namespace Slugs.Pads
 		public readonly float T;
 		public readonly float Offset;
 
-		public SKPoint StartPoint => StartRef.Point; // todo: add t and offset to virtual point
+		public SKPoint StartPoint => StartRef.Point;
 		public SKPoint EndPoint => EndRef.Point;
 
 		public VirtualPointRef(PointRef startRef, PointRef endRef, float t, float offset = 0)

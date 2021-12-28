@@ -14,10 +14,10 @@ namespace Slugs
 {
     public partial class SlugForm : Form
     {
-	    private SlugRenderer _renderer;
-	    private Control _control;
+	    private readonly SlugRenderer _renderer;
+	    private readonly Control _control;
 
-	    private SlugAgent _agent;
+	    private readonly SlugAgent _agent;
 
         public SlugForm()
         {

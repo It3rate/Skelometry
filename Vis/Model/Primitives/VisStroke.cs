@@ -28,7 +28,7 @@ namespace Vis.Model.Primitives
         public VisNode MidNode => new VisNode(this, 0.5f);
         public VisNode EndNode => Nodes[Nodes.Count - 1];
 
-        private List<VisPoint> GenPoints = new List<VisPoint>();
+        private readonly List<VisPoint> GenPoints = new List<VisPoint>();
         public List<IPrimitivePath> Segments = new List<IPrimitivePath>();
         public IPath UnitReference { get; set; }
 

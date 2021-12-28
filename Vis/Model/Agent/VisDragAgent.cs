@@ -48,16 +48,16 @@ namespace Vis.Model.Agent
 	    public VisPad WorkingPad { get; private set; }
         public VisPad FocusPad { get; private set; }
         public VisPad ViewPad { get; private set; }
-        private SkiaRenderer _renderer;
-        private SkiaRenderer _hoverRender;
-        private VisMeasureSkills _skills;
+        private readonly SkiaRenderer _renderer;
+        private readonly SkiaRenderer _hoverRender;
+        private readonly VisMeasureSkills _skills;
 
-        private List<ModeData> ModeMap = ModeData.Modes();
+        private readonly List<ModeData> ModeMap = ModeData.Modes();
 	    public UIStatus Status { get; }
 
         public int _unitPixels = 220;
-        private float _normWidth;
-        private float _normHeight;
+        private readonly float _normWidth;
+        private readonly float _normHeight;
         public IPath AnchorLine { get; private set; }
 
         public VisDragAgent(SkiaRenderer renderer)

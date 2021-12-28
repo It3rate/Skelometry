@@ -17,9 +17,9 @@ namespace Vis.Model.Primitives
         public override bool IsPath => true;
         public bool IsFixed { get; set; } = false;
 
-        private float _startAngle;
-        private float _endAngle;
-        private float _arcLength; // 0 to 2PI
+        private readonly float _startAngle;
+        private readonly float _endAngle;
+        private readonly float _arcLength; // 0 to 2PI
 
         public float Radius => Reference.Radius;
         public VisPoint Center => Reference.Center;
