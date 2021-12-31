@@ -15,7 +15,9 @@ namespace Slugs.Slugs
     {
         // This should all be done with ints, setting a unit size abs(push-pull), and a max value. I think.
 
-	    public static readonly Slug Zero = new Slug(0.0, 0.0);
+        public static readonly Slug Empty = new Slug(0.0, 1.0, true); // instead of empty, perhaps the fall back slug is always Unit?
+
+        public static readonly Slug Zero = new Slug(0.0, 0.0);
 	    public static readonly Slug Unit = new Slug(0.0, 1.0);
 	    public static readonly Slug Unot = new Slug(1.0, 0.0);
 	    public static readonly Slug Unil = new Slug(-0.5, 0.5);
@@ -24,22 +26,36 @@ namespace Slugs.Slugs
 
         public double Pull { get; } // should be able to make these int and everything rational
 	    public double Push { get; }
+	    private readonly bool _hasValue;
 
 	    public Slug(int pull, int push)
 	    {
+		    _hasValue = true;
 		    Pull = pull;
 		    Push = push;
 	    }
-	    public Slug(double pull, double push)
+        public Slug(double pull, double push)
 	    {
-		    Pull = pull;
+		    _hasValue = true;
+            Pull = pull;
 		    Push = push;
 	    }
 	    public Slug(Slug value)
 	    {
-		    Pull = value.Pull;
+		    _hasValue = true;
+            Pull = value.Pull;
 		    Push = value.Push;
 	    }
+
+	    private Slug(double pull, double push, bool isEmpty) // empty ctor
+	    {
+		    _hasValue = !isEmpty;
+		    Pull = pull;
+		    Push = push;
+	    }
+
+        public bool IsEmpty => _hasValue;
+
 	    public Slug Clone() => new Slug(Pull, Push);
 
 	    public double Length() => Slug.Length(this);

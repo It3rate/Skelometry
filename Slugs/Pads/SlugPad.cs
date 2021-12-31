@@ -32,9 +32,7 @@ namespace Slugs.Pads
 	    public PointRef HighlightLine = PointRef.Empty;
 
         private readonly List<DataMap> _dataMaps = new List<DataMap>();
-        private readonly List<SlugMap> _slugMaps = new List<SlugMap>();
-        //private readonly List<DataPoints> _dataMaps = new List<DataPoints>(); // todo: move points and map into single file that updates either.
-        //private readonly List<PointRef[]> _dataMapsMap = new List<PointRef[]>();
+        private readonly List<SlugRef> _slugMaps = new List<SlugRef>();
         private readonly List<SKSegment> _output = new List<SKSegment>();
 
         public IEnumerable<DataMap> Input
@@ -47,9 +45,8 @@ namespace Slugs.Pads
 		        }
 	        }
         }
-        public IEnumerable<SKSegment> Output => _output;
 
-        private readonly DataMap _defaults;
+        public IEnumerable<SKSegment> Output => _output;
 
         public SlugPad(PadKind padKind)
 	    {
@@ -66,7 +63,7 @@ namespace Slugs.Pads
 		    data.DataMapIndex = _dataMaps.Count;
 		    _dataMaps.Add(data);
 		    Slugs.Add(slug);
-		    _slugMaps.Add(new SlugMap(_dataMaps.Count - 1, Slugs.Count - 1));
+		    _slugMaps.Add(new SlugRef(PadIndex, _dataMaps.Count - 1, Slugs.Count - 1));
 		    return Slugs.Count - 1;
 	    }
 	    public int Add(DataMap data, int index)
@@ -74,7 +71,7 @@ namespace Slugs.Pads
 		    data.PadIndex = PadIndex;
             data.DataMapIndex = _dataMaps.Count;
             _dataMaps.Add(data);
-            _slugMaps.Add(new SlugMap(_dataMaps.Count - 1, index));
+            _slugMaps.Add(new SlugRef(PadIndex, _dataMaps.Count - 1, index));
 		    return index;
 	    }
 	    public int Add(DataMap data)
@@ -82,7 +79,7 @@ namespace Slugs.Pads
 		    data.PadIndex = PadIndex;
 		    data.DataMapIndex = _dataMaps.Count;
             _dataMaps.Add(data);
-            _slugMaps.Add(new SlugMap(_dataMaps.Count - 1, 0));
+            _slugMaps.Add(new SlugRef(PadIndex, _dataMaps.Count - 1, 0));
 		    return -1;
 	    }
         public void Clear()

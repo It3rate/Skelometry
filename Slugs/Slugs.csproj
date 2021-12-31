@@ -111,7 +111,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Slugs\Slug.cs" />
     <Compile Include="Slugs\IElement.cs" />
-    <Compile Include="Slugs\SlugMap.cs" />
+    <Compile Include="Slugs\SlugRef.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

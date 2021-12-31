@@ -26,7 +26,9 @@ namespace Slugs.Input
 	    private readonly List<PointRef> _inputRefs = new List<PointRef>();
 	    public int Count => _inputRefs.Count;
 
-	    private DataMap()
+	    private readonly List<Slug> _slugs = new List<Slug>();
+
+        private DataMap()
 	    {
 		    IsEmpty = true;
 		    // SKPoint.Empty, SkPointExtension.MinPoint, SkPointExtension.MaxPoint
@@ -62,11 +64,42 @@ namespace Slugs.Input
 		    return new DataMap(pad, pointRefs);
 	    }
 
+        public bool HasSlug(SlugRef slugRef) =>
+	        slugRef.PadIndex == PadIndex && slugRef.DataMapIndex == DataMapIndex && HasSlugAtIndex(slugRef.SlugIndex);
+        public bool HasSlugAtIndex(int index) => index >= 0 && index < _slugs.Count;
+        public int SlugCount => _slugs.Count;
+        public Slug SlugAt(int index) => (index >= 0 && index < _slugs.Count) ? _slugs[index] : Slug.Empty; // default to unit slug instead of empty?
+        public SlugRef AddSlug(Slug item)
+        {
+	        _slugs.Add(item);
+	        return new SlugRef(PadIndex, DataMapIndex, _slugs.Count - 1);
+        }
+        public bool RemoveSlugAt(int index)
+        {
+	        bool result = false;
+	        if (HasSlugAtIndex(index))
+	        {
+		        result = true;
+		        _slugs.RemoveAt(index);
+	        }
+	        return result;
+        }
+        public bool RemoveSlug(SlugRef slugRef)
+        {
+	        bool result = false;
+	        if (HasSlug(slugRef))
+	        {
+		        result = true;
+                _slugs.RemoveAt(slugRef.SlugIndex);
+	        }
+	        return result;
+        }
+
         private bool IsOwn(PointRef pointRef) => pointRef.PadIndex == PadIndex && pointRef.DataMapIndex == DataMapIndex;
         private SlugPad PadAt(int index) => SlugAgent.Pads[index];
         public SKPoint this[PointRef pointRef]
         {
-	        get => IsOwn(pointRef) ? _inputPoints[pointRef.PointIndex] : PadAt(pointRef.PadIndex).InputFromIndex(pointRef.DataMapIndex)[pointRef];
+	        get => IsOwn(pointRef) ? _inputPoints[pointRef.PointIndex] : SlugAgent.ActiveAgent[pointRef];
 	        set
 	        {
 		        if (IsOwn(pointRef))
@@ -75,7 +108,7 @@ namespace Slugs.Input
 		        }
 		        else
 		        {
-			        PadAt(pointRef.PadIndex).InputFromIndex(pointRef.DataMapIndex)[pointRef] = value;
+			        SlugAgent.ActiveAgent[pointRef] = value;
                 }
 	        }
         }

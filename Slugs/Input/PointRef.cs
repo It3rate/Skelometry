@@ -16,15 +16,24 @@ namespace Slugs.Pads
 		public readonly int PadIndex;
 		public readonly int DataMapIndex;
 		public readonly int PointIndex;
-		// pointIndex, endIndex, t -- then everything becomes a place on a line. Perhaps also offset.
-		// Look at 'start index' being referenced from the end (like complex segments)
-		// The output can be two lines as well, esp symmetrical along axis - maybe this is the negative/complex version (see top and bottom of transparent sheet)
+		public readonly float T; // maybe t isn't needed, and pointrefs can only represent measured things, not extrapolated.
 
-		public PointRef(int padIndex, int dataMapIndex, int pointIndex, int endIndex = -1, float t = 0, float offset = 0)
+        // pointIndex, endIndex, t -- then everything becomes a place on a line. Perhaps also offset.
+        // Look at 'start index' being referenced from the end (like complex segments)
+        // The output can be two lines as well, esp symmetrical along axis - maybe this is the negative/complex version (see top and bottom of transparent sheet)
+
+        // OR... this only maps points, everything on a line is a line (DataMap) and a slug. Points on a line are always segments, where you can ignore one side (0-7 vs 7).
+        // probably datamaps should be just segments rather than polylines.
+        // Addition is relating one line's slug with another line
+        // Multiplication is locking the absolute size (eg after translating units like cm/inch) of one line/slug to another.
+        // conflicts cause things to move up a dimension, as curves of various types, or even triangles (no curve). This is based on properties of the segments.
+
+        public PointRef(int padIndex, int dataMapIndex, int pointIndex, float t = 0)
 		{
 			PadIndex = padIndex;
 			DataMapIndex = dataMapIndex;
 			PointIndex = pointIndex;
+			T = t;
 		}
 
 		public SKPoint Point
@@ -33,13 +42,13 @@ namespace Slugs.Pads
 			set => SlugAgent.ActiveAgent[this] = value;
         } 
 
-		public bool IsEmpty => PadIndex == -1 && DataMapIndex == -1 && PointIndex == -1;
+		public bool IsEmpty => PointIndex == -1;
 
-		public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.DataMapIndex == right.DataMapIndex && left.PointIndex == right.PointIndex;
-		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.DataMapIndex != right.DataMapIndex || left.PointIndex != right.PointIndex;
+		public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.DataMapIndex == right.DataMapIndex && left.PointIndex == right.PointIndex && left.T == right.T;
+		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.DataMapIndex != right.DataMapIndex || left.PointIndex != right.PointIndex || left.T != right.T;
 		public override bool Equals(object obj) => obj is PointRef value && this == value;
-		public bool Equals(PointRef value) => this.PadIndex.Equals(value.PadIndex) && this.DataMapIndex.Equals(value.DataMapIndex) && this.PointIndex.Equals(value.PointIndex);
-		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + DataMapIndex.GetHashCode() * 37 + PointIndex.GetHashCode();
+		public bool Equals(PointRef value) => this == value;
+		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + DataMapIndex.GetHashCode() * 37 + PointIndex.GetHashCode() + T.GetHashCode() * 41;
 	}
 
 	public readonly struct VirtualPointRef : IEquatable<VirtualPointRef>
