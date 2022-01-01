@@ -29,7 +29,7 @@ namespace Slugs.Pads
 
 	    public PadKind PadKind;
 	    public PointRef HighlightPoint = PointRef.Empty;
-	    public PointRef HighlightLine = PointRef.Empty;
+	    public SegmentRef HighlightLine = SegmentRef.Empty;
 
         private readonly List<DataMap> _dataMaps = new List<DataMap>();
         private readonly List<SlugRef> _slugMaps = new List<SlugRef>();
@@ -111,55 +111,46 @@ namespace Slugs.Pads
 	    {
 		    _dataMaps[pointRef.DataMapIndex][pointRef] = pt;
 	    }
-	    public void UpdatePointRef(PointRef pointRef, PointRef value)
+        public void UpdatePointRef(PointRef pointRef, PointRef value)
 	    {
 		    _dataMaps[pointRef.DataMapIndex][pointRef.PointIndex] = value;
 	    }
 
-        public SKPoint GetHighlightPoint() => HighlightPoint.IsEmpty ? SKPoint.Empty : InputFromIndex(HighlightPoint.DataMapIndex)[HighlightPoint];
+	    public SKPoint GetHighlightPoint() => HighlightPoint.SKPoint;//IsEmpty ? SKPoint.Empty : InputFromIndex(HighlightPoint.DataMapIndex)[HighlightPoint];
 
-	    public SKSegment GetHighlightLine()
-	    {
-		    SKSegment result = SKSegment.Empty;
-		    var dataMap = InputFromIndex(HighlightPoint.DataMapIndex);
-		    if (!dataMap.IsEmpty)
-		    {
-                result = new SKSegment(dataMap.PointAt(0), dataMap.PointAt(1));
-            }
-		    return result;
-	    } 
+        public SKSegment GetHighlightLine() => HighlightLine.SKSegment;
 
-        public PointRef[] GetSnapPoints(SKPoint input, float maxDist = SnapDistance)
+        public PointRef[] GetSnapPoints(SKPoint input, PointRef dragRef, float maxDist = SnapDistance)
 	    {
 		    var result = new List<PointRef>();
 		    int dataIndex = 0;
+		    var orgPt = dragRef.SKPoint;
 		    foreach (var dataMap in _dataMaps)
 		    {
 			    var ptIndex = dataMap.GetSnapPoint(input, maxDist);
-			    if (ptIndex > -1)
+			    if (ptIndex > -1 && dataMap[ptIndex].SKPoint != orgPt)
 			    {
 				    result.Add(new PointRef(PadIndex, dataIndex, ptIndex));
 			    }
 			    dataIndex++;
-
 		    }
 		    return result.ToArray();
 	    }
 
-	    public PointRef GetSnapLine(SKPoint point, float maxDist = SnapDistance)
+	    public SegmentRef GetSnapLine(SKPoint point, float maxDist = SnapDistance)
 	    {
-		    var result = PointRef.Empty;
+		    var result = SegmentRef.Empty;
 		    int lineIndex = 0;
 		    foreach (var dataMap in _dataMaps)
 		    {
 			    for (int i = 0; i < dataMap.Count - 1; i++)
 			    {
-				    var seg = new SegmentRef(dataMap[i]);
+				    var seg = new SegmentRef(dataMap[i], dataMap[i+1]);
 				    var closest = seg.ProjectPointOnto(point);
 				    var dist = point.SquaredDistanceTo(closest);
 				    if (dist < maxDist)
 				    {
-                        result = new PointRef(this.PadIndex, lineIndex, i);
+                        result = seg;
                         goto End;
 				    }
 					lineIndex++;

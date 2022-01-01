@@ -12,8 +12,9 @@ namespace Slugs.Pads
 	public readonly struct PointRef : IEquatable<PointRef>
 	{
 		public static PointRef Empty = new PointRef(-1, -1, -1);
+		public bool IsEmpty => PointIndex == -1;
 
-		public readonly int PadIndex;
+        public readonly int PadIndex;
 		public readonly int DataMapIndex;
 		public readonly int PointIndex;
 		public readonly float T; // maybe t isn't needed, and pointrefs can only represent measured things, not extrapolated.
@@ -36,13 +37,11 @@ namespace Slugs.Pads
 			T = t;
 		}
 
-		public SKPoint Point
+		public SKPoint SKPoint
 		{
 			get => SlugAgent.ActiveAgent[this];
 			set => SlugAgent.ActiveAgent[this] = value;
-        } 
-
-		public bool IsEmpty => PointIndex == -1;
+        }
 
 		public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.DataMapIndex == right.DataMapIndex && left.PointIndex == right.PointIndex && left.T == right.T;
 		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.DataMapIndex != right.DataMapIndex || left.PointIndex != right.PointIndex || left.T != right.T;
@@ -60,8 +59,8 @@ namespace Slugs.Pads
 		public readonly float T;
 		public readonly float Offset;
 
-		public SKPoint StartPoint => StartRef.Point;
-		public SKPoint EndPoint => EndRef.Point;
+		public SKPoint StartPoint => StartRef.SKPoint;
+		public SKPoint EndPoint => EndRef.SKPoint;
 
 		public VirtualPointRef(PointRef startRef, PointRef endRef, float t, float offset = 0)
 		{

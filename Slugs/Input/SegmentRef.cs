@@ -14,7 +14,10 @@ namespace Slugs.Input
 
     public readonly struct SegmentRef
     {
-	    public PointRef StartRef { get; }
+	    public static SegmentRef Empty = new SegmentRef(PointRef.Empty);
+	    public bool IsEmpty => StartRef.IsEmpty && EndRef.IsEmpty;
+
+        public PointRef StartRef { get; }
 	    public PointRef EndRef { get; }
 
 	    public SKPoint StartPoint
@@ -29,9 +32,7 @@ namespace Slugs.Input
 	    }
         public SKSegment SKSegment => new SKSegment(StartPoint, EndPoint);
 
-	    public static SegmentRef Empty = new SegmentRef(PointRef.Empty);
-
-	    public SegmentRef(PointRef startRef)
+        public SegmentRef(PointRef startRef)
 	    {
 		    StartRef = startRef;
 		    EndRef = startRef;
