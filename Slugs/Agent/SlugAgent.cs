@@ -31,7 +31,9 @@ namespace Slugs.Agent
 	    private SKPoint DownPoint;
 	    private SKPoint CurrentPoint;
 	    private SKPoint SnapPoint;
-	    private readonly List<SKPoint> DragSegment = new List<SKPoint>();
+	    private PointRef StartHighlight;
+
+        private readonly List<SKPoint> DragSegment = new List<SKPoint>();
 	    private readonly List<SKPoint> ClickData = new List<SKPoint>();
 	    private readonly List<SKPoint> DragPath = new List<SKPoint>();
 
@@ -131,7 +133,8 @@ namespace Slugs.Agent
 	        WorkingPad.Clear();
 	        DragRef.Clear();
 
-            DownPoint = SKPoint.Empty;
+            DownPoint = SKPoint.Empty; 
+            StartHighlight = PointRef.Empty;
         }
 
         public void Draw()
@@ -145,7 +148,7 @@ namespace Slugs.Agent
             SetHighlight();
 		    DownPoint = SnapPoint;
 		    DragRef.Origin = CurrentPoint;
-		    if (InputPad.HighlightPoints.Count > 0 && CurrentKey != Keys.ControlKey)
+		    if (InputPad.HasHighlightPoint && CurrentKey != Keys.ControlKey)
 		    {
                 DragRef.Add(InputPad.HighlightPoints);
 		    }
@@ -157,7 +160,8 @@ namespace Slugs.Agent
             {
 			    DragSegment.Add(SnapPoint);
 			    DragPath.Add(SnapPoint);
-		    }
+			    StartHighlight = InputPad.FirstHighlightPoint;
+            }
 
             return true;
 	    }
@@ -221,7 +225,7 @@ namespace Slugs.Agent
 				    InputPad.HighlightLine = snapLine;
 			    }
 		    }
-		    SnapPoint = InputPad.HighlightPoints.Count == 0 ? CurrentPoint : InputPad.GetHighlightPoint();
+		    SnapPoint = !InputPad.HasHighlightPoint ? CurrentPoint : InputPad.GetHighlightPoint();
 
 		    return hasChange;
 	    }
@@ -234,9 +238,9 @@ namespace Slugs.Agent
 			    if (final)
 			    {
 				    DragRef.OffsetValues(SnapPoint);
-				    if (IsDraggingPoint && InputPad.HighlightPoints.Count > 0)
+				    if (IsDraggingPoint && InputPad.HasHighlightPoint)
 				    {
-                        MergePointRefs(DragRef.PointRefs, InputPad.HighlightPoints[0], SnapPoint);
+                        MergePointRefs(DragRef.PointRefs, InputPad.FirstHighlightPoint, SnapPoint);
 				    }
 				    result = true;
 			    }
@@ -253,12 +257,15 @@ namespace Slugs.Agent
 				    if (DragSegment[0].DistanceTo(DragSegment[1]) > 10)
 				    {
 					    var newDataMap = DataMap.CreateIn(InputPad, DragSegment);
-					    if (InputPad.HighlightPoints.Count > 0)
+					    if (StartHighlight != PointRef.Empty)
 					    {
-						    //InputPad.HighlightPoints.Add(newSeg.LastRef());
-								MergePointRefs(new List<PointRef>(){ newDataMap.LastRef()}, InputPad.HighlightPoints[0], SnapPoint);
+						    MergePointRefs(new List<PointRef>() { newDataMap.FirstRef }, StartHighlight, StartHighlight.SKPoint);
 					    }
-				    }
+					    if (InputPad.HasHighlightPoint)
+					    {
+						    MergePointRefs(new List<PointRef>() { newDataMap.LastRef }, InputPad.FirstHighlightPoint, SnapPoint);
+					    }
+                    }
 			    }
 			    result = true;
 		    }

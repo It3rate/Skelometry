@@ -29,7 +29,9 @@ namespace Slugs.Pads
 
 	    public PadKind PadKind;
 	    public List<PointRef> HighlightPoints = new List<PointRef>();
-	    public SegmentRef HighlightLine = SegmentRef.Empty;
+	    public bool HasHighlightPoint => HighlightPoints.Count > 0;
+	    public PointRef FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : PointRef.Empty;
+        public SegmentRef HighlightLine = SegmentRef.Empty;
 
         private readonly List<DataMap> _dataMaps = new List<DataMap>();
         private readonly List<SlugRef> _slugMaps = new List<SlugRef>();
