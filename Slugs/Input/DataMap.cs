@@ -117,6 +117,8 @@ namespace Slugs.Input
 	        get => _inputRefs[index];
 	        set => _inputRefs[index] = value;
         }
+        public PointRef FirstRef() => _inputRefs.Count > 0 ? _inputRefs[0] : PointRef.Empty;
+        public PointRef LastRef() => _inputRefs.Count > 0 ? _inputRefs[_inputRefs.Count - 1] : PointRef.Empty;
         public SKPoint PointAt(int index)
         {
 	        SKPoint result;

@@ -115,7 +115,7 @@ namespace Slugs.Renderer
 					DrawDirectedLine(input.Line, Pens.DarkPen);
 				}
 
-				if (!slugPad.HighlightPoint.IsEmpty)
+				if (slugPad.HighlightPoints.Count > 0)
 				{
 					DrawRoundBox(slugPad.GetHighlightPoint(), Pens.HoverPen);
 				}

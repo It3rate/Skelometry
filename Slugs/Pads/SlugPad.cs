@@ -28,7 +28,7 @@ namespace Slugs.Pads
         public const float SnapDistance = 10.0f;
 
 	    public PadKind PadKind;
-	    public PointRef HighlightPoint = PointRef.Empty;
+	    public List<PointRef> HighlightPoints = new List<PointRef>();
 	    public SegmentRef HighlightLine = SegmentRef.Empty;
 
         private readonly List<DataMap> _dataMaps = new List<DataMap>();
@@ -116,25 +116,24 @@ namespace Slugs.Pads
 		    _dataMaps[pointRef.DataMapIndex][pointRef.PointIndex] = value;
 	    }
 
-	    public SKPoint GetHighlightPoint() => HighlightPoint.SKPoint;//IsEmpty ? SKPoint.Empty : InputFromIndex(HighlightPoint.DataMapIndex)[HighlightPoint];
+	    public SKPoint GetHighlightPoint() => HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
 
         public SKSegment GetHighlightLine() => HighlightLine.SKSegment;
 
-        public PointRef[] GetSnapPoints(SKPoint input, PointRef dragRef, float maxDist = SnapDistance)
+        public List<PointRef> GetSnapPoints(SKPoint input, DragRef ignorePoints, float maxDist = SnapDistance)
 	    {
 		    var result = new List<PointRef>();
 		    int dataIndex = 0;
-		    var orgPt = dragRef.SKPoint;
 		    foreach (var dataMap in _dataMaps)
 		    {
 			    var ptIndex = dataMap.GetSnapPoint(input, maxDist);
-			    if (ptIndex > -1 && dataMap[ptIndex].SKPoint != orgPt)
+			    if (ptIndex > -1 && !ignorePoints.Contains(dataMap[ptIndex]) && !result.Contains(dataMap[ptIndex]))
 			    {
-				    result.Add(new PointRef(PadIndex, dataIndex, ptIndex));
+				    result.Add(dataMap[ptIndex]);//new PointRef(PadIndex, dataIndex, ptIndex));
 			    }
 			    dataIndex++;
 		    }
-		    return result.ToArray();
+		    return result;
 	    }
 
 	    public SegmentRef GetSnapLine(SKPoint point, float maxDist = SnapDistance)

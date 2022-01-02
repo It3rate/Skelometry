@@ -14,19 +14,20 @@ namespace Slugs.Input
     {
 	    public SKPoint Origin { get; set; }
         //public Dictionary<PointRef, SKPoint> MovingPoints { get; } = new Dictionary<PointRef, SKPoint>();
-        private List<PointRef> PointRefs = new List<PointRef>();
+        public List<PointRef> PointRefs { get; private set; } = new List<PointRef>();
         private List<SKPoint> OriginalPoints = new List<SKPoint>();
         public int Count => PointRefs.Count;
+        public bool IsLine { get; private set; }
 
         public DragRef()
         {
         }
 
         public DragRef(SKPoint origin, params PointRef[] startPoints)
-	    {
-		    Origin = origin;
-		    Add(startPoints);
-	    }
+        {
+	        Origin = origin;
+	        Add(startPoints);
+        }
 
         public PointRef this[int index]
         {
@@ -36,9 +37,13 @@ namespace Slugs.Input
 
         public void Clear()
         {
+	        IsLine = false;
 	        PointRefs.Clear();
 	        OriginalPoints.Clear();
         }
+
+        public bool IsEmpty => PointRefs.Count == 0;
+        public bool Contains(PointRef pointRef) => PointRefs.Contains(pointRef);
 
         public void Add(params PointRef[] points)
 	    {
@@ -48,8 +53,22 @@ namespace Slugs.Input
 			    OriginalPoints.Add(startPoint.SKPoint);
 		    }
         }
+        public void Add(List<PointRef> points)
+        {
+            Add(points.ToArray());
+        }
+        public void Add(PointRef start, PointRef end, bool isLine)
+        {
+	        Add(start, end);
+	        IsLine = isLine;
+        }
+        public void AddToFront(PointRef point)
+        {
+	        PointRefs.Insert(0, point);
+	        OriginalPoints.Insert(0, point.SKPoint);
+        }
 
-	    public void OffsetValues(SKPoint currentPoint)
+        public void OffsetValues(SKPoint currentPoint)
 	    {
 		    var diff = Origin - currentPoint;
 		    for (int i = 0; i < PointRefs.Count; i++)

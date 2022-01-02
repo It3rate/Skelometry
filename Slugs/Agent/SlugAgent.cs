@@ -36,11 +36,8 @@ namespace Slugs.Agent
 	    private readonly List<SKPoint> DragPath = new List<SKPoint>();
 
 	    public DragRef DragRef = new DragRef();
-	    private bool IsDragging => DragRef.Count > 0;
-        public PointRef DraggingPoint => IsDraggingPoint ? DragRef[0] : PointRef.Empty;
-        private bool IsDraggingPoint => DragRef.Count == 1;
-	    //public SegmentRef DraggingLine = SegmentRef.Empty;
-	    private bool IsDraggingLine => DragRef.Count > 1;
+	    private bool IsDragging => !DragRef.IsEmpty;
+	    private bool IsDraggingPoint => !DragRef.IsEmpty && !DragRef.IsLine;
 
         private bool IsDown => DownPoint != SKPoint.Empty;
 	    public double UnitPull
@@ -103,11 +100,20 @@ namespace Slugs.Agent
 		    }
 	    }
 
-	    public void UpdatePointRef(PointRef target, PointRef value)
+	    public void MergePointRefs(List<PointRef> fromList, PointRef to, SKPoint position)
 	    {
-		    var pad = SlugAgent.Pads[target.PadIndex];
-		    var dataMap = pad.InputFromIndex(target.DataMapIndex);
-		    dataMap[target.PointIndex] = value;
+		    to.SKPoint = position;
+		    foreach (var from in fromList)
+		    {
+			    UpdatePointRef(from, to);
+		    }
+	    }
+
+	    public void UpdatePointRef(PointRef from, PointRef to)
+	    {
+		    var pad = SlugAgent.Pads[from.PadIndex];
+		    var dataMap = pad.InputFromIndex(from.DataMapIndex);
+		    dataMap[from.PointIndex] = to;
 	    }
 
 	    public void Clear()
@@ -126,8 +132,6 @@ namespace Slugs.Agent
 	        DragRef.Clear();
 
             DownPoint = SKPoint.Empty;
-	        //DraggingPoint = PointRef.Empty;
-	        //DraggingLine = SegmentRef.Empty;
         }
 
         public void Draw()
@@ -141,15 +145,13 @@ namespace Slugs.Agent
             SetHighlight();
 		    DownPoint = SnapPoint;
 		    DragRef.Origin = CurrentPoint;
-		    if (!InputPad.HighlightPoint.IsEmpty && CurrentKey != Keys.ControlKey)
+		    if (InputPad.HighlightPoints.Count > 0 && CurrentKey != Keys.ControlKey)
 		    {
-                DragRef.Add(InputPad.HighlightPoint);
-			    //DraggingPoint = InputPad.HighlightPoint;
+                DragRef.Add(InputPad.HighlightPoints);
 		    }
 		    else if(!InputPad.HighlightLine.IsEmpty && CurrentKey != Keys.ControlKey)
 		    {
-			    DragRef.Add(InputPad.HighlightLine.StartRef, InputPad.HighlightLine.EndRef);
-                //DraggingLine = InputPad.HighlightLine;
+			    DragRef.Add(InputPad.HighlightLine.StartRef, InputPad.HighlightLine.EndRef, true);
 		    }
 		    else
             {
@@ -198,16 +200,16 @@ namespace Slugs.Agent
 	    private bool SetHighlight(bool final = false)
 	    {
 		    bool hasChange = false;
-		    var snap = InputPad.GetSnapPoints(CurrentPoint, DraggingPoint);
-		    if (snap.Length > 0)
+		    var snap = InputPad.GetSnapPoints(CurrentPoint, DragRef);
+		    if (snap.Count > 0)
 		    {
 			    hasChange = true;
-			    InputPad.HighlightPoint = snap[0];
+			    InputPad.HighlightPoints = snap;
 			    InputPad.HighlightLine = SegmentRef.Empty;
 		    }
 		    else
 		    {
-			    InputPad.HighlightPoint = PointRef.Empty;
+			    InputPad.HighlightPoints.Clear();
 			    var snapLine = InputPad.GetSnapLine(CurrentPoint);
 			    if (snapLine.IsEmpty)
 			    {
@@ -219,7 +221,7 @@ namespace Slugs.Agent
 				    InputPad.HighlightLine = snapLine;
 			    }
 		    }
-		    SnapPoint = InputPad.HighlightPoint.IsEmpty ? CurrentPoint : InputPad.GetHighlightPoint();
+		    SnapPoint = InputPad.HighlightPoints.Count == 0 ? CurrentPoint : InputPad.GetHighlightPoint();
 
 		    return hasChange;
 	    }
@@ -231,22 +233,14 @@ namespace Slugs.Agent
 		    {
 			    if (final)
 			    {
-				    DragRef.OffsetValues(CurrentPoint);
-				    if (IsDraggingPoint && !InputPad.HighlightPoint.IsEmpty)
+				    DragRef.OffsetValues(SnapPoint);
+				    if (IsDraggingPoint && InputPad.HighlightPoints.Count > 0)
 				    {
-					    UpdatePointRef(DraggingPoint, InputPad.HighlightPoint);
+                        MergePointRefs(DragRef.PointRefs, InputPad.HighlightPoints[0], SnapPoint);
 				    }
 				    result = true;
 			    }
 		    }
-		    //else if (IsDraggingLine)
-		    //{
-			   // if (final)
-			   // {
-				  //  UpdatePointRef(DraggingPoint, InputPad.HighlightPoint);
-				  //  result = true;
-			   // }
-		    //}
             else if (IsDown)
 		    {
 			    DragPath.Add(SnapPoint);
@@ -256,8 +250,16 @@ namespace Slugs.Agent
 				    DragSegment.Add(SnapPoint);
 				    ClickData.Add(SnapPoint);
 				    DragPath.Add(SnapPoint);
-					DataMap.CreateIn(InputPad, DragSegment);
-                }
+				    if (DragSegment[0].DistanceTo(DragSegment[1]) > 10)
+				    {
+					    var newDataMap = DataMap.CreateIn(InputPad, DragSegment);
+					    if (InputPad.HighlightPoints.Count > 0)
+					    {
+						    //InputPad.HighlightPoints.Add(newSeg.LastRef());
+								MergePointRefs(new List<PointRef>(){ newDataMap.LastRef()}, InputPad.HighlightPoints[0], SnapPoint);
+					    }
+				    }
+			    }
 			    result = true;
 		    }
 		    return result;
@@ -268,14 +270,8 @@ namespace Slugs.Agent
 		    if (IsDragging)
 		    {
 			    DragRef.OffsetValues(CurrentPoint);
-                //InputPad.UpdatePoint(DraggingPoint, SnapPoint);
 			    result = true;
 		    }
-      //      else if (IsDraggingLine)
-		    //{
-			   // InputPad.UpdateLine(DraggingLine, SnapPoint);
-			   // result = true;
-		    //}
             return result;
 	    }
     }
