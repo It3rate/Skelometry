@@ -1,5 +1,6 @@
 ﻿using SkiaSharp;
 using Slugs.Agent;
+using Slugs.Input;
 
 namespace Slugs.Pads
 {
@@ -9,15 +10,22 @@ namespace Slugs.Pads
 	using System.Text;
 	using System.Threading.Tasks;
 
-	public readonly struct PointRef : IEquatable<PointRef>
+	public interface IPointRef
+	{
+		int PadIndex { get; }
+        int DataMapIndex { get; }
+		int PointIndex { get; }
+        SKPoint SKPoint { get; set; }
+        bool IsEmpty { get; }
+	}
+	public readonly struct PointRef : IPointRef, IEquatable<PointRef>
 	{
 		public static PointRef Empty = new PointRef(-1, -1, -1);
 		public bool IsEmpty => PointIndex == -1;
 
-        public readonly int PadIndex;
-		public readonly int DataMapIndex;
-		public readonly int PointIndex;
-		public readonly float T; // maybe t isn't needed, and pointrefs can only represent measured things, not extrapolated.
+		public int PadIndex { get; }
+		public int DataMapIndex { get; }
+		public int PointIndex { get; }
 
         // pointIndex, endIndex, t -- then everything becomes a place on a line. Perhaps also offset.
         // Look at 'start index' being referenced from the end (like complex segments)
@@ -29,61 +37,73 @@ namespace Slugs.Pads
         // Multiplication is locking the absolute size (eg after translating units like cm/inch) of one line/slug to another.
         // conflicts cause things to move up a dimension, as curves of various types, or even triangles (no curve). This is based on properties of the segments.
 
-        public PointRef(int padIndex, int dataMapIndex, int pointIndex, float t = 0)
+        public PointRef(int padIndex, int dataMapIndex, int pointIndex)
 		{
 			PadIndex = padIndex;
 			DataMapIndex = dataMapIndex;
 			PointIndex = pointIndex;
-			T = t;
 		}
 
-		public SKPoint SKPoint
+        public SKPoint SKPoint
 		{
 			get => SlugAgent.ActiveAgent[this];
 			set => SlugAgent.ActiveAgent[this] = value;
         }
 
-		public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.DataMapIndex == right.DataMapIndex && left.PointIndex == right.PointIndex && left.T == right.T;
-		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.DataMapIndex != right.DataMapIndex || left.PointIndex != right.PointIndex || left.T != right.T;
+		public void UpdateWith(IPointRef newPoint)
+		{
+			SlugAgent.ActiveAgent.UpdatePointRef(this, newPoint);
+		}
+
+        public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.DataMapIndex == right.DataMapIndex && left.PointIndex == right.PointIndex;
+		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.DataMapIndex != right.DataMapIndex || left.PointIndex != right.PointIndex;
 		public override bool Equals(object obj) => obj is PointRef value && this == value;
 		public bool Equals(PointRef value) => this == value;
-		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + DataMapIndex.GetHashCode() * 37 + PointIndex.GetHashCode() + T.GetHashCode() * 41;
+		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + DataMapIndex.GetHashCode() * 37 + PointIndex.GetHashCode();
 	}
 
-	public readonly struct VirtualPointRef : IEquatable<VirtualPointRef>
+	public struct VirtualPoint : IPointRef, IEquatable<VirtualPoint>
 	{
-		public static PointRef Empty = new PointRef(-1, -1, -1);
+		public bool IsEmpty => Segment.IsEmpty;
 
-		public readonly PointRef StartRef;
-		public readonly PointRef EndRef;
-		public readonly float T;
+        private PointRef _pointRef;
+        public readonly SegmentRef Segment;
+		public float T;
 		public readonly float Offset;
 
-		public SKPoint StartPoint => StartRef.SKPoint;
-		public SKPoint EndPoint => EndRef.SKPoint;
+		public int PadIndex => _pointRef.PadIndex;
+		public int DataMapIndex => _pointRef.DataMapIndex;
+        public int PointIndex => _pointRef.PointIndex;
 
-		public VirtualPointRef(PointRef startRef, PointRef endRef, float t, float offset = 0)
+		public SKPoint StartPoint => Segment.StartPoint;
+		public SKPoint EndPoint => Segment.EndPoint;
+
+		public VirtualPoint(SegmentRef segment, float t, float offset = 0)
 		{
-			StartRef = startRef;
-			EndRef = endRef;
+			_pointRef = PointRef.Empty;
+			Segment = segment;
 			T = t;
 			Offset = offset;
 		}
 
-		public bool IsEmpty => StartRef.IsEmpty;
+		public SKPoint SKPoint
+		{
+			get => Segment.PointAlongLine(T);
+			set => T = Segment.TFromPoint(value);
+		}
 
-		public static bool operator ==(VirtualPointRef left, VirtualPointRef right) =>
-			left.StartRef == right.StartRef && left.EndRef == right.EndRef && left.T == right.T && left.Offset == right.Offset;
+		public static bool operator ==(VirtualPoint left, VirtualPoint right) =>
+			left._pointRef == right._pointRef && left.Segment == right.Segment && left.T == right.T && left.Offset == right.Offset;
 
-		public static bool operator !=(VirtualPointRef left, VirtualPointRef right) =>
-			left.StartRef != right.StartRef || left.EndRef != right.EndRef || left.T != right.T || left.Offset != right.Offset;
+		public static bool operator !=(VirtualPoint left, VirtualPoint right) =>
+			left._pointRef == right._pointRef && left.Segment != right.Segment || left.T != right.T || left.Offset != right.Offset;
 
-		public override bool Equals(object obj) => obj is VirtualPointRef value && this == value;
+		public override bool Equals(object obj) => obj is VirtualPoint value && this == value;
 
-		public bool Equals(VirtualPointRef value) =>
-			StartRef.Equals(value.StartRef) && EndRef.Equals(value.EndRef) && T.Equals(value.T) && Offset.Equals(value.Offset);
+		public bool Equals(VirtualPoint value) =>
+			_pointRef.Equals(value._pointRef) && Segment.Equals(value.Segment) && T.Equals(value.T) && Offset.Equals(value.Offset);
 
 		public override int GetHashCode() =>
-			17 * 23 + StartRef.GetHashCode() * 29 + EndRef.GetHashCode() * 31 + T.GetHashCode() * 37 + Offset.GetHashCode();
+			Segment.GetHashCode() * 39 + Segment.GetHashCode()* 29 + T.GetHashCode() * 37 + Offset.GetHashCode();
 	}
 }

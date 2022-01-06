@@ -93,6 +93,7 @@
     <Compile Include="Agent\SlugAgent.cs" />
     <Compile Include="Input\DataMap.cs" />
     <Compile Include="Input\DragRef.cs" />
+    <Compile Include="Input\Point.cs" />
     <Compile Include="Input\SkPointExtension.cs" />
     <Compile Include="Input\SegmentRef.cs" />
     <Compile Include="Input\PointRef.cs" />

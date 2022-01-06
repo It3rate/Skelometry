@@ -10,6 +10,19 @@ namespace Slugs.Input
     using System.Text;
     using System.Threading.Tasks;
 
+    public struct SegmentBase
+    {
+	    public static SegmentBase Empty = new SegmentBase(SKPoint.Empty);
+
+        public SKPoint StartPoint { get; private set; }
+	    public SKPoint EndPoint => StartPoint;
+	    public SegmentBase(SKPoint start)
+	    {
+		    StartPoint = start;
+        }
+
+	    public SegmentBase Clone() => new SegmentBase(StartPoint);
+    }
     public struct SKSegment
     {
         public SKPoint StartPoint { get; private set; }
@@ -17,11 +30,11 @@ namespace Slugs.Input
 
         public static SKSegment Empty = new SKSegment(SKPoint.Empty, SKPoint.Empty);
 
-        public SKSegment(SKPoint start)
-        {
-	        StartPoint = start;
-	        EndPoint = start;
-        }
+        //public SKSegment(SKPoint start)
+        //{
+	       // StartPoint = start;
+	       // EndPoint = start;
+        //}
         public SKSegment(SKPoint start, SKPoint end)
         {
 	        StartPoint = start;
@@ -56,11 +69,11 @@ namespace Slugs.Input
             return a.Clone();
         }
 
-        public float Length() => (float)Math.Sqrt((EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y));
-        public float SquaredLength() => (EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y);
+        public float Length => (float)Math.Sqrt((EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y));
+        public float LengthSquared => (EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y);
         public SKPoint PointAlongLine(float t) => new SKPoint((EndPoint.X - StartPoint.X) * t + StartPoint.X, (EndPoint.Y - StartPoint.Y) * t + StartPoint.Y);
-        public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Length());
-        public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Length());
+        public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Length);
+        public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Length);
 
         public SKPoint OrthogonalPoint(SKPoint pt, float offset)
         {
@@ -80,6 +93,19 @@ namespace Slugs.Input
             x = (x < StartPoint.X && x < EndPoint.X) ? (float)Math.Min(StartPoint.X, EndPoint.X) : (x > StartPoint.X && x > EndPoint.X) ? (float)Math.Max(StartPoint.X, EndPoint.X) : x;
             y = (y < StartPoint.Y && y < EndPoint.Y) ? (float)Math.Min(StartPoint.Y, EndPoint.Y) : (y > StartPoint.Y && y > EndPoint.Y) ? (float)Math.Max(StartPoint.Y, EndPoint.Y) : y;
             return new SKPoint(x, y);
+        }
+
+        public float TFromPoint(SKPoint point)
+        {
+	        var pp = ProjectPointOnto(point);
+	        var v0 = EndPoint - StartPoint;
+	        var v1 = pp - StartPoint;
+	        var sign = Math.Sign(v0.X) != Math.Sign(v1.X) || Math.Sign(v0.Y) != Math.Sign(v1.Y) ? -1f : 1f;
+	        var l0 = v0.Length;
+	        var l1 = v1.Length * sign;
+
+            var t = l0 / l1;
+            return t;
         }
 
         public SKPoint[] EndArrow(float dist = 8f)

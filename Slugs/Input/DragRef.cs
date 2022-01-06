@@ -13,8 +13,8 @@ namespace Slugs.Input
     public class DragRef
     {
 	    public SKPoint Origin { get; set; }
-        //public Dictionary<PointRef, SKPoint> MovingPoints { get; } = new Dictionary<PointRef, SKPoint>();
-        public List<PointRef> PointRefs { get; private set; } = new List<PointRef>();
+        //public Dictionary<IPointRef, SKPoint> MovingPoints { get; } = new Dictionary<IPointRef, SKPoint>();
+        public List<IPointRef> PointRefs { get; private set; } = new List<IPointRef>();
         private List<SKPoint> OriginalPoints = new List<SKPoint>();
         public int Count => PointRefs.Count;
         public bool IsLine { get; private set; }
@@ -23,13 +23,13 @@ namespace Slugs.Input
         {
         }
 
-        public DragRef(SKPoint origin, params PointRef[] startPoints)
+        public DragRef(SKPoint origin, params IPointRef[] startPoints)
         {
 	        Origin = origin;
 	        Add(startPoints);
         }
 
-        public PointRef this[int index]
+        public IPointRef this[int index]
         {
 	        get => index >= 0 && index < PointRefs.Count ? PointRefs[index] : PointRef.Empty;
         }
@@ -43,9 +43,9 @@ namespace Slugs.Input
         }
 
         public bool IsEmpty => PointRefs.Count == 0;
-        public bool Contains(PointRef pointRef) => PointRefs.Contains(pointRef);
+        public bool Contains(IPointRef pointRef) => PointRefs.Contains(pointRef);
 
-        public void Add(params PointRef[] points)
+        public void Add(params IPointRef[] points)
 	    {
 		    foreach (var startPoint in points)
 		    {
@@ -53,16 +53,16 @@ namespace Slugs.Input
 			    OriginalPoints.Add(startPoint.SKPoint);
 		    }
         }
-        public void Add(List<PointRef> points)
+        public void Add(List<IPointRef> points)
         {
             Add(points.ToArray());
         }
-        public void Add(PointRef start, PointRef end, bool isLine)
+        public void Add(IPointRef start, IPointRef end, bool isLine)
         {
 	        Add(start, end);
 	        IsLine = isLine;
         }
-        public void AddToFront(PointRef point)
+        public void AddToFront(IPointRef point)
         {
 	        PointRefs.Insert(0, point);
 	        OriginalPoints.Insert(0, point.SKPoint);

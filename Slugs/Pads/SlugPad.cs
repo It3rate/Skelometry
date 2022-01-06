@@ -28,10 +28,11 @@ namespace Slugs.Pads
         public const float SnapDistance = 10.0f;
 
 	    public PadKind PadKind;
-	    public List<PointRef> HighlightPoints = new List<PointRef>();
+	    public List<IPointRef> HighlightPoints = new List<IPointRef>();
 	    public bool HasHighlightPoint => HighlightPoints.Count > 0;
-	    public PointRef FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : PointRef.Empty;
+	    public IPointRef FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : PointRef.Empty;
         public SegmentRef HighlightLine = SegmentRef.Empty;
+        public bool HasHighlightLine => HighlightLine != SegmentRef.Empty;
 
         private readonly List<DataMap> _dataMaps = new List<DataMap>();
         private readonly List<SlugRef> _slugMaps = new List<SlugRef>();
@@ -109,29 +110,28 @@ namespace Slugs.Pads
             }
 	    }
 
-	    public void UpdatePoint(PointRef pointRef, SKPoint pt)
+	    public void UpdatePoint(IPointRef pointRef, SKPoint pt)
 	    {
 		    _dataMaps[pointRef.DataMapIndex][pointRef] = pt;
 	    }
-        public void UpdatePointRef(PointRef pointRef, PointRef value)
+        public void UpdatePointRef(IPointRef pointRef, IPointRef value)
 	    {
 		    _dataMaps[pointRef.DataMapIndex][pointRef.PointIndex] = value;
 	    }
 
 	    public SKPoint GetHighlightPoint() => HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
+	    public SKSegment GetHighlightLine() => HighlightLine.SKSegment;
 
-        public SKSegment GetHighlightLine() => HighlightLine.SKSegment;
-
-        public List<PointRef> GetSnapPoints(SKPoint input, DragRef ignorePoints, float maxDist = SnapDistance)
+        public List<IPointRef> GetSnapPoints(SKPoint input, DragRef ignorePoints, float maxDist = SnapDistance)
 	    {
-		    var result = new List<PointRef>();
+		    var result = new List<IPointRef>();
 		    int dataIndex = 0;
 		    foreach (var dataMap in _dataMaps)
 		    {
 			    var ptIndex = dataMap.GetSnapPoint(input, maxDist);
 			    if (ptIndex > -1 && !ignorePoints.Contains(dataMap[ptIndex]) && !result.Contains(dataMap[ptIndex]))
 			    {
-				    result.Add(dataMap[ptIndex]);//new PointRef(PadIndex, dataIndex, ptIndex));
+				    result.Add(dataMap[ptIndex]);//new IPointRef(PadIndex, dataIndex, ptIndex));
 			    }
 			    dataIndex++;
 		    }

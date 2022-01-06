@@ -23,7 +23,7 @@ namespace Slugs.Input
 
 	    // refs do not need to point to the internal point store, but will normally start this way for user input.
         private readonly List<SKPoint> _inputPoints = new List<SKPoint>(); 
-	    private readonly List<PointRef> _inputRefs = new List<PointRef>();
+	    private readonly List<IPointRef> _inputRefs = new List<IPointRef>();
 	    public int Count => _inputRefs.Count;
 
 	    private readonly List<Slug> _slugs = new List<Slug>();
@@ -42,7 +42,7 @@ namespace Slugs.Input
 			    this.Add(point);
 		    }
 	    }
-	    private DataMap(SlugPad pad, params PointRef[] pointRefs)
+	    private DataMap(SlugPad pad, params IPointRef[] pointRefs)
         {
 	        pad.Add(this);
             foreach (var pointRef in pointRefs)
@@ -59,7 +59,7 @@ namespace Slugs.Input
 	    {
 		    return new DataMap(pad, points.ToArray());
 	    }
-        public static DataMap CreateIn(SlugPad pad, params PointRef[] pointRefs)
+        public static DataMap CreateIn(SlugPad pad, params IPointRef[] pointRefs)
 	    {
 		    return new DataMap(pad, pointRefs);
 	    }
@@ -95,9 +95,9 @@ namespace Slugs.Input
 	        return result;
         }
 
-        private bool IsOwn(PointRef pointRef) => pointRef.PadIndex == PadIndex && pointRef.DataMapIndex == DataMapIndex;
+        private bool IsOwn(IPointRef pointRef) => pointRef.PadIndex == PadIndex && pointRef.DataMapIndex == DataMapIndex;
         private SlugPad PadAt(int index) => SlugAgent.Pads[index];
-        public SKPoint this[PointRef pointRef]
+        public SKPoint this[IPointRef pointRef]
         {
 	        get => IsOwn(pointRef) ? _inputPoints[pointRef.PointIndex] : SlugAgent.ActiveAgent[pointRef];
 	        set
@@ -112,13 +112,13 @@ namespace Slugs.Input
                 }
 	        }
         }
-        public PointRef this[int index]
+        public IPointRef this[int index]
         {
 	        get => _inputRefs[index];
 	        set => _inputRefs[index] = value;
         }
-        public PointRef FirstRef => _inputRefs.Count > 0 ? _inputRefs[0] : PointRef.Empty;
-        public PointRef LastRef => _inputRefs.Count > 0 ? _inputRefs[_inputRefs.Count - 1] : PointRef.Empty;
+        public IPointRef FirstRef => _inputRefs.Count > 0 ? _inputRefs[0] : PointRef.Empty;
+        public IPointRef LastRef => _inputRefs.Count > 0 ? _inputRefs[_inputRefs.Count - 1] : PointRef.Empty;
         public SKPoint PointAt(int index)
         {
 	        SKPoint result;
@@ -135,11 +135,11 @@ namespace Slugs.Input
 
         public void Add(SKPoint point)
         {
-	        PointRef pointRef = new PointRef(PadIndex, DataMapIndex, _inputPoints.Count);
+	        IPointRef pointRef = new PointRef(PadIndex, DataMapIndex, _inputPoints.Count);
 	        _inputPoints.Add(point);
 	        _inputRefs.Add(pointRef);
         }
-        public void Add(PointRef pointRef)
+        public void Add(IPointRef pointRef)
         {
 	        _inputPoints.Add(SKPoint.Empty);
 	        _inputRefs.Add(pointRef);

@@ -12,13 +12,13 @@ namespace Slugs.Input
     using System.Text;
     using System.Threading.Tasks;
 
-    public readonly struct SegmentRef
+    public readonly struct SegmentRef : IEquatable<SegmentRef>
     {
 	    public static SegmentRef Empty = new SegmentRef(PointRef.Empty);
 	    public bool IsEmpty => StartRef.IsEmpty && EndRef.IsEmpty;
 
-        public PointRef StartRef { get; }
-	    public PointRef EndRef { get; }
+        public IPointRef StartRef { get; }
+	    public IPointRef EndRef { get; }
 
 	    public SKPoint StartPoint
 	    {
@@ -32,12 +32,12 @@ namespace Slugs.Input
 	    }
         public SKSegment SKSegment => new SKSegment(StartPoint, EndPoint);
 
-        public SegmentRef(PointRef startRef)
+        public SegmentRef(IPointRef startRef)
 	    {
 		    StartRef = startRef;
 		    EndRef = startRef;
 	    }
-	    public SegmentRef(PointRef startRef, PointRef endRef)
+	    public SegmentRef(IPointRef startRef, IPointRef endRef)
 	    {
 		    StartRef = startRef;
 		    EndRef = endRef;
@@ -69,13 +69,34 @@ namespace Slugs.Input
 	        return a.Clone();
         }
 
-        public float Length() => SKSegment.Length();
-        public float SquaredLength() => SKSegment.SquaredLength();
+        public float Length() => SKSegment.Length;
+        public float SquaredLength() => SKSegment.LengthSquared;
         public SKPoint PointAlongLine(float t) => SKSegment.PointAlongLine(t);
         public SKPoint SKPointFromStart(float dist) => SKSegment.PointAlongLine(dist);
         public SKPoint SKPointFromEnd(float dist) => SKSegment.SKPointFromEnd(dist);
         public SKPoint OrthogonalPoint(SKPoint pt, float offset) => SKSegment.OrthogonalPoint(pt, offset);
         public SKPoint ProjectPointOnto(SKPoint p) => SKSegment.ProjectPointOnto(p);
+        public float TFromPoint(SKPoint point) => SKSegment.TFromPoint(point);
         public SKPoint[] EndArrow(float dist = 8f) => SKSegment.EndArrow(dist);
+
+        public IPointRef GetVirtualPointFor(SKPoint point)
+        {
+	        var t = TFromPoint(point);
+            return new VirtualPoint(this, t);
+        }
+
+        public static bool operator ==(SegmentRef left, SegmentRef right) =>
+	        left.StartRef == right.StartRef && left.EndRef == right.EndRef;
+
+        public static bool operator !=(SegmentRef left, SegmentRef right) =>
+	        left.StartRef != right.StartRef || left.EndRef != right.EndRef;
+
+        public override bool Equals(object obj) => obj is SegmentRef value && this == value;
+
+        public bool Equals(SegmentRef value) =>
+	        StartRef.Equals(value.StartRef) && EndRef.Equals(value.EndRef);
+
+        public override int GetHashCode() =>
+	        17 * 23 + StartRef.GetHashCode() * 29 + EndRef.GetHashCode() * 31;
     }
 }
