@@ -28,7 +28,12 @@ namespace Slugs.Slugs
 	    public double Push { get; }
 	    private readonly bool _hasValue;
 
-	    public Slug(int pull, int push)
+	    public float Natural => (float)Push;
+	    public float Complex => (float)Pull;
+	    public float End => (float)Push;
+	    public float Start => (float)Pull;
+
+        public Slug(int pull, int push)
 	    {
 		    _hasValue = true;
 		    Pull = pull;

@@ -89,15 +89,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Agent\BaseAgent.cs" />
+    <Compile Include="Agent\EntityAgent.cs" />
     <Compile Include="Agent\IAgent.cs" />
     <Compile Include="Agent\SlugAgent.cs" />
     <Compile Include="Input\DataMap.cs" />
     <Compile Include="Input\DragRef.cs" />
     <Compile Include="Input\Point.cs" />
-    <Compile Include="Input\SkPointExtension.cs" />
-    <Compile Include="Input\SegmentRef.cs" />
+    <Compile Include="Extensions\SkPointExtension.cs" />
+    <Compile Include="Input\SegRef.cs" />
     <Compile Include="Input\PointRef.cs" />
-    <Compile Include="Input\SKSegment.cs" />
+    <Compile Include="Extensions\SKSegment.cs" />
+    <Compile Include="Entities\Bond.cs" />
+    <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\PadData.cs" />
+    <Compile Include="Entities\PtRef.cs" />
+    <Compile Include="Entities\SegRef.cs" />
     <Compile Include="Pads\SlugPad.cs" />
     <Compile Include="Renderer\RenderFlags.cs" />
     <Compile Include="Renderer\RenderStatus.cs" />
@@ -111,6 +118,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Slugs\IPointRef.cs" />
     <Compile Include="Slugs\Slug.cs" />
     <Compile Include="Slugs\IElement.cs" />
     <Compile Include="Slugs\SlugRef.cs" />

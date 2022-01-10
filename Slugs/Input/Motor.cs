@@ -2,7 +2,6 @@
 using System.Dynamic;
 using SkiaSharp;
 using Slugs.Agent;
-using Slugs.Extensions;
 using Slugs.Pads;
 using Slugs.Slugs;
 
@@ -14,28 +13,46 @@ namespace Slugs.Input
     using System.Text;
     using System.Threading.Tasks;
 
-    public class DataMap : IEnumerable<SKPoint>
+    public struct T // maybe t is just a slug
     {
-        public static readonly DataMap Empty = new DataMap();
+	    public double Tn { get; }
+	    public double Ti { get; }
+    }
+    public struct Bond
+    {
+	    public int SegIndex0 { get; }
+	    public int SegIndex1 { get; }
+	    public Slug Slug0 { get; }
+	    public Slug Slug1 { get; }
+    }
+    public class Motor : IEnumerable<SKPoint>
+    {
+        public static readonly Motor Empty = new Motor();
 	    public bool IsEmpty = false;
 
         public int PadIndex;
-	    public int DataMapIndex;
+	    public int MotorIndex;
 
-	    // refs do not need to point to the internal point store, but will normally start this way for user input.
-        private readonly List<SKPoint> _inputPoints = new List<SKPoint>(); 
-	    private readonly List<IPointRef> _inputRefs = new List<IPointRef>();
-	    public int Count => _inputRefs.Count;
+        // ISample - pointRef, Motor/t - returns an xy point when sampled with t (can also sample a t between any two segrefs)
+        // Ordered SegRefs - each side is an ISample. Eventually can have min/max, behaviour at limits and past, accuracy, precision type etc.
+        // Bonds (2 per segref pair) - these are t based floats, not points
+        // BondDirections - can be one way, both ways, cacheable'
 
-	    private readonly List<Slug> _slugs = new List<Slug>();
+        // refs do not need to point to the internal point store, but will normally start this way for user input.
+        //private readonly List<SKPoint> _inputPoints = new List<SKPoint>(); 
+	    //private readonly List<IPointRef> _inputRefs = new List<IPointRef>();
+	    public int Count => _segments.Count;
 
-        private DataMap()
+	    private readonly List<SegmentRef> _segments = new List<SegmentRef>();
+	    private readonly List<Slug> _bonds = new List<Slug>();
+
+        private Motor()
 	    {
 		    IsEmpty = true;
 		    // SKPoint.Empty, SkPointExtension.MinPoint, SkPointExtension.MaxPoint
         }
 
-	    private DataMap(SlugPad pad, params SKPoint[] points)
+	    private Motor(SlugPad pad, params SKPoint[] points)
 	    {
 		    pad?.Add(this);
 		    foreach (var point in points)
@@ -43,7 +60,7 @@ namespace Slugs.Input
 			    this.Add(point);
 		    }
 	    }
-	    private DataMap(SlugPad pad, params IPointRef[] pointRefs)
+	    private Motor(SlugPad pad, params IPointRef[] pointRefs)
         {
 	        pad.Add(this);
             foreach (var pointRef in pointRefs)
@@ -52,28 +69,28 @@ namespace Slugs.Input
 		    }
 	    }
 
-	    public static DataMap CreateIn(SlugPad pad, params SKPoint[] points)
+	    public static Motor CreateIn(SlugPad pad, params SKPoint[] points)
 	    {
-		    return new DataMap(pad, points);
+		    return new Motor(pad, points);
 	    }
-	    public static DataMap CreateIn(SlugPad pad,List<SKPoint> points)
+	    public static Motor CreateIn(SlugPad pad, List<SKPoint> points)
 	    {
-		    return new DataMap(pad, points.ToArray());
+		    return new Motor(pad, points.ToArray());
 	    }
-        public static DataMap CreateIn(SlugPad pad, params IPointRef[] pointRefs)
+        public static Motor CreateIn(SlugPad pad, params IPointRef[] pointRefs)
 	    {
-		    return new DataMap(pad, pointRefs);
+		    return new Motor(pad, pointRefs);
 	    }
 
         public bool HasSlug(SlugRef slugRef) =>
-	        slugRef.PadIndex == PadIndex && slugRef.DataMapIndex == DataMapIndex && HasSlugAtIndex(slugRef.SlugIndex);
-        public bool HasSlugAtIndex(int index) => index >= 0 && index < _slugs.Count;
-        public int SlugCount => _slugs.Count;
-        public Slug SlugAt(int index) => (index >= 0 && index < _slugs.Count) ? _slugs[index] : Slug.Empty; // default to unit slug instead of empty?
+	        slugRef.PadIndex == PadIndex && slugRef.MotorIndex == MotorIndex && HasSlugAtIndex(slugRef.SlugIndex);
+        public bool HasSlugAtIndex(int index) => index >= 0 && index < _bonds.Count;
+        public int SlugCount => _bonds.Count;
+        public Slug SlugAt(int index) => (index >= 0 && index < _bonds.Count) ? _bonds[index] : Slug.Empty; // default to unit slug instead of empty?
         public SlugRef AddSlug(Slug item)
         {
-	        _slugs.Add(item);
-	        return new SlugRef(PadIndex, DataMapIndex, _slugs.Count - 1);
+	        _bonds.Add(item);
+	        return new SlugRef(PadIndex, MotorIndex, _bonds.Count - 1);
         }
         public bool RemoveSlugAt(int index)
         {
@@ -81,7 +98,7 @@ namespace Slugs.Input
 	        if (HasSlugAtIndex(index))
 	        {
 		        result = true;
-		        _slugs.RemoveAt(index);
+		        _bonds.RemoveAt(index);
 	        }
 	        return result;
         }
@@ -91,28 +108,33 @@ namespace Slugs.Input
 	        if (HasSlug(slugRef))
 	        {
 		        result = true;
-                _slugs.RemoveAt(slugRef.SlugIndex);
+                _bonds.RemoveAt(slugRef.SlugIndex);
 	        }
 	        return result;
         }
 
-        private bool IsOwn(IPointRef pointRef) => pointRef.PadIndex == PadIndex && pointRef.EntityIndex == DataMapIndex;
+        private bool IsOwn(IPointRef pointRef) => pointRef.PadIndex == PadIndex && pointRef.MotorIndex == MotorIndex;
         private SlugPad PadAt(int index) => SlugAgent.Pads[index];
-        public SKPoint this[IPointRef pointRef]
+
+        public SKPoint GetPointAt(double t)
         {
-	        get => IsOwn(pointRef) ? _inputPoints[pointRef.FocalIndex] : SlugAgent.ActiveAgent[pointRef];
-	        set
-	        {
-		        if (IsOwn(pointRef))
-		        {
-			        _inputPoints[pointRef.FocalIndex] = value;
-		        }
-		        else
-		        {
-			        SlugAgent.ActiveAgent[pointRef] = value;
-                }
-	        }
+
         }
+        //public SKPoint this[IPointRef pointRef]
+        //{
+	       // get => IsOwn(pointRef) ? _inputPoints[pointRef.TIndex] : SlugAgent.ActiveAgent.GetPointAt(pointRef);
+	       // set
+	       // {
+		      //  if (IsOwn(pointRef))
+		      //  {
+			     //   _inputPoints[pointRef.TIndex] = value;
+		      //  }
+		      //  else
+		      //  {
+			     //   SlugAgent.ActiveAgent.SetPointAt(pointRef, value);
+        //        }
+	       // }
+        //}
         public IPointRef this[int index]
         {
 	        get => _inputRefs[index];
@@ -136,7 +158,7 @@ namespace Slugs.Input
 
         public void Add(SKPoint point)
         {
-	        IPointRef pointRef = new PointRef(PadIndex, DataMapIndex, _inputPoints.Count);
+	        IPointRef pointRef = new PointRef(PadIndex, MotorIndex, _inputPoints.Count);
 	        _inputPoints.Add(point);
 	        _inputRefs.Add(pointRef);
         }
@@ -152,17 +174,17 @@ namespace Slugs.Input
 		    _inputRefs.Clear();
 	    }
 
-        public SegRef SegmentAt(int startIndex, int endIndex = -1)
+        public SegmentRef SegmentAt(int startIndex, int endIndex = -1)
         {
-            SegRef result;
+            SegmentRef result;
             endIndex = (endIndex == -1) ? startIndex + 1 : endIndex;
             if (startIndex < 0 || startIndex > Count - 1 || endIndex < 0 || endIndex > Count - 1)
             {
-                result = SegRef.Empty;
+                result = SegmentRef.Empty;
             }
             else
             {
-                result = new SegRef(_inputRefs[startIndex], _inputRefs[endIndex]);
+                result = new SegmentRef(_inputRefs[startIndex], _inputRefs[endIndex]);
 
             }
             return result;

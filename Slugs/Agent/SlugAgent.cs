@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using Slugs.Extensions;
 using Slugs.Input;
 using Slugs.Pads;
 using Slugs.Renderer;
@@ -16,32 +17,31 @@ namespace Slugs.Agent
 
     public class SlugAgent : IAgent
     {
-	    public static SlugAgent ActiveAgent { get; private set; }
-        public static readonly Dictionary<int, SlugPad> Pads = new Dictionary<int, SlugPad>();
+	    public static IAgent ActiveAgent { get; private set; }
 
-	    private double _unitPull = 0;
-	    public double _unitPush = 10;
+	    public static readonly Dictionary<int, SlugPad> Pads = new Dictionary<int, SlugPad>();
+	    public readonly SlugPad WorkingPad = new SlugPad(PadKind.Working);
+	    public readonly SlugPad InputPad = new SlugPad(PadKind.Drawn);
 
 	    private readonly SlugRenderer _renderer;
 	    public RenderStatus Status { get; }
 
-	    public readonly SlugPad WorkingPad = new SlugPad(PadKind.Working);
-	    public readonly SlugPad InputPad = new SlugPad(PadKind.Drawn);
 
+	    private double _unitPull = 0;
+	    public double _unitPush = 10;
+
+	    private bool IsDown => DownPoint != SKPoint.Empty;
 	    private SKPoint DownPoint;
 	    private SKPoint CurrentPoint;
 	    private SKPoint SnapPoint;
 	    private IPointRef StartHighlight;
-
-        private readonly List<SKPoint> DragSegment = new List<SKPoint>();
+	    private readonly List<SKPoint> DragSegment = new List<SKPoint>();
 	    private readonly List<SKPoint> ClickData = new List<SKPoint>();
 	    private readonly List<SKPoint> DragPath = new List<SKPoint>();
-
 	    public DragRef DragRef = new DragRef();
 	    private bool IsDragging => !DragRef.IsEmpty;
 	    private bool IsDraggingPoint => !DragRef.IsEmpty && !DragRef.IsLine;
 
-        private bool IsDown => DownPoint != SKPoint.Empty;
 	    public double UnitPull
 	    {
 		    get => _unitPull;
@@ -60,8 +60,7 @@ namespace Slugs.Agent
 			    SlugPad.ActiveSlug = new Slug(_unitPull, _unitPush);
 		    }
 	    }
-
-	    public SlugAgent(SlugRenderer renderer)
+        public SlugAgent(SlugRenderer renderer)
 	    {
 		    ActiveAgent = this;
 		    SlugAgent.Pads[WorkingPad.PadIndex] = WorkingPad;
@@ -85,7 +84,7 @@ namespace Slugs.Agent
 			    if (!pointRef.IsEmpty)
 			    {
 				    var pad = SlugAgent.Pads[pointRef.PadIndex];
-				    var dataMap = pad.InputFromIndex(pointRef.DataMapIndex);
+				    var dataMap = pad.InputFromIndex(pointRef.EntityIndex);
 				    result = dataMap[pointRef];
 			    }
 			    else
@@ -97,7 +96,7 @@ namespace Slugs.Agent
 		    set
 		    {
 			    var pad = SlugAgent.Pads[pointRef.PadIndex];
-			    var dataMap = pad.InputFromIndex(pointRef.DataMapIndex);
+			    var dataMap = pad.InputFromIndex(pointRef.EntityIndex);
 			    dataMap[pointRef] = value;
 		    }
 	    }
@@ -114,8 +113,8 @@ namespace Slugs.Agent
 	    public void UpdatePointRef(IPointRef from, IPointRef to)
 	    {
 		    var pad = SlugAgent.Pads[from.PadIndex];
-		    var dataMap = pad.InputFromIndex(from.DataMapIndex);
-		    dataMap[from.PointIndex] = to;
+		    var dataMap = pad.InputFromIndex(from.EntityIndex);
+		    dataMap[from.FocalIndex] = to;
 	    }
 
 	    public void Clear()
@@ -209,7 +208,7 @@ namespace Slugs.Agent
 		    {
 			    hasChange = true;
 			    InputPad.HighlightPoints = snap;
-			    InputPad.HighlightLine = SegmentRef.Empty;
+			    InputPad.HighlightLine = SegRef.Empty;
 		    }
 		    else
 		    {
@@ -217,7 +216,7 @@ namespace Slugs.Agent
 			    var snapLine = InputPad.GetSnapLine(CurrentPoint);
 			    if (snapLine.IsEmpty)
 			    {
-				    InputPad.HighlightLine = SegmentRef.Empty;
+				    InputPad.HighlightLine = SegRef.Empty;
 			    }
 			    else
 			    {
@@ -256,7 +255,7 @@ namespace Slugs.Agent
 					    var dragPoint = DragRef.PointRefs[0];
 					    var vp = InputPad.HighlightLine.GetVirtualPointFor(SnapPoint);
                         //UpdatePointRef(dragPoint, vp);
-					    // replace last point with Virutal Point Ref for line being snapped to.
+					    // replace last point with Virutal SKPoint Ref for line being snapped to.
 				    }
 				    result = true;
 			    }

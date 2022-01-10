@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using SkiaSharp;
 using Slugs.Pads;
+using Slugs.Slugs;
 
 namespace Slugs.Input
 {

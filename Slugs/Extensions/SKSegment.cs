@@ -1,16 +1,9 @@
-﻿using SkiaSharp;
-using Slugs.Agent;
-using Slugs.Pads;
+﻿using System;
+using SkiaSharp;
 
-namespace Slugs.Input
+namespace Slugs.Extensions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public struct SegmentBase
+	public struct SegmentBase
     {
 	    public static SegmentBase Empty = new SegmentBase(SKPoint.Empty);
 

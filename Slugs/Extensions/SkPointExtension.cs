@@ -1,15 +1,9 @@
-﻿using SkiaSharp;
+﻿using System;
+using SkiaSharp;
 
-namespace Slugs.Input
+namespace Slugs.Extensions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-
-    public static class SkPointExtension
+	public static class SkPointExtension
     {
 	    public static SKPoint MaxPoint = new SKPoint(float.MaxValue, float.MaxValue);
 	    public static SKPoint MinPoint = new SKPoint(float.MinValue, float.MinValue);

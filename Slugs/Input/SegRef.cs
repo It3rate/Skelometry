@@ -2,7 +2,9 @@
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Slugs.Agent;
+using Slugs.Extensions;
 using Slugs.Pads;
+using Slugs.Slugs;
 
 namespace Slugs.Input
 {
@@ -12,9 +14,9 @@ namespace Slugs.Input
     using System.Text;
     using System.Threading.Tasks;
 
-    public readonly struct SegmentRef : IEquatable<SegmentRef>
+    public readonly struct SegRef : IEquatable<SegRef>
     {
-	    public static SegmentRef Empty = new SegmentRef(PointRef.Empty);
+	    public static SegRef Empty = new SegRef(PointRef.Empty);
 	    public bool IsEmpty => StartRef.IsEmpty && EndRef.IsEmpty;
 
         public IPointRef StartRef { get; }
@@ -32,37 +34,37 @@ namespace Slugs.Input
 	    }
         public SKSegment SKSegment => new SKSegment(StartPoint, EndPoint);
 
-        public SegmentRef(IPointRef startRef)
+        public SegRef(IPointRef startRef)
 	    {
 		    StartRef = startRef;
 		    EndRef = startRef;
 	    }
-	    public SegmentRef(IPointRef startRef, IPointRef endRef)
+	    public SegRef(IPointRef startRef, IPointRef endRef)
 	    {
 		    StartRef = startRef;
 		    EndRef = endRef;
 	    }
-        public SegmentRef Clone() => new SegmentRef(StartRef, EndRef);
+        public SegRef Clone() => new SegRef(StartRef, EndRef);
 
-        public static SegmentRef operator +(SegmentRef a, float value)
+        public static SegRef operator +(SegRef a, float value)
         {
 	        a.StartPoint = a.StartPoint.Add(value);
 	        a.EndPoint = a.EndPoint.Add(value);
             return a.Clone();
         }
-        public static SegmentRef operator -(SegmentRef a, float value)
+        public static SegRef operator -(SegRef a, float value)
         {
 	        a.StartPoint = a.StartPoint.Subtract(value);
 	        a.EndPoint = a.EndPoint.Subtract(value);
 	        return a.Clone();
         }
-        public static SegmentRef operator *(SegmentRef a, float value)
+        public static SegRef operator *(SegRef a, float value)
         {
 	        a.StartPoint = a.StartPoint.Multiply(value);
 	        a.EndPoint = a.EndPoint.Multiply(value);
 	        return a.Clone();
         }
-        public static SegmentRef operator /(SegmentRef a, float value)
+        public static SegRef operator /(SegRef a, float value)
         {
 	        a.StartPoint = a.StartPoint.Divide(value);
 	        a.EndPoint = a.EndPoint.Divide(value);
@@ -85,15 +87,15 @@ namespace Slugs.Input
             return new VirtualPoint(this, t);
         }
 
-        public static bool operator ==(SegmentRef left, SegmentRef right) =>
+        public static bool operator ==(SegRef left, SegRef right) =>
 	        left.StartRef == right.StartRef && left.EndRef == right.EndRef;
 
-        public static bool operator !=(SegmentRef left, SegmentRef right) =>
+        public static bool operator !=(SegRef left, SegRef right) =>
 	        left.StartRef != right.StartRef || left.EndRef != right.EndRef;
 
-        public override bool Equals(object obj) => obj is SegmentRef value && this == value;
+        public override bool Equals(object obj) => obj is SegRef value && this == value;
 
-        public bool Equals(SegmentRef value) =>
+        public bool Equals(SegRef value) =>
 	        StartRef.Equals(value.StartRef) && EndRef.Equals(value.EndRef);
 
         public override int GetHashCode() =>

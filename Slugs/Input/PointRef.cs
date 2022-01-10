@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
 using Slugs.Agent;
 using Slugs.Input;
+using Slugs.Slugs;
 
 namespace Slugs.Pads
 {
@@ -10,22 +11,14 @@ namespace Slugs.Pads
 	using System.Text;
 	using System.Threading.Tasks;
 
-	public interface IPointRef
-	{
-		int PadIndex { get; }
-        int DataMapIndex { get; }
-		int PointIndex { get; }
-        SKPoint SKPoint { get; set; }
-        bool IsEmpty { get; }
-	}
 	public readonly struct PointRef : IPointRef, IEquatable<PointRef>
 	{
 		public static PointRef Empty = new PointRef(-1, -1, -1);
-		public bool IsEmpty => PointIndex == -1;
+		public bool IsEmpty => FocalIndex == -1;
 
 		public int PadIndex { get; }
-		public int DataMapIndex { get; }
-		public int PointIndex { get; }
+		public int EntityIndex { get; }
+		public int FocalIndex { get; }
 
         // pointIndex, endIndex, t -- then everything becomes a place on a line. Perhaps also offset.
         // Look at 'start index' being referenced from the end (like complex segments)
@@ -40,8 +33,8 @@ namespace Slugs.Pads
         public PointRef(int padIndex, int dataMapIndex, int pointIndex)
 		{
 			PadIndex = padIndex;
-			DataMapIndex = dataMapIndex;
-			PointIndex = pointIndex;
+			EntityIndex = dataMapIndex;
+			FocalIndex = pointIndex;
 		}
 
         public SKPoint SKPoint
@@ -55,55 +48,55 @@ namespace Slugs.Pads
 			SlugAgent.ActiveAgent.UpdatePointRef(this, newPoint);
 		}
 
-        public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.DataMapIndex == right.DataMapIndex && left.PointIndex == right.PointIndex;
-		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.DataMapIndex != right.DataMapIndex || left.PointIndex != right.PointIndex;
+        public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.EntityIndex == right.EntityIndex && left.FocalIndex == right.FocalIndex;
+		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.EntityIndex != right.EntityIndex || left.FocalIndex != right.FocalIndex;
 		public override bool Equals(object obj) => obj is PointRef value && this == value;
 		public bool Equals(PointRef value) => this == value;
-		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + DataMapIndex.GetHashCode() * 37 + PointIndex.GetHashCode();
+		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + EntityIndex.GetHashCode() * 37 + FocalIndex.GetHashCode();
 	}
 
 	public struct VirtualPoint : IPointRef, IEquatable<VirtualPoint>
 	{
-		public bool IsEmpty => Segment.IsEmpty;
+		public bool IsEmpty => Seg.IsEmpty;
 
         private PointRef _pointRef;
-        public readonly SegmentRef Segment;
+        public readonly SegRef Seg;
 		public float T;
 		public readonly float Offset;
 
 		public int PadIndex => _pointRef.PadIndex;
-		public int DataMapIndex => _pointRef.DataMapIndex;
-        public int PointIndex => _pointRef.PointIndex;
+		public int EntityIndex => _pointRef.EntityIndex;
+        public int FocalIndex => _pointRef.FocalIndex;
 
-		public SKPoint StartPoint => Segment.StartPoint;
-		public SKPoint EndPoint => Segment.EndPoint;
+		public SKPoint StartPoint => Seg.StartPoint;
+		public SKPoint EndPoint => Seg.EndPoint;
 
-		public VirtualPoint(SegmentRef segment, float t, float offset = 0)
+		public VirtualPoint(SegRef seg, float t, float offset = 0)
 		{
 			_pointRef = PointRef.Empty;
-			Segment = segment;
+			Seg = seg;
 			T = t;
 			Offset = offset;
 		}
 
 		public SKPoint SKPoint
 		{
-			get => Segment.PointAlongLine(T);
-			set => T = Segment.TFromPoint(value);
+			get => Seg.PointAlongLine(T);
+			set => T = Seg.TFromPoint(value);
 		}
 
 		public static bool operator ==(VirtualPoint left, VirtualPoint right) =>
-			left._pointRef == right._pointRef && left.Segment == right.Segment && left.T == right.T && left.Offset == right.Offset;
+			left._pointRef == right._pointRef && left.Seg == right.Seg && left.T == right.T && left.Offset == right.Offset;
 
 		public static bool operator !=(VirtualPoint left, VirtualPoint right) =>
-			left._pointRef == right._pointRef && left.Segment != right.Segment || left.T != right.T || left.Offset != right.Offset;
+			left._pointRef == right._pointRef && left.Seg != right.Seg || left.T != right.T || left.Offset != right.Offset;
 
 		public override bool Equals(object obj) => obj is VirtualPoint value && this == value;
 
 		public bool Equals(VirtualPoint value) =>
-			_pointRef.Equals(value._pointRef) && Segment.Equals(value.Segment) && T.Equals(value.T) && Offset.Equals(value.Offset);
+			_pointRef.Equals(value._pointRef) && Seg.Equals(value.Seg) && T.Equals(value.T) && Offset.Equals(value.Offset);
 
 		public override int GetHashCode() =>
-			Segment.GetHashCode() * 39 + Segment.GetHashCode()* 29 + T.GetHashCode() * 37 + Offset.GetHashCode();
+			Seg.GetHashCode() * 39 + Seg.GetHashCode()* 29 + T.GetHashCode() * 37 + Offset.GetHashCode();
 	}
 }

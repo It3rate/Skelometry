@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using Slugs.Extensions;
 using Slugs.Input;
 using Slugs.Pads;
 using Slugs.Slugs;

@@ -5,13 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SkiaSharp;
 using Slugs.Renderer;
+using Slugs.Slugs;
 
 namespace Slugs.Agent
 {
     public interface IAgent
     {
         RenderStatus Status { get; }
+        SKPoint this[IPointRef pointRef] { get; set; }
+
+        void UpdatePointRef(IPointRef from, IPointRef to);
         void Clear();
         void Draw();
 
