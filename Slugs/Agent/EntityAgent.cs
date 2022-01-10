@@ -13,7 +13,7 @@ namespace Slugs.Agent
 
     public class EntityAgent : IAgent
     {
-	    public RenderStatus Status { get; }
+	    public RenderStatus RenderStatus { get; }
 	    public SKPoint this[IPointRef pointRef]
 	    {
 		    get => throw new NotImplementedException();

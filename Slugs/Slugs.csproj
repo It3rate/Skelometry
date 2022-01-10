@@ -93,6 +93,7 @@
     <Compile Include="Agent\EntityAgent.cs" />
     <Compile Include="Agent\IAgent.cs" />
     <Compile Include="Agent\SlugAgent.cs" />
+    <Compile Include="Entities\UIStatus.cs" />
     <Compile Include="Input\DataMap.cs" />
     <Compile Include="Input\DragRef.cs" />
     <Compile Include="Input\Point.cs" />

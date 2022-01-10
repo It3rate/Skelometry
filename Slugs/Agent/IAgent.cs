@@ -13,7 +13,7 @@ namespace Slugs.Agent
 {
     public interface IAgent
     {
-        RenderStatus Status { get; }
+        RenderStatus RenderStatus { get; }
         SKPoint this[IPointRef pointRef] { get; set; }
 
         void UpdatePointRef(IPointRef from, IPointRef to);

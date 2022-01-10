@@ -16,7 +16,7 @@ namespace Slugs.Input
 	    public SKPoint Origin { get; set; }
         //public Dictionary<IPointRef, SKPoint> MovingPoints { get; } = new Dictionary<IPointRef, SKPoint>();
         public List<IPointRef> PointRefs { get; private set; } = new List<IPointRef>();
-        private List<SKPoint> OriginalPoints = new List<SKPoint>();
+        private List<SKPoint> OriginalPoints { get; } = new List<SKPoint>();
         public int Count => PointRefs.Count;
         public bool IsLine { get; private set; }
 

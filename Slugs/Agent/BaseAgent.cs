@@ -24,7 +24,7 @@ namespace Slugs.Agent
 		public readonly SlugPad InputPad = new SlugPad(PadKind.Drawn);
 
 		private readonly SlugRenderer _renderer;
-		public RenderStatus Status { get; }
+		public RenderStatus RenderStatus { get; }
 
 
 		private double _unitPull = 0;
