@@ -1,24 +1,17 @@
-﻿using System.Net;
+﻿using System;
 using SkiaSharp;
 using Slugs.Extensions;
-using Slugs.Input;
-using Slugs.Pads;
+using Slugs.Slugs;
 
-namespace Slugs.Motors
+namespace Slugs.Entities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class SegRef : IEquatable<SegRef>
+	public class SegRef : IEquatable<SegRef>
     {
 	    public static SegRef Empty = new SegRef(PtRef.Empty);
 	    public bool IsEmpty => StartRef.IsEmpty && EndRef.IsEmpty;
 
-	    public PtRef StartRef { get; private set; }
-	    public PtRef EndRef { get; private set; }
+	    public IPointRef StartRef { get; private set; }
+	    public IPointRef EndRef { get; private set; }
 	    private PointKind Kind { get; set; }
 
         private SKSegment _cachedSeg;
@@ -45,12 +38,12 @@ namespace Slugs.Motors
 	        set => EndRef.SKPoint = value;
         }
 
-        public SegRef(PtRef startRef)
+        public SegRef(IPointRef startRef)
 	    {
 		    StartRef = startRef;
 		    EndRef = startRef;
 	    }
-	    public SegRef(PtRef startRef, PtRef endRef)
+	    public SegRef(IPointRef startRef, IPointRef endRef)
 	    {
 		    StartRef = startRef;
 		    EndRef = endRef;

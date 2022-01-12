@@ -1,5 +1,6 @@
 ﻿using SkiaSharp;
 using Slugs.Agent;
+using Slugs.Entities;
 using Slugs.Input;
 using Slugs.Slugs;
 
@@ -14,11 +15,11 @@ namespace Slugs.Pads
 	public readonly struct PointRef : IPointRef, IEquatable<PointRef>
 	{
 		public static PointRef Empty = new PointRef(-1, -1, -1);
-		public bool IsEmpty => FocalIndex == -1;
+		public bool IsEmpty => FocalKey == -1;
 
 		public int PadIndex { get; }
-		public int EntityIndex { get; }
-		public int FocalIndex { get; }
+		public int EntityKey { get; }
+		public int FocalKey { get; }
 
         // pointIndex, endIndex, t -- then everything becomes a place on a line. Perhaps also offset.
         // Look at 'start index' being referenced from the end (like complex segments)
@@ -33,8 +34,8 @@ namespace Slugs.Pads
         public PointRef(int padIndex, int dataMapIndex, int pointIndex)
 		{
 			PadIndex = padIndex;
-			EntityIndex = dataMapIndex;
-			FocalIndex = pointIndex;
+			EntityKey = dataMapIndex;
+			FocalKey = pointIndex;
 		}
 
         public SKPoint SKPoint
@@ -48,11 +49,11 @@ namespace Slugs.Pads
 			SlugAgent.ActiveAgent.UpdatePointRef(this, newPoint);
 		}
 
-        public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.EntityIndex == right.EntityIndex && left.FocalIndex == right.FocalIndex;
-		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.EntityIndex != right.EntityIndex || left.FocalIndex != right.FocalIndex;
+        public static bool operator ==(PointRef left, PointRef right) => left.PadIndex == right.PadIndex && left.EntityKey == right.EntityKey && left.FocalKey == right.FocalKey;
+		public static bool operator !=(PointRef left, PointRef right) => left.PadIndex != right.PadIndex || left.EntityKey != right.EntityKey || left.FocalKey != right.FocalKey;
 		public override bool Equals(object obj) => obj is PointRef value && this == value;
 		public bool Equals(PointRef value) => this == value;
-		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + EntityIndex.GetHashCode() * 37 + FocalIndex.GetHashCode();
+		public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + EntityKey.GetHashCode() * 37 + FocalKey.GetHashCode();
 	}
 
 	public struct VirtualPoint : IPointRef, IEquatable<VirtualPoint>
@@ -65,8 +66,8 @@ namespace Slugs.Pads
 		public readonly float Offset;
 
 		public int PadIndex => _pointRef.PadIndex;
-		public int EntityIndex => _pointRef.EntityIndex;
-        public int FocalIndex => _pointRef.FocalIndex;
+		public int EntityKey => _pointRef.EntityKey;
+        public int FocalKey => _pointRef.FocalKey;
 
 		public SKPoint StartPoint => Seg.StartPoint;
 		public SKPoint EndPoint => Seg.EndPoint;

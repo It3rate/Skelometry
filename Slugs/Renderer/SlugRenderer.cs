@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using Slugs.Entities;
 using Slugs.Extensions;
 using Slugs.Input;
 using Slugs.Pads;
@@ -21,7 +22,7 @@ namespace Slugs.Renderer
         public int Height { get; protected set; }
 	    public event EventHandler DrawingComplete;
 
-        public readonly List<SlugPad> Pads = new List<SlugPad>();
+	    public UIData UIData = new UIData();
 
         public int PenIndex { get; set; }
 
@@ -103,7 +104,7 @@ namespace Slugs.Renderer
 
         public void Draw()
         {
-	        foreach (var slugPad in Pads)
+	        foreach (var slugPad in UIData.Pads.Values)
 	        {
                 slugPad.Refresh();  
 				var slug = SlugPad.ActiveSlug;
@@ -115,17 +116,17 @@ namespace Slugs.Renderer
 				{
 					DrawDirectedLine(input.Line, Pens.DarkPen);
 				}
-
-				if (slugPad.HighlightPoints.Count > 0)
-				{
-					DrawRoundBox(slugPad.GetHighlightPoint(), Pens.HoverPen);
-				}
-
-				if (!slugPad.HighlightLine.IsEmpty)
-				{
-					DrawDirectedLine(slugPad.GetHighlightLine(), Pens.HighlightPen);
-				}
             }
+
+			if (UIData.HighlightPoints.Count > 0)
+			{
+				DrawRoundBox(UIData.GetHighlightPoint(), Pens.HoverPen);
+			}
+
+			if (!UIData.HighlightLine.IsEmpty)
+			{
+				DrawDirectedLine(UIData.GetHighlightLine(), Pens.HighlightPen);
+			}
         }
 
         public void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)

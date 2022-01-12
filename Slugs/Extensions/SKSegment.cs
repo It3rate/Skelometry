@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using SkiaSharp;
+using Slugs.Input;
 
 namespace Slugs.Extensions
 {
@@ -35,6 +37,7 @@ namespace Slugs.Extensions
         }
 
         public SKPoint[] Points => new[] {StartPoint, EndPoint};
+
         public SKSegment Clone() => new SKSegment(StartPoint, EndPoint);
 
         public static SKSegment operator +(SKSegment a, float value)

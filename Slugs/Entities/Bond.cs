@@ -1,14 +1,8 @@
 ﻿using Slugs.Slugs;
 
-namespace Slugs.Motors
+namespace Slugs.Entities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public readonly struct Bond
+	public readonly struct Bond
     {
         public static readonly Bond Empty = new Bond(-2);
         public bool IsEmpty => StartIndex == -2;

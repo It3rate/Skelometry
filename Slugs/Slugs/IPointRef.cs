@@ -11,8 +11,8 @@ namespace Slugs.Slugs
     public interface IPointRef
     {
 	    int PadIndex { get; }
-	    int EntityIndex { get; }
-	    int FocalIndex { get; }
+	    int EntityKey { get; }
+	    int FocalKey { get; }
 	    SKPoint SKPoint { get; set; }
 	    bool IsEmpty { get; }
     }

@@ -2,6 +2,7 @@
 using System.Dynamic;
 using SkiaSharp;
 using Slugs.Agent;
+using Slugs.Entities;
 using Slugs.Extensions;
 using Slugs.Pads;
 using Slugs.Slugs;
@@ -96,16 +97,16 @@ namespace Slugs.Input
 	        return result;
         }
 
-        private bool IsOwn(IPointRef pointRef) => pointRef.PadIndex == PadIndex && pointRef.EntityIndex == DataMapIndex;
-        private SlugPad PadAt(int index) => SlugAgent.Pads[index];
+        private bool IsOwn(IPointRef pointRef) => pointRef.PadIndex == PadIndex && pointRef.EntityKey == DataMapIndex;
+        private SlugPad PadAt(int index) => SlugAgent.ActiveAgent.PadAt(index);
         public SKPoint this[IPointRef pointRef]
         {
-	        get => IsOwn(pointRef) ? _inputPoints[pointRef.FocalIndex] : SlugAgent.ActiveAgent[pointRef];
+	        get => IsOwn(pointRef) ? _inputPoints[pointRef.FocalKey] : SlugAgent.ActiveAgent[pointRef];
 	        set
 	        {
 		        if (IsOwn(pointRef))
 		        {
-			        _inputPoints[pointRef.FocalIndex] = value;
+			        _inputPoints[pointRef.FocalKey] = value;
 		        }
 		        else
 		        {

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SkiaSharp;
+using Slugs.Pads;
 using Slugs.Renderer;
 using Slugs.Slugs;
 
@@ -15,6 +16,8 @@ namespace Slugs.Agent
     {
         RenderStatus RenderStatus { get; }
         SKPoint this[IPointRef pointRef] { get; set; }
+
+        SlugPad PadAt(int index);
 
         void UpdatePointRef(IPointRef from, IPointRef to);
         void Clear();

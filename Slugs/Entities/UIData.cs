@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using Slugs.Extensions;
 using Slugs.Input;
 using Slugs.Pads;
 using Slugs.Slugs;
@@ -11,9 +12,11 @@ namespace Slugs.Entities
     using System.Text;
     using System.Threading.Tasks;
 
-    public class UIStatus
+    public class UIData
     {
-	    public SKPoint DownPoint;
+	    public readonly Dictionary<int, SlugPad> Pads = new Dictionary<int, SlugPad>();
+
+        public SKPoint DownPoint;
 	    public SKPoint CurrentPoint;
 	    public SKPoint SnapPoint;
 	    public IPointRef StartHighlight;
@@ -27,7 +30,16 @@ namespace Slugs.Entities
 	    public readonly List<SKPoint> ClickData = new List<SKPoint>();
         public readonly List<SKPoint> DragPath = new List<SKPoint>();
 
-	    private double _unitPush = 10;
+        public List<IPointRef> HighlightPoints = new List<IPointRef>();
+        public bool HasHighlightPoint => HighlightPoints.Count > 0;
+        public IPointRef FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : PointRef.Empty;
+        public SegRef HighlightLine = SegRef.Empty;
+        public bool HasHighlightLine => HighlightLine != SegRef.Empty;
+        public SKPoint GetHighlightPoint() => HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
+        public SKSegment GetHighlightLine() => HighlightLine.Segment;
+
+
+        private double _unitPush = 10;
 	    private double _unitPull = 0;
         public double UnitPull
         {
