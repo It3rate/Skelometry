@@ -104,21 +104,24 @@ namespace Slugs.Renderer
 
         public void Draw()
         {
-	        foreach (var slugPad in UIData.Pads.Values)
+	        foreach (var pad in UIData.Pads.Values)
 	        {
-                slugPad.Refresh();  
-				var slug = SlugPad.ActiveSlug;
-		        foreach (var output in slugPad.Output)
+                pad.Refresh();  
+				var slug = EntityPad.ActiveSlug;
+		        foreach (var output in pad.Output)
 		        {
 			        DrawDirectedLine(output, Pens.DrawPen);
 		        }
-				foreach (var input in slugPad.Input)
-				{
-					DrawDirectedLine(input.Line, Pens.DarkPen);
-				}
+                foreach (var entity in pad.Entities)
+                {
+	                foreach (var trait in entity.Traits)
+	                {
+		                DrawDirectedLine(trait.Segment, Pens.DarkPen);
+	                }
+                }
             }
 
-			if (UIData.HighlightPoints.Count > 0)
+            if (UIData.HighlightPoints.Count > 0)
 			{
 				DrawRoundBox(UIData.GetHighlightPoint(), Pens.HoverPen);
 			}

@@ -12,14 +12,14 @@ namespace Slugs.Entities
 
 	    public IPointRef StartRef { get; private set; }
 	    public IPointRef EndRef { get; private set; }
-	    private PointKind Kind { get; set; }
+	    private PointKind Kind { get; set; } = PointKind.Dirty;
 
         private SKSegment _cachedSeg;
         public SKSegment Segment
         {
 	        get
 	        {
-		        if (Kind == PointKind.NeedsUpdate)
+		        if (Kind.NeedsUpdate())
 		        {
 			        _cachedSeg = new SKSegment(StartRef.SKPoint, EndRef.SKPoint);
 			        Kind = (Kind == PointKind.Dirty) ? PointKind.Cached : Kind;

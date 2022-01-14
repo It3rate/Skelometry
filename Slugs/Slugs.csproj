@@ -93,13 +93,12 @@
     <Compile Include="Agent\EntityAgent.cs" />
     <Compile Include="Agent\IAgent.cs" />
     <Compile Include="Agent\SlugAgent.cs" />
+    <Compile Include="Entities\IPoint.cs" />
     <Compile Include="Pads\EntityPad.cs" />
     <Compile Include="Entities\UIData.cs" />
     <Compile Include="Input\DataMap.cs" />
     <Compile Include="Input\DragRef.cs" />
-    <Compile Include="Input\Point.cs" />
     <Compile Include="Extensions\SkPointExtension.cs" />
-    <Compile Include="Input\SegRef.cs" />
     <Compile Include="Input\PointRef.cs" />
     <Compile Include="Extensions\SKSegment.cs" />
     <Compile Include="Entities\Bond.cs" />

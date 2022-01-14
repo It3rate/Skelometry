@@ -15,5 +15,7 @@ namespace Slugs.Slugs
 	    int FocalKey { get; }
 	    SKPoint SKPoint { get; set; }
 	    bool IsEmpty { get; }
+
+	    bool ReplaceWith(IPointRef ptRef);
     }
 }

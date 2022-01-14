@@ -17,8 +17,28 @@ namespace Slugs.Entities
 	    private static int _pointCounter = 1;
 	    private static int _focalCounter = 1;
         private readonly Dictionary<int, Entity> _entityMap = new Dictionary<int, Entity>();
+        public Entity EntityAt(int key) => HasPointIndex(key) ? _entityMap[key] : Entity.Empty;
+
 	    private readonly Dictionary<int, Slug> _focalMap = new Dictionary<int, Slug>();
+        public Slug FocalAt(int key) => HasPointIndex(key) ? _focalMap[key] : Slug.Empty;
+
 	    private readonly Dictionary<int, IPointRef> _pointMap = new Dictionary<int, IPointRef>();
+	    public IPointRef PtRefAt(int key) => HasPointIndex(key) ? _pointMap[key] : PtRef.Empty;
+	    public IPointRef SetPtRef(int key, IPointRef value) => _pointMap[key] = value;
+
+        public int KeyForPtRef(IPointRef ptRef)
+        {
+	        var result = -1;
+	        foreach (var kvp in _pointMap)
+	        {
+		        if (ptRef == kvp.Value)
+		        {
+			        result = kvp.Key;
+			        break;
+		        }
+	        }
+	        return result;
+        }
 
         public PadData(int padIndex, EntityPad pad)
         {
@@ -36,24 +56,21 @@ namespace Slugs.Entities
         public bool ContainsMap(PtRef p) => p.PadIndex == PadIndex && _entityMap.ContainsKey(p.EntityKey) && _focalMap.ContainsKey(p.FocalKey);
         public bool HasPointIndex(int key) => _pointMap.ContainsKey(key);
 
-        public IPointRef PtRefAt(int key) => HasPointIndex(key) ? _pointMap[key] : PtRef.Empty;
-        public Entity EntityAt(int key) => HasPointIndex(key) ? _entityMap[key] : Entity.Empty;
-        public Slug FocalAt(int key) => HasPointIndex(key) ? _focalMap[key] : Slug.Empty;
 
-        public int CreatePtRef(SKPoint point)
+        public (int, PtRef) CreatePtRef(SKPoint point)
         {
-	        var ptRef = new PtRef(PadIndex, -1, -1, point);
+	        var ptRef = new PtRef(PadIndex, -1, -1, -1, point);
 	        var key = _pointCounter++;
             _pointMap.Add(key, ptRef);
-            return key;
+            return (key, ptRef);
         }
-        public int CreateEntity(params SKSegment[] segments) => CreateEntity(ToSegRefs(segments));
-        public int CreateEntity(params SegRef[] segRefs)
+        public (int, Entity) CreateEntity(params SKSegment[] segments) => CreateEntity(ToSegRefs(segments));
+        public (int, Entity) CreateEntity(params SegRef[] segRefs)
         {
 	        var key = _entityCounter++;
 	        var entity = new Entity(segRefs);
 	        _entityMap.Add(key, entity);
-	        return key;
+	        return (key, entity);
         }
         public int CreateFocal(Slug focal)
         {
@@ -145,8 +162,8 @@ namespace Slugs.Entities
 		    var result = new List<SegRef>(segs.Length);
 		    foreach (var skSegment in segs)
 		    {
-			    var a = new PtRef(_pointCounter++, -1, -1, skSegment.StartPoint);
-			    var b = new PtRef(_pointCounter++, -1, -1, skSegment.StartPoint);
+			    var a = new PtRef(_pointCounter++, -1, -1, -1, skSegment.StartPoint);
+			    var b = new PtRef(_pointCounter++, -1, -1, -1, skSegment.EndPoint);
 			    result.Add(new SegRef(a, b));
 		    }
 		    return result.ToArray();

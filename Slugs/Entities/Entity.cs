@@ -13,17 +13,20 @@ namespace Slugs.Entities
         // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segRef of it is local.
         
         private List<SegRef> _traits { get; } = new List<SegRef>(); 
-	    private List<Bond> _bonds { get; } = new List<Bond>(); // Interactions
-
 	    public IEnumerable<SegRef> Traits => _traits;
+        public SegRef TraitAt(int key) => _traits[key];
+
+	    private List<Bond> _bonds { get; } = new List<Bond>(); // Interactions
 	    public IEnumerable<Bond> Bonds => _bonds;
+        public Bond BondAt(int key) => _bonds[key];
 
         public Entity(params SegRef[] segs)
 	    {
             _traits.AddRange(segs);
 	    }
 
-	    public SKPoint GetPointAt(Slug t)
+
+        public SKPoint GetPointAt(Slug t)
 	    {
 		    SKPoint result;
 		    if (_traits.Count > 0)

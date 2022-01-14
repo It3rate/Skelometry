@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using SkiaSharp;
+using Slugs.Entities;
 using Slugs.Pads;
 using Slugs.Slugs;
 
@@ -32,7 +33,7 @@ namespace Slugs.Input
 
         public IPointRef this[int index]
         {
-	        get => index >= 0 && index < PointRefs.Count ? PointRefs[index] : PointRef.Empty;
+	        get => index >= 0 && index < PointRefs.Count ? PointRefs[index] : PtRef.Empty;
         }
         public SKPoint OriginalValue(int index) => index >= 0 && index < OriginalPoints.Count ? OriginalPoints[index] : SKPoint.Empty;
 

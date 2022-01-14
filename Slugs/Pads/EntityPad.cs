@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.Runtime.CompilerServices;
+using SkiaSharp;
 using Slugs.Agent;
 using Slugs.Extensions;
 using Slugs.Input;
@@ -29,8 +30,15 @@ namespace Slugs.Entities
         public const float SnapDistance = 10.0f;
 
         public IEnumerable<IPointRef> PtRefs => Data.PtRefs;
+        public IPointRef PtRefAt(int key) => Data.PtRefAt(key);
+        public int KeyForPtRef(IPointRef ptRef) => Data.KeyForPtRef(ptRef);
+        public IPointRef SetPtRef(int key, IPointRef value) => Data.SetPtRef(key, value);
+
         public IEnumerable<Entity> Entities => Data.Entities;
+        public Entity EntityAt(int key) => Data.EntityAt(key);
+
         public IEnumerable<Slug> Focals => Data.Focals;
+        public Slug FocalAt(int key) => Data.FocalAt(key);
 
         private readonly List<SKSegment> _output = new List<SKSegment>();
         public IEnumerable<SKSegment> Output => _output;
@@ -44,25 +52,34 @@ namespace Slugs.Entities
             Clear();
         }
 
-        public int Add(SKPoint start, SKPoint end, Slug slug)
+        public (int, Entity) AddEntity(SKPoint start, SKPoint end, Slug slug)
         {
-	        var entityKey = Data.CreateEntity(new SKSegment(start, end));
-            return entityKey;
+	        return Data.CreateEntity(new SKSegment(start, end));
         }
-        //public int Add(DataMap data, int index)
+        public (int, Entity) AddEntity(SKPoint start, SKPoint end)
+        {
+	        return AddEntity(start, end, Slug.Unit);
+        }
+        public (IPointRef, IPointRef) AddSegmentEntity(SKPoint start, SKPoint end)
+        {
+	        var (key, entity) = Data.CreateEntity(new SKSegment(start, end));
+	        var trait0 = entity.TraitAt(0);
+	        return (trait0.StartRef, trait0.EndRef);
+        }
+        //public int AddEntity(DataMap data, int index)
         //{
         //    data.PadIndex = PadIndex;
         //    data.DataMapIndex = _dataMaps.Count;
-        //    _dataMaps.Add(data);
-        //    _slugMaps.Add(new SlugRef(PadIndex, _dataMaps.Count - 1, index));
+        //    _dataMaps.AddEntity(data);
+        //    _slugMaps.AddEntity(new SlugRef(PadIndex, _dataMaps.Count - 1, index));
         //    return index;
         //}
-        //public int Add(DataMap data)
+        //public int AddEntity(DataMap data)
         //{
         //    data.PadIndex = PadIndex;
         //    data.DataMapIndex = _dataMaps.Count;
-        //    _dataMaps.Add(data);
-        //    _slugMaps.Add(new SlugRef(PadIndex, _dataMaps.Count - 1, 0));
+        //    _dataMaps.AddEntity(data);
+        //    _slugMaps.AddEntity(new SlugRef(PadIndex, _dataMaps.Count - 1, 0));
         //    return -1;
         //}
         public void Clear()
@@ -81,7 +98,7 @@ namespace Slugs.Entities
                     //var norm = unit / 10.0;
                     //var multStart = line.PointAlongLine(0, 1, norm.IsForward ? -(float)norm.Pull : (float)norm.Push);
                     //var multEnd = line.PointAlongLine(0, 1, norm.IsForward ? (float)norm.Push : -(float)norm.Pull);
-                    //_output.Add(new SKSegment(multStart, multEnd));
+                    //_output.AddEntity(new SKSegment(multStart, multEnd));
                 }
             }
         }

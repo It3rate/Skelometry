@@ -14,7 +14,8 @@ namespace Slugs.Entities
 
     public class UIData
     {
-	    public readonly Dictionary<int, SlugPad> Pads = new Dictionary<int, SlugPad>();
+	    public readonly Dictionary<int, EntityPad> Pads = new Dictionary<int, EntityPad>();
+	    public EntityPad PadAt(int key) => Pads[key];
 
         public SKPoint DownPoint;
 	    public SKPoint CurrentPoint;
@@ -32,7 +33,7 @@ namespace Slugs.Entities
 
         public List<IPointRef> HighlightPoints = new List<IPointRef>();
         public bool HasHighlightPoint => HighlightPoints.Count > 0;
-        public IPointRef FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : PointRef.Empty;
+        public IPointRef FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : PtRef.Empty;
         public SegRef HighlightLine = SegRef.Empty;
         public bool HasHighlightLine => HighlightLine != SegRef.Empty;
         public SKPoint GetHighlightPoint() => HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
@@ -47,7 +48,7 @@ namespace Slugs.Entities
 	        set
 	        {
 		        _unitPull = value;
-		        SlugPad.ActiveSlug = new Slug(_unitPull, _unitPush);
+		        EntityPad.ActiveSlug = new Slug(_unitPull, _unitPush);
 	        }
         }
         public double UnitPush
@@ -56,7 +57,7 @@ namespace Slugs.Entities
 	        set
 	        {
 		        _unitPush = value;
-		        SlugPad.ActiveSlug = new Slug(_unitPull, _unitPush);
+		        EntityPad.ActiveSlug = new Slug(_unitPull, _unitPush);
 	        }
         }
     }

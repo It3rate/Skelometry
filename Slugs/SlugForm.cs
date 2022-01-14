@@ -17,7 +17,7 @@ namespace Slugs
 	    private readonly SlugRenderer _renderer;
 	    private readonly Control _control;
 
-	    private readonly SlugAgent _agent;
+	    private readonly EntityAgent _agent;
 
         public SlugForm()
         {
@@ -32,7 +32,7 @@ namespace Slugs
             _control.KeyDown += OnKeyDown;
             _control.KeyUp += OnKeyUp;
 
-            _agent = new SlugAgent(_renderer);
+            _agent = new EntityAgent(_renderer);
             scTop.Value = (int)_agent.UnitPull;
             lbTop.Text = (scTop.Value).ToString();
             scBottom.Value = (int)_agent.UnitPush;

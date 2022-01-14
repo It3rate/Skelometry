@@ -48,7 +48,7 @@
 //			set
 //			{
 //				_unitPull = value;
-//				SlugPad.ActiveSlug = new Slug(_unitPull, _unitPush);
+//				EntityPad.ActiveSlug = new Slug(_unitPull, _unitPush);
 //			}
 //		}
 //		public double UnitPush
@@ -57,7 +57,7 @@
 //			set
 //			{
 //				_unitPush = value;
-//				SlugPad.ActiveSlug = new Slug(_unitPull, _unitPush);
+//				EntityPad.ActiveSlug = new Slug(_unitPull, _unitPush);
 //			}
 //		}
 
@@ -68,12 +68,12 @@
 //			Agent.SlugAgent.Pads[InputPad.PadIndex] = InputPad;
 
 //			_renderer = renderer;
-//			SlugPad.ActiveSlug = new Slug(UnitPull, UnitPush);
+//			EntityPad.ActiveSlug = new Slug(UnitPull, UnitPush);
 //			//var pl = (new DataPoints(new SKPoint(_renderer.Width / 2.0f, 20f), new SKPoint(_renderer.Width * 3.0f / 4.0f, 20f)));
 //			var pl = DataMap.CreateIn(InputPad, new SKPoint(200, 100), new SKPoint(400, 300));
-//			//InputPad.Add(pl);
-//			_renderer.Pads.Add(WorkingPad);
-//			_renderer.Pads.Add(InputPad);
+//			//InputPad.AddEntity(pl);
+//			_renderer.Pads.AddEntity(WorkingPad);
+//			_renderer.Pads.AddEntity(InputPad);
 //			ClearMouse();
 //		}
 
@@ -151,16 +151,16 @@
 //			DragRef.Origin = CurrentPoint;
 //			if (InputPad.HasHighlightPoint && CurrentKey != Keys.ControlKey)
 //			{
-//				DragRef.Add(InputPad.HighlightPoints);
+//				DragRef.AddEntity(InputPad.HighlightPoints);
 //			}
 //			else if (!InputPad.HighlightLine.IsEmpty && CurrentKey != Keys.ControlKey)
 //			{
-//				DragRef.Add(InputPad.HighlightLine.StartRef, InputPad.HighlightLine.EndRef, true);
+//				DragRef.AddEntity(InputPad.HighlightLine.StartRef, InputPad.HighlightLine.EndRef, true);
 //			}
 //			else
 //			{
-//				DragSegment.Add(SnapPoint);
-//				DragPath.Add(SnapPoint);
+//				DragSegment.AddEntity(SnapPoint);
+//				DragPath.AddEntity(SnapPoint);
 //				StartHighlight = InputPad.FirstHighlightPoint;
 //			}
 
@@ -266,13 +266,13 @@
 //			}
 //			else if (IsDown)
 //			{
-//				DragPath.Add(SnapPoint);
+//				DragPath.AddEntity(SnapPoint);
 //				DataMap.CreateIn(WorkingPad, DownPoint, SnapPoint);
 //				if (final)
 //				{
-//					DragSegment.Add(SnapPoint);
-//					ClickData.Add(SnapPoint);
-//					DragPath.Add(SnapPoint);
+//					DragSegment.AddEntity(SnapPoint);
+//					ClickData.AddEntity(SnapPoint);
+//					DragPath.AddEntity(SnapPoint);
 //					if (DragSegment[0].DistanceTo(DragSegment[1]) > 10)
 //					{
 //						var newDataMap = DataMap.CreateIn(InputPad, DragSegment);
