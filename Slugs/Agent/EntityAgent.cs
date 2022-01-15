@@ -18,6 +18,7 @@ namespace Slugs.Agent
 
     public class EntityAgent : IAgent
     {
+
         public static IAgent ActiveAgent { get; private set; }
         public readonly EntityPad WorkingPad;
         public readonly EntityPad InputPad;
@@ -25,6 +26,8 @@ namespace Slugs.Agent
 
         private readonly SlugRenderer _renderer;
         public RenderStatus RenderStatus { get; }
+
+        private int _traitIndexCounter = 4096;
 
         private UIData _data = new UIData();
         public double UnitPull { get => _data.UnitPull; set => _data.UnitPull = value; }
@@ -43,8 +46,8 @@ namespace Slugs.Agent
 
             EntityPad.ActiveSlug = new Slug(_data.UnitPull, _data.UnitPush);
             //var pl = InputPad.AddSegmentEntity(new SKPoint(200, 100), new SKPoint(400, 300));
-            var (index, entity, trait) = InputPad.AddEntity(new SKSegment( 200, 100, 400, 300));
-            InputPad.AddTrait(index, new SKSegment(210, 100, 410, 300));
+            var (index, entity, trait) = InputPad.AddEntity(new SKSegment( 200, 100, 400, 300), 1);
+            InputPad.AddTrait(index, new SKSegment(210, 100, 410, 300), 1);
 
             //InputPad.AddEntity(pl);
             //_renderer.Pads.AddEntity(WorkingPad);
@@ -190,7 +193,7 @@ namespace Slugs.Agent
             {
                 hasChange = true;
                 _data.HighlightPoints = snap;
-                _data.HighlightLine = SegRef.Empty;
+                _data.HighlightLine = Trait.Empty;
             }
             else
             {
@@ -198,7 +201,7 @@ namespace Slugs.Agent
                 var snapLine = InputPad.GetSnapLine(_data.CurrentPoint);
                 if (snapLine.IsEmpty)
                 {
-                    _data.HighlightLine = SegRef.Empty;
+                    _data.HighlightLine = Trait.Empty;
                 }
                 else
                 {
@@ -245,7 +248,7 @@ namespace Slugs.Agent
             else if (_data.IsDown)
             {
                 _data.DragPath.Add(_data.SnapPoint);
-                WorkingPad.AddEntity(new SKSegment(_data.DownPoint, _data.SnapPoint));
+                WorkingPad.AddEntity(new SKSegment(_data.DownPoint, _data.SnapPoint), 0);
                 //DataMap.CreateIn(WorkingPad, _data.DownPoint, _data.SnapPoint);
                 if (final)
                 {
@@ -254,7 +257,7 @@ namespace Slugs.Agent
                     _data.DragPath.Add(_data.SnapPoint);
                     if (_data.DragSegment[0].DistanceTo(_data.DragSegment[1]) > 10)
                     {
-	                    var (key, entity, trait) = InputPad.AddEntity(new SKSegment(_data.DownPoint,  _data.DragSegment[1]));
+	                    var (key, entity, trait) = InputPad.AddEntity(new SKSegment(_data.DownPoint,  _data.DragSegment[1]), _traitIndexCounter++);
                         //var newDataMap = DataMap.CreateIn(InputPad, _data.DragSegment);
                         if (!_data.StartHighlight.IsEmpty)
                         {

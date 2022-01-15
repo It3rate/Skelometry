@@ -52,23 +52,20 @@ namespace Slugs.Entities
             Clear();
         }
 
-        public (int, Entity, SegRef) AddEntity(SKSegment seg, Slug slug)
+        public (int, Entity, SegRef) AddEntity(SKSegment seg, int traitKindIndex)
         {
 	        var (key, entity) = Data.CreateEmptyEntity();
-	        var segRef = AddTrait(key, seg);
+	        var segRef = AddTrait(key, seg, traitKindIndex);
 	        return (key, entity, segRef);
         }
-        public (int, Entity, SegRef) AddEntity(SKSegment seg)
-        {
-	        return AddEntity(seg, Slug.Unit);
-        }
-        public SegRef AddTrait(int key, SKSegment seg)
+        public SegRef AddTrait(int key, SKSegment seg, int traitKindIndex)
         {
 	        var entity = Data.GetOrCreateEntity(key);
 	        var segRef = Data.CreateTerminalSegRef(seg);
 	        segRef.StartRef.EntityKey = key;
 	        segRef.EndRef.EntityKey = key;
-            entity.EmbedTrait(segRef);
+            var trait = new Trait(segRef, traitKindIndex);
+            entity.EmbedTrait(trait);
 	        return segRef;
         }
         //public int AddEntity(DataMap data, int index)
@@ -131,9 +128,9 @@ namespace Slugs.Entities
             return result;
         }
 
-        public SegRef GetSnapLine(SKPoint point, float maxDist = SnapDistance)
+        public Trait GetSnapLine(SKPoint point, float maxDist = SnapDistance)
         {
-            var result = SegRef.Empty;
+            var result = Trait.Empty;
             int lineIndex = 0;
             foreach (var entity in Data.Entities)
             {

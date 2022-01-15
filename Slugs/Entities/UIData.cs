@@ -34,8 +34,8 @@ namespace Slugs.Entities
         public List<IPointRef> HighlightPoints = new List<IPointRef>();
         public bool HasHighlightPoint => HighlightPoints.Count > 0;
         public IPointRef FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : PtRef.Empty;
-        public SegRef HighlightLine = SegRef.Empty;
-        public bool HasHighlightLine => HighlightLine != SegRef.Empty;
+        public Trait HighlightLine = Trait.Empty;
+        public bool HasHighlightLine => HighlightLine != Trait.Empty;
         public SKPoint GetHighlightPoint() => HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
         public SKSegment GetHighlightLine() => HighlightLine.Segment;
 

@@ -15,11 +15,11 @@ namespace Slugs.Entities
         // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segRef of it is local.
 
         private static int _traitCounter;
-        private Dictionary<int, SegRef> _traits { get; } = new Dictionary<int, SegRef>(); 
+        private Dictionary<int, Trait> _traits { get; } = new Dictionary<int, Trait>(); 
         public bool HasTraits => _traits.Count > 0;
-	    public IEnumerable<SegRef> Traits => _traits.Values;
-        public SegRef TraitAt(int key) => _traits[key];
-        public void EmbedTrait(SegRef trait)
+	    public IEnumerable<Trait> Traits => _traits.Values;
+        public Trait TraitAt(int key) => _traits[key];
+        public void EmbedTrait(Trait trait)
         {
 	        var traitKey = _traitCounter++;
 	        trait.StartRef.EntityKey = Key;
@@ -28,7 +28,7 @@ namespace Slugs.Entities
             trait.EndRef.TraitKey = traitKey;
             _traits.Add(traitKey, trait);
         }
-        public void LinkTrait(SegRef trait)
+        public void LinkTrait(Trait trait)
         {
 	        var traitKey = _traitCounter++;
 	        _traits.Add(traitKey, trait);
@@ -38,7 +38,7 @@ namespace Slugs.Entities
 	    public IEnumerable<Bond> Bonds => _bonds;
         public Bond BondAt(int key) => _bonds[key];
 
-        public Entity(int entityKey, params SegRef[] segs)
+        public Entity(int entityKey, params Trait[] segs)
         {
 	        Key = entityKey;
 		    foreach (var segRef in segs)
