@@ -26,10 +26,10 @@ namespace Slugs.Entities
         public static readonly PtRef Empty = new PtRef(-1,-1,-1, -1, SKPoint.Empty);
         public bool IsEmpty => EntityKey == -1 && CachedPoint == SKPoint.Empty;
 
-        public int PadIndex { get; }
-	    public int EntityKey { get; } // if motor index < 0, use cached point.
-        public int TraitKey { get; }
-        public int FocalKey { get; }
+        public int PadIndex { get; set; }
+        public int EntityKey { get; set; } // if motor index < 0, use cached point.
+        public int TraitKey { get; set; }
+        public int FocalKey { get; set; }
         private PointKind Kind { get; set; }
         private SKPoint CachedPoint { get; set; }
 

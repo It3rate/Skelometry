@@ -10,10 +10,11 @@ namespace Slugs.Slugs
 
     public interface IPointRef
     {
-	    int PadIndex { get; }
-	    int EntityKey { get; }
-	    int FocalKey { get; }
-	    SKPoint SKPoint { get; set; }
+	    int PadIndex { get; set; }
+        int EntityKey { get; set; }
+        int TraitKey { get; set; }
+        int FocalKey { get; set; }
+        SKPoint SKPoint { get; set; }
 	    bool IsEmpty { get; }
 
 	    bool ReplaceWith(IPointRef ptRef);

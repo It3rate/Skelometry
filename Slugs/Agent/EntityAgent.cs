@@ -42,7 +42,9 @@ namespace Slugs.Agent
             _renderer.UIData = _data;
 
             EntityPad.ActiveSlug = new Slug(_data.UnitPull, _data.UnitPush);
-            var pl = InputPad.AddSegmentEntity(new SKPoint(200, 100), new SKPoint(400, 300));
+            //var pl = InputPad.AddSegmentEntity(new SKPoint(200, 100), new SKPoint(400, 300));
+            var (index, entity, trait) = InputPad.AddEntity(new SKSegment( 200, 100, 400, 300));
+            InputPad.AddTrait(index, new SKSegment(210, 100, 410, 300));
 
             //InputPad.AddEntity(pl);
             //_renderer.Pads.AddEntity(WorkingPad);
@@ -243,7 +245,7 @@ namespace Slugs.Agent
             else if (_data.IsDown)
             {
                 _data.DragPath.Add(_data.SnapPoint);
-                WorkingPad.AddEntity(_data.DownPoint, _data.SnapPoint);
+                WorkingPad.AddEntity(new SKSegment(_data.DownPoint, _data.SnapPoint));
                 //DataMap.CreateIn(WorkingPad, _data.DownPoint, _data.SnapPoint);
                 if (final)
                 {
@@ -252,15 +254,15 @@ namespace Slugs.Agent
                     _data.DragPath.Add(_data.SnapPoint);
                     if (_data.DragSegment[0].DistanceTo(_data.DragSegment[1]) > 10)
                     {
-	                    var (p0, p1) = InputPad.AddSegmentEntity(_data.DownPoint,  _data.DragSegment[1]);
+	                    var (key, entity, trait) = InputPad.AddEntity(new SKSegment(_data.DownPoint,  _data.DragSegment[1]));
                         //var newDataMap = DataMap.CreateIn(InputPad, _data.DragSegment);
                         if (!_data.StartHighlight.IsEmpty)
                         {
-                            MergePointRefs(new List<IPointRef>() { p0 }, _data.StartHighlight, _data.StartHighlight.SKPoint);
+                            MergePointRefs(new List<IPointRef>() { trait.StartRef }, _data.StartHighlight, _data.StartHighlight.SKPoint);
                         }
                         if (_data.HasHighlightPoint)
                         {
-                            MergePointRefs(new List<IPointRef>() { p1 }, _data.FirstHighlightPoint, _data.SnapPoint);
+                            MergePointRefs(new List<IPointRef>() { trait.EndRef }, _data.FirstHighlightPoint, _data.SnapPoint);
                         }
                     }
                 }

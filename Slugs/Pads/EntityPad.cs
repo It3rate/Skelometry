@@ -52,19 +52,24 @@ namespace Slugs.Entities
             Clear();
         }
 
-        public (int, Entity) AddEntity(SKPoint start, SKPoint end, Slug slug)
+        public (int, Entity, SegRef) AddEntity(SKSegment seg, Slug slug)
         {
-	        return Data.CreateEntity(new SKSegment(start, end));
+	        var (key, entity) = Data.CreateEmptyEntity();
+	        var segRef = AddTrait(key, seg);
+	        return (key, entity, segRef);
         }
-        public (int, Entity) AddEntity(SKPoint start, SKPoint end)
+        public (int, Entity, SegRef) AddEntity(SKSegment seg)
         {
-	        return AddEntity(start, end, Slug.Unit);
+	        return AddEntity(seg, Slug.Unit);
         }
-        public (IPointRef, IPointRef) AddSegmentEntity(SKPoint start, SKPoint end)
+        public SegRef AddTrait(int key, SKSegment seg)
         {
-	        var (key, entity) = Data.CreateEntity(new SKSegment(start, end));
-	        var trait0 = entity.TraitAt(0);
-	        return (trait0.StartRef, trait0.EndRef);
+	        var entity = Data.GetOrCreateEntity(key);
+	        var segRef = Data.CreateTerminalSegRef(seg);
+	        segRef.StartRef.EntityKey = key;
+	        segRef.EndRef.EntityKey = key;
+            entity.EmbedTrait(segRef);
+	        return segRef;
         }
         //public int AddEntity(DataMap data, int index)
         //{
