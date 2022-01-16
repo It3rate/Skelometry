@@ -22,10 +22,10 @@ namespace Slugs.Entities
         public void EmbedTrait(Trait trait)
         {
 	        var traitKey = _traitCounter++;
-	        trait.StartRef.EntityKey = Key;
-	        trait.StartRef.TraitKey = traitKey;
-	        trait.EndRef.EntityKey = Key;
-            trait.EndRef.TraitKey = traitKey;
+	        //trait.Start.EntityKey = Key;
+	        //trait.Start.TraitKey = traitKey;
+	        //trait.End.EntityKey = Key;
+         //   trait.End.TraitKey = traitKey;
             _traits.Add(traitKey, trait);
         }
         public void LinkTrait(Trait trait)

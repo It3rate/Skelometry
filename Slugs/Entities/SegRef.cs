@@ -7,11 +7,11 @@ namespace Slugs.Entities
 {
 	public class SegRef : IEquatable<SegRef>
     {
-	    public static SegRef Empty = new SegRef(PtRef.Empty);
-	    public bool IsEmpty => StartRef.IsEmpty && EndRef.IsEmpty;
+	    public static SegRef Empty = new SegRef(VPoint.Empty);
+	    public bool IsEmpty => Start.IsEmpty && End.IsEmpty;
 
-	    public IPointRef StartRef { get; private set; }
-	    public IPointRef EndRef { get; private set; }
+	    public IPoint Start { get; private set; }
+	    public IPoint End { get; private set; }
 	    private PointKind Kind { get; set; } = PointKind.Dirty;
 
         private SKSegment _cachedSeg;
@@ -19,34 +19,36 @@ namespace Slugs.Entities
         {
 	        get
 	        {
-		        if (Kind.NeedsUpdate())
-		        {
-			        _cachedSeg = new SKSegment(StartRef.SKPoint, EndRef.SKPoint);
-			        Kind = (Kind == PointKind.Dirty) ? PointKind.Cached : Kind;
-		        }
-		        return _cachedSeg;
+		        return new SKSegment(Start.SKPoint, End.SKPoint);
+
+          //      if (Kind.NeedsUpdate())
+		        //{
+			       // _cachedSeg = new SKSegment(Start.SKPoint, End.SKPoint);
+			       // Kind = PointKind.Terminal; //(Kind == PointKind.Dirty) ? PointKind.Cached : Kind;
+		        //}
+		        //return _cachedSeg;
 	        }
         }
         public SKPoint StartPoint
         {
-	        get => StartRef.SKPoint;
-	        set => StartRef.SKPoint = value;
+	        get => Start.SKPoint;
+	        set => Start.SKPoint = value;
         }
         public SKPoint EndPoint
         {
-	        get => EndRef.SKPoint;
-	        set => EndRef.SKPoint = value;
+	        get => End.SKPoint;
+	        set => End.SKPoint = value;
         }
 
-        public SegRef(IPointRef startRef)
+        public SegRef(IPoint start)
 	    {
-		    StartRef = startRef;
-		    EndRef = startRef;
+		    Start = start;
+		    End = start;
 	    }
-	    public SegRef(IPointRef startRef, IPointRef endRef)
+	    public SegRef(IPoint start, IPoint end)
 	    {
-		    StartRef = startRef;
-		    EndRef = endRef;
+		    Start = start;
+		    End = end;
         }
 
 	    public static SegRef operator +(SegRef a, float value)
@@ -74,7 +76,7 @@ namespace Slugs.Entities
 		    return a.Clone();
 	    }
 
-        public SegRef Clone() => new SegRef(StartRef, EndRef);
+        public SegRef Clone() => new SegRef(Start, End);
 	    public float Length() => Segment.Length;
 	    public float SquaredLength() => Segment.LengthSquared;
 	    public SKPoint PointAlongLine(float t) => Segment.PointAlongLine(t);
@@ -85,25 +87,25 @@ namespace Slugs.Entities
 	    public float TFromPoint(SKPoint point) => Segment.TFromPoint(point);
 	    public SKPoint[] EndArrow(float dist = 8f) => Segment.EndArrow(dist);
 
-        //public IPointRef GetVirtualPointFor(SKPoint point)
+        //public IPoint GetVirtualPointFor(SKPoint point)
         //{
         // var t = TFromPoint(point);
         // return new VirtualPoint(this, t);
         //}
 
         public static bool operator ==(SegRef left, SegRef right) =>
-	        left.StartRef == right.StartRef && left.EndRef == right.EndRef;
+	        left.Start == right.Start && left.End == right.End;
 
         public static bool operator !=(SegRef left, SegRef right) =>
-	        left.StartRef != right.StartRef || left.EndRef != right.EndRef;
+	        left.Start != right.Start || left.End != right.End;
 
         public override bool Equals(object obj) => obj is SegRef value && this == value;
 
         public bool Equals(SegRef value) =>
-	        StartRef.Equals(value.StartRef) && EndRef.Equals(value.EndRef);
+	        Start.Equals(value.Start) && End.Equals(value.End);
 
         public override int GetHashCode() =>
-	        17 * 23 + StartRef.GetHashCode() * 29 + EndRef.GetHashCode() * 31;
+	        17 * 23 + Start.GetHashCode() * 29 + End.GetHashCode() * 31;
 
     }
 }

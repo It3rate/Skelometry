@@ -1,18 +1,13 @@
-﻿using SkiaSharp;
+﻿using System.Collections.Generic;
+using SkiaSharp;
+using Slugs.Entities;
 using Slugs.Extensions;
-using Slugs.Input;
-using Slugs.Pads;
 using Slugs.Slugs;
+using IPoint = Slugs.Entities.IPoint;
 
-namespace Slugs.Entities
+namespace Slugs.Input
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class UIData
+	public class UIData
     {
 	    public readonly Dictionary<int, EntityPad> Pads = new Dictionary<int, EntityPad>();
 	    public EntityPad PadAt(int key) => Pads[key];
@@ -20,7 +15,7 @@ namespace Slugs.Entities
         public SKPoint DownPoint;
 	    public SKPoint CurrentPoint;
 	    public SKPoint SnapPoint;
-	    public IPointRef StartHighlight;
+	    public IPoint StartHighlight;
 	    public DragRef DragRef = new DragRef();
 
 	    public bool IsDown => DownPoint != SKPoint.Empty;
@@ -31,9 +26,9 @@ namespace Slugs.Entities
 	    public readonly List<SKPoint> ClickData = new List<SKPoint>();
         public readonly List<SKPoint> DragPath = new List<SKPoint>();
 
-        public List<IPointRef> HighlightPoints = new List<IPointRef>();
+        public List<IPoint> HighlightPoints = new List<IPoint>();
         public bool HasHighlightPoint => HighlightPoints.Count > 0;
-        public IPointRef FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : PtRef.Empty;
+        public IPoint FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : VPoint.Empty;
         public Trait HighlightLine = Trait.Empty;
         public bool HasHighlightLine => HighlightLine != Trait.Empty;
         public SKPoint GetHighlightPoint() => HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;

@@ -16,11 +16,11 @@ namespace Slugs.Agent
     public interface IAgent
     {
         RenderStatus RenderStatus { get; }
-        //SKPoint this[IPointRef pointRef] { get; set; }
+        //SKPoint this[IPoint point] { get; set; }
 
         EntityPad PadAt(int index);
 
-        //void UpdatePointRef(IPointRef from, IPointRef to);
+        //void UpdatePointRef(IPoint from, IPoint to);
         void Clear();
         void Draw();
 

@@ -1,22 +1,32 @@
-﻿namespace Slugs.Entities
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+﻿using System;
+using SkiaSharp;
 
-    public interface IPoint : IEquatable<IPoint>
+namespace Slugs.Entities
+{
+	public interface IPoint
     {
-	    float X { get; }
-	    float Y { get; }
+	    int PadIndex { get; set; }
+        //int EntityKey { get; set; }
+        //int TraitKey { get; set; }
+        //int FocalKey { get; set; }
+        PointKind Kind { get; set; }
+        SKPoint SKPoint { get; set; }
 	    bool IsEmpty { get; }
-	    float Length { get; }
-	    float LengthSquared { get; }
-	    void Offset(IPoint p);
-	    void Offset(float dx, float dy);
-	    //bool Equals(IPoint obj);
-	    //bool Equals(object obj);
-	    //int GetHashCode();
+
+	    bool ReplaceWith(IPoint pt);
+    }
+
+    [Flags]
+    public enum PointKind
+    {
+	    Terminal,
+	    Cached,
+	    Dirty,
+	    Dynamic,
+	    NeedsUpdate = Dirty & Dynamic,
+    }
+    public static class PointKindExtensions
+    {
+	    public static bool NeedsUpdate(this PointKind grade) => (grade & (PointKind.Dirty | PointKind.Dynamic)) != 0;
     }
 }

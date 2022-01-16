@@ -7,33 +7,19 @@ using Slugs.Slugs;
 
 namespace Slugs.Entities
 {
-	[Flags]
-    public enum PointKind
+	public class VPoint : IPoint, IEquatable<VPoint>
     {
-        Terminal,
-        Cached,
-        Dirty,
-        Dynamic,
-        NeedsUpdate = Dirty & Dynamic,
-    }
-    public static class PointKindExtensions
-    {
-	    public static bool NeedsUpdate(this PointKind grade) => (grade & (PointKind.Dirty | PointKind.Dynamic)) != 0;
-    }
-
-    public class PtRef : IPointRef, IEquatable<PtRef>
-    {
-        public static readonly PtRef Empty = new PtRef(-1,-1,-1, -1, SKPoint.Empty);
+        public static readonly VPoint Empty = new VPoint(-1,-1,-1, -1, SKPoint.Empty);
         public bool IsEmpty => EntityKey == -1 && CachedPoint == SKPoint.Empty;
 
         public int PadIndex { get; set; }
         public int EntityKey { get; set; } // if motor index < 0, use cached point.
         public int TraitKey { get; set; }
         public int FocalKey { get; set; }
-        private PointKind Kind { get; set; }
+        public PointKind Kind { get; set; }
         private SKPoint CachedPoint { get; set; }
 
-        public PtRef(int padIndex, int entityIndex, int traitKey, int tFocalIndex, SKPoint cachedPoint)
+        public VPoint(int padIndex, int entityIndex, int traitKey, int tFocalIndex, SKPoint cachedPoint)
 	    {
 		    PadIndex = padIndex;
 		    EntityKey = entityIndex;
@@ -46,12 +32,13 @@ namespace Slugs.Entities
         {
 	        get
 	        {
-		        if (Kind == PointKind.NeedsUpdate)
-		        {
-			        CachedPoint = Entity.GetPointAt(T);
-			        Kind = (Kind == PointKind.Dirty) ? PointKind.Cached : Kind;
-		        }
-		        return CachedPoint;
+		        return Entity.GetPointAt(T);
+          //      if (Kind != PointKind.Terminal)
+		        //{
+			       // CachedPoint = Entity.GetPointAt(T);
+			       // //Kind = (Kind == PointKind.Dirty) ? PointKind.Cached : Kind;
+		        //}
+		        //return CachedPoint;
 	        }
 	        set
 	        {
@@ -66,7 +53,7 @@ namespace Slugs.Entities
             }
         }
 
-        public bool ReplaceWith(IPointRef to)
+        public bool ReplaceWith(IPoint to)
         {
 	        var result = false;
 	        var key = Pad.KeyForPtRef(this);
@@ -83,12 +70,12 @@ namespace Slugs.Entities
         public Slug T => Data.FocalFromIndex(FocalKey);
         public Entity Entity => Data.EntityFromIndex(EntityKey);
 
-        public static bool operator ==(PtRef left, PtRef right) =>
+        public static bool operator ==(VPoint left, VPoint right) =>
 	        left.PadIndex == right.PadIndex && left.EntityKey == right.EntityKey && left.TraitKey == right.TraitKey && left.FocalKey == right.FocalKey;
-        public static bool operator !=(PtRef left, PtRef right) => 
+        public static bool operator !=(VPoint left, VPoint right) => 
 	        left.PadIndex != right.PadIndex || left.EntityKey != right.EntityKey || left.TraitKey != right.TraitKey || left.FocalKey != right.FocalKey;
-        public override bool Equals(object obj) => obj is PtRef value && this == value;
-        public bool Equals(PtRef value) => this == value;
+        public override bool Equals(object obj) => obj is VPoint value && this == value;
+        public bool Equals(VPoint value) => this == value;
         public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + TraitKey.GetHashCode() * 31 + EntityKey.GetHashCode() * 37 + FocalKey.GetHashCode();
     }
 }

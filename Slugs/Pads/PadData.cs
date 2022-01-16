@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using SkiaSharp;
-using Slugs.Agent;
+using Slugs.Entities;
 using Slugs.Extensions;
-using Slugs.Input;
 using Slugs.Slugs;
+using IPoint = Slugs.Entities.IPoint;
 
-namespace Slugs.Entities
+namespace Slugs.Pads
 {
 	public class PadData
 	{
@@ -14,7 +13,6 @@ namespace Slugs.Entities
 
         public readonly int PadIndex;
 	    private static int _entityCounter = 1;
-	    private static int _pointCounter = 1;
 	    private static int _focalCounter = 1;
 
         private readonly Dictionary<int, Entity> _entityMap = new Dictionary<int, Entity>();
@@ -24,16 +22,20 @@ namespace Slugs.Entities
         private readonly Dictionary<int, Slug> _focalMap = new Dictionary<int, Slug>();
         public Slug FocalAt(int key) => HasPointIndex(key) ? _focalMap[key] : Slug.Empty;
 
-	    private readonly Dictionary<int, IPointRef> _pointMap = new Dictionary<int, IPointRef>();
-	    public IPointRef PtRefAt(int key) => HasPointIndex(key) ? _pointMap[key] : PtRef.Empty;
-	    public IPointRef SetPtRef(int key, IPointRef value) => _pointMap[key] = value;
+	    private readonly Dictionary<int, IPoint> _pointMap = new Dictionary<int, IPoint>();
+	    public IPoint PtRefAt(int key) => HasPointIndex(key) ? _pointMap[key] : VPoint.Empty;
+	    public void SetPtRef(int key, IPoint value)
+	    {
+		    value.Kind = PointKind.Dirty;
+		    _pointMap[key] = value;
+	    }
 
-        public int KeyForPtRef(IPointRef ptRef)
+	    public int KeyForPtRef(IPoint pt)
         {
 	        var result = -1;
 	        foreach (var kvp in _pointMap)
 	        {
-		        if (ptRef == kvp.Value)
+		        if (pt == kvp.Value)
 		        {
 			        result = kvp.Key;
 			        break;
@@ -54,8 +56,8 @@ namespace Slugs.Entities
             _entityMap.Clear();
 	    }
         // Contains doesn't check for <0 indexes because that represents the default cached point.
-        public bool IsOwnPad(PtRef p) => p.PadIndex == PadIndex;
-        public bool ContainsMap(PtRef p) => p.PadIndex == PadIndex && _entityMap.ContainsKey(p.EntityKey) && _focalMap.ContainsKey(p.FocalKey);
+        public bool IsOwnPad(VPoint p) => p.PadIndex == PadIndex;
+        public bool ContainsMap(VPoint p) => p.PadIndex == PadIndex && _entityMap.ContainsKey(p.EntityKey) && _focalMap.ContainsKey(p.FocalKey);
         public bool HasPointIndex(int key) => _pointMap.ContainsKey(key);
 
         //public (int, Entity, SegRef[]) CreateEntity(params SKSegment[] segments) => CreateEntity(ToSegRefs(segments));
@@ -87,7 +89,7 @@ namespace Slugs.Entities
 
         public SKPoint PointAt(int index) => PtRefFromIndex(index).SKPoint;
 
-        public bool ReplacePointRef(IPointRef source, IPointRef value)
+        public bool ReplacePointRef(IPoint source, IPoint value)
         {
 	        var result = false;
 	        foreach (var pair in _pointMap)
@@ -102,11 +104,11 @@ namespace Slugs.Entities
             return result;
         }
 
-	    public IPointRef PtRefFromIndex(int index)
+	    public IPoint PtRefFromIndex(int index)
 	    {
 		    if (!_pointMap.TryGetValue(index, out var value))
 		    {
-			    value = PtRef.Empty;
+			    value = VPoint.Empty;
 		    }
 		    return value;
 	    }
@@ -127,7 +129,7 @@ namespace Slugs.Entities
 		    return value;
 	    }
 
-	    public IEnumerable<IPointRef> PtRefs
+	    public IEnumerable<IPoint> PtRefs
 	    {
 		    get
 		    {
@@ -158,18 +160,17 @@ namespace Slugs.Entities
 		    }
 	    }
 
-        public (int, PtRef) CreateTerminalPoint(SKPoint pt)
+        public Point CreateTerminalPoint(SKPoint pt)
 	    {
-		    var key = _pointCounter++;
-		    var ptRef = new PtRef(PadIndex, -1, -1, -1, pt);
-		    _pointMap.Add(key, ptRef);
-		    return (key, ptRef);
+		    var ptRef = new Point(PadIndex, pt);
+		    _pointMap.Add(ptRef.Key, ptRef);
+		    return ptRef;
 	    }
 	    public SegRef CreateTerminalSegRef(SKSegment skSegment)
 	    {
-		    var (aKey, aVal) = CreateTerminalPoint(skSegment.StartPoint);
-		    var (bKey, bVal) = CreateTerminalPoint(skSegment.EndPoint);
-		    return new SegRef(aVal, bVal);
+		    var a = CreateTerminalPoint(skSegment.StartPoint);
+		    var b = CreateTerminalPoint(skSegment.EndPoint);
+		    return new SegRef(a, b);
 	    }
 	    public SegRef[] CreateTerminalSegRefs(params SKSegment[] segs)
 	    {

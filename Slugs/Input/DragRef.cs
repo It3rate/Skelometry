@@ -3,6 +3,7 @@ using SkiaSharp;
 using Slugs.Entities;
 using Slugs.Pads;
 using Slugs.Slugs;
+using IPoint = Slugs.Entities.IPoint;
 
 namespace Slugs.Input
 {
@@ -15,8 +16,8 @@ namespace Slugs.Input
     public class DragRef
     {
 	    public SKPoint Origin { get; set; }
-        //public Dictionary<IPointRef, SKPoint> MovingPoints { get; } = new Dictionary<IPointRef, SKPoint>();
-        public List<IPointRef> PointRefs { get; private set; } = new List<IPointRef>();
+        //public Dictionary<IPoint, SKPoint> MovingPoints { get; } = new Dictionary<IPoint, SKPoint>();
+        public List<IPoint> PointRefs { get; private set; } = new List<IPoint>();
         private List<SKPoint> OriginalPoints { get; } = new List<SKPoint>();
         public int Count => PointRefs.Count;
         public bool IsLine { get; private set; }
@@ -25,15 +26,15 @@ namespace Slugs.Input
         {
         }
 
-        public DragRef(SKPoint origin, params IPointRef[] startPoints)
+        public DragRef(SKPoint origin, params IPoint[] startPoints)
         {
 	        Origin = origin;
 	        Add(startPoints);
         }
 
-        public IPointRef this[int index]
+        public IPoint this[int index]
         {
-	        get => index >= 0 && index < PointRefs.Count ? PointRefs[index] : PtRef.Empty;
+	        get => index >= 0 && index < PointRefs.Count ? PointRefs[index] : VPoint.Empty;
         }
         public SKPoint OriginalValue(int index) => index >= 0 && index < OriginalPoints.Count ? OriginalPoints[index] : SKPoint.Empty;
 
@@ -45,9 +46,9 @@ namespace Slugs.Input
         }
 
         public bool IsEmpty => PointRefs.Count == 0;
-        public bool Contains(IPointRef pointRef) => PointRefs.Contains(pointRef);
+        public bool Contains(IPoint point) => PointRefs.Contains(point);
 
-        public void Add(params IPointRef[] points)
+        public void Add(params IPoint[] points)
 	    {
 		    foreach (var startPoint in points)
 		    {
@@ -55,16 +56,16 @@ namespace Slugs.Input
 			    OriginalPoints.Add(startPoint.SKPoint);
 		    }
         }
-        public void Add(List<IPointRef> points)
+        public void Add(List<IPoint> points)
         {
             Add(points.ToArray());
         }
-        public void Add(IPointRef start, IPointRef end, bool isLine)
+        public void Add(IPoint start, IPoint end, bool isLine)
         {
 	        Add(start, end);
 	        IsLine = isLine;
         }
-        public void AddToFront(IPointRef point)
+        public void AddToFront(IPoint point)
         {
 	        PointRefs.Insert(0, point);
 	        OriginalPoints.Insert(0, point.SKPoint);
@@ -75,8 +76,8 @@ namespace Slugs.Input
 		    var diff = Origin - currentPoint;
 		    for (int i = 0; i < PointRefs.Count; i++)
 		    {
-			    var key = PointRefs[i];
-                key.SKPoint = OriginalPoints[i] - diff;
+			    var pt = PointRefs[i];
+                pt.SKPoint = OriginalPoints[i] - diff;
             }
 	    }
         public void ResetValues()

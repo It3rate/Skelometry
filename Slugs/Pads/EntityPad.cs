@@ -29,10 +29,10 @@ namespace Slugs.Entities
         private static readonly List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
         public const float SnapDistance = 10.0f;
 
-        public IEnumerable<IPointRef> PtRefs => Data.PtRefs;
-        public IPointRef PtRefAt(int key) => Data.PtRefAt(key);
-        public int KeyForPtRef(IPointRef ptRef) => Data.KeyForPtRef(ptRef);
-        public IPointRef SetPtRef(int key, IPointRef value) => Data.SetPtRef(key, value);
+        public IEnumerable<IPoint> PtRefs => Data.PtRefs;
+        public IPoint PtRefAt(int key) => Data.PtRefAt(key);
+        public int KeyForPtRef(IPoint pt) => Data.KeyForPtRef(pt);
+        public void SetPtRef(int key, IPoint value) => Data.SetPtRef(key, value);
 
         public IEnumerable<Entity> Entities => Data.Entities;
         public Entity EntityAt(int key) => Data.EntityAt(key);
@@ -62,8 +62,8 @@ namespace Slugs.Entities
         {
 	        var entity = Data.GetOrCreateEntity(key);
 	        var segRef = Data.CreateTerminalSegRef(seg);
-	        segRef.StartRef.EntityKey = key;
-	        segRef.EndRef.EntityKey = key;
+	        //segRef.Start.EntityKey = key;
+	        //segRef.End.EntityKey = key;
             var trait = new Trait(segRef, traitKindIndex);
             entity.EmbedTrait(trait);
 	        return segRef;
@@ -105,19 +105,19 @@ namespace Slugs.Entities
             }
         }
 
-        public void UpdatePoint(IPointRef pointRef, SKPoint pt)
+        public void UpdatePoint(IPoint point, SKPoint pt)
         {
-	        pointRef.SKPoint = pt;
-            //_dataMaps[pointRef.EntityKey][pointRef] = pt;
+	        point.SKPoint = pt;
+            //_dataMaps[point.EntityKey][point] = pt;
         }
-        public void UpdatePointRef(IPointRef pointRef, IPointRef value)
+        public void UpdatePointRef(IPoint point, IPoint value)
         {
-	        Data.ReplacePointRef(pointRef, value);
+	        Data.ReplacePointRef(point, value);
         }
 
-        public List<IPointRef> GetSnapPoints(SKPoint input, DragRef ignorePoints, float maxDist = SnapDistance)
+        public List<IPoint> GetSnapPoints(SKPoint input, DragRef ignorePoints, float maxDist = SnapDistance)
         {
-            var result = new List<IPointRef>();
+            var result = new List<IPoint>();
             foreach (var ptRef in Data.PtRefs)
             {
 	            if (!ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.SKPoint) < maxDist)

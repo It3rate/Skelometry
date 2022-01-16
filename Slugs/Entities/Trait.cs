@@ -21,14 +21,14 @@ namespace Slugs.Entities
 	    public int KindIndex { get; }
 
         // Trait default properties
-        public IPointRef StartRef
+        public IPoint Start
         {
-	        get => SegRef.StartRef;
+	        get => SegRef.Start;
 	        set => throw new NotImplementedException();
         }
-        public IPointRef EndRef
+        public IPoint End
         {
-	        get => SegRef.EndRef;
+	        get => SegRef.End;
 	        set => throw new NotImplementedException();
         }
         public SKPoint StartPoint

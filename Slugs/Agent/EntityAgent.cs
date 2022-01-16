@@ -7,6 +7,7 @@ using Slugs.Input;
 using Slugs.Pads;
 using Slugs.Renderer;
 using Slugs.Slugs;
+using IPoint = Slugs.Entities.IPoint;
 
 namespace Slugs.Agent
 {
@@ -47,7 +48,7 @@ namespace Slugs.Agent
             EntityPad.ActiveSlug = new Slug(_data.UnitPull, _data.UnitPush);
             //var pl = InputPad.AddSegmentEntity(new SKPoint(200, 100), new SKPoint(400, 300));
             var (index, entity, trait) = InputPad.AddEntity(new SKSegment( 200, 100, 400, 300), 1);
-            InputPad.AddTrait(index, new SKSegment(210, 100, 410, 300), 1);
+            InputPad.AddTrait(index, new SKSegment(290, 100, 490, 300), 1);
 
             //InputPad.AddEntity(pl);
             //_renderer.Pads.AddEntity(WorkingPad);
@@ -55,22 +56,22 @@ namespace Slugs.Agent
             ClearMouse();
         }
 
-        //public SKPoint this[IPointRef pointRef]
+        //public SKPoint this[IPoint point]
         //{
         //    get
         //    {
-	       //     return pointRef.SKPoint;
+	       //     return point.SKPoint;
         //        SKPoint result;
-        //        if (!pointRef.IsEmpty)
+        //        if (!point.IsEmpty)
         //        {
-	       //         var pad = PadAt(pointRef.PadIndex);
-	       //         var entity = pad.EntityAt(pointRef.EntityKey);
+	       //         var pad = PadAt(point.PadIndex);
+	       //         var entity = pad.EntityAt(point.EntityKey);
 	       //         if (entity.IsEmpty)
 	       //         {
-		      //          result = pointRef.c;
+		      //          result = point.c;
 	       //         }
-        //            var dataMap = pad.InputFromIndex(pointRef.EntityKey);
-        //            result = dataMap[pointRef];
+        //            var dataMap = pad.InputFromIndex(point.EntityKey);
+        //            result = dataMap[point];
         //        }
         //        else
         //        {
@@ -80,13 +81,13 @@ namespace Slugs.Agent
         //    }
         //    set
         //    {
-        //        var pad = _data.Pads[pointRef.PadIndex];
-        //        var dataMap = pad.InputFromIndex(pointRef.EntityKey);
-        //        dataMap[pointRef] = value;
+        //        var pad = _data.Pads[point.PadIndex];
+        //        var dataMap = pad.InputFromIndex(point.EntityKey);
+        //        dataMap[point] = value;
         //    }
         //}
 
-        public void MergePointRefs(List<IPointRef> fromList, IPointRef to, SKPoint position)
+        public void MergePointRefs(List<IPoint> fromList, IPoint to, SKPoint position)
         {
             to.SKPoint = position;
             foreach (var from in fromList)
@@ -95,7 +96,7 @@ namespace Slugs.Agent
             }
         }
 
-        //public void UpdatePointRef(IPointRef from, IPointRef to)
+        //public void UpdatePointRef(IPoint from, IPoint to)
         //{
         //    var pad = _data.Pads[from.PadIndex];
         //    var dataMap = pad.InputFromIndex(from.EntityKey);
@@ -118,7 +119,7 @@ namespace Slugs.Agent
             _data.DragRef.Clear();
 
             _data.DownPoint = SKPoint.Empty;
-            _data.StartHighlight = PtRef.Empty;
+            _data.StartHighlight = VPoint.Empty;
         }
 
         public void Draw()
@@ -138,7 +139,7 @@ namespace Slugs.Agent
             }
             else if (!_data.HighlightLine.IsEmpty && CurrentKey != Keys.ControlKey)
             {
-                _data.DragRef.Add(_data.HighlightLine.StartRef, _data.HighlightLine.EndRef, true);
+                _data.DragRef.Add(_data.HighlightLine.Start, _data.HighlightLine.End, true);
             }
             else
             {
@@ -261,11 +262,11 @@ namespace Slugs.Agent
                         //var newDataMap = DataMap.CreateIn(InputPad, _data.DragSegment);
                         if (!_data.StartHighlight.IsEmpty)
                         {
-                            MergePointRefs(new List<IPointRef>() { trait.StartRef }, _data.StartHighlight, _data.StartHighlight.SKPoint);
+                            MergePointRefs(new List<IPoint>() { trait.Start }, _data.StartHighlight, _data.StartHighlight.SKPoint);
                         }
                         if (_data.HasHighlightPoint)
                         {
-                            MergePointRefs(new List<IPointRef>() { trait.EndRef }, _data.FirstHighlightPoint, _data.SnapPoint);
+                            MergePointRefs(new List<IPoint>() { trait.End }, _data.FirstHighlightPoint, _data.SnapPoint);
                         }
                     }
                 }
