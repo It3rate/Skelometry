@@ -1,17 +1,20 @@
 ﻿using System;
 using OpenTK.Input;
 using SkiaSharp;
-using Slugs.Agent;
+using Slugs.Agents;
 using Slugs.Pads;
 using Slugs.Slugs;
 
 namespace Slugs.Entities
 {
-	public class VPoint : IPoint, IEquatable<VPoint>
+	public class VPoint : IPoint
     {
         public static readonly VPoint Empty = new VPoint(-1,-1,-1, -1, SKPoint.Empty);
         public bool IsEmpty => EntityKey == -1 && CachedPoint == SKPoint.Empty;
 
+        private static int _counter = int.MaxValue / 2;
+
+        public int Key { get; }
         public int PadIndex { get; set; }
         public int EntityKey { get; set; } // if motor index < 0, use cached point.
         public int TraitKey { get; set; }
@@ -20,7 +23,8 @@ namespace Slugs.Entities
         private SKPoint CachedPoint { get; set; }
 
         public VPoint(int padIndex, int entityIndex, int traitKey, int tFocalIndex, SKPoint cachedPoint)
-	    {
+        {
+	        Key = _counter++;
 		    PadIndex = padIndex;
 		    EntityKey = entityIndex;
 		    TraitKey = traitKey;
@@ -56,26 +60,23 @@ namespace Slugs.Entities
         public bool ReplaceWith(IPoint to)
         {
 	        var result = false;
-	        var key = Pad.KeyForPtRef(this);
-	        if (key != -1)
+	        if (Key != -1)
 	        {
-		        Pad.SetPtRef(key, to);
+		        Agent.Current.SetPointAt(Key, to);
 		        result = true;
 	        }
 	        return result;
         }
 
-        public EntityPad Pad => EntityAgent.ActiveAgent.PadAt(PadIndex);
-	    public PadData Data => EntityAgent.ActiveAgent.PadAt(PadIndex).Data;
+        public EntityPad Pad => Agents.Agent.Current.PadAt(PadIndex);
+	    public PadData Data => Agents.Agent.Current.PadAt(PadIndex).Data;
         public Slug T => Data.FocalFromIndex(FocalKey);
         public Entity Entity => Data.EntityFromIndex(EntityKey);
 
-        public static bool operator ==(VPoint left, VPoint right) =>
-	        left.PadIndex == right.PadIndex && left.EntityKey == right.EntityKey && left.TraitKey == right.TraitKey && left.FocalKey == right.FocalKey;
-        public static bool operator !=(VPoint left, VPoint right) => 
-	        left.PadIndex != right.PadIndex || left.EntityKey != right.EntityKey || left.TraitKey != right.TraitKey || left.FocalKey != right.FocalKey;
+        public static bool operator ==(VPoint left, IPoint right) => left.Key == right.Key;
+        public static bool operator !=(VPoint left, IPoint right) => left.Key != right.Key;
         public override bool Equals(object obj) => obj is VPoint value && this == value;
-        public bool Equals(VPoint value) => this == value;
-        public override int GetHashCode() => 17 * 23 + PadIndex.GetHashCode() * 29 + TraitKey.GetHashCode() * 31 + EntityKey.GetHashCode() * 37 + FocalKey.GetHashCode();
+        public bool Equals(IPoint value) => this == value;
+        public override int GetHashCode() => Key.GetHashCode();// 17 * 23 + PadIndex.GetHashCode() * 29 + TraitKey.GetHashCode() * 31 + EntityKey.GetHashCode() * 37 + FocalKey.GetHashCode();
     }
 }

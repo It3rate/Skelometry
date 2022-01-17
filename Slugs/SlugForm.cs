@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Slugs.Agent;
 using Slugs.Renderer;
 
 namespace Slugs
@@ -17,7 +16,7 @@ namespace Slugs
 	    private readonly SlugRenderer _renderer;
 	    private readonly Control _control;
 
-	    private readonly EntityAgent _agent;
+	    private readonly Agents.Agent _agent;
 
         public SlugForm()
         {
@@ -32,7 +31,7 @@ namespace Slugs
             _control.KeyDown += OnKeyDown;
             _control.KeyUp += OnKeyUp;
 
-            _agent = new EntityAgent(_renderer);
+            _agent = new Agents.Agent(_renderer);
             scTop.Value = (int)_agent.UnitPull;
             lbTop.Text = (scTop.Value).ToString();
             scBottom.Value = (int)_agent.UnitPush;

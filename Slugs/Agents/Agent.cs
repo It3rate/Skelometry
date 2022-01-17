@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Slugs.Entities;
@@ -7,20 +8,47 @@ using Slugs.Input;
 using Slugs.Pads;
 using Slugs.Renderer;
 using Slugs.Slugs;
-using IPoint = Slugs.Entities.IPoint;
 
-namespace Slugs.Agent
+namespace Slugs.Agents
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class EntityAgent : IAgent
+	public class Agent : IAgent
     {
+	    public static Agent Current { get; private set; }
 
-        public static IAgent ActiveAgent { get; private set; }
+	    private readonly Dictionary<int, IPoint> _pointMap = new Dictionary<int, IPoint>();
+	    public IEnumerable<IPoint> Points => _pointMap.Values;
+	    public IPoint PointAt(int key)
+	    {
+		    var success = _pointMap.TryGetValue(key, out IPoint result);
+		    return success ? result : Point.Empty;
+	    }
+	    public void SetPointAt(int key, IPoint value)
+	    {
+		    value.Kind = PointKind.Dirty;
+		    _pointMap[key] = value;
+	    }
+	    public Point CreateTerminalPoint(int padIndex, SKPoint pt)
+	    {
+		    var ptRef = new Point(padIndex, pt);
+		    _pointMap.Add(ptRef.Key, ptRef);
+		    return ptRef;
+	    }
+	    public SegRef CreateTerminalSegRef(int padIndex, SKSegment skSegment)
+	    {
+		    var a = CreateTerminalPoint(padIndex, skSegment.StartPoint);
+		    var b = CreateTerminalPoint(padIndex, skSegment.EndPoint);
+		    return new SegRef(a, b);
+	    }
+	    public SegRef[] CreateTerminalSegRefs(int padIndex, params SKSegment[] segs)
+	    {
+		    var result = new List<SegRef>(segs.Length);
+		    foreach (var skSegment in segs)
+		    {
+			    result.Add(CreateTerminalSegRef(padIndex, skSegment));
+		    }
+		    return result.ToArray();
+	    }
+
         public readonly EntityPad WorkingPad;
         public readonly EntityPad InputPad;
         public EntityPad PadAt(int index) => _data.PadAt(index);
@@ -34,9 +62,9 @@ namespace Slugs.Agent
         public double UnitPull { get => _data.UnitPull; set => _data.UnitPull = value; }
         public double UnitPush { get => _data.UnitPush; set => _data.UnitPush = value; }
 
-        public EntityAgent(SlugRenderer renderer)
+        public Agent(SlugRenderer renderer)
         {
-            ActiveAgent = this;
+            Current = this;
             WorkingPad = new EntityPad(PadKind.Working, this);
             InputPad = new EntityPad(PadKind.Working, this);
             _data.Pads[WorkingPad.PadIndex] = WorkingPad;
@@ -262,11 +290,11 @@ namespace Slugs.Agent
                         //var newDataMap = DataMap.CreateIn(InputPad, _data.DragSegment);
                         if (!_data.StartHighlight.IsEmpty)
                         {
-                            MergePointRefs(new List<IPoint>() { trait.Start }, _data.StartHighlight, _data.StartHighlight.SKPoint);
+                            MergePointRefs(new List<IPoint>() { trait.StartRef }, _data.StartHighlight, _data.StartHighlight.SKPoint);
                         }
                         if (_data.HasHighlightPoint)
                         {
-                            MergePointRefs(new List<IPoint>() { trait.End }, _data.FirstHighlightPoint, _data.SnapPoint);
+                            MergePointRefs(new List<IPoint>() { trait.EndRef }, _data.FirstHighlightPoint, _data.SnapPoint);
                         }
                     }
                 }

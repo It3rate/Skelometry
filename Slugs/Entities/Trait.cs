@@ -23,13 +23,11 @@ namespace Slugs.Entities
         // Trait default properties
         public IPoint Start
         {
-	        get => SegRef.Start;
-	        set => throw new NotImplementedException();
+	        get => SegRef.StartRef;
         }
         public IPoint End
         {
-	        get => SegRef.End;
-	        set => throw new NotImplementedException();
+	        get => SegRef.EndRef;
         }
         public SKPoint StartPoint
         {

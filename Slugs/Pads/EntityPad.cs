@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using SkiaSharp;
-using Slugs.Agent;
+using Slugs.Agents;
 using Slugs.Extensions;
 using Slugs.Input;
 using Slugs.Pads;
@@ -22,17 +22,12 @@ namespace Slugs.Entities
 
         public PadKind PadKind;
 
-        private IAgent _agent;
+        private Agent _agent;
         public readonly PadData Data;
 
         public static Slug ActiveSlug = Slug.Unit;
         private static readonly List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
         public const float SnapDistance = 10.0f;
-
-        public IEnumerable<IPoint> PtRefs => Data.PtRefs;
-        public IPoint PtRefAt(int key) => Data.PtRefAt(key);
-        public int KeyForPtRef(IPoint pt) => Data.KeyForPtRef(pt);
-        public void SetPtRef(int key, IPoint value) => Data.SetPtRef(key, value);
 
         public IEnumerable<Entity> Entities => Data.Entities;
         public Entity EntityAt(int key) => Data.EntityAt(key);
@@ -43,7 +38,7 @@ namespace Slugs.Entities
         private readonly List<SKSegment> _output = new List<SKSegment>();
         public IEnumerable<SKSegment> Output => _output;
 
-        public EntityPad(PadKind padKind, IAgent agent)
+        public EntityPad(PadKind padKind, Agent agent)
         {
             PadKind = padKind;
             _agent = agent;
@@ -61,9 +56,9 @@ namespace Slugs.Entities
         public SegRef AddTrait(int key, SKSegment seg, int traitKindIndex)
         {
 	        var entity = Data.GetOrCreateEntity(key);
-	        var segRef = Data.CreateTerminalSegRef(seg);
-	        //segRef.Start.EntityKey = key;
-	        //segRef.End.EntityKey = key;
+	        var segRef = _agent.CreateTerminalSegRef(PadIndex, seg);
+	        //segRef.StartKey.EntityKey = key;
+	        //segRef.EndKey.EntityKey = key;
             var trait = new Trait(segRef, traitKindIndex);
             entity.EmbedTrait(trait);
 	        return segRef;
@@ -112,15 +107,15 @@ namespace Slugs.Entities
         }
         public void UpdatePointRef(IPoint point, IPoint value)
         {
-	        Data.ReplacePointRef(point, value);
+	        _agent.SetPointAt(point.Key, value);
         }
 
         public List<IPoint> GetSnapPoints(SKPoint input, DragRef ignorePoints, float maxDist = SnapDistance)
         {
             var result = new List<IPoint>();
-            foreach (var ptRef in Data.PtRefs)
+            foreach (var ptRef in _agent.Points) // use entities and traits rather than points?
             {
-	            if (!ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.SKPoint) < maxDist)
+	            if (ptRef.PadIndex == PadIndex && !ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.SKPoint) < maxDist)
 	            {
                     result.Add(ptRef);
 	            }

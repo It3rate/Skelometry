@@ -3,9 +3,10 @@ using SkiaSharp;
 
 namespace Slugs.Entities
 {
-	public interface IPoint
+	public interface IPoint : IEquatable<IPoint>
     {
 	    int PadIndex { get; set; }
+        int Key { get; }
         //int EntityKey { get; set; }
         //int TraitKey { get; set; }
         //int FocalKey { get; set; }

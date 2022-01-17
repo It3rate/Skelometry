@@ -248,7 +248,7 @@ namespace Slugs.Renderer
 	    //    {
 		   //     if (pen != null)
 		   //     {
-			  //      _canvas.DrawLine(seg.X, seg.Y, seg.End.X, seg.End.Y, pen);
+			  //      _canvas.DrawLine(seg.X, seg.Y, seg.EndKey.X, seg.EndKey.Y, pen);
      //           }
 	    //    }
      //   }

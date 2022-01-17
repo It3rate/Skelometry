@@ -89,8 +89,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Agent\EntityAgent.cs" />
-    <Compile Include="Agent\IAgent.cs" />
+    <Compile Include="Agents\Agent.cs" />
+    <Compile Include="Agents\IAgent.cs" />
     <Compile Include="Entities\Point.cs" />
     <Compile Include="Entities\Trait.cs" />
     <Compile Include="Pads\EntityPad.cs" />
