@@ -21,7 +21,7 @@ namespace Slugs.Entities
     public enum PointKind
     {
 	    Terminal,
-	    Cached,
+	    Pointer,
 	    Dirty,
 	    Dynamic,
 	    NeedsUpdate = Dirty & Dynamic,

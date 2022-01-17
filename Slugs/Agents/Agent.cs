@@ -22,7 +22,18 @@ namespace Slugs.Agents
 		    var success = _pointMap.TryGetValue(key, out IPoint result);
 		    return success ? result : Point.Empty;
 	    }
-	    public void SetPointAt(int key, IPoint value)
+	    public IPoint TerminalPointAt(int key)
+	    {
+		    IPoint result;
+		    var success = _pointMap.TryGetValue(key, out result);
+		    while (success && result.Kind != PointKind.Terminal)
+		    {
+			    success = _pointMap.TryGetValue(key, out result);
+            }
+
+		    return result;
+	    }
+        public void SetPointAt(int key, IPoint value)
 	    {
 		    value.Kind = PointKind.Dirty;
 		    _pointMap[key] = value;
@@ -118,9 +129,10 @@ namespace Slugs.Agents
         public void MergePointRefs(List<IPoint> fromList, IPoint to, SKPoint position)
         {
             to.SKPoint = position;
+            var terminal = TerminalPointAt(to.Key);
             foreach (var from in fromList)
             {
-                from.ReplaceWith(to);
+                from.ReplaceWith(terminal);
             }
         }
 

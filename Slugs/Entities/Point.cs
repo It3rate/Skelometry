@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using Slugs.Agents;
 
 namespace Slugs.Entities
 {
@@ -16,20 +17,41 @@ namespace Slugs.Entities
 
 	    private static int _counter = 1;
 
-	    public int Key { get; }
+	    public int Key { get; private set; }
 	    public int PadIndex { get; set; }
-        public SKPoint SKPoint { get; set; }
-	    public PointKind Kind { get; set; }
+	    private SKPoint _point;
+        public SKPoint SKPoint
+        {
+	        get => Kind == PointKind.Terminal ? _point : Agent.Current.PointAt(Key).SKPoint;
+	        set
+	        {
+		        if (Kind == PointKind.Terminal)
+		        {
+			        _point = value;
+		        }
+		        else
+		        {
+			        var tp = Agent.Current.TerminalPointAt(Key);
+			        if (!tp.IsEmpty)
+			        {
+				        tp.SKPoint = value;
+			        }
+		        }
+	        }
+        }
+        public PointKind Kind { get; set; }
 
 	    public Point(int padIndex, SKPoint point)
 	    {
 		    Key = _counter++;
+		    Kind = PointKind.Terminal;
 		    PadIndex = padIndex;
-		    SKPoint = point;
+		    _point = point;
 	    }
 	    public bool ReplaceWith(IPoint pt)
 	    {
-		    SKPoint = pt.SKPoint;
+		    Key = pt.Key;
+		    Kind = PointKind.Pointer;
 		    return true;
         }
 	    public static bool operator ==(Point left, IPoint right) => left.Key == right.Key;
