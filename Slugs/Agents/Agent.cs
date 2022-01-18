@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
@@ -74,7 +75,13 @@ namespace Slugs.Agents
 	        _pointMap.Add(ptRef.Key, ptRef);
 	        return ptRef;
         }
-        public void MergePointRefs(List<IPoint> fromList, IPoint to, SKPoint position)
+        public void MergePoints(IPoint from, IPoint to, SKPoint position)
+        {
+	        to.SKPoint = position;
+	        var terminal = TerminalPointAt(to.Key);
+	        from.ReplaceWith(terminal);
+        }
+        public void MergePoints(List<IPoint> fromList, IPoint to, SKPoint position)
         {
 	        to.SKPoint = position;
 	        var terminal = TerminalPointAt(to.Key);
@@ -128,7 +135,7 @@ namespace Slugs.Agents
 	    {
 		    _focalMap[key] = value;
 	    }
-	    public Focal CreateTerminalFocal(int padIndex, Slug slug, float t)
+	    public Focal CreateTerminalFocal(int padIndex, float t, Slug slug)
 	    {
 		    var focal = new Focal(padIndex, t, slug);
 		    _focalMap.Add(focal.Key, focal);
@@ -199,7 +206,7 @@ namespace Slugs.Agents
 		    }
 		    else if (!_data.HighlightLine.IsEmpty && CurrentKey != Keys.ControlKey)
 		    {
-			    _data.DragRef.Add(_data.HighlightLine.Start, _data.HighlightLine.End, true);
+			    _data.DragRef.Add(_data.HighlightLine.StartRef, _data.HighlightLine.EndRef, true);
 		    }
 		    else
 		    {
@@ -295,7 +302,7 @@ namespace Slugs.Agents
                     _data.DragRef.OffsetValues(_data.SnapPoint);
                     if (_data.IsDraggingPoint && _data.HasHighlightPoint)
                     {
-                        MergePointRefs(_data.DragRef.PointRefs, _data.FirstHighlightPoint, _data.SnapPoint);
+                        MergePoints(_data.DragRef.PointRefs, _data.FirstHighlightPoint, _data.SnapPoint);
                     }
                     else if (_data.IsDraggingPoint && _data.HasHighlightLine)
                     {
@@ -320,15 +327,20 @@ namespace Slugs.Agents
                         //var newDataMap = DataMap.CreateIn(InputPad, _data.DragSegment);
                         if (!_data.StartHighlight.IsEmpty)
                         {
-                            MergePointRefs(new List<IPoint>() { trait.StartRef }, _data.StartHighlight, _data.StartHighlight.SKPoint);
+                            MergePoints(trait.StartRef, _data.StartHighlight, _data.StartHighlight.SKPoint);
                         }
                         if (_data.HasHighlightPoint)
                         {
-                            MergePointRefs(new List<IPoint>() { trait.EndRef }, _data.FirstHighlightPoint, _data.SnapPoint);
+                            MergePoints(trait.EndRef, _data.FirstHighlightPoint, _data.SnapPoint);
                         }
                         else if (_data.HasHighlightLine)
                         {
-
+	                        var highlightLine = _data.HighlightLine;
+	                        var (t, pt) = highlightLine.TFromPoint(_data.DragSegment[1]);
+                            var focal = CreateTerminalFocal(InputPad.PadIndex, t, Slug.Unit);
+                            var vp = new VPoint(InputPad.PadIndex, highlightLine.EntityKey, highlightLine.Key, focal.Key);
+                            _pointMap.Add(vp.Key, vp);
+                            trait.EndRef.ReplaceWith(vp);
                         }
                     }
                 }

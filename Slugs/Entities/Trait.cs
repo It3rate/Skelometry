@@ -23,8 +23,8 @@ namespace Slugs.Entities
 	    public int KindIndex { get; }
 
         // Trait default properties
-        public IPoint Start => SegRef.StartRef;
-        public IPoint End  => SegRef.EndRef;
+        public IPoint StartRef => SegRef.StartRef;
+        public IPoint EndRef  => SegRef.EndRef;
         
         public SKSegment Segment => SegRef.Segment;
         public SKPoint StartPoint
@@ -40,6 +40,7 @@ namespace Slugs.Entities
 
         public int Key { get; }
         private Entity _entity { get; }
+        public int EntityKey => _entity.Key;
 
         public Trait(SegRef segRef, Entity entity, int traitKindIndex)
         {
@@ -56,7 +57,7 @@ namespace Slugs.Entities
         public VPoint VPointFrom(SKPoint point)
         {
 	        var (t, projected) = TFromPoint(point);
-            return new VPoint(_entity.PadIndex, _entity.Key, Key, -1, projected);
+            return new VPoint(_entity.PadIndex, _entity.Key, Key, -1);
         }
     }
 }

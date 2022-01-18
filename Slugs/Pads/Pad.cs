@@ -47,19 +47,19 @@ namespace Slugs.Entities
             Clear();
         }
 
-        public (int, Entity, SegRef) AddEntity(SKSegment seg, int traitKindIndex)
+        public (int, Entity, Trait) AddEntity(SKSegment seg, int traitKindIndex)
         {
 	        var (key, entity) = Data.CreateEmptyEntity();
-	        var segRef = AddTrait(key, seg, traitKindIndex);
-	        return (key, entity, segRef);
+	        var trait = AddTrait(key, seg, traitKindIndex);
+	        return (key, entity, trait);
         }
-        public SegRef AddTrait(int entityKey, SKSegment seg, int traitKindIndex)
+        public Trait AddTrait(int entityKey, SKSegment seg, int traitKindIndex)
         {
 	        var entity = Data.GetOrCreateEntity(entityKey);
 	        var segRef = _agent.CreateTerminalSegRef(PadIndex, seg);
             var trait = new Trait(segRef, entity, traitKindIndex);
             entity.EmbedTrait(trait);
-	        return segRef;
+	        return trait;
         }
         public void Clear()
         {

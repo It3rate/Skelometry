@@ -17,24 +17,17 @@ namespace Slugs.Entities
 
 		#region Traits
 
-	    private static int _traitCounter;
 	    private Dictionary<int, Trait> _traits { get; } = new Dictionary<int, Trait>(); 
 	    public bool HasTraits => _traits.Count > 0;
 	    public IEnumerable<Trait> Traits => _traits.Values;
 	    public Trait TraitAt(int key) => _traits[key];
 	    public void EmbedTrait(Trait trait)
 	    {
-		    var traitKey = _traitCounter++;
-		    //trait.StartKey.EntityKey = Key;
-		    //trait.StartKey.TraitKey = traitKey;
-		    //trait.EndKey.EntityKey = Key;
-		    //   trait.EndKey.TraitKey = traitKey;
-		    _traits.Add(traitKey, trait);
+		    _traits.Add(trait.Key, trait);
 	    }
 	    public void LinkTrait(Trait trait)
 	    {
-		    var traitKey = _traitCounter++;
-		    _traits.Add(traitKey, trait);
+		    _traits.Add(trait.Key, trait);
 	    }
 
 #endregion
