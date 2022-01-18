@@ -8,7 +8,7 @@ namespace Slugs.Entities
 {
 	public class SegRef : IEquatable<SegRef>
     {
-	    public static SegRef Empty = new SegRef(VPoint.Empty);
+	    public static SegRef Empty = new SegRef(Point.Empty);
 	    public bool IsEmpty => StartKey == -1 || EndKey == -1;
 
 	    public int StartKey { get; private set; }

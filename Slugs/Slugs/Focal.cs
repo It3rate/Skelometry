@@ -8,7 +8,7 @@ namespace Slugs.Slugs
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Focal
+    public class Focal : IEquatable<Focal>
     {
         public static Focal Empty = new Focal();
         public bool IsEmpty => Key == -1;
@@ -32,6 +32,12 @@ namespace Slugs.Slugs
 		    Kind = PointKind.Terminal;
 		    Focus = focus;
 		    Range = range;
-	    }
+        }
+
+	    public static bool operator ==(Focal left, Focal right) => left.Key == right.Key;
+	    public static bool operator !=(Focal left, Focal right) => left.Key != right.Key;
+	    public override bool Equals(object obj) => obj is Focal value && this == value;
+	    public bool Equals(Focal value) => this == value;
+	    public override int GetHashCode() => Key.GetHashCode();
     }
 }

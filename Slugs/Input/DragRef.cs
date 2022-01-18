@@ -33,7 +33,7 @@ namespace Slugs.Input
 
         public IPoint this[int index]
         {
-	        get => index >= 0 && index < PointRefs.Count ? PointRefs[index] : VPoint.Empty;
+	        get => index >= 0 && index < PointRefs.Count ? PointRefs[index] : Point.Empty;
         }
         public SKPoint OriginalValue(int index) => index >= 0 && index < OriginalPoints.Count ? OriginalPoints[index] : SKPoint.Empty;
 

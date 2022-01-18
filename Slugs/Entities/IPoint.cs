@@ -7,7 +7,7 @@ namespace Slugs.Entities
     {
 	    int PadIndex { get; set; }
         int Key { get; }
-        PointKind Kind { get; set; }
+        PointKind Kind { get; }
         SKPoint SKPoint { get; set; }
 	    bool IsEmpty { get; }
 

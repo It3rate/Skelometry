@@ -28,7 +28,7 @@ namespace Slugs.Input
 
         public List<IPoint> HighlightPoints = new List<IPoint>();
         public bool HasHighlightPoint => HighlightPoints.Count > 0;
-        public IPoint FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : VPoint.Empty;
+        public IPoint FirstHighlightPoint => HasHighlightPoint ? HighlightPoints[0] : Point.Empty;
         public Trait HighlightLine = Trait.Empty;
         public bool HasHighlightLine => HighlightLine != Trait.Empty;
         public SKPoint GetHighlightPoint() => HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;

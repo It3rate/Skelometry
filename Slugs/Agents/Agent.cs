@@ -57,14 +57,12 @@ namespace Slugs.Agents
         }
         public IPoint TerminalPointAt(int key)
         {
-	        IPoint result;
-	        var success = _pointMap.TryGetValue(key, out result);
-	        while (success && result.Kind != PointKind.Terminal)
+	        var success = _pointMap.TryGetValue(key, out IPoint result);
+	        while (success && result.Kind == PointKind.Pointer)
 	        {
 		        success = _pointMap.TryGetValue(key, out result);
 	        }
-
-	        return result;
+	        return success ? result : Point.Empty;
         }
         public void SetPointAt(int key, IPoint value)
         {
@@ -84,6 +82,28 @@ namespace Slugs.Agents
 	        {
 		        from.ReplaceWith(terminal);
 	        }
+        }
+
+        public SKPoint SKPointFor(IPoint point)
+        {
+	        SKPoint result;
+	        switch (point.Kind)
+	        {
+                case PointKind.Terminal:
+	                result = point.SKPoint;
+	                break;
+                case PointKind.Pointer:
+	                result = TerminalPointAt(point.Key).SKPoint;
+	                break;
+                case PointKind.Virtual:
+                default:
+	                var p = (VPoint) point;
+	                var trait = PadAt(p.PadIndex).EntityAt(p.EntityKey).TraitAt(p.TraitKey);
+	                var focal = FocalAt(p.FocalKey);
+	                result = trait.PointAlongLine(focal.T);
+	                break;
+	        }
+	        return result;
         }
         #endregion
 
@@ -164,7 +184,7 @@ namespace Slugs.Agents
             _data.DragRef.Clear();
 
             _data.DownPoint = SKPoint.Empty;
-            _data.StartHighlight = VPoint.Empty;
+            _data.StartHighlight = Point.Empty;
         }
 
 	    public bool MouseDown(MouseEventArgs e)

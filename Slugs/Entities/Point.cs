@@ -19,7 +19,7 @@ namespace Slugs.Entities
 
 	    public int Key { get; private set; }
 	    public int PadIndex { get; set; }
-	    public PointKind Kind { get; set; }
+	    public PointKind Kind { get; private set; }
         private SKPoint _point;
         public SKPoint SKPoint
         {

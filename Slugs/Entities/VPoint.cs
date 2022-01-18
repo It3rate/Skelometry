@@ -9,8 +9,6 @@ namespace Slugs.Entities
 {
 	public class VPoint : IPoint
     {
-        public static readonly VPoint Empty = new VPoint(-1,-1,-1, -1, SKPoint.Empty);
-        public bool IsEmpty => EntityKey == -1 && CachedPoint == SKPoint.Empty;
 
         private static int _counter = int.MaxValue / 2;
 
@@ -19,42 +17,22 @@ namespace Slugs.Entities
         public int EntityKey { get; set; } // if motor index < 0, use cached point.
         public int TraitKey { get; set; }
         public int FocalKey { get; set; }
-        public PointKind Kind { get; set; }
-        private SKPoint CachedPoint { get; set; }
 
-        public VPoint(int padIndex, int entityIndex, int traitKey, int tFocalIndex, SKPoint cachedPoint)
+        public PointKind Kind => PointKind.Virtual;
+        public bool IsEmpty => Key == -1;
+
+        public VPoint(int padIndex, int entityIndex, int traitKey, int focalIndex)
         {
 	        Key = _counter++;
 		    PadIndex = padIndex;
 		    EntityKey = entityIndex;
 		    TraitKey = traitKey;
-            FocalKey = tFocalIndex;
-		    Kind = PointKind.Virtual;
-		    CachedPoint = cachedPoint;
+            FocalKey = focalIndex;
         } 
         public SKPoint SKPoint
         {
-	        get
-	        {
-		        return Entity.GetPointAt(T);
-          //      if (Kind != PointKind.Terminal)
-		        //{
-			       // CachedPoint = Entity.GetPointAt(T);
-			       // //Kind = (Kind == PointKind.Dirty) ? PointKind.Cached : Kind;
-		        //}
-		        //return CachedPoint;
-	        }
-	        set
-	        {
-		        if (Kind == PointKind.Terminal)
-		        {
-			        CachedPoint = value;
-		        }
-		        else
-		        {
-			        Entity.SetPointAt(T, value);
-		        }
-            }
+	        get => Agent.Current.SKPointFor(this);
+	        set => throw new InvalidOperationException("Can't set location of virtual point."); // not impossible to adjust terminal points?
         }
 
         public bool ReplaceWith(IPoint to)

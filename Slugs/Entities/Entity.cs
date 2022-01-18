@@ -56,37 +56,5 @@ namespace Slugs.Entities
 			    EmbedTrait(segRef);
 		    }
 	    }
-
-        public SKPoint GetPointAt(Slug t)
-	    {
-		    SKPoint result;
-		    if (_traits.Count > 0)
-		    {
-			    result = _traits[0].PointAlongLine(t.Natural);
-		    }
-		    else
-		    {
-                result = SKPoint.Empty;
-		    }
-		    return result;
-	    }
-	    public bool SetPointAt(Slug t, SKPoint value)
-	    {
-		    bool result = false;
-		    if (_traits.Count > 0)
-		    {
-			    if (t.End == 0)
-			    {
-				    _traits[0].StartPoint = value; // todo: make point set return true if success
-				    result = true;
-			    }
-                else if (t.End == 1)
-			    {
-				    _traits[1].StartPoint = value;
-				    result = true;
-                }
-		    }
-		    return result;
-	    }
     }
 }
