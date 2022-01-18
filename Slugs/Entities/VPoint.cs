@@ -29,7 +29,7 @@ namespace Slugs.Entities
 		    EntityKey = entityIndex;
 		    TraitKey = traitKey;
             FocalKey = tFocalIndex;
-		    Kind = entityIndex < 0 ? PointKind.Terminal : PointKind.Dirty;
+		    Kind = PointKind.Virtual;
 		    CachedPoint = cachedPoint;
         } 
         public SKPoint SKPoint
@@ -68,7 +68,7 @@ namespace Slugs.Entities
 	        return result;
         }
 
-        public EntityPad Pad => Agents.Agent.Current.PadAt(PadIndex);
+        public Pad Pad => Agents.Agent.Current.PadAt(PadIndex);
 	    public PadData Data => Agents.Agent.Current.PadAt(PadIndex).Data;
         public Slug T => Data.FocalFromIndex(FocalKey);
         public Entity Entity => Data.EntityFromIndex(EntityKey);

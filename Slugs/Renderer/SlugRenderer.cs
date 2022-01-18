@@ -107,7 +107,7 @@ namespace Slugs.Renderer
 	        foreach (var pad in UIData.Pads.Values)
 	        {
                 pad.Refresh();  
-				var slug = EntityPad.ActiveSlug;
+				var slug = Pad.ActiveSlug;
 		        foreach (var output in pad.Output)
 		        {
 			        DrawDirectedLine(output, Pens.DrawPen);

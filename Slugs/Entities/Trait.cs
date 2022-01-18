@@ -14,21 +14,19 @@ namespace Slugs.Entities
 
     public class Trait
     {
-        public static Trait Empty = new Trait(SegRef.Empty, -1);
+	    private static int _counter = 0;
+
+        public static Trait Empty = new Trait( SegRef.Empty, Entity.Empty, -1);
         public bool IsEmpty => KindIndex == -1;
 
 	    public SegRef SegRef { get; }
 	    public int KindIndex { get; }
 
         // Trait default properties
-        public IPoint Start
-        {
-	        get => SegRef.StartRef;
-        }
-        public IPoint End
-        {
-	        get => SegRef.EndRef;
-        }
+        public IPoint Start => SegRef.StartRef;
+        public IPoint End  => SegRef.EndRef;
+        
+        public SKSegment Segment => SegRef.Segment;
         public SKPoint StartPoint
         {
 	        get => SegRef.StartPoint;
@@ -39,16 +37,26 @@ namespace Slugs.Entities
 	        get => SegRef.EndPoint;
 	        set => SegRef.EndPoint = value;
         }
-        public SKSegment Segment => SegRef.Segment;
 
-        public Trait(SegRef segRef, int traitKindIndex)
-	    {
+        public int Key { get; }
+        private Entity _entity { get; }
+
+        public Trait(SegRef segRef, Entity entity, int traitKindIndex)
+        {
+	        Key = _counter++;
+	        _entity = entity;
 		    SegRef = segRef;
 		    KindIndex = traitKindIndex;
 	    }
 
         public SKPoint PointAlongLine(float t) =>  SegRef.PointAlongLine(t);
         public SKPoint ProjectPointOnto(SKPoint p) => SegRef.ProjectPointOnto(p);
+        public (float, SKPoint) TFromPoint(SKPoint point) => SegRef.TFromPoint(point);
 
+        public VPoint VPointFrom(SKPoint point)
+        {
+	        var (t, projected) = TFromPoint(point);
+            return new VPoint(_entity.PadIndex, _entity.Key, Key, -1, projected);
+        }
     }
 }

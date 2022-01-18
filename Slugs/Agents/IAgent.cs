@@ -9,7 +9,7 @@ namespace Slugs.Agents
         RenderStatus RenderStatus { get; }
         //SKPoint this[IPoint point] { get; set; }
 
-        EntityPad PadAt(int index);
+        Pad PadAt(int index);
 
         //void UpdatePointRef(IPoint from, IPoint to);
         void Clear();

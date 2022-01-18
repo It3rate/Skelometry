@@ -16,136 +16,141 @@ namespace Slugs.Agents
 	    public static Agent Current { get; private set; }
 
 	    private readonly Dictionary<int, IPoint> _pointMap = new Dictionary<int, IPoint>();
-	    public IEnumerable<IPoint> Points => _pointMap.Values;
-	    public IPoint PointAt(int key)
-	    {
-		    var success = _pointMap.TryGetValue(key, out IPoint result);
-		    return success ? result : Point.Empty;
-	    }
-	    public IPoint TerminalPointAt(int key)
-	    {
-		    IPoint result;
-		    var success = _pointMap.TryGetValue(key, out result);
-		    while (success && result.Kind != PointKind.Terminal)
-		    {
-			    success = _pointMap.TryGetValue(key, out result);
-            }
+	    private readonly Dictionary<int, Focal> _focalMap = new Dictionary<int, Focal>();
 
-		    return result;
-	    }
-        public void SetPointAt(int key, IPoint value)
-	    {
-		    value.Kind = PointKind.Dirty;
-		    _pointMap[key] = value;
-	    }
-	    public Point CreateTerminalPoint(int padIndex, SKPoint pt)
-	    {
-		    var ptRef = new Point(padIndex, pt);
-		    _pointMap.Add(ptRef.Key, ptRef);
-		    return ptRef;
-	    }
-	    public SegRef CreateTerminalSegRef(int padIndex, SKSegment skSegment)
-	    {
-		    var a = CreateTerminalPoint(padIndex, skSegment.StartPoint);
-		    var b = CreateTerminalPoint(padIndex, skSegment.EndPoint);
-		    return new SegRef(a, b);
-	    }
-	    public SegRef[] CreateTerminalSegRefs(int padIndex, params SKSegment[] segs)
-	    {
-		    var result = new List<SegRef>(segs.Length);
-		    foreach (var skSegment in segs)
-		    {
-			    result.Add(CreateTerminalSegRef(padIndex, skSegment));
-		    }
-		    return result.ToArray();
-	    }
+        public readonly Pad WorkingPad;
+        public readonly Pad InputPad;
+        public Pad PadAt(int index) => _data.PadAt(index);
 
-        public readonly EntityPad WorkingPad;
-        public readonly EntityPad InputPad;
-        public EntityPad PadAt(int index) => _data.PadAt(index);
-
+        private UIData _data = new UIData();
         private readonly SlugRenderer _renderer;
+        public double UnitPull { get => _data.UnitPull; set => _data.UnitPull = value; }
+        public double UnitPush { get => _data.UnitPush; set => _data.UnitPush = value; }
         public RenderStatus RenderStatus { get; }
 
         private int _traitIndexCounter = 4096;
 
-        private UIData _data = new UIData();
-        public double UnitPull { get => _data.UnitPull; set => _data.UnitPull = value; }
-        public double UnitPush { get => _data.UnitPush; set => _data.UnitPush = value; }
-
         public Agent(SlugRenderer renderer)
         {
             Current = this;
-            WorkingPad = new EntityPad(PadKind.Working, this);
-            InputPad = new EntityPad(PadKind.Working, this);
+            WorkingPad = new Pad(PadKind.Working, this);
+            InputPad = new Pad(PadKind.Working, this);
             _data.Pads[WorkingPad.PadIndex] = WorkingPad;
             _data.Pads[InputPad.PadIndex] = InputPad;
 
             _renderer = renderer;
             _renderer.UIData = _data;
 
-            EntityPad.ActiveSlug = new Slug(_data.UnitPull, _data.UnitPush);
-            //var pl = InputPad.AddSegmentEntity(new SKPoint(200, 100), new SKPoint(400, 300));
+            Pad.ActiveSlug = new Slug(_data.UnitPull, _data.UnitPush);
             var (index, entity, trait) = InputPad.AddEntity(new SKSegment( 200, 100, 400, 300), 1);
             InputPad.AddTrait(index, new SKSegment(290, 100, 490, 300), 1);
 
-            //InputPad.AddEntity(pl);
-            //_renderer.Pads.AddEntity(WorkingPad);
-            //_renderer.Pads.AddEntity(InputPad);
             ClearMouse();
         }
 
-        //public SKPoint this[IPoint point]
-        //{
-        //    get
-        //    {
-	       //     return point.SKPoint;
-        //        SKPoint result;
-        //        if (!point.IsEmpty)
-        //        {
-	       //         var pad = PadAt(point.PadIndex);
-	       //         var entity = pad.EntityAt(point.EntityKey);
-	       //         if (entity.IsEmpty)
-	       //         {
-		      //          result = point.c;
-	       //         }
-        //            var dataMap = pad.InputFromIndex(point.EntityKey);
-        //            result = dataMap[point];
-        //        }
-        //        else
-        //        {
-        //            result = SKPoint.Empty;
-        //        }
-        //        return result;
-        //    }
-        //    set
-        //    {
-        //        var pad = _data.Pads[point.PadIndex];
-        //        var dataMap = pad.InputFromIndex(point.EntityKey);
-        //        dataMap[point] = value;
-        //    }
-        //}
+		#region Points
+        public IEnumerable<IPoint> Points => _pointMap.Values;
+        public IPoint PointAt(int key)
+        {
+	        var success = _pointMap.TryGetValue(key, out IPoint result);
+	        return success ? result : Point.Empty;
+        }
+        public IPoint TerminalPointAt(int key)
+        {
+	        IPoint result;
+	        var success = _pointMap.TryGetValue(key, out result);
+	        while (success && result.Kind != PointKind.Terminal)
+	        {
+		        success = _pointMap.TryGetValue(key, out result);
+	        }
 
+	        return result;
+        }
+        public void SetPointAt(int key, IPoint value)
+        {
+	        _pointMap[key] = value;
+        }
+        public Point CreateTerminalPoint(int padIndex, SKPoint pt)
+        {
+	        var ptRef = new Point(padIndex, pt);
+	        _pointMap.Add(ptRef.Key, ptRef);
+	        return ptRef;
+        }
         public void MergePointRefs(List<IPoint> fromList, IPoint to, SKPoint position)
         {
-            to.SKPoint = position;
-            var terminal = TerminalPointAt(to.Key);
-            foreach (var from in fromList)
-            {
-                from.ReplaceWith(terminal);
-            }
+	        to.SKPoint = position;
+	        var terminal = TerminalPointAt(to.Key);
+	        foreach (var from in fromList)
+	        {
+		        from.ReplaceWith(terminal);
+	        }
+        }
+        #endregion
+
+		#region Focal
+	    public IEnumerable<Focal> Focals => _focalMap.Values;
+	    public Focal FocalAt(int key)
+	    {
+		    var success = _focalMap.TryGetValue(key, out Focal result);
+		    return success ? result : Focal.Empty;
+	    }
+	    public Focal TerminalFocalAt(int key)
+	    {
+		    var success = _focalMap.TryGetValue(key, out Focal result);
+		    while (success && result.Kind != PointKind.Terminal)
+		    {
+			    success = _focalMap.TryGetValue(key, out result);
+		    }
+
+		    return success ? result : Focal.Empty;
+	    }
+	    public void SetFocalAt(int key, Focal value)
+	    {
+		    _focalMap[key] = value;
+	    }
+	    public Focal CreateTerminalFocal(int padIndex, Slug slug, float t)
+	    {
+		    var focal = new Focal(padIndex, t, slug);
+		    _focalMap.Add(focal.Key, focal);
+		    return focal;
+	    }
+	    public void MergeFocalRefs(Focal from, Focal to)
+	    {
+		    var terminal = TerminalFocalAt(to.Key);
+		    from.Kind = PointKind.Pointer;
+		    from.Key = terminal.Key;
+	    }
+#endregion
+
+        #region Segments
+
+        public SegRef CreateTerminalSegRef(int padIndex, SKSegment skSegment)
+        {
+	        var a = CreateTerminalPoint(padIndex, skSegment.StartPoint);
+	        var b = CreateTerminalPoint(padIndex, skSegment.EndPoint);
+	        return new SegRef(a, b);
+        }
+        public SegRef[] CreateTerminalSegRefs(int padIndex, params SKSegment[] segs)
+        {
+	        var result = new List<SegRef>(segs.Length);
+	        foreach (var skSegment in segs)
+	        {
+		        result.Add(CreateTerminalSegRef(padIndex, skSegment));
+	        }
+	        return result.ToArray();
         }
 
-        //public void UpdatePointRef(IPoint from, IPoint to)
-        //{
-        //    var pad = _data.Pads[from.PadIndex];
-        //    var dataMap = pad.InputFromIndex(from.EntityKey);
-        //    dataMap[from.FocalKey] = to;
-        //}
+#endregion
 
-        public void Clear()
+	    public void Clear()
         {
         }
+	    public void Draw()
+        {
+            _renderer.Draw();
+        }
+
+		#region Mouse and Keyboard
 
         public void ClearMouse()
         {
@@ -162,69 +167,66 @@ namespace Slugs.Agents
             _data.StartHighlight = VPoint.Empty;
         }
 
-        public void Draw()
-        {
-            _renderer.Draw();
-        }
+	    public bool MouseDown(MouseEventArgs e)
+	    {
+		    _data.CurrentPoint = e.Location.ToSKPoint();
+		    SetHighlight();
+		    _data.DownPoint = _data.SnapPoint;
+		    _data.DragRef.Origin = _data.CurrentPoint;
+		    if (_data.HasHighlightPoint && CurrentKey != Keys.ControlKey)
+		    {
+			    _data.DragRef.Add(_data.HighlightPoints);
+		    }
+		    else if (!_data.HighlightLine.IsEmpty && CurrentKey != Keys.ControlKey)
+		    {
+			    _data.DragRef.Add(_data.HighlightLine.Start, _data.HighlightLine.End, true);
+		    }
+		    else
+		    {
+			    _data.DragSegment.Add(_data.SnapPoint);
+			    _data.DragPath.Add(_data.SnapPoint);
+			    _data.StartHighlight = _data.FirstHighlightPoint;
+		    }
 
-        public bool MouseDown(MouseEventArgs e)
-        {
-            _data.CurrentPoint = e.Location.ToSKPoint();
-            SetHighlight();
-            _data.DownPoint = _data.SnapPoint;
-            _data.DragRef.Origin = _data.CurrentPoint;
-            if (_data.HasHighlightPoint && CurrentKey != Keys.ControlKey)
-            {
-                _data.DragRef.Add(_data.HighlightPoints);
-            }
-            else if (!_data.HighlightLine.IsEmpty && CurrentKey != Keys.ControlKey)
-            {
-                _data.DragRef.Add(_data.HighlightLine.Start, _data.HighlightLine.End, true);
-            }
-            else
-            {
-                _data.DragSegment.Add(_data.SnapPoint);
-                _data.DragPath.Add(_data.SnapPoint);
-                _data.StartHighlight = _data.FirstHighlightPoint;
-            }
+		    return true;
+	    }
 
-            return true;
-        }
+	    public bool MouseMove(MouseEventArgs e)
+	    {
+		    WorkingPad.Clear();
+		    _data.CurrentPoint = e.Location.ToSKPoint();
+		    SetHighlight();
+		    SetDragging();
+		    SetCreating();
 
-        public bool MouseMove(MouseEventArgs e)
-        {
-            WorkingPad.Clear();
-            _data.CurrentPoint = e.Location.ToSKPoint();
-            SetHighlight();
-            SetDragging();
-            SetCreating();
+		    return true;
+	    }
 
-            return true;
-        }
+	    public bool MouseUp(MouseEventArgs e)
+	    {
+		    _data.CurrentPoint = e.Location.ToSKPoint();
+		    SetHighlight(true);
+		    SetDragging();
+		    SetCreating(true);
 
-        public bool MouseUp(MouseEventArgs e)
-        {
-            _data.CurrentPoint = e.Location.ToSKPoint();
-            SetHighlight(true);
-            SetDragging();
-            SetCreating(true);
+		    ClearMouse();
+		    return true;
+	    }
 
-            ClearMouse();
-            return true;
-        }
-
-        private Keys CurrentKey;
-        public bool KeyDown(KeyEventArgs e)
-        {
-            CurrentKey = e.KeyCode;
-            return true;
-        }
+	    private Keys CurrentKey;
+	    public bool KeyDown(KeyEventArgs e)
+	    {
+		    CurrentKey = e.KeyCode;
+		    return true;
+	    }
 
         public bool KeyUp(KeyEventArgs e)
         {
             CurrentKey = Keys.None;
             return true;
         }
+
+#endregion
 
         private bool SetHighlight(bool final = false)
         {
@@ -263,7 +265,6 @@ namespace Slugs.Agents
 
             return hasChange;
         }
-
         private bool SetCreating(bool final = false)
         {
             var result = false;
@@ -279,9 +280,6 @@ namespace Slugs.Agents
                     else if (_data.IsDraggingPoint && _data.HasHighlightLine)
                     {
                         var dragPoint = _data.DragRef.PointRefs[0];
-                        //var vp = _data.HighlightLine.GetVirtualPointFor(_data.SnapPoint);
-                        //UpdatePointRef(dragPoint, vp);
-                        // replace last point with Virutal SKPoint Ref for line being snapped to.
                     }
                     result = true;
                 }
@@ -307,6 +305,10 @@ namespace Slugs.Agents
                         if (_data.HasHighlightPoint)
                         {
                             MergePointRefs(new List<IPoint>() { trait.EndRef }, _data.FirstHighlightPoint, _data.SnapPoint);
+                        }
+                        else if (_data.HasHighlightLine)
+                        {
+
                         }
                     }
                 }

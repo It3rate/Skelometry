@@ -9,7 +9,7 @@ namespace Slugs.Pads
 {
 	public class PadData
 	{
-		private EntityPad _pad;
+		private Pad _pad;
 
         public readonly int PadIndex;
 	    private static int _entityCounter = 1;
@@ -34,7 +34,7 @@ namespace Slugs.Pads
 	        return success? result : Slug.Empty;
         }
 
-        public PadData(int padIndex, EntityPad pad)
+        public PadData(int padIndex, Pad pad)
         {
             PadIndex = padIndex;
             _pad = pad;
@@ -48,18 +48,10 @@ namespace Slugs.Pads
         public bool IsOwnPad(VPoint p) => p.PadIndex == PadIndex;
         public bool ContainsMap(VPoint p) => p.PadIndex == PadIndex && _entityMap.ContainsKey(p.EntityKey) && _focalMap.ContainsKey(p.FocalKey);
 
-        //public (int, Entity, SegRef[]) CreateEntity(params SKSegment[] segments) => CreateEntity(ToSegRefs(segments));
-        //public (int, Entity, SegRef[]) CreateEntity(params SegRef[] segRefs)
-        //{
-	       // var key = _entityCounter++;
-	       // var entity = new Entity(segRefs);
-	       // _entityMap.Add(key, entity);
-	       // return (key, entity, segRefs);
-        //}
         public (int, Entity) CreateEmptyEntity()
         {
 	        var key = _entityCounter++;
-	        var entity = new Entity(key);
+	        var entity = new Entity(PadIndex, key);
 	        _entityMap.Add(key, entity);
 	        return (key, entity);
         }

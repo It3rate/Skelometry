@@ -19,7 +19,8 @@ namespace Slugs.Entities
 
 	    public int Key { get; private set; }
 	    public int PadIndex { get; set; }
-	    private SKPoint _point;
+	    public PointKind Kind { get; set; }
+        private SKPoint _point;
         public SKPoint SKPoint
         {
 	        get => Kind == PointKind.Terminal ? _point : Agent.Current.PointAt(Key).SKPoint;
@@ -39,7 +40,6 @@ namespace Slugs.Entities
 		        }
 	        }
         }
-        public PointKind Kind { get; set; }
 
 	    public Point(int padIndex, SKPoint point)
 	    {

@@ -15,7 +15,7 @@ namespace Slugs.Entities
     using System.Text;
     using System.Threading.Tasks;
 
-    public class EntityPad
+    public class Pad
     {
         private static int _padIndexCounter = 0;
         public readonly int PadIndex;
@@ -38,7 +38,7 @@ namespace Slugs.Entities
         private readonly List<SKSegment> _output = new List<SKSegment>();
         public IEnumerable<SKSegment> Output => _output;
 
-        public EntityPad(PadKind padKind, Agent agent)
+        public Pad(PadKind padKind, Agent agent)
         {
             PadKind = padKind;
             _agent = agent;
@@ -53,32 +53,14 @@ namespace Slugs.Entities
 	        var segRef = AddTrait(key, seg, traitKindIndex);
 	        return (key, entity, segRef);
         }
-        public SegRef AddTrait(int key, SKSegment seg, int traitKindIndex)
+        public SegRef AddTrait(int entityKey, SKSegment seg, int traitKindIndex)
         {
-	        var entity = Data.GetOrCreateEntity(key);
+	        var entity = Data.GetOrCreateEntity(entityKey);
 	        var segRef = _agent.CreateTerminalSegRef(PadIndex, seg);
-	        //segRef.StartKey.EntityKey = key;
-	        //segRef.EndKey.EntityKey = key;
-            var trait = new Trait(segRef, traitKindIndex);
+            var trait = new Trait(segRef, entity, traitKindIndex);
             entity.EmbedTrait(trait);
 	        return segRef;
         }
-        //public int AddEntity(DataMap data, int index)
-        //{
-        //    data.PadIndex = PadIndex;
-        //    data.DataMapIndex = _dataMaps.Count;
-        //    _dataMaps.AddEntity(data);
-        //    _slugMaps.AddEntity(new SlugRef(PadIndex, _dataMaps.Count - 1, index));
-        //    return index;
-        //}
-        //public int AddEntity(DataMap data)
-        //{
-        //    data.PadIndex = PadIndex;
-        //    data.DataMapIndex = _dataMaps.Count;
-        //    _dataMaps.AddEntity(data);
-        //    _slugMaps.AddEntity(new SlugRef(PadIndex, _dataMaps.Count - 1, 0));
-        //    return -1;
-        //}
         public void Clear()
         {
             Data.Clear();
@@ -177,7 +159,7 @@ namespace Slugs.Entities
             return result;
         }
 
-        //public IEnumerator<(DataMap, Slug)> GetEnumerator()
+        //public IEnumerator<(DataMap, Range)> GetEnumerator()
         //{
         //    foreach (var map in _slugMaps)
         //    {

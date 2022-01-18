@@ -24,8 +24,8 @@ namespace Slugs.Slugs
 	    public static readonly Slug Max = new Slug(double.MaxValue, double.MaxValue);
 	    public static readonly Slug Min = new Slug(double.MinValue, double.MinValue);
 
-        public double Pull { get; } // should be able to make these int and everything rational
-	    public double Push { get; }
+        public double Pull { get; set; } // should be able to make these int and everything rational
+	    public double Push { get; set; }
 	    private readonly bool _hasValue;
 
 	    public float Natural => (float)Push;
@@ -72,7 +72,7 @@ namespace Slugs.Slugs
         public Slug NormalizeTo(Slug value) => Slug.NormalizeTo(this, value);
 
         public bool IsZero => Push == 0 && Pull == 0;
-	    public bool IsZeroLength => AbsLength() == 0;
+        public bool IsZeroLength => (Push == Pull);
 	    public bool IsForward => Push >= Pull;
 	    public double Direction => Push >= Pull ? 1.0 : -1.0;
 
@@ -117,15 +117,15 @@ namespace Slugs.Slugs
         {
             // should be divide by self?
             return value.IsZeroLength ? new Slug(0.5, 0.5) : value / value;
-	        //Slug result;
+	        //Range result;
 	        //if (value.IsZeroLength)
 	        //{
-		       // result = value.IsForward ? new Slug(0.5, 0.5) : new Slug(-0.5, -0.5); // (-0.5, 0.5); // (0, 1.0);
+		       // result = value.IsForward ? new Range(0.5, 0.5) : new Range(-0.5, -0.5); // (-0.5, 0.5); // (0, 1.0);
 	        //}
 	        //else
 	        //{
 		       // double scale = 1.0 / value.AbsLength();
-		       // result = new Slug(value.Pull * scale, value.Push * scale);
+		       // result = new Range(value.Pull * scale, value.Push * scale);
 	        //}
 
 	        //return result;
@@ -135,7 +135,7 @@ namespace Slugs.Slugs
 	        return from.Normalize() * to;
 	        //var norm = Normalize(value);
 	        //var scale = value.Length();
-	        //var result = new Slug(norm.Pull * scale, norm.Push * scale);
+	        //var result = new Range(norm.Pull * scale, norm.Push * scale);
 
 	        //var offset = value.Pull - result.Pull;
 	        //result.Offset((int)offset); // not sure if measure needs to be offset or multiplied here, probably everything needs to be wedged etc.

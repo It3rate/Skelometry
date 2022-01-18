@@ -7,9 +7,6 @@ namespace Slugs.Entities
     {
 	    int PadIndex { get; set; }
         int Key { get; }
-        //int EntityKey { get; set; }
-        //int TraitKey { get; set; }
-        //int FocalKey { get; set; }
         PointKind Kind { get; set; }
         SKPoint SKPoint { get; set; }
 	    bool IsEmpty { get; }
@@ -22,12 +19,10 @@ namespace Slugs.Entities
     {
 	    Terminal,
 	    Pointer,
-	    Dirty,
-	    Dynamic,
-	    NeedsUpdate = Dirty & Dynamic,
+        Virtual,
     }
     public static class PointKindExtensions
     {
-	    public static bool NeedsUpdate(this PointKind grade) => (grade & (PointKind.Dirty | PointKind.Dynamic)) != 0;
+	    //public static bool NeedsUpdate(this PointKind grade) => (grade & (PointKind.Dirty | PointKind.Dynamic)) != 0;
     }
 }

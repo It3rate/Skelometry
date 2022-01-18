@@ -9,8 +9,8 @@ namespace Slugs.Input
 {
 	public class UIData
     {
-	    public readonly Dictionary<int, EntityPad> Pads = new Dictionary<int, EntityPad>();
-	    public EntityPad PadAt(int key) => Pads[key];
+	    public readonly Dictionary<int, Pad> Pads = new Dictionary<int, Pad>();
+	    public Pad PadAt(int key) => Pads[key];
 
         public SKPoint DownPoint;
 	    public SKPoint CurrentPoint;
@@ -43,7 +43,7 @@ namespace Slugs.Input
 	        set
 	        {
 		        _unitPull = value;
-		        EntityPad.ActiveSlug = new Slug(_unitPull, _unitPush);
+		        Pad.ActiveSlug = new Slug(_unitPull, _unitPush);
 	        }
         }
         public double UnitPush
@@ -52,7 +52,7 @@ namespace Slugs.Input
 	        set
 	        {
 		        _unitPush = value;
-		        EntityPad.ActiveSlug = new Slug(_unitPull, _unitPush);
+		        Pad.ActiveSlug = new Slug(_unitPull, _unitPush);
 	        }
         }
     }

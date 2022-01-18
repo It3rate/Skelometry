@@ -92,7 +92,7 @@ namespace Slugs.Extensions
             return new SKPoint(x, y);
         }
 
-        public float TFromPoint(SKPoint point)
+        public (float, SKPoint) TFromPoint(SKPoint point)
         {
 	        var pp = ProjectPointOnto(point);
 	        var v0 = EndPoint - StartPoint;
@@ -102,7 +102,7 @@ namespace Slugs.Extensions
 	        var l1 = v1.Length * sign;
 
             var t = l0 / l1;
-            return t;
+            return (t, pp);
         }
 
         public SKPoint[] EndArrow(float dist = 8f)

@@ -13,7 +13,7 @@ namespace Slugs.Entities
 
 	    public int StartKey { get; private set; }
 	    public int EndKey { get; private set; }
-	    private PointKind Kind { get; set; } = PointKind.Dirty;
+	    private PointKind Kind { get; set; } = PointKind.Terminal;
 
 	    public IPoint StartRef => Agent.Current.PointAt(StartKey);
 	    public IPoint EndRef => Agent.Current.PointAt(EndKey);
@@ -79,7 +79,7 @@ namespace Slugs.Entities
 	    public SKPoint SKPointFromEnd(float dist) => Segment.SKPointFromEnd(dist);
 	    public SKPoint OrthogonalPoint(SKPoint pt, float offset) => Segment.OrthogonalPoint(pt, offset);
 	    public SKPoint ProjectPointOnto(SKPoint p) => Segment.ProjectPointOnto(p);
-	    public float TFromPoint(SKPoint point) => Segment.TFromPoint(point);
+        public (float, SKPoint) TFromPoint(SKPoint point) => Segment.TFromPoint(point);
 	    public SKPoint[] EndArrow(float dist = 8f) => Segment.EndArrow(dist);
 
         //public IPoint GetVirtualPointFor(SKPoint point)

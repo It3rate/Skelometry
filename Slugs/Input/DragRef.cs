@@ -16,7 +16,6 @@ namespace Slugs.Input
     public class DragRef
     {
 	    public SKPoint Origin { get; set; }
-        //public Dictionary<IPoint, SKPoint> MovingPoints { get; } = new Dictionary<IPoint, SKPoint>();
         public List<IPoint> PointRefs { get; private set; } = new List<IPoint>();
         private List<SKPoint> OriginalPoints { get; } = new List<SKPoint>();
         public int Count => PointRefs.Count;
