@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using SkiaSharp;
 using Slugs.Entities;
-using Slugs.Extensions;
-using Slugs.Slugs;
+using Slugs.Primitives;
 using IPoint = Slugs.Entities.IPoint;
 
 namespace Slugs.Pads
@@ -11,32 +10,32 @@ namespace Slugs.Pads
 	{
 		private Pad _pad;
 
-        public readonly int PadIndex;
+        public readonly PadKind PadKind;
 	    private static int _entityCounter = 1;
 	    private static int _focalCounter = 1;
 
         private readonly Dictionary<int, Entity> _entityMap = new Dictionary<int, Entity>();
         public Entity EntityAt(int key)
         {
-	        var success = _entityMap.TryGetValue(key, out Entity result);
+	        var success = _entityMap.TryGetValue(key, out var result);
 	        return success ? result : Entity.Empty;
         }
         public Entity GetOrCreateEntity(int key)
         {
-	        var success = _entityMap.TryGetValue(key, out Entity result);
+	        var success = _entityMap.TryGetValue(key, out var result);
 	        return success ? result : CreateEmptyEntity().Item2;
         }
 
-        private readonly Dictionary<int, Slug> _focalMap = new Dictionary<int, Slug>();
-        public Slug FocalAt(int key) 
+        private readonly Dictionary<int, Focal> _focalMap = new Dictionary<int, Focal>();
+        public Focal FocalAt(int key) 
         {
-	        var success = _focalMap.TryGetValue(key, out Slug result);
-	        return success? result : Slug.Empty;
+	        var success = _focalMap.TryGetValue(key, out var result);
+	        return success? result : Focal.Empty;
         }
 
-        public PadData(int padIndex, Pad pad)
+        public PadData(PadKind padKind, Pad pad)
         {
-            PadIndex = padIndex;
+            PadKind = padKind;
             _pad = pad;
         }
         public void Clear()
@@ -45,17 +44,17 @@ namespace Slugs.Pads
             _entityMap.Clear();
 	    }
         // Contains doesn't check for <0 indexes because that represents the default cached point.
-        public bool IsOwnPad(VPoint p) => p.PadIndex == PadIndex;
-        public bool ContainsMap(VPoint p) => p.PadIndex == PadIndex && _entityMap.ContainsKey(p.EntityKey) && _focalMap.ContainsKey(p.FocalKey);
+        public bool IsOwnPad(VPoint p) => p.PadKind == PadKind;
+        public bool ContainsMap(VPoint p) => p.PadKind == PadKind && _entityMap.ContainsKey(p.EntityKey) && _focalMap.ContainsKey(p.FocalKey);
 
         public (int, Entity) CreateEmptyEntity()
         {
 	        var key = _entityCounter++;
-	        var entity = new Entity(PadIndex, key);
+	        var entity = new Entity(PadKind, key);
 	        _entityMap.Add(key, entity);
 	        return (key, entity);
         }
-        public int CreateFocal(Slug focal)
+        public int CreateFocal(Focal focal)
         {
 	        var key = _focalCounter++;
 	        _focalMap.Add(key, focal);
@@ -66,7 +65,7 @@ namespace Slugs.Pads
 	        return false;
         }
 
-	    public Entity EntityFromIndex(int index)
+	    public Entity EntityFromKey(int index)
 	    {
 		    if (!_entityMap.TryGetValue(index, out var value))
 		    {
@@ -74,22 +73,22 @@ namespace Slugs.Pads
 		    }
 		    return value;
 	    }
-	    public Slug FocalFromIndex(int index)
+	    public Focal FocalFromKey(int index)
 	    {
 		    if (!_focalMap.TryGetValue(index, out var value))
 		    {
-			    value = Slug.Empty;
+			    value = Focal.Empty;
 		    }
 		    return value;
 	    }
 
-	    public IEnumerable<Slug> Focals
+	    public IEnumerable<Focal> Focals
 	    {
 		    get
 		    {
-			    foreach (var slug in _focalMap.Values)
+			    foreach (var focal in _focalMap.Values)
 			    {
-				    yield return slug;
+				    yield return focal;
 			    }
 		    }
 	    }

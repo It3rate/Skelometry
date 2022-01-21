@@ -32,9 +32,9 @@ namespace Slugs
             _control.KeyUp += OnKeyUp;
 
             _agent = new Agents.Agent(_renderer);
-            scTop.Value = (int)_agent.UnitPull;
+            scTop.Value = (int)_agent.ScrollLeft;
             lbTop.Text = (scTop.Value).ToString();
-            scBottom.Value = (int)_agent.UnitPush;
+            scBottom.Value = (int)_agent.ScrollRight;
             lbBottom.Text = (scBottom.Value).ToString();
             scTop.Scroll += ScTop_Scroll;
             scBottom.Scroll += ScBottom_Scroll;
@@ -43,13 +43,13 @@ namespace Slugs
 
         private void ScTop_Scroll(object sender, ScrollEventArgs e)
         {
-	        _agent.UnitPull = scTop.Value;
+	        _agent.ScrollLeft = scTop.Value;
 	        lbTop.Text = (scTop.Value).ToString();
 	        Redraw();
         }
         private void ScBottom_Scroll(object sender, ScrollEventArgs e)
         {
-	        _agent.UnitPush = scBottom.Value;
+	        _agent.ScrollRight = scBottom.Value;
 	        lbBottom.Text = (scBottom.Value).ToString();
             Redraw();
         }

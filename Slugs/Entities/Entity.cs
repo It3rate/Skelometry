@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using SkiaSharp;
-using Slugs.Slugs;
-using SegRef = Slugs.Entities.SegRef;
+using Slugs.Pads;
+using SegRef = Slugs.Primitives.SegRef;
 
 namespace Slugs.Entities
 {
-	public class Entity
+	public class Entity : IElement
     {
-        public static Entity Empty = new Entity(-1, -1);
+        public static Entity Empty = new Entity(PadKind.None, -1);
         public bool IsEmpty => (Key == -1);
 
-        public int PadIndex { get; }
+        public PadKind PadKind { get; }
         public int Key { get; }
 
         // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segRef of it is local.
@@ -20,7 +20,11 @@ namespace Slugs.Entities
 	    private Dictionary<int, Trait> _traits { get; } = new Dictionary<int, Trait>(); 
 	    public bool HasTraits => _traits.Count > 0;
 	    public IEnumerable<Trait> Traits => _traits.Values;
-	    public Trait TraitAt(int key) => _traits[key];
+	    public Trait TraitAt(int key)
+	    {
+		    var success = _traits.TryGetValue(key, out var result);
+		    return success ? result : Trait.Empty;
+	    }
 	    public void EmbedTrait(Trait trait)
 	    {
 		    _traits.Add(trait.Key, trait);
@@ -40,9 +44,9 @@ namespace Slugs.Entities
 
 #endregion
 
-        public Entity(int padIndex, int entityKey, params Trait[] segs)
+        public Entity(PadKind padKind, int entityKey, params Trait[] segs)
         {
-	        PadIndex = padIndex;
+	        PadKind = padKind;
 	        Key = entityKey;
 		    foreach (var segRef in segs)
 		    {

@@ -1,5 +1,6 @@
 ﻿using SkiaSharp;
 using Slugs.Agents;
+using Slugs.Pads;
 
 namespace Slugs.Entities
 {
@@ -12,14 +13,14 @@ namespace Slugs.Entities
     public class Point : IPoint
     {
         public static Point Empty = new Point();
-	    private Point() { Key = -1; SKPoint = SKPoint.Empty; }
-        public bool IsEmpty => Key == -1;
+	    private Point() { Key = -99; SKPoint = SKPoint.Empty; }
+        public bool IsEmpty => Key == -99;
 
 	    private static int _counter = 1;
 
 	    public int Key { get; private set; }
-	    public int PadIndex { get; set; }
-	    public PointKind Kind { get; private set; }
+	    public PadKind PadKind { get; set; }
+	    public PointKind Kind { get; private set; } // probably should more reference to VPoint.
         private SKPoint _point;
         public SKPoint SKPoint
         {
@@ -41,20 +42,44 @@ namespace Slugs.Entities
 	        }
         }
 
-	    public Point(int padIndex, SKPoint point)
+	    public Point(PadKind padKind, SKPoint point)
 	    {
 		    Key = _counter++;
 		    Kind = PointKind.Terminal;
-		    PadIndex = padIndex;
+		    PadKind = padKind;
 		    _point = point;
 	    }
-	    public bool ReplaceWith(IPoint pt)
+
+
+	    public Pad GetPad() => Agent.Current.PadAt(PadKind);
+	    public Entity GetEntity() => Entity.Empty; 
+	    public Trait GetTrait() => Trait.Empty; // todo: find valid trait/focal for terminal points.
+	    public Focal GetFocal() => Focal.Empty;
+	    public float GetT() => 0;
+
+        public bool ReplaceWith(IPoint pt)
 	    {
 		    Key = pt.Key;
-		    Kind = PointKind.Pointer;
+		    Kind = PointKind.Reference;
 		    return true;
         }
-	    public static bool operator ==(Point left, IPoint right) => left.Key == right.Key;
+
+	    public void CopyValuesFrom(IPoint from)
+	    {
+		    PadKind = from.PadKind;
+		    if (from.Kind == PointKind.Terminal)
+		    {
+			    Kind = PointKind.Terminal;
+			    _point = from.SKPoint;
+		    }
+            else
+		    {
+			    Kind = PointKind.Reference;
+                Key = from.Key;
+			    //_point = from.SKPoint;
+		    }
+	    }
+        public static bool operator ==(Point left, IPoint right) => left.Key == right.Key;
 	    public static bool operator !=(Point left, IPoint right) => left.Key != right.Key;
 	    public override bool Equals(object obj) => obj is Point value && this == value;
 	    public bool Equals(IPoint value) => this == value;

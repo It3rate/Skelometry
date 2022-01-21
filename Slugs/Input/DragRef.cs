@@ -2,7 +2,6 @@
 using SkiaSharp;
 using Slugs.Entities;
 using Slugs.Pads;
-using Slugs.Slugs;
 using IPoint = Slugs.Entities.IPoint;
 
 namespace Slugs.Input
@@ -35,7 +34,6 @@ namespace Slugs.Input
         {
 	        get => index >= 0 && index < PointRefs.Count ? PointRefs[index] : Point.Empty;
         }
-        public SKPoint OriginalValue(int index) => index >= 0 && index < OriginalPoints.Count ? OriginalPoints[index] : SKPoint.Empty;
 
         public void Clear()
         {

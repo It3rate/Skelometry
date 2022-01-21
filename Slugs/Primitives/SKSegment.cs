@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using SkiaSharp;
-using Slugs.Input;
 
-namespace Slugs.Extensions
+namespace Slugs.Primitives
 {
 	public struct SegmentBase
     {

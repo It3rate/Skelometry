@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using Slugs.Entities;
+using Slugs.Pads;
 using Slugs.Renderer;
 
 namespace Slugs.Agents
@@ -9,7 +10,7 @@ namespace Slugs.Agents
         RenderStatus RenderStatus { get; }
         //SKPoint this[IPoint point] { get; set; }
 
-        Pad PadAt(int index);
+        Pad PadAt(PadKind padKind);
 
         //void UpdatePointRef(IPoint from, IPoint to);
         void Clear();

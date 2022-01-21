@@ -1,17 +1,9 @@
-﻿using System.Globalization;
-using System.Runtime.CompilerServices;
-using OpenTK.Graphics.OpenGL;
+﻿using System;
+using System.Globalization;
 
-namespace Slugs.Slugs
+namespace Slugs.Primitives
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Numerics;
-
-    public struct Slug : IElement, IEquatable<Slug>
+	public struct Slug : IEquatable<Slug>
     {
         // This should all be done with ints, setting a unit size abs(push-pull), and a max value. I think.
 

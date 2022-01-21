@@ -8,10 +8,9 @@ using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Slugs.Entities;
-using Slugs.Extensions;
 using Slugs.Input;
 using Slugs.Pads;
-using Slugs.Slugs;
+using Slugs.Primitives;
 
 namespace Slugs.Renderer
 {
@@ -22,7 +21,7 @@ namespace Slugs.Renderer
         public int Height { get; protected set; }
 	    public event EventHandler DrawingComplete;
 
-	    public UIData UIData = new UIData();
+	    public UIData Data { get; set; }
 
         public int PenIndex { get; set; }
 
@@ -31,7 +30,7 @@ namespace Slugs.Renderer
 	    public bool ShowBitmap { get; set; }
 
         public SlugRenderer()
-	    {
+        {
             GeneratePens();
 	    }
 
@@ -104,7 +103,7 @@ namespace Slugs.Renderer
 
         public void Draw()
         {
-	        foreach (var pad in UIData.Pads.Values)
+	        foreach (var pad in Data.Pads.Values)
 	        {
                 pad.Refresh();  
 				var slug = Pad.ActiveSlug;
@@ -121,14 +120,14 @@ namespace Slugs.Renderer
                 }
             }
 
-            if (UIData.HighlightPoints.Count > 0)
+            if (Data.HasHighlightPoint)
 			{
-				DrawRoundBox(UIData.GetHighlightPoint(), Pens.HoverPen);
+				DrawRoundBox(Data.HighlightPoint.SKPoint, Pens.HoverPen);
 			}
 
-			if (!UIData.HighlightLine.IsEmpty)
+			if (Data.HasHighlightLine)
 			{
-				DrawDirectedLine(UIData.GetHighlightLine(), Pens.HighlightPen);
+				DrawDirectedLine(Data.HighlightLine.Segment, Pens.HighlightPen);
 			}
         }
 

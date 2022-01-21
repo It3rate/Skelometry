@@ -1,7 +1,7 @@
 ﻿using System;
 using SkiaSharp;
 
-namespace Slugs.Extensions
+namespace Slugs.Primitives
 {
 	public static class SkPointExtension
     {

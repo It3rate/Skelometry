@@ -1,20 +1,16 @@
-﻿using Slugs.Entities;
+﻿using System;
+using Slugs.Pads;
+using Slugs.Primitives;
 
-namespace Slugs.Slugs
+namespace Slugs.Entities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class Focal : IEquatable<Focal>
+	public class Focal : IElement, IEquatable<Focal>
     {
         public static Focal Empty = new Focal();
         public bool IsEmpty => Key == -1;
 
 	    private static int _counter = 1;
-	    public int PadIndex { get; private set; }
+	    public PadKind PadKind { get; private set; }
         public int Key { get; set; }
 
         public Slug Range { get; }
@@ -24,11 +20,11 @@ namespace Slugs.Slugs
         public float T => Range.IsZeroLength ? 0 : (float)(Range.Length() / Focus + Range.Start);
 
         private Focal() {Key = -1; Range = Slug.Empty;}
-        //public Focal(int padIndex, float focus) : this(padIndex, focus, Slug.Unit){}
-	    public Focal(int padIndex, float focus, Slug range)
+        //public Focal(int padKind, float focus) : this(padKind, focus, Slug.Unit){}
+	    public Focal(PadKind padKind, float focus, Slug range)
 	    {
 		    Key = _counter++;
-		    PadIndex = padIndex;
+		    PadKind = padKind;
 		    Kind = PointKind.Terminal;
 		    Focus = focus;
 		    Range = range;

@@ -1,11 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using SkiaSharp;
 using Slugs.Agents;
-using Slugs.Extensions;
 using Slugs.Input;
 using Slugs.Pads;
-using Slugs.Slugs;
-using SegRef = Slugs.Entities.SegRef;
+using Slugs.Primitives;
+using SegRef = Slugs.Primitives.SegRef;
 
 namespace Slugs.Entities
 {
@@ -17,10 +16,7 @@ namespace Slugs.Entities
 
     public class Pad
     {
-        private static int _padIndexCounter = 0;
-        public readonly int PadIndex;
-
-        public PadKind PadKind;
+        public readonly PadKind PadKind;
 
         private Agent _agent;
         public readonly PadData Data;
@@ -32,8 +28,8 @@ namespace Slugs.Entities
         public IEnumerable<Entity> Entities => Data.Entities;
         public Entity EntityAt(int key) => Data.EntityAt(key);
 
-        public IEnumerable<Slug> Focals => Data.Focals;
-        public Slug FocalAt(int key) => Data.FocalAt(key);
+        public IEnumerable<Focal> Focals => Data.Focals;
+        public Focal FocalAt(int key) => Data.FocalAt(key);
 
         private readonly List<SKSegment> _output = new List<SKSegment>();
         public IEnumerable<SKSegment> Output => _output;
@@ -42,8 +38,7 @@ namespace Slugs.Entities
         {
             PadKind = padKind;
             _agent = agent;
-            PadIndex = _padIndexCounter++;
-            Data = new PadData(PadIndex, this);
+            Data = new PadData(PadKind, this);
             Clear();
         }
 
@@ -56,7 +51,7 @@ namespace Slugs.Entities
         public Trait AddTrait(int entityKey, SKSegment seg, int traitKindIndex)
         {
 	        var entity = Data.GetOrCreateEntity(entityKey);
-	        var segRef = _agent.CreateTerminalSegRef(PadIndex, seg);
+	        var segRef = _agent.CreateTerminalSegRef(PadKind, seg);
             var trait = new Trait(segRef, entity, traitKindIndex);
             entity.EmbedTrait(trait);
 	        return trait;
@@ -97,7 +92,7 @@ namespace Slugs.Entities
             var result = new List<IPoint>();
             foreach (var ptRef in _agent.Points) // use entities and traits rather than points?
             {
-	            if (ptRef.PadIndex == PadIndex && !ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.SKPoint) < maxDist)
+	            if (ptRef.PadKind == PadKind && !ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.SKPoint) < maxDist)
 	            {
                     result.Add(ptRef);
 	            }

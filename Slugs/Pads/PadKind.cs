@@ -6,5 +6,11 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    public enum PadKind { Working, Drawn }
+    public enum PadKind
+    {
+	    None,
+	    Working,
+	    Input,
+	    Drawn
+    }
 }

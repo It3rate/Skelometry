@@ -1,10 +1,9 @@
 ﻿using System;
 using SkiaSharp;
 using Slugs.Agents;
-using Slugs.Extensions;
-using Slugs.Slugs;
+using Slugs.Entities;
 
-namespace Slugs.Entities
+namespace Slugs.Primitives
 {
 	public class SegRef : IEquatable<SegRef>
     {

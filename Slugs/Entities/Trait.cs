@@ -1,6 +1,5 @@
 ﻿using SkiaSharp;
-using Slugs.Extensions;
-using Slugs.Slugs;
+using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
@@ -12,7 +11,7 @@ namespace Slugs.Entities
 
     public struct TraitKind{}
 
-    public class Trait
+    public class Trait : IElement
     {
 	    private static int _counter = 0;
 
@@ -57,7 +56,7 @@ namespace Slugs.Entities
         public VPoint VPointFrom(SKPoint point)
         {
 	        var (t, projected) = TFromPoint(point);
-            return new VPoint(_entity.PadIndex, _entity.Key, Key, -1);
+            return new VPoint(_entity.PadKind, _entity.Key, Key, -1);
         }
     }
 }

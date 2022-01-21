@@ -1,8 +1,9 @@
-﻿using Slugs.Slugs;
+﻿
+using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
-	public readonly struct Bond
+	public readonly struct Bond : IElement
     {
         public static readonly Bond Empty = new Bond(-2);
         public bool IsEmpty => StartIndex == -2;
