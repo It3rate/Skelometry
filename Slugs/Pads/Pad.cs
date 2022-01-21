@@ -65,7 +65,7 @@ namespace Slugs.Entities
             _output.Clear();
             foreach (var entity in Entities)
             {
-	            foreach (var bond in entity.Bonds)
+	            foreach (var bond in entity.Traits)
 	            {
                     //var unit = SlugFromIndex(entity.SlugIndex);
                     //var line = InputFromIndex(entity.DataMapIndex);
@@ -80,14 +80,13 @@ namespace Slugs.Entities
         public void UpdatePoint(IPoint point, SKPoint pt)
         {
 	        point.SKPoint = pt;
-            //_dataMaps[point.EntityKey][point] = pt;
         }
         public void UpdatePointRef(IPoint point, IPoint value)
         {
 	        _agent.SetPointAt(point.Key, value);
         }
 
-        public List<IPoint> GetSnapPoints(SKPoint input, DragRef ignorePoints, float maxDist = SnapDistance)
+        public List<IPoint> GetSnapPoints(SKPoint input, IPoint[] ignorePoints, float maxDist = SnapDistance)
         {
             var result = new List<IPoint>();
             foreach (var ptRef in _agent.Points) // use entities and traits rather than points?

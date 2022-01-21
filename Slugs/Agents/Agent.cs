@@ -178,7 +178,7 @@ namespace Slugs.Agents
 
             _data.DragSegment.Clear(); 
             WorkingPad.Clear();
-            _data.DragRef.Clear();
+            //_data.DragRef.Clear();
 
         }
 
@@ -190,7 +190,7 @@ namespace Slugs.Agents
 		    //_data.CurrentPoint = e.Location.ToSKPoint();
 		    //SetHighlight();
 		    //_data.DownPoint = _data.SnapPoint;
-		    _data.DragRef.Origin = _data.CurrentPoint;
+		    //_data.DragRef.Origin = _data.CurrentPoint;
 		    if (_data.HasHighlightPoint && CurrentKey != Keys.ControlKey)
 		    {
                 //_data.DragRef.Add(_data.HighlightPoints);
@@ -214,9 +214,6 @@ namespace Slugs.Agents
 	    {
 		    WorkingPad.Clear();
 		    _data.Move(e.Location.ToSKPoint());
-            //_data.CurrentPoint = e.Location.ToSKPoint();
-		    //SetHighlight();
-		    SetDragging();
 		    SetCreating();
 
 		    return true;
@@ -225,10 +222,6 @@ namespace Slugs.Agents
 	    public bool MouseUp(MouseEventArgs e)
 	    {
 		    _data.End(e.Location.ToSKPoint());
-            //_data.CurrentPoint = e.Location.ToSKPoint();
-            //UpdateHighlight(e.Location.ToSKPoint(), _data.Current);
-            //SetHighlight(true);
-		    SetDragging();
 		    SetCreating(true);
 
 		    ClearMouse();
@@ -253,10 +246,6 @@ namespace Slugs.Agents
 	    public void Clear()
         {
         }
-	    public void Draw()
-        {
-            _renderer.Draw();
-        }
 
         private bool SetCreating(bool final = false)
         {
@@ -265,14 +254,14 @@ namespace Slugs.Agents
             {
                 if (final)
                 {
-                    _data.DragRef.OffsetValues(_data.SnapPoint);
+                    //_data.DragRef.OffsetValues(_data.SnapPoint);
                     if (_data.IsDraggingPoint && _data.HasHighlightPoint)
                     {
-                        MergePoints(_data.DragRef.PointRefs, _data.HighlightPoint, _data.SnapPoint);
+                        MergePoints(_data.Origin.Snap, _data.HighlightPoint, _data.SnapPoint);
                     }
                     else if (_data.IsDraggingPoint && _data.HasHighlightLine)
                     {
-                        var dragPoint = _data.DragRef.PointRefs[0];
+                        //var dragPoint = _data.DragRef.PointRefs[0];
                     }
                     result = true;
                 }
@@ -306,16 +295,6 @@ namespace Slugs.Agents
                         }
                     }
                 }
-                result = true;
-            }
-            return result;
-        }
-        private bool SetDragging()
-        {
-            var result = false;
-            if (_data.IsDragging)
-            {
-                _data.DragRef.OffsetValues(_data.CurrentPoint);
                 result = true;
             }
             return result;

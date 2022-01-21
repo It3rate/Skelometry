@@ -15,12 +15,13 @@ namespace Slugs.Input
     {
 	    public PadKind PadKind => Snap.PadKind;
 	    public SKPoint ActualPoint { get; private set; }
+	    public SKPoint SnapPoint { get; private set; }// => HasSnap ? Snap.SKPoint : ActualPoint;
 	    public VPoint Snap { get; private set; }
 	    public SelectionKind Kind { get; set; }
 	    public SelectionExtent Extent { get; private set; }
-	    public SKPoint SnapPoint => HasSnap ? Snap.SKPoint : ActualPoint;
 	    public float T { get; set; } = 1;
 	    public bool HasSnap => Kind != SelectionKind.None;
+        public IPoint[] Points => new IPoint[]{Snap};
 
         public SelectionSet(PadKind padKind)
 	    {
@@ -32,11 +33,13 @@ namespace Slugs.Input
 	    public void Update(SKPoint position)
 	    {
 		    ActualPoint = position;
+		    SnapPoint = position;
 		    Kind = SelectionKind.None;
 	    }
 	    public void Update(SKPoint position, IPoint snap, SelectionKind kind = SelectionKind.None)
 	    {
 		    ActualPoint = position;
+		    SnapPoint = snap.SKPoint;
 		    Snap.CopyValuesFrom(snap);
 		    T = 1;
 		    Kind = (kind == SelectionKind.None) ? Kind : kind;
@@ -45,7 +48,8 @@ namespace Slugs.Input
 	    {
 		    ActualPoint = position;
 		    Snap.Update(PadKind, entityKey, traitKey, focalKey);
-		    T = t;
+		    SnapPoint = Snap.SKPoint;
+            T = t;
 		    Kind = (kind == SelectionKind.None) ? Kind : kind;
 	    }
 

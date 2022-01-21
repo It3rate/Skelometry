@@ -14,7 +14,6 @@ namespace Slugs.Agents
 
         //void UpdatePointRef(IPoint from, IPoint to);
         void Clear();
-        void Draw();
 
         bool MouseDown(MouseEventArgs e);
         bool MouseMove(MouseEventArgs e);

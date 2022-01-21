@@ -30,7 +30,7 @@ namespace Slugs.Input
 
 	    public SKPoint CurrentPoint => Current.ActualPoint;
 	    public SKPoint SnapPoint => Current.SnapPoint;
-	    public DragRef DragRef = new DragRef();
+	    //public DragRef DragRef = new DragRef();
 
 	    public bool HasHighlightPoint => Current.Kind == SelectionKind.Point;
 	    public IPoint HighlightPoint => HasHighlightPoint ? (IPoint)Current.Snap : (IPoint)Point.Empty;
@@ -50,8 +50,9 @@ namespace Slugs.Input
 	    private IElement UpdateHighlight(PadKind padKind, SKPoint p, SelectionSet sel)
 	    {
 		    IElement result = null;
+		    sel.Update(p);
 		    var pad = PadFrom(padKind);
-		    var snap = pad.GetSnapPoints(p, DragRef);
+		    var snap = pad.GetSnapPoints(p, Origin.Points);
 		    sel.Kind = SelectionKind.None;
 		    if (snap.Count > 0)
 		    {
@@ -88,7 +89,6 @@ namespace Slugs.Input
 		    {
 			    if (IsDraggingPoint)
 			    {
-				    Console.WriteLine(Origin.ActualPoint);
 				    var dif = Current.ActualPoint - Origin.ActualPoint;
                     ((Point)DragElement).SKPoint = Origin.ActualPoint + dif;
 			    }
