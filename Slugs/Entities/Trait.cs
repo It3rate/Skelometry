@@ -13,8 +13,8 @@ namespace Slugs.Entities
 
     public class Trait : ElementBase
     {
-	    public new ElementKind ElementKind => ElementKind.Trait;
-	    public new IElement EmptyElement => Empty;
+	    public override ElementKind ElementKind => ElementKind.Trait;
+	    public override IElement EmptyElement => Empty;
 	    public static Trait Empty = new Trait();
 
 	    public SegRef SegRef { get; }

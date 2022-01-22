@@ -6,8 +6,8 @@ namespace Slugs.Entities
 {
 	public class Focal : ElementBase, IEquatable<Focal>
     {
-	    public new ElementKind ElementKind => ElementKind.Focal;
-	    public new IElement EmptyElement => Empty;
+	    public override ElementKind ElementKind => ElementKind.Focal;
+	    public override IElement EmptyElement => Empty;
 	    public static Focal Empty = new Focal();
 
         public Slug Range { get; }

@@ -13,7 +13,7 @@ namespace Slugs.Entities
         bool IsEmpty { get; }
         //IPoint[] TerminalPoints { get; }
         //IPoint[] Points { get; }
-        //SKPoint[] SKPoints { get; }
+        //SKPoint[] SKPoints { get; } // maybe just use enumerators
     }
 
     public abstract class ElementBase : IElement
@@ -23,9 +23,10 @@ namespace Slugs.Entities
 
         public PadKind PadKind { get; set; }
 		public int Key { get; set; }
-		public ElementKind ElementKind => ElementKind.None;
-		public IElement EmptyElement => null;
-		public bool IsEmpty => Key == EmptyKeyValue;
+		public virtual ElementKind ElementKind => ElementKind.None;
+		public virtual IElement EmptyElement => null;
+		public virtual bool IsEmpty => Key == EmptyKeyValue;
+		//public SKPoint[] SKPoints => null;
 
 		protected ElementBase(bool isEmpty) // used to privately create an empty element
 		{
@@ -42,15 +43,20 @@ namespace Slugs.Entities
 		None,
 		Terminal,
 		Point,
-		Trait,
+		VPoint,
+        Trait,
 		Focal,
 		Bond,
 		Entity,
 		Unit,
-		Grid,
+		Group,
+		SelectionGroup,
+        PadProjection,
+        Grid,
 	}
 	public static class SelectionKindExtensions
 	{
 		public static bool HasSnap(this ElementKind kind) => (kind != ElementKind.None && kind != ElementKind.Terminal);
-	}
+		public static bool IsPoint(this ElementKind kind) => (kind == ElementKind.Terminal || kind == ElementKind.Point || kind == ElementKind.VPoint);
+    }
 }

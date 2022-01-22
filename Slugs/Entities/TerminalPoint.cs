@@ -12,8 +12,8 @@ namespace Slugs.Entities
 
     public class TerminalPoint : ElementBase, IPoint
     {
-        public new ElementKind ElementKind => ElementKind.Terminal;
-        public new IElement EmptyElement => Empty;
+        public override ElementKind ElementKind => ElementKind.Terminal;
+        public override IElement EmptyElement => Empty;
         public static TerminalPoint Empty = new TerminalPoint();
         public PointKind Kind => PointKind.Terminal;
         public SKPoint SKPoint { get; set; }

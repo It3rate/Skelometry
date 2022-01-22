@@ -12,8 +12,8 @@ namespace Slugs.Entities
 
     public class Point : ElementBase, IPoint
     {
-	    public new ElementKind ElementKind => (Kind == PointKind.Terminal) ? ElementKind.Terminal : ElementKind.Point;
-        public new IElement EmptyElement => Empty;
+	    public override ElementKind ElementKind => (Kind == PointKind.Terminal) ? ElementKind.Terminal : ElementKind.Point;
+        public override IElement EmptyElement => Empty;
         public static Point Empty = new Point();
 
 	    public PointKind Kind { get; private set; } // todo: move reference to VPoint or it's own class.

@@ -8,8 +8,8 @@ namespace Slugs.Entities
 {
 	public class VPoint : ElementBase, IPoint
 	{
-		public new ElementKind ElementKind => ElementKind.Point;
-		public new IElement EmptyElement => Empty;
+		public override ElementKind ElementKind => ElementKind.Point;
+		public override IElement EmptyElement => Empty;
 	    public static VPoint Empty = new VPoint();
 
 	    public PointKind Kind { get; private set; } = PointKind.Virtual; // all points could be vpoints if adding cached SkPoint, not doing this atm as terminal points are external.

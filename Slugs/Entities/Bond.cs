@@ -6,8 +6,8 @@ namespace Slugs.Entities
 {
 	public class Bond : ElementBase
     {
-	    public new ElementKind ElementKind => ElementKind.Bond;
-        public new IElement EmptyElement => Empty;
+	    public override ElementKind ElementKind => ElementKind.Bond;
+        public override IElement EmptyElement => Empty;
         public static readonly Bond Empty = new Bond();
 
 	    public int StartTraitKey { get; }

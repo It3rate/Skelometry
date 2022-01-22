@@ -11,6 +11,7 @@ namespace Slugs.Input
     using System.Text;
     using System.Threading.Tasks;
 
+	// Eventaully selection sets are the basis of commands
     public class SelectionSet
     {
 	    public PadKind PadKind { get; private set; }
@@ -22,7 +23,7 @@ namespace Slugs.Input
 	        get => Kind.HasSnap() ? _originSnap : OriginPoint;
 	        private set => _originSnap = value;
         }
-	    public VPoint Snap { get; private set; } // maybe this should just be an IElement?
+	    public VPoint Snap { get; private set; } // todo: this is an element key. If multi-select, it is a key to a temp group.
 	    public ElementKind Kind { get; set; }
 	    //public SelectionExtent Extent { get; private set; }
 	    public float T { get; set; } = 1;

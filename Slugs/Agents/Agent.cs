@@ -44,8 +44,8 @@ namespace Slugs.Agents
 
             _renderer = renderer;
             _renderer.Data = _data;
-            var (index, entity, trait) = InputPad.AddEntity(new SKSegment( 200, 100, 400, 300), 1);
-            InputPad.AddTrait(index, new SKSegment(290, 100, 490, 300), 1);
+            var (entity, trait) = InputPad.AddEntity(new SKSegment( 200, 100, 400, 300), 1);
+            InputPad.AddTrait(entity.Key, new SKSegment(290, 100, 490, 300), 1);
 
             ClearMouse();
         }
@@ -275,7 +275,7 @@ namespace Slugs.Agents
                     _data.DragSegment.Add(_data.SnapPoint);
                     if (_data.DragSegment[0].DistanceTo(_data.DragSegment[1]) > 10)
                     {
-	                    var (key, entity, trait) = InputPad.AddEntity(new SKSegment(_data.DownPoint,  _data.DragSegment[1]), _traitIndexCounter++);
+	                    var (entity, trait) = InputPad.AddEntity(new SKSegment(_data.DownPoint,  _data.DragSegment[1]), _traitIndexCounter++);
                         //var newDataMap = DataMap.CreateIn(InputPad, _data.DragSegment);
                         if (!_data.StartHighlight.IsEmpty)
                         {

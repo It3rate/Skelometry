@@ -19,17 +19,27 @@ namespace Slugs.Entities
         public readonly PadKind PadKind;
 
         private Agent _agent;
-        public readonly PadData Data;
+        private readonly Dictionary<int, IElement> _elements = new Dictionary<int, IElement>();
+        private readonly HashSet<int> _entityKeys = new HashSet<int>();
 
         public static Slug ActiveSlug = Slug.Unit;
         private static readonly List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
         public const float SnapDistance = 10.0f;
 
-        public IEnumerable<Entity> Entities => Data.Entities;
-        public Entity EntityAt(int key) => Data.EntityAt(key);
+        public IEnumerable<Entity> Entities
+        {
+	        get 
+	        {
+		        foreach (var key in _entityKeys)
+		        {
+			        yield return EntityAt(key);
+		        }
+	        }
+        }
+        //public Entity EntityAt(int key) => Data.EntityAt(key);
 
-        public IEnumerable<Focal> Focals => Data.Focals;
-        public Focal FocalAt(int key) => Data.FocalAt(key);
+        //public IEnumerable<Focal> Focals => Data.Focals;
+        //public Focal FocalAt(int key) => Data.FocalAt(key);
 
         private readonly List<SKSegment> _output = new List<SKSegment>();
         public IEnumerable<SKSegment> Output => _output;
@@ -38,19 +48,119 @@ namespace Slugs.Entities
         {
             PadKind = padKind;
             _agent = agent;
-            Data = new PadData(PadKind, this);
+            //Data = new PadData(PadKind, this);
             Clear();
         }
 
-        public (int, Entity, Trait) AddEntity(SKSegment seg, int traitKindIndex)
+        public void AddElement(IElement element)
         {
-	        var (key, entity) = Data.CreateEmptyEntity();
-	        var trait = AddTrait(key, seg, traitKindIndex);
-	        return (key, entity, trait);
+	        _elements.Add(element.Key, element);
+	        switch (element.ElementKind)
+	        {
+		        case ElementKind.Entity:
+			        _entityKeys.Add(element.Key);
+			        break;
+	        }
+        }
+
+        public void RemoveElement(int key)
+        {
+	        if (HasElementAt(key, out var element))
+	        {
+		        switch (element.ElementKind)
+		        {
+			        case ElementKind.Entity:
+				        _entityKeys.Remove(element.Key);
+				        break;
+		        }
+            }
+	        _elements.Remove(key);
+        }
+
+        public void ClearElements()
+        {
+            _entityKeys.Clear();
+	        _elements.Clear();
+        }
+
+        public bool HasElementAt(int key, out IElement element)
+        {
+	        _elements.TryGetValue(key, out element);
+	        return element.IsEmpty;
+        }
+        public Entity EntityAt(int key)
+        {
+	        var success = _elements.TryGetValue(key, out var result);
+	        return success && (result.ElementKind == ElementKind.Entity) ? (Entity)result : Entity.Empty;
+        }
+        public Trait TraitAt(int key)
+        {
+	        var success = _elements.TryGetValue(key, out var result);
+	        return success && (result.ElementKind == ElementKind.Trait) ? (Trait)result : Trait.Empty;
+        }
+        public Focal FocalAt(int key)
+        {
+	        var success = _elements.TryGetValue(key, out var result);
+	        return success && (result.ElementKind == ElementKind.Focal) ? (Focal)result : Focal.Empty;
+        }
+        public Bond BondAt(int key)
+        {
+	        var success = _elements.TryGetValue(key, out var result);
+	        return success && (result.ElementKind == ElementKind.Bond) ? (Bond)result : Bond.Empty;
+        }
+        public IPoint PointAt(int key)
+        {
+	        var success = _elements.TryGetValue(key, out var result);
+	        return success && result.ElementKind.IsPoint() ? (IPoint)result : Point.Empty;
+        }
+
+        public Entity CreateEntity(params Trait[] traits)
+        {
+	        var entity = new Entity(PadKind, traits);
+	        AddElement(entity);
+	        return entity;
+        }
+        public Entity GetOrCreateEntity(int entityKey)
+        {
+	        var entity = EntityAt(entityKey);
+	        return entity.IsEmpty ? CreateEntity() : entity;
+        }
+        public Trait CreateTrait(int entityKey, SKSegment seg, int traitKindIndex)
+        {
+	        var entity = GetOrCreateEntity(entityKey);
+	        var segRef = CreateTerminalSegRef(seg);
+	        var trait = new Trait(segRef, entity, traitKindIndex);
+	        entity.EmbedTrait(trait);
+	        return trait;
+        }
+        public SegRef CreateTerminalSegRef(SKSegment skSegment)
+        {
+	        var a = CreateTerminalPoint(skSegment.StartPoint);
+	        var b = CreateTerminalPoint(skSegment.EndPoint);
+	        return new SegRef(a, b);
+        }
+        public Point CreateTerminalPoint(SKPoint pt)
+        {
+	        var point = new Point(PadKind, pt);
+	        AddElement(point);
+	        return point;
+        }
+        public Focal CreateFocal(float focus, Slug slug)
+        {
+            var focal = new Focal(PadKind, focus, slug);
+            AddElement(focal);
+	        return focal;
+        }
+
+        public (Entity, Trait) AddEntity(SKSegment seg, int traitKindIndex)
+        {
+	        var entity = CreateEntity();
+	        var trait = AddTrait(entity.Key, seg, traitKindIndex);
+	        return (entity, trait);
         }
         public Trait AddTrait(int entityKey, SKSegment seg, int traitKindIndex)
         {
-	        var entity = Data.GetOrCreateEntity(entityKey);
+	        var entity = GetOrCreateEntity(entityKey);
 	        var segRef = _agent.CreateTerminalSegRef(PadKind, seg);
             var trait = new Trait(segRef, entity, traitKindIndex);
             entity.EmbedTrait(trait);
@@ -58,7 +168,7 @@ namespace Slugs.Entities
         }
         public void Clear()
         {
-            Data.Clear();
+            ClearElements();
         }
         public void Refresh()
         {
@@ -103,7 +213,7 @@ namespace Slugs.Entities
         {
             var result = Trait.Empty;
             int lineIndex = 0;
-            foreach (var entity in Data.Entities)
+            foreach (var entity in Entities)
             {
 	            foreach (var trait in entity.Traits)
 	            {

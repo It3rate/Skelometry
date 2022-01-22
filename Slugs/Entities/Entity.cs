@@ -7,9 +7,9 @@ namespace Slugs.Entities
 {
 	public class Entity : ElementBase
     {
-	    public new ElementKind ElementKind => ElementKind.Entity;
-	    public new IElement EmptyElement => Empty;
-        public static Entity Empty = new Entity();
+	    public override ElementKind ElementKind => ElementKind.Entity;
+	    public override IElement EmptyElement => Empty;
+	    public static Entity Empty = new Entity();
 
         // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segRef of it is local.
 
@@ -38,9 +38,8 @@ namespace Slugs.Entities
         #endregion
 
 	    private Entity() : base(PadKind.None) { }
-        public Entity(PadKind padKind, int entityKey, params Trait[] segs) : base(padKind)
+        public Entity(PadKind padKind, params Trait[] segs) : base(padKind)
         {
-	        Key = entityKey;
 		    foreach (var segRef in segs)
 		    {
 			    EmbedTrait(segRef);
