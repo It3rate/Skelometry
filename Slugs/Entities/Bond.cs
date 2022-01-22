@@ -3,8 +3,11 @@ using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
-	public readonly struct Bond : IElement
+	public class Bond : IElement
     {
+	    public ElementKind ElementKind => ElementKind.Bond;
+        public int Key { get; set; }
+
         public static readonly Bond Empty = new Bond(-2);
         public bool IsEmpty => StartIndex == -2;
 

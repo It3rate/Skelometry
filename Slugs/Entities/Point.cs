@@ -12,6 +12,8 @@ namespace Slugs.Entities
 
     public class Point : IPoint
     {
+	    public ElementKind ElementKind => (Kind == PointKind.Terminal) ? ElementKind.Terminal : ElementKind.Point;
+
         public static Point Empty = new Point();
 	    private Point() { Key = -99; SKPoint = SKPoint.Empty; }
         public bool IsEmpty => Key == -99;
@@ -20,7 +22,7 @@ namespace Slugs.Entities
 
 	    public int Key { get; private set; }
 	    public PadKind PadKind { get; set; }
-	    public PointKind Kind { get; private set; } // probably should more reference to VPoint.
+	    public PointKind Kind { get; private set; } // todo: move reference to VPoint or it's own class.
         private SKPoint _point;
         public SKPoint SKPoint
         {

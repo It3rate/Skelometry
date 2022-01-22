@@ -14,45 +14,82 @@ namespace Slugs.Input
     public class SelectionSet
     {
 	    public PadKind PadKind => Snap.PadKind;
-	    public SKPoint ActualPoint { get; private set; }
-	    public SKPoint SnapPoint { get; private set; }// => HasSnap ? Snap.SKPoint : ActualPoint;
-	    public VPoint Snap { get; private set; }
-	    public SelectionKind Kind { get; set; }
-	    public SelectionExtent Extent { get; private set; }
+        // todo: all origin/snaps are lists, used for undo. Any multiple VPoint selections would probably be temp groups, but maybe collections too.
+        public SKPoint OriginPoint { get; private set; }
+        private SKPoint _originSnap;
+        public SKPoint OriginSnap
+        {
+	        get => Kind.HasSnap() ? _originSnap : OriginPoint;
+	        private set => _originSnap = value;
+        }
+	    public VPoint Snap { get; private set; } // maybe this should just be an IElement?
+	    public ElementKind Kind { get; set; }
+	    //public SelectionExtent Extent { get; private set; }
 	    public float T { get; set; } = 1;
-	    public bool HasSnap => Kind != SelectionKind.None;
-        public IPoint[] Points => new IPoint[]{Snap};
+
+        public IPoint[] Points
+        {
+	        get
+	        {
+		        var result = new List<IPoint>();
+		        switch (Kind)
+		        {
+			        case ElementKind.Point:
+                        result.Add(T > 0.5f ? Snap.GetEndPoint() : Snap.GetStartPoint());
+				        break;
+			        case ElementKind.Trait:
+				        var trait = Snap.GetTrait();
+				        result.Add(trait.StartRef);
+				        result.Add(trait.EndRef);
+                        break;
+                }
+		        return result.ToArray();
+	        }
+        }
 
         public SelectionSet(PadKind padKind)
 	    {
 		    Snap = new VPoint(padKind, -1, -1, -1);
-		    ActualPoint = new SKPoint(0, 0);
-		    Kind = SelectionKind.None;
+		    OriginPoint = new SKPoint(0, 0);
+		    Kind = ElementKind.None;
 	    }
 
-	    public void Update(SKPoint position)
+        public void Set(SKPoint position)
+        {
+	        OriginPoint = position;
+	        OriginSnap = position;
+	        Kind = ElementKind.None;
+        }
+
+        public void Update(SKPoint position)
 	    {
-		    ActualPoint = position;
-		    SnapPoint = position;
-		    Kind = SelectionKind.None;
+		    OriginPoint = position;
+		    OriginSnap = position;
+		    Kind = ElementKind.Terminal;
 	    }
-	    public void Update(SKPoint position, IPoint snap, SelectionKind kind = SelectionKind.None)
+	    public void Update(SKPoint position, IPoint snap, ElementKind kind = ElementKind.None)
 	    {
-		    ActualPoint = position;
-		    SnapPoint = snap.SKPoint;
+		    OriginPoint = position;
+		    OriginSnap = snap.SKPoint;
 		    Snap.CopyValuesFrom(snap);
 		    T = 1;
-		    Kind = (kind == SelectionKind.None) ? Kind : kind;
+		    Kind = (kind == ElementKind.None) ? Kind : kind;
         }
-	    public void Update(SKPoint position, int entityKey, int traitKey, int focalKey, float t, SelectionKind kind = SelectionKind.None)
+	    public void Update(SKPoint position, int entityKey, int traitKey, int focalKey, float t, ElementKind kind = ElementKind.None)
 	    {
-		    ActualPoint = position;
+		    OriginPoint = position;
 		    Snap.Update(PadKind, entityKey, traitKey, focalKey);
-		    SnapPoint = Snap.SKPoint;
+		    OriginSnap = Snap.SKPoint;
             T = t;
-		    Kind = (kind == SelectionKind.None) ? Kind : kind;
+		    Kind = (kind == ElementKind.None) ? Kind : kind;
 	    }
 
+	    public void Clear()
+	    {
+		    OriginPoint = SKPoint.Empty;
+		    OriginSnap = SKPoint.Empty;
+		    Kind = ElementKind.None;
+	    }
         // All selectable elements can be represented by their points? Need for offset, highlighting, 
         public IPoint[] GetElementPoints()
 	    {
@@ -66,16 +103,5 @@ namespace Slugs.Input
 	    Point,
 	    Line,
 	    Linkages,
-    }
-    public enum SelectionKind
-    {
-	    None,
-	    Point,
-	    Trait,
-	    Focal,
-	    Bond,
-        Entity,
-	    Unit,
-	    Grid,
     }
 }

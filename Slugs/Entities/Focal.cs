@@ -6,6 +6,8 @@ namespace Slugs.Entities
 {
 	public class Focal : IElement, IEquatable<Focal>
     {
+	    public ElementKind ElementKind => ElementKind.Focal;
+
         public static Focal Empty = new Focal();
         public bool IsEmpty => Key == -1;
 

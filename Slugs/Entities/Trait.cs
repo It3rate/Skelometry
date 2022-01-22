@@ -13,7 +13,9 @@ namespace Slugs.Entities
 
     public class Trait : IElement
     {
-	    private static int _counter = 0;
+	    public ElementKind ElementKind => ElementKind.Trait;
+
+        private static int _counter = 0;
 
         public static Trait Empty = new Trait( SegRef.Empty, Entity.Empty, -1);
         public bool IsEmpty => KindIndex == -1;

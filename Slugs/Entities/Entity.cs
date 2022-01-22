@@ -7,6 +7,8 @@ namespace Slugs.Entities
 {
 	public class Entity : IElement
     {
+	    public ElementKind ElementKind => ElementKind.Entity;
+
         public static Entity Empty = new Entity(PadKind.None, -1);
         public bool IsEmpty => (Key == -1);
 
@@ -18,7 +20,6 @@ namespace Slugs.Entities
 		#region Traits
 
 	    private Dictionary<int, Trait> _traits { get; } = new Dictionary<int, Trait>(); 
-	    public bool HasTraits => _traits.Count > 0;
 	    public IEnumerable<Trait> Traits => _traits.Values;
 	    public Trait TraitAt(int key)
 	    {
@@ -26,10 +27,6 @@ namespace Slugs.Entities
 		    return success ? result : Trait.Empty;
 	    }
 	    public void EmbedTrait(Trait trait)
-	    {
-		    _traits.Add(trait.Key, trait);
-	    }
-	    public void LinkTrait(Trait trait)
 	    {
 		    _traits.Add(trait.Key, trait);
 	    }

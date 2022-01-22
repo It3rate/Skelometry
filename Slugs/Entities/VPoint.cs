@@ -7,7 +7,9 @@ using Slugs.Pads;
 namespace Slugs.Entities
 {
 	public class VPoint : IPoint
-    {
+	{
+		public ElementKind ElementKind => ElementKind.Point;
+
 	    public static VPoint Empty = new VPoint();
 	    private VPoint() { Key = -99; }
 	    public bool IsEmpty => Key == -99;
@@ -40,6 +42,8 @@ namespace Slugs.Entities
         public Trait GetTrait() => Agent.Current.PadAt(PadKind).EntityAt(EntityKey).TraitAt(TraitKey);
         public Focal GetFocal() => Agent.Current.PadAt(PadKind).FocalAt(FocalKey);
         public float GetT() => Agent.Current.PadAt(PadKind).FocalAt(FocalKey).T;
+        public IPoint GetStartPoint() => Agent.Current.PadAt(PadKind).EntityAt(EntityKey).TraitAt(TraitKey).StartRef;
+        public IPoint GetEndPoint() => Agent.Current.PadAt(PadKind).EntityAt(EntityKey).TraitAt(TraitKey).EndRef;
 
 
         public bool ReplaceWith(IPoint to)

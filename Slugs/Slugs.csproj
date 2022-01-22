@@ -96,7 +96,6 @@
     <Compile Include="Input\SelectionSet.cs" />
     <Compile Include="Pads\Pad.cs" />
     <Compile Include="Input\UIData.cs" />
-    <Compile Include="Input\DragRef.cs" />
     <Compile Include="Primitives\SkPointExtension.cs" />
     <Compile Include="Primitives\SKSegment.cs" />
     <Compile Include="Entities\Bond.cs" />

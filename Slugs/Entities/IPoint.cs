@@ -8,7 +8,6 @@ namespace Slugs.Entities
 	public interface IPoint : IElement, IEquatable<IPoint>
     {
 	    PadKind PadKind { get; set; }
-        int Key { get; }
         PointKind Kind { get; }
         SKPoint SKPoint { get; set; }
 	    bool IsEmpty { get; }

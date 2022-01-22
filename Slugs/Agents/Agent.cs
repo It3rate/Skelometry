@@ -15,6 +15,7 @@ namespace Slugs.Agents
     {
 	    public static Agent Current { get; private set; }
 
+        // todo: Move all collections to agents, maybe duplicate keys in entities etc if useful, though filters amount to the same.
 	    private readonly Dictionary<int, IPoint> _pointMap = new Dictionary<int, IPoint>();
 	    private readonly Dictionary<int, Focal> _focalMap = new Dictionary<int, Focal>();
 
@@ -171,8 +172,8 @@ namespace Slugs.Agents
         {
             _data.Reset();
             //_data.DownPoint = SKPoint.Empty;
-            //_data.CurrentPoint = SKPoint.Empty;
-            //_data.SnapPoint = SKPoint.Empty;
+            //_data.OriginPoint = SKPoint.Empty;
+            //_data.OriginSnap = SKPoint.Empty;
             //_data.DownPoint = SKPoint.Empty;
             //_data.StartHighlight = Point.Empty;
 
@@ -187,10 +188,10 @@ namespace Slugs.Agents
 	        var curPt = e.Location.ToSKPoint();
             _data.Start(curPt);
             //UpdateHighlight(curPt, _data.Origin);
-		    //_data.CurrentPoint = e.Location.ToSKPoint();
+		    //_data.OriginPoint = e.Location.ToSKPoint();
 		    //SetHighlight();
-		    //_data.DownPoint = _data.SnapPoint;
-		    //_data.DragRef.Origin = _data.CurrentPoint;
+		    //_data.DownPoint = _data.OriginSnap;
+		    //_data.DragRef.Origin = _data.OriginPoint;
 		    if (_data.HasHighlightPoint && CurrentKey != Keys.ControlKey)
 		    {
                 //_data.DragRef.Add(_data.HighlightPoints);
@@ -203,7 +204,7 @@ namespace Slugs.Agents
             }
 		    else
 		    {
-			    //_data.DragSegment.Add(_data.SnapPoint);
+			    //_data.DragSegment.Add(_data.OriginSnap);
 			    //_data.StartHighlight = _data.HighlightPoint;
 		    }
 
@@ -254,7 +255,7 @@ namespace Slugs.Agents
             {
                 if (final)
                 {
-                    //_data.DragRef.OffsetValues(_data.SnapPoint);
+                    //_data.DragRef.OffsetValues(_data.OriginSnap);
                     if (_data.IsDraggingPoint && _data.HasHighlightPoint)
                     {
                         MergePoints(_data.Origin.Snap, _data.HighlightPoint, _data.SnapPoint);
