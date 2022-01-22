@@ -13,7 +13,7 @@ namespace Slugs.Input
 
     public class SelectionSet
     {
-	    public PadKind PadKind => Snap.PadKind;
+	    public PadKind PadKind { get; private set; }
         // todo: all origin/snaps are lists, used for undo. Any multiple VPoint selections would probably be temp groups, but maybe collections too.
         public SKPoint OriginPoint { get; private set; }
         private SKPoint _originSnap;
@@ -34,8 +34,16 @@ namespace Slugs.Input
 		        var result = new List<IPoint>();
 		        switch (Kind)
 		        {
-			        case ElementKind.Point:
-                        result.Add(T > 0.5f ? Snap.GetEndPoint() : Snap.GetStartPoint());
+			        case ElementKind.Terminal:
+                    case ElementKind.Point:
+				        if (Snap.Kind == PointKind.Virtual)
+				        {
+					        result.Add(T > 0.5f ? Snap.GetEndPoint() : Snap.GetStartPoint());
+				        }
+				        else
+				        {
+                            result.Add(Agent.Current.PointAt(Snap.Key));
+				        }
 				        break;
 			        case ElementKind.Trait:
 				        var trait = Snap.GetTrait();
@@ -48,7 +56,8 @@ namespace Slugs.Input
         }
 
         public SelectionSet(PadKind padKind)
-	    {
+        {
+	        PadKind = padKind;
 		    Snap = new VPoint(padKind, -1, -1, -1);
 		    OriginPoint = new SKPoint(0, 0);
 		    Kind = ElementKind.None;
@@ -70,10 +79,10 @@ namespace Slugs.Input
 	    public void Update(SKPoint position, IPoint snap, ElementKind kind = ElementKind.None)
 	    {
 		    OriginPoint = position;
+		    Kind = (kind == ElementKind.None) ? Kind : kind;
 		    OriginSnap = snap.SKPoint;
 		    Snap.CopyValuesFrom(snap);
 		    T = 1;
-		    Kind = (kind == ElementKind.None) ? Kind : kind;
         }
 	    public void Update(SKPoint position, int entityKey, int traitKey, int focalKey, float t, ElementKind kind = ElementKind.None)
 	    {

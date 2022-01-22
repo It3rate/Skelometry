@@ -4,16 +4,11 @@ using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
-	public class Focal : IElement, IEquatable<Focal>
+	public class Focal : ElementBase, IEquatable<Focal>
     {
-	    public ElementKind ElementKind => ElementKind.Focal;
-
-        public static Focal Empty = new Focal();
-        public bool IsEmpty => Key == -1;
-
-	    private static int _counter = 1;
-	    public PadKind PadKind { get; private set; }
-        public int Key { get; set; }
+	    public new ElementKind ElementKind => ElementKind.Focal;
+	    public new IElement EmptyElement => Empty;
+	    public static Focal Empty = new Focal();
 
         public Slug Range { get; }
 	    public float Focus { get; set; }
@@ -21,12 +16,10 @@ namespace Slugs.Entities
 
         public float T => Range.IsZeroLength ? 0 : (float)(Range.Length() / Focus + Range.Start);
 
-        private Focal() {Key = -1; Range = Slug.Empty;}
+        private Focal() : base(PadKind.None) {Range = Slug.Empty;}
         //public Focal(int padKind, float focus) : this(padKind, focus, Slug.Unit){}
-	    public Focal(PadKind padKind, float focus, Slug range)
+	    public Focal(PadKind padKind, float focus, Slug range) : base(padKind)
 	    {
-		    Key = _counter++;
-		    PadKind = padKind;
 		    Kind = PointKind.Terminal;
 		    Focus = focus;
 		    Range = range;

@@ -6,27 +6,21 @@ using Slugs.Pads;
 
 namespace Slugs.Entities
 {
-	public class VPoint : IPoint
+	public class VPoint : ElementBase, IPoint
 	{
-		public ElementKind ElementKind => ElementKind.Point;
-
+		public new ElementKind ElementKind => ElementKind.Point;
+		public new IElement EmptyElement => Empty;
 	    public static VPoint Empty = new VPoint();
-	    private VPoint() { Key = -99; }
-	    public bool IsEmpty => Key == -99;
 
-        private static int _counter = int.MaxValue / 2;
+	    public PointKind Kind { get; private set; } = PointKind.Virtual; // all points could be vpoints if adding cached SkPoint, not doing this atm as terminal points are external.
 
-        public PointKind Kind { get; private set; } = PointKind.Virtual; // all points could be vpoints if adding cached SkPoint, not doing this atm as terminal points are external.
-        public int Key { get; private set; }
-        public PadKind PadKind { get; set; }
         public int EntityKey { get; set; } // if motor index < 0, use cached point.
         public int TraitKey { get; set; }
         public int FocalKey { get; set; }
 
-        public VPoint(PadKind padKind, int entityKey, int traitKey, int focalKey)
+        private VPoint():base(true) { }
+        public VPoint(PadKind padKind, int entityKey, int traitKey, int focalKey) : base(padKind)
         {
-	        Key = _counter++;
-		    PadKind = padKind;
 		    EntityKey = entityKey;
 		    TraitKey = traitKey;
             FocalKey = focalKey;

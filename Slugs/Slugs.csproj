@@ -92,7 +92,9 @@
     <Compile Include="Agents\Agent.cs" />
     <Compile Include="Agents\IAgent.cs" />
     <Compile Include="Entities\Point.cs" />
+    <Compile Include="Entities\TerminalPoint.cs" />
     <Compile Include="Entities\Trait.cs" />
+    <Compile Include="Input\KeyedCollection.cs" />
     <Compile Include="Input\SelectionSet.cs" />
     <Compile Include="Pads\Pad.cs" />
     <Compile Include="Input\UIData.cs" />

@@ -10,18 +10,12 @@ namespace Slugs.Entities
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Point : IPoint
+    public class Point : ElementBase, IPoint
     {
-	    public ElementKind ElementKind => (Kind == PointKind.Terminal) ? ElementKind.Terminal : ElementKind.Point;
-
+	    public new ElementKind ElementKind => (Kind == PointKind.Terminal) ? ElementKind.Terminal : ElementKind.Point;
+        public new IElement EmptyElement => Empty;
         public static Point Empty = new Point();
-	    private Point() { Key = -99; SKPoint = SKPoint.Empty; }
-        public bool IsEmpty => Key == -99;
 
-	    private static int _counter = 1;
-
-	    public int Key { get; private set; }
-	    public PadKind PadKind { get; set; }
 	    public PointKind Kind { get; private set; } // todo: move reference to VPoint or it's own class.
         private SKPoint _point;
         public SKPoint SKPoint
@@ -44,11 +38,10 @@ namespace Slugs.Entities
 	        }
         }
 
-	    public Point(PadKind padKind, SKPoint point)
+        private Point() :base(true){ SKPoint = SKPoint.Empty; }
+	    public Point(PadKind padKind, SKPoint point) : base(padKind)
 	    {
-		    Key = _counter++;
 		    Kind = PointKind.Terminal;
-		    PadKind = padKind;
 		    _point = point;
 	    }
 

@@ -5,15 +5,11 @@ using SegRef = Slugs.Primitives.SegRef;
 
 namespace Slugs.Entities
 {
-	public class Entity : IElement
+	public class Entity : ElementBase
     {
-	    public ElementKind ElementKind => ElementKind.Entity;
-
-        public static Entity Empty = new Entity(PadKind.None, -1);
-        public bool IsEmpty => (Key == -1);
-
-        public PadKind PadKind { get; }
-        public int Key { get; }
+	    public new ElementKind ElementKind => ElementKind.Entity;
+	    public new IElement EmptyElement => Empty;
+        public static Entity Empty = new Entity();
 
         // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segRef of it is local.
 
@@ -39,11 +35,11 @@ namespace Slugs.Entities
 	    public IEnumerable<Bond> Bonds => _bonds;
 	    public Bond BondAt(int key) => _bonds[key];
 
-#endregion
+        #endregion
 
-        public Entity(PadKind padKind, int entityKey, params Trait[] segs)
+	    private Entity() : base(PadKind.None) { }
+        public Entity(PadKind padKind, int entityKey, params Trait[] segs) : base(padKind)
         {
-	        PadKind = padKind;
 	        Key = entityKey;
 		    foreach (var segRef in segs)
 		    {

@@ -7,16 +7,13 @@ namespace Slugs.Entities
 {
 	public interface IPoint : IElement, IEquatable<IPoint>
     {
-	    PadKind PadKind { get; set; }
         PointKind Kind { get; }
         SKPoint SKPoint { get; set; }
-	    bool IsEmpty { get; }
-
-	    Pad GetPad();
-	    Entity GetEntity();
-	    Trait GetTrait();
-	    Focal GetFocal();
-        float GetT();
+        //Pad GetPad();
+	    //Entity GetEntity();
+	    //Trait GetTrait();
+	    //Focal GetFocal();
+     //   float GetT();
 
         bool ReplaceWith(IPoint pt);
 	    void CopyValuesFrom(IPoint from);

@@ -11,14 +11,11 @@ namespace Slugs.Entities
 
     public struct TraitKind{}
 
-    public class Trait : IElement
+    public class Trait : ElementBase
     {
-	    public ElementKind ElementKind => ElementKind.Trait;
-
-        private static int _counter = 0;
-
-        public static Trait Empty = new Trait( SegRef.Empty, Entity.Empty, -1);
-        public bool IsEmpty => KindIndex == -1;
+	    public new ElementKind ElementKind => ElementKind.Trait;
+	    public new IElement EmptyElement => Empty;
+	    public static Trait Empty = new Trait();
 
 	    public SegRef SegRef { get; }
 	    public int KindIndex { get; }
@@ -39,13 +36,17 @@ namespace Slugs.Entities
 	        set => SegRef.EndPoint = value;
         }
 
-        public int Key { get; }
         private Entity _entity { get; }
         public int EntityKey => _entity.Key;
 
-        public Trait(SegRef segRef, Entity entity, int traitKindIndex)
+        private Trait() : base(true)
         {
-	        Key = _counter++;
+            _entity = Entity.Empty;
+            SegRef = SegRef.Empty;
+            KindIndex = -1;
+        }
+        public Trait(SegRef segRef, Entity entity, int traitKindIndex) : base(entity.PadKind)
+        {
 	        _entity = entity;
 		    SegRef = segRef;
 		    KindIndex = traitKindIndex;

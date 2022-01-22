@@ -1,33 +1,32 @@
 ﻿
+using Slugs.Pads;
 using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
-	public class Bond : IElement
+	public class Bond : ElementBase
     {
-	    public ElementKind ElementKind => ElementKind.Bond;
-        public int Key { get; set; }
+	    public new ElementKind ElementKind => ElementKind.Bond;
+        public new IElement EmptyElement => Empty;
+        public static readonly Bond Empty = new Bond();
 
-        public static readonly Bond Empty = new Bond(-2);
-        public bool IsEmpty => StartIndex == -2;
-
-	    public int StartIndex { get; }
+	    public int StartTraitKey { get; }
 	    public Slug StartSlug { get; }
-	    public int EndIndex { get; }
+	    public int EndTraitKey { get; }
 	    public Slug EndSlug { get; }
 
-	    private Bond(int index) // Empty ctor
+	    private Bond() : base(true) // Empty ctor
 	    {
-		    StartIndex = index;
+		    StartTraitKey = -1;
             StartSlug = Slug.Empty;
-		    EndIndex = index;
+		    EndTraitKey = -1;
             EndSlug = Slug.Empty;
 	    }
-	    public Bond(int startIndex, Slug startSlug, int endIndex, Slug endSlug)
+	    public Bond(Trait startTrait, Slug startSlug, Trait endTrait, Slug endSlug) : base(startTrait.PadKind)
 	    {
-		    StartIndex = startIndex;
+		    StartTraitKey = startTrait.Key;
 		    StartSlug = startSlug;
-		    EndIndex = endIndex;
+		    EndTraitKey = endTrait.Key;
 		    EndSlug = endSlug;
 	    }
     }
