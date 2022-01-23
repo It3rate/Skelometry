@@ -12,7 +12,7 @@ namespace Slugs.Entities
 
         public Slug Range { get; }
 	    public float Focus { get; set; }
-	    public PointKind Kind { get; set; }
+	    //public PointKind Kind { get; set; }
 
         public float T => Range.IsZeroLength ? 0 : (float)(Range.Length() / Focus + Range.Start);
 
@@ -20,7 +20,7 @@ namespace Slugs.Entities
         //public Focal(int padKind, float focus) : this(padKind, focus, Slug.Unit){}
 	    public Focal(PadKind padKind, float focus, Slug range) : base(padKind)
 	    {
-		    Kind = PointKind.Terminal;
+		    //Kind = PointKind.Terminal;
 		    Focus = focus;
 		    Range = range;
         }

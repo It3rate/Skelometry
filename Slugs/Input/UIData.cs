@@ -20,13 +20,13 @@ namespace Slugs.Input
 
         public IElement DragElement { get; set; }
         public bool IsDraggingElement => DragElement != null;
-        public bool IsDraggingPoint => Origin.Kind == ElementKind.Point && IsDraggingElement;
+        public bool IsDraggingPoint => Origin.Kind == ElementKind.RefPoint && IsDraggingElement;
         public readonly List<SKPoint> DragSegment = new List<SKPoint>();
 
 
         public bool IsDown { get; private set; }
 	    public bool IsDragging { get; private set; }
-	    //public bool IsDraggingPoint => IsDragging && Origin.Extent == SelectionExtent.Point;
+	    //public bool IsDraggingPoint => IsDragging && Origin.Extent == SelectionExtent.RefPoint;
 
         public SKPoint DownPoint => Origin.OriginPoint;
 	    public IPoint StartHighlight => Origin.Snap;
@@ -35,8 +35,8 @@ namespace Slugs.Input
 	    public SKPoint SnapPoint => Current.OriginSnap;
 	    //public DragRef DragRef = new DragRef();
 
-	    public bool HasHighlightPoint => Current.Kind == ElementKind.Point;
-	    public IPoint HighlightPoint => HasHighlightPoint ? (IPoint)Current.Snap : (IPoint)Point.Empty;
+	    public bool HasHighlightPoint => Current.Kind == ElementKind.RefPoint;
+	    public IPoint HighlightPoint => HasHighlightPoint ? (IPoint)Current.Snap : (IPoint)RefPoint.Empty;
 	    public bool HasHighlightLine => Current.Kind == ElementKind.Trait;
         public Trait HighlightLine => HasHighlightLine ? Current.Snap.GetTrait() : Trait.Empty;
 
@@ -61,7 +61,7 @@ namespace Slugs.Input
 			    result = snap[0];
 			    foreach (var sel in sels)
 			    {
-					sel.Update(p, snap[0], ElementKind.Point);
+					sel.Update(p, snap[0], ElementKind.RefPoint);
 			    }
 		    }
 		    else

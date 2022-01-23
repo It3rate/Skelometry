@@ -15,7 +15,7 @@ namespace Slugs.Entities
         public override ElementKind ElementKind => ElementKind.Terminal;
         public override IElement EmptyElement => Empty;
         public static TerminalPoint Empty = new TerminalPoint();
-        public PointKind Kind => PointKind.Terminal;
+        //public PointKind Kind => PointKind.Terminal;
         public SKPoint SKPoint { get; set; }
 
         private TerminalPoint() : base(true) { SKPoint = SKPoint.Empty; }
@@ -26,7 +26,7 @@ namespace Slugs.Entities
 
         public bool ReplaceWith(IPoint pt)
         {
-            Agent.Current.SetPointAt(Key, pt);
+            Pad.SetPointAt(Key, pt);
             return true;
         }
 

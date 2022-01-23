@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms.VisualStyles;
 using SkiaSharp;
+using Slugs.Agents;
 using Slugs.Pads;
 
 namespace Slugs.Entities
@@ -7,6 +8,7 @@ namespace Slugs.Entities
 	public interface IElement
     {
 	    PadKind PadKind { get; set; }
+	    Pad Pad { get; }
         ElementKind ElementKind { get; }
         int Key { get; }
         IElement EmptyElement { get; }
@@ -20,12 +22,14 @@ namespace Slugs.Entities
     {
 	    protected static int KeyCounter = 1;
 	    protected const int EmptyKeyValue = -99;
+		public virtual bool IsEmpty => Key == EmptyKeyValue;
 
         public PadKind PadKind { get; set; }
+        public Pad Pad => Agent.Current.PadAt(PadKind);
 		public int Key { get; set; }
-		public virtual ElementKind ElementKind => ElementKind.None;
-		public virtual IElement EmptyElement => null;
-		public virtual bool IsEmpty => Key == EmptyKeyValue;
+
+		public abstract IElement EmptyElement { get; }
+		public abstract ElementKind ElementKind { get; }
 		//public SKPoint[] SKPoints => null;
 
 		protected ElementBase(bool isEmpty) // used to privately create an empty element
@@ -42,7 +46,7 @@ namespace Slugs.Entities
 	{
 		None,
 		Terminal,
-		Point,
+		RefPoint,
 		VPoint,
         Trait,
 		Focal,
@@ -57,6 +61,6 @@ namespace Slugs.Entities
 	public static class SelectionKindExtensions
 	{
 		public static bool HasSnap(this ElementKind kind) => (kind != ElementKind.None && kind != ElementKind.Terminal);
-		public static bool IsPoint(this ElementKind kind) => (kind == ElementKind.Terminal || kind == ElementKind.Point || kind == ElementKind.VPoint);
+		public static bool IsPoint(this ElementKind kind) => (kind == ElementKind.Terminal || kind == ElementKind.RefPoint || kind == ElementKind.VPoint);
     }
 }

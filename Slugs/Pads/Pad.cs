@@ -4,7 +4,6 @@ using Slugs.Agents;
 using Slugs.Input;
 using Slugs.Pads;
 using Slugs.Primitives;
-using SegRef = Slugs.Primitives.SegRef;
 
 namespace Slugs.Entities
 {
@@ -21,6 +20,7 @@ namespace Slugs.Entities
         private Agent _agent;
         private readonly Dictionary<int, IElement> _elements = new Dictionary<int, IElement>();
         private readonly HashSet<int> _entityKeys = new HashSet<int>();
+        private readonly HashSet<int> _pointKeys = new HashSet<int>();
 
         public static Slug ActiveSlug = Slug.Unit;
         private static readonly List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
@@ -28,11 +28,22 @@ namespace Slugs.Entities
 
         public IEnumerable<Entity> Entities
         {
-	        get 
+	        get
 	        {
 		        foreach (var key in _entityKeys)
 		        {
 			        yield return EntityAt(key);
+		        }
+	        }
+        }
+        public IEnumerable<IPoint> Points
+        {
+	        get
+	        {
+		        var points = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint());
+                foreach (var kvp in points)
+		        {
+			        yield return (IPoint)kvp.Value;
 		        }
 	        }
         }
@@ -111,7 +122,23 @@ namespace Slugs.Entities
         public IPoint PointAt(int key)
         {
 	        var success = _elements.TryGetValue(key, out var result);
-	        return success && result.ElementKind.IsPoint() ? (IPoint)result : Point.Empty;
+	        return success && result.ElementKind.IsPoint() ? (IPoint)result : RefPoint.Empty;
+        }
+        public void SetPointAt(int key, IPoint point)
+        {
+	        _elements[key] = point;
+        }
+        public TerminalPoint TerminalPointAt(int key)
+        {
+	        var success = _elements.TryGetValue(key, out var result);
+	        return success && result.ElementKind == ElementKind.Terminal ? (TerminalPoint)result : TerminalPoint.Empty;
+        }
+        public void MergePoints(IPoint from, IPoint to, SKPoint position)
+        {
+	        to.SKPoint = position;
+	        var terminal = TerminalPointAt(to.Key);
+            var point = new RefPoint(PadKind, to.Key);
+            SetPointAt(from.Key, point);
         }
 
         public Entity CreateEntity(params Trait[] traits)
@@ -125,23 +152,9 @@ namespace Slugs.Entities
 	        var entity = EntityAt(entityKey);
 	        return entity.IsEmpty ? CreateEntity() : entity;
         }
-        public Trait CreateTrait(int entityKey, SKSegment seg, int traitKindIndex)
+        public TerminalPoint CreateTerminalPoint(SKPoint pt)
         {
-	        var entity = GetOrCreateEntity(entityKey);
-	        var segRef = CreateTerminalSegRef(seg);
-	        var trait = new Trait(segRef, entity, traitKindIndex);
-	        entity.EmbedTrait(trait);
-	        return trait;
-        }
-        public SegRef CreateTerminalSegRef(SKSegment skSegment)
-        {
-	        var a = CreateTerminalPoint(skSegment.StartPoint);
-	        var b = CreateTerminalPoint(skSegment.EndPoint);
-	        return new SegRef(a, b);
-        }
-        public Point CreateTerminalPoint(SKPoint pt)
-        {
-	        var point = new Point(PadKind, pt);
+	        var point = new TerminalPoint(PadKind, pt);
 	        AddElement(point);
 	        return point;
         }
@@ -161,8 +174,9 @@ namespace Slugs.Entities
         public Trait AddTrait(int entityKey, SKSegment seg, int traitKindIndex)
         {
 	        var entity = GetOrCreateEntity(entityKey);
-	        var segRef = _agent.CreateTerminalSegRef(PadKind, seg);
-            var trait = new Trait(segRef, entity, traitKindIndex);
+	        var start = CreateTerminalPoint(seg.StartPoint);
+	        var end = CreateTerminalPoint(seg.EndPoint);
+	        var trait = new Trait(start, end, entity, traitKindIndex);
             entity.EmbedTrait(trait);
 	        return trait;
         }
@@ -187,19 +201,10 @@ namespace Slugs.Entities
             }
         }
 
-        public void UpdatePoint(IPoint point, SKPoint pt)
-        {
-	        point.SKPoint = pt;
-        }
-        public void UpdatePointRef(IPoint point, IPoint value)
-        {
-	        _agent.SetPointAt(point.Key, value);
-        }
-
         public List<IPoint> GetSnapPoints(SKPoint input, IPoint[] ignorePoints, float maxDist = SnapDistance)
         {
             var result = new List<IPoint>();
-            foreach (var ptRef in _agent.Points) // use entities and traits rather than points?
+            foreach (var ptRef in Points) // use entities and traits rather than points?
             {
 	            if (ptRef.PadKind == PadKind && !ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.SKPoint) < maxDist)
 	            {

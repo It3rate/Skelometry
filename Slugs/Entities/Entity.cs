@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SkiaSharp;
 using Slugs.Pads;
-using SegRef = Slugs.Primitives.SegRef;
 
 namespace Slugs.Entities
 {
@@ -11,7 +10,7 @@ namespace Slugs.Entities
 	    public override IElement EmptyElement => Empty;
 	    public static Entity Empty = new Entity();
 
-        // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segRef of it is local.
+        // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segmentBase of it is local.
 
 		#region Traits
 

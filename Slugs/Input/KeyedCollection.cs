@@ -25,7 +25,7 @@ namespace Slugs.Input
         {
             _dict[key] = value;
         }
-        public Point[] TerminalPoints()
+        public RefPoint[] TerminalPoints()
         {
 	        throw new NotImplementedException();
         }

@@ -15,7 +15,9 @@ namespace Slugs.Input
     public class SelectionSet
     {
 	    public PadKind PadKind { get; private set; }
+	    public Pad Pad => Agent.Current.PadAt(PadKind);
         // todo: all origin/snaps are lists, used for undo. Any multiple VPoint selections would probably be temp groups, but maybe collections too.
+        // will still need the idea of a focused point, eg snapping a group of elements to a point based on a single point in them
         public SKPoint OriginPoint { get; private set; }
         private SKPoint _originSnap;
         public SKPoint OriginSnap
@@ -36,14 +38,14 @@ namespace Slugs.Input
 		        switch (Kind)
 		        {
 			        case ElementKind.Terminal:
-                    case ElementKind.Point:
-				        if (Snap.Kind == PointKind.Virtual)
+                    case ElementKind.RefPoint:
+				        if (Snap.ElementKind == ElementKind.VPoint)
 				        {
 					        result.Add(T > 0.5f ? Snap.GetEndPoint() : Snap.GetStartPoint());
 				        }
 				        else
 				        {
-                            result.Add(Agent.Current.PointAt(Snap.Key));
+                            result.Add(Pad.PointAt(Snap.Key));
 				        }
 				        break;
 			        case ElementKind.Trait:

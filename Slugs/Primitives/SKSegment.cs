@@ -3,19 +3,6 @@ using SkiaSharp;
 
 namespace Slugs.Primitives
 {
-	public struct SegmentBase
-    {
-	    public static SegmentBase Empty = new SegmentBase(SKPoint.Empty);
-
-        public SKPoint StartPoint { get; private set; }
-	    public SKPoint EndPoint => StartPoint;
-	    public SegmentBase(SKPoint start)
-	    {
-		    StartPoint = start;
-        }
-
-	    public SegmentBase Clone() => new SegmentBase(StartPoint);
-    }
     public struct SKSegment
     {
         public SKPoint StartPoint { get; private set; }

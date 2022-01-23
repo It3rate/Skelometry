@@ -91,7 +91,7 @@
   <ItemGroup>
     <Compile Include="Agents\Agent.cs" />
     <Compile Include="Agents\IAgent.cs" />
-    <Compile Include="Entities\Point.cs" />
+    <Compile Include="Entities\RefPoint.cs" />
     <Compile Include="Entities\TerminalPoint.cs" />
     <Compile Include="Entities\Trait.cs" />
     <Compile Include="Input\KeyedCollection.cs" />
@@ -102,9 +102,8 @@
     <Compile Include="Primitives\SKSegment.cs" />
     <Compile Include="Entities\Bond.cs" />
     <Compile Include="Entities\Entity.cs" />
-    <Compile Include="Pads\PadData.cs" />
     <Compile Include="Entities\VPoint.cs" />
-    <Compile Include="Primitives\SegRef.cs" />
+    <Compile Include="Primitives\SegmentBase.cs" />
     <Compile Include="Pads\PadKind.cs" />
     <Compile Include="Renderer\RenderFlags.cs" />
     <Compile Include="Renderer\RenderStatus.cs" />

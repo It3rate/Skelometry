@@ -51,58 +51,49 @@ namespace Slugs.Agents
         }
 
 #region Points
-        public IEnumerable<IPoint> Points => _pointMap.Values;
-        public IPoint PointAt(int key)
-        {
-	        var success = _pointMap.TryGetValue(key, out IPoint result);
-	        return success ? result : Point.Empty;
-        }
-        public IPoint TerminalPointAt(int key)
-        {
-	        var success = _pointMap.TryGetValue(key, out IPoint result);
-	        while (success && result.Kind == PointKind.Reference)
-	        {
-		        success = _pointMap.TryGetValue(key, out result);
-	        }
-	        return success ? result : Point.Empty;
-        }
-        public void SetPointAt(int key, IPoint value)
-        {
-	        _pointMap[key] = value;
-        }
-        public Point CreateTerminalPoint(PadKind padKind, SKPoint pt)
-        {
-	        var ptRef = new Point(padKind, pt);
-	        _pointMap.Add(ptRef.Key, ptRef);
-	        return ptRef;
-        }
-        public void MergePoints(IPoint from, IPoint to, SKPoint position)
-        {
-	        to.SKPoint = position;
-	        var terminal = TerminalPointAt(to.Key);
-	        from.ReplaceWith(terminal);
-        }
-        public void MergePoints(List<IPoint> fromList, IPoint to, SKPoint position)
-        {
-	        to.SKPoint = position;
-	        var terminal = TerminalPointAt(to.Key);
-	        foreach (var from in fromList)
-	        {
-		        from.ReplaceWith(terminal);
-	        }
-        }
+        //public IEnumerable<IPoint> Points => _pointMap.Values;
+        //public IPoint PointAt(int key)
+        //{
+	       // var success = _pointMap.TryGetValue(key, out IPoint result);
+	       // return success ? result : RefPoint.Empty;
+        //}
+        //public IPoint TerminalPointAt(int key)
+        //{
+	       // var success = _pointMap.TryGetValue(key, out IPoint result);
+	       // while (success && result.Kind == PointKind.Reference)
+	       // {
+		      //  success = _pointMap.TryGetValue(key, out result);
+	       // }
+	       // return success ? result : RefPoint.Empty;
+        //}
+        //public void SetPointAt(int key, IPoint value)
+        //{
+	       // _pointMap[key] = value;
+        //}
+        //public RefPoint CreateTerminalPoint(PadKind padKind, SKPoint pt)
+        //{
+	       // var ptRef = new RefPoint(padKind, pt);
+	       // _pointMap.Add(ptRef.Key, ptRef);
+	       // return ptRef;
+        //}
+        //public void MergePoints(IPoint from, IPoint to, SKPoint position)
+        //{
+	       // to.SKPoint = position;
+	       // var terminal = from.Pad.TerminalPointAt(to.Key);
+	       // from.ReplaceWith(terminal);
+        //}
         public SKPoint SKPointFor(IPoint point)
         {
 	        SKPoint result;
-	        switch (point.Kind)
+	        switch (point.ElementKind)
 	        {
-                case PointKind.Terminal:
+                case ElementKind.Terminal:
 	                result = point.SKPoint;
 	                break;
-                case PointKind.Reference:
-	                result = TerminalPointAt(point.Key).SKPoint;
+                case ElementKind.RefPoint:
+	                result = point.Pad.TerminalPointAt(point.Key).SKPoint;
 	                break;
-                case PointKind.Virtual:
+                case ElementKind.VPoint:
                 default:
 	                var p = (VPoint) point;
 	                var trait = PadAt(p.PadKind).EntityAt(p.EntityKey).TraitAt(p.TraitKey);
@@ -123,7 +114,7 @@ namespace Slugs.Agents
 	    public Focal TerminalFocalAt(int key)
 	    {
 		    var success = _focalMap.TryGetValue(key, out Focal result);
-		    while (success && result.Kind != PointKind.Terminal)
+		    while (success && result.ElementKind != ElementKind.Terminal)
 		    {
 			    success = _focalMap.TryGetValue(key, out result);
 		    }
@@ -140,30 +131,30 @@ namespace Slugs.Agents
 		    _focalMap.Add(focal.Key, focal);
 		    return focal;
 	    }
-	    public void MergeFocalRefs(Focal from, Focal to)
-	    {
-		    var terminal = TerminalFocalAt(to.Key);
-		    from.Kind = PointKind.Reference;
-		    from.Key = terminal.Key;
-	    }
+	    //public void MergeFocalRefs(Focal from, Focal to)
+	    //{
+		   // var terminal = TerminalFocalAt(to.Key);
+		   // from.Kind = PointKind.Reference;
+		   // from.Key = terminal.Key;
+	    //}
 #endregion
 #region Segments
 
-        public SegRef CreateTerminalSegRef(PadKind padKind, SKSegment skSegment)
-        {
-	        var a = CreateTerminalPoint(padKind, skSegment.StartPoint);
-	        var b = CreateTerminalPoint(padKind, skSegment.EndPoint);
-	        return new SegRef(a, b);
-        }
-        public SegRef[] CreateTerminalSegRefs(PadKind padKind, params SKSegment[] segs)
-        {
-	        var result = new List<SegRef>(segs.Length);
-	        foreach (var skSegment in segs)
-	        {
-		        result.Add(CreateTerminalSegRef(padKind, skSegment));
-	        }
-	        return result.ToArray();
-        }
+        //public SegmentBase CreateTerminalSegRef(PadKind padKind, SKSegment skSegment)
+        //{
+	       // var a = PadAt(padKind).CreateTerminalPoint(skSegment.StartPoint);
+	       // var b = PadAt(padKind).CreateTerminalPoint(skSegment.EndPoint);
+	       // return new SegmentBase(padKind, a, b);
+        //}
+        //public SegmentBase[] CreateTerminalSegRefs(PadKind padKind, params SKSegment[] segs)
+        //{
+	       // var result = new List<SegmentBase>(segs.Length);
+	       // foreach (var skSegment in segs)
+	       // {
+		      //  result.Add(CreateTerminalSegRef(padKind, skSegment));
+	       // }
+	       // return result.ToArray();
+        //}
 
 #endregion
 #region Mouse and Keyboard
@@ -175,7 +166,7 @@ namespace Slugs.Agents
             //_data.OriginPoint = SKPoint.Empty;
             //_data.OriginSnap = SKPoint.Empty;
             //_data.DownPoint = SKPoint.Empty;
-            //_data.StartHighlight = Point.Empty;
+            //_data.StartHighlight = RefPoint.Empty;
 
             _data.DragSegment.Clear(); 
             WorkingPad.Clear();
@@ -258,7 +249,8 @@ namespace Slugs.Agents
                     //_data.DragRef.OffsetValues(_data.OriginSnap);
                     if (_data.IsDraggingPoint && _data.HasHighlightPoint)
                     {
-                        MergePoints(_data.Origin.Snap, _data.HighlightPoint, _data.SnapPoint);
+                        PadAt(PadKind.Input).MergePoints(_data.Origin.Snap, _data.HighlightPoint, _data.SnapPoint);
+                        //MergePoints(_data.Origin.Snap, _data.HighlightPoint, _data.SnapPoint);
                     }
                     else if (_data.IsDraggingPoint && _data.HasHighlightLine)
                     {
@@ -279,11 +271,11 @@ namespace Slugs.Agents
                         //var newDataMap = DataMap.CreateIn(InputPad, _data.DragSegment);
                         if (!_data.StartHighlight.IsEmpty)
                         {
-                            MergePoints(trait.StartRef, _data.StartHighlight, _data.StartHighlight.SKPoint);
+	                        PadAt(PadKind.Input).MergePoints(trait.StartRef, _data.StartHighlight, _data.StartHighlight.SKPoint);
                         }
                         if (_data.HasHighlightPoint)
                         {
-                            MergePoints(trait.EndRef, _data.HighlightPoint, _data.SnapPoint);
+	                        PadAt(PadKind.Input).MergePoints(trait.EndRef, _data.HighlightPoint, _data.SnapPoint);
                         }
                         else if (_data.HasHighlightLine)
                         {
@@ -292,7 +284,8 @@ namespace Slugs.Agents
                             var focal = CreateTerminalFocal(InputPad.PadKind, t, Slug.Unit);
                             var vp = new VPoint(InputPad.PadKind, highlightLine.EntityKey, highlightLine.Key, focal.Key);
                             _pointMap.Add(vp.Key, vp);
-                            trait.EndRef.ReplaceWith(vp);
+                            PadAt(PadKind.Input).SetPointAt(trait.EndRef.Key, vp);
+                            //trait.EndRef.ReplaceWith(vp);
                         }
                     }
                 }
