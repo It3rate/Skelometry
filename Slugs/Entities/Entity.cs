@@ -12,18 +12,23 @@ namespace Slugs.Entities
 
         // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segmentBase of it is local.
 
-		#region Traits
+        #region Traits
 
-	    private Dictionary<int, Trait> _traits { get; } = new Dictionary<int, Trait>(); 
-	    public IEnumerable<Trait> Traits => _traits.Values;
-	    public Trait TraitAt(int key)
-	    {
-		    var success = _traits.TryGetValue(key, out var result);
-		    return success ? result : Trait.Empty;
+	    private readonly HashSet<int> _traitKeys = new HashSet<int>();
+
+	    public IEnumerable<Trait> Traits
+        {
+		    get
+		    {
+			    foreach (var key in _traitKeys)
+			    {
+				    yield return Pad.TraitAt(key);
+			    }
+		    }
 	    }
-	    public void EmbedTrait(Trait trait)
+        public void EmbedTrait(Trait trait)
 	    {
-		    _traits.Add(trait.Key, trait);
+		    _traitKeys.Add(trait.Key);
 	    }
 
 #endregion
@@ -37,11 +42,11 @@ namespace Slugs.Entities
         #endregion
 
 	    private Entity() : base(PadKind.None) { }
-        public Entity(PadKind padKind, params Trait[] segs) : base(padKind)
+        public Entity(PadKind padKind, params Trait[] traits) : base(padKind)
         {
-		    foreach (var segRef in segs)
+		    foreach (var trait in traits)
 		    {
-			    EmbedTrait(segRef);
+			    EmbedTrait(trait);
 		    }
 	    }
     }

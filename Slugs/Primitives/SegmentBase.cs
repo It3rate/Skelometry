@@ -11,8 +11,8 @@ namespace Slugs.Primitives
 	    public int StartKey { get; private set; }
 	    public int EndKey { get; private set; }
 
-	    public IPoint StartRef => Agent.Current.InputPad.PointAt(StartKey); // todo: make this base class for segment elements.
-	    public IPoint EndRef => Agent.Current.InputPad.PointAt(EndKey);
+	    public IPoint StartRef => Pad.PointAt(StartKey); // todo: make this base class for segment elements.
+	    public IPoint EndRef => Pad.PointAt(EndKey);
 
         public SKPoint StartPoint
         {

@@ -40,7 +40,11 @@ namespace Slugs.Entities
 		{
 			Key = KeyCounter++;
 			PadKind = padKind;
-		}
+			if (padKind != PadKind.None) // used in empty definitions.
+			{
+				Pad.AddElement(this);
+            }
+        }
     }
 	public enum ElementKind
 	{

@@ -27,17 +27,21 @@ namespace Slugs.Entities
         } 
         public SKPoint SKPoint
         {
-	        get => Agent.Current.SKPointFor(this);
+	        get
+	        {
+                var trait = Pad.TraitAt(TraitKey);
+                var focal = Pad.FocalAt(FocalKey);
+                return trait.IsEmpty ? SKPoint.Empty : trait.PointAlongLine(focal.T);
+	        }
 	        set => throw new InvalidOperationException("Can't set location of virtual point."); // not impossible to adjust terminal points?
         }
 
-        public Pad GetPad() => Agent.Current.PadAt(PadKind);
-        public Entity GetEntity() => Agent.Current.PadAt(PadKind).EntityAt(EntityKey);
-        public Trait GetTrait() => Agent.Current.PadAt(PadKind).EntityAt(EntityKey).TraitAt(TraitKey);
-        public Focal GetFocal() => Agent.Current.PadAt(PadKind).FocalAt(FocalKey);
-        public float GetT() => Agent.Current.PadAt(PadKind).FocalAt(FocalKey).T;
-        public IPoint GetStartPoint() => Agent.Current.PadAt(PadKind).EntityAt(EntityKey).TraitAt(TraitKey).StartRef;
-        public IPoint GetEndPoint() => Agent.Current.PadAt(PadKind).EntityAt(EntityKey).TraitAt(TraitKey).EndRef;
+        public Entity GetEntity() => Pad.EntityAt(EntityKey);
+        public Trait GetTrait() => Pad.TraitAt(TraitKey);
+        public Focal GetFocal() => Pad.FocalAt(FocalKey);
+        public float GetT() => Pad.FocalAt(FocalKey).T;
+        public IPoint GetStartPoint() => Pad.TraitAt(TraitKey).StartRef;
+        public IPoint GetEndPoint() => Pad.TraitAt(TraitKey).EndRef;
 
 
         public bool ReplaceWith(IPoint to)

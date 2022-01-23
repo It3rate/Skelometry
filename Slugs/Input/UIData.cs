@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SkiaSharp;
+using Slugs.Agents;
 using Slugs.Entities;
 using Slugs.Pads;
 using Slugs.Primitives;
@@ -9,11 +10,10 @@ using IPoint = Slugs.Entities.IPoint;
 namespace Slugs.Input
 {
 	public class UIData
-    {
-	    public readonly Dictionary<PadKind, Pad> Pads = new Dictionary<PadKind, Pad>();
-	    public Pad PadFrom(PadKind key) => Pads[key];
+	{
+		public IEnumerable<Pad> Pads => _agent.Pads.Values;
 
-	    public SelectionSet Origin { get; }
+        public SelectionSet Origin { get; }
 	    public SelectionSet Current { get; }
 	    public SelectionSet Highlight { get; }
 	    public SelectionSet Selection { get; }
@@ -43,8 +43,11 @@ namespace Slugs.Input
 	    public SKPoint GetHighlightPoint() => Current.OriginSnap; //HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
 	    public SKSegment GetHighlightLine() => HighlightLine.Segment;
 
-        public UIData()
-	    {
+	    private readonly Agent _agent;
+
+        public UIData(Agent agent)
+        {
+	        _agent = agent;
 		    Origin = new SelectionSet(PadKind.Input);
 		    Current = new SelectionSet(PadKind.Input);
 		    Selection = new SelectionSet(PadKind.Input);
@@ -54,7 +57,7 @@ namespace Slugs.Input
 	    private IElement UpdateHighlight(PadKind padKind, SKPoint p, params SelectionSet[] sels)
 	    {
 		    IElement result = null;
-		    var pad = PadFrom(padKind);
+		    var pad = _agent.PadAt(padKind);
 		    var snap = pad.GetSnapPoints(p, Origin.Points);
 		    if (snap.Count > 0)
 		    {

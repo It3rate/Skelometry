@@ -15,13 +15,15 @@ namespace Slugs.Agents
     {
 	    public static Agent Current { get; private set; }
 
-        // todo: Move all collections to agents, maybe duplicate keys in entities etc if useful, though filters amount to the same.
-	    private readonly Dictionary<int, IPoint> _pointMap = new Dictionary<int, IPoint>();
-	    private readonly Dictionary<int, Focal> _focalMap = new Dictionary<int, Focal>();
+	    public readonly Dictionary<PadKind, Pad> Pads = new Dictionary<PadKind, Pad>();
 
-        public readonly Pad WorkingPad;
-        public readonly Pad InputPad;
-        public Pad PadAt(PadKind kind) => _data.PadFrom(kind);
+        // todo: Move all collections to agents, maybe duplicate keys in entities etc if useful, though filters amount to the same.
+        //private readonly Dictionary<int, IPoint> _pointMap = new Dictionary<int, IPoint>();
+        private readonly Dictionary<int, Focal> _focalMap = new Dictionary<int, Focal>();
+
+	    public Pad WorkingPad => PadAt(PadKind.Working);
+        public Pad InputPad => PadAt(PadKind.Input);
+        public Pad PadAt(PadKind kind) => Pads[kind];
 
         private UIData _data;
         private readonly SlugRenderer _renderer;
@@ -35,12 +37,9 @@ namespace Slugs.Agents
         public Agent(SlugRenderer renderer)
         {
             Current = this;
-            WorkingPad = new Pad(PadKind.Working, this);
-            InputPad = new Pad(PadKind.Input, this);
-            _data = new UIData();
-
-            _data.Pads[WorkingPad.PadKind] = WorkingPad;
-            _data.Pads[InputPad.PadKind] = InputPad;
+            AddPad(PadKind.Working);
+            AddPad(PadKind.Input);
+            _data = new UIData(this);
 
             _renderer = renderer;
             _renderer.Data = _data;
@@ -49,62 +48,13 @@ namespace Slugs.Agents
 
             ClearMouse();
         }
-
-#region Points
-        //public IEnumerable<IPoint> Points => _pointMap.Values;
-        //public IPoint PointAt(int key)
-        //{
-	       // var success = _pointMap.TryGetValue(key, out IPoint result);
-	       // return success ? result : RefPoint.Empty;
-        //}
-        //public IPoint TerminalPointAt(int key)
-        //{
-	       // var success = _pointMap.TryGetValue(key, out IPoint result);
-	       // while (success && result.Kind == PointKind.Reference)
-	       // {
-		      //  success = _pointMap.TryGetValue(key, out result);
-	       // }
-	       // return success ? result : RefPoint.Empty;
-        //}
-        //public void SetPointAt(int key, IPoint value)
-        //{
-	       // _pointMap[key] = value;
-        //}
-        //public RefPoint CreateTerminalPoint(PadKind padKind, SKPoint pt)
-        //{
-	       // var ptRef = new RefPoint(padKind, pt);
-	       // _pointMap.Add(ptRef.Key, ptRef);
-	       // return ptRef;
-        //}
-        //public void MergePoints(IPoint from, IPoint to, SKPoint position)
-        //{
-	       // to.SKPoint = position;
-	       // var terminal = from.Pad.TerminalPointAt(to.Key);
-	       // from.ReplaceWith(terminal);
-        //}
-        public SKPoint SKPointFor(IPoint point)
+        public Pad AddPad(PadKind padKind)
         {
-	        SKPoint result;
-	        switch (point.ElementKind)
-	        {
-                case ElementKind.Terminal:
-	                result = point.SKPoint;
-	                break;
-                case ElementKind.RefPoint:
-	                result = point.Pad.TerminalPointAt(point.Key).SKPoint;
-	                break;
-                case ElementKind.VPoint:
-                default:
-	                var p = (VPoint) point;
-	                var trait = PadAt(p.PadKind).EntityAt(p.EntityKey).TraitAt(p.TraitKey);
-	                var focal = FocalAt(p.FocalKey);
-	                result = trait.PointAlongLine(focal.T);
-	                break;
-	        }
-	        return result;
+	        Pads[padKind] = new Pad(padKind, this);
+	        return Pads[padKind];
         }
-#endregion
-#region Focal
+
+        #region Focal
         public IEnumerable<Focal> Focals => _focalMap.Values;
 	    public Focal FocalAt(int key)
 	    {
@@ -137,25 +87,6 @@ namespace Slugs.Agents
 		   // from.Kind = PointKind.Reference;
 		   // from.Key = terminal.Key;
 	    //}
-#endregion
-#region Segments
-
-        //public SegmentBase CreateTerminalSegRef(PadKind padKind, SKSegment skSegment)
-        //{
-	       // var a = PadAt(padKind).CreateTerminalPoint(skSegment.StartPoint);
-	       // var b = PadAt(padKind).CreateTerminalPoint(skSegment.EndPoint);
-	       // return new SegmentBase(padKind, a, b);
-        //}
-        //public SegmentBase[] CreateTerminalSegRefs(PadKind padKind, params SKSegment[] segs)
-        //{
-	       // var result = new List<SegmentBase>(segs.Length);
-	       // foreach (var skSegment in segs)
-	       // {
-		      //  result.Add(CreateTerminalSegRef(padKind, skSegment));
-	       // }
-	       // return result.ToArray();
-        //}
-
 #endregion
 #region Mouse and Keyboard
 
@@ -283,7 +214,8 @@ namespace Slugs.Agents
 	                        var (t, pt) = highlightLine.TFromPoint(_data.DragSegment[1]);
                             var focal = CreateTerminalFocal(InputPad.PadKind, t, Slug.Unit);
                             var vp = new VPoint(InputPad.PadKind, highlightLine.EntityKey, highlightLine.Key, focal.Key);
-                            _pointMap.Add(vp.Key, vp);
+                            //InputPad.AddElement(vp);
+                            //_pointMap.Add(vp.Key, vp);
                             PadAt(PadKind.Input).SetPointAt(trait.EndRef.Key, vp);
                             //trait.EndRef.ReplaceWith(vp);
                         }

@@ -19,8 +19,6 @@ namespace Slugs.Entities
 
         private Agent _agent;
         private readonly Dictionary<int, IElement> _elements = new Dictionary<int, IElement>();
-        private readonly HashSet<int> _entityKeys = new HashSet<int>();
-        private readonly HashSet<int> _pointKeys = new HashSet<int>();
 
         public static Slug ActiveSlug = Slug.Unit;
         private static readonly List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
@@ -30,9 +28,10 @@ namespace Slugs.Entities
         {
 	        get
 	        {
-		        foreach (var key in _entityKeys)
+		        var values = _elements.Where(kvp => kvp.Value.ElementKind == ElementKind.Entity);
+		        foreach (var kvp in values)
 		        {
-			        yield return EntityAt(key);
+			        yield return (Entity)kvp.Value;
 		        }
 	        }
         }
@@ -40,8 +39,8 @@ namespace Slugs.Entities
         {
 	        get
 	        {
-		        var points = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint());
-                foreach (var kvp in points)
+		        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint());
+                foreach (var kvp in values)
 		        {
 			        yield return (IPoint)kvp.Value;
 		        }
@@ -66,31 +65,15 @@ namespace Slugs.Entities
         public void AddElement(IElement element)
         {
 	        _elements.Add(element.Key, element);
-	        switch (element.ElementKind)
-	        {
-		        case ElementKind.Entity:
-			        _entityKeys.Add(element.Key);
-			        break;
-	        }
         }
 
         public void RemoveElement(int key)
         {
-	        if (HasElementAt(key, out var element))
-	        {
-		        switch (element.ElementKind)
-		        {
-			        case ElementKind.Entity:
-				        _entityKeys.Remove(element.Key);
-				        break;
-		        }
-            }
 	        _elements.Remove(key);
         }
 
         public void ClearElements()
         {
-            _entityKeys.Clear();
 	        _elements.Clear();
         }
 
@@ -144,7 +127,6 @@ namespace Slugs.Entities
         public Entity CreateEntity(params Trait[] traits)
         {
 	        var entity = new Entity(PadKind, traits);
-	        AddElement(entity);
 	        return entity;
         }
         public Entity GetOrCreateEntity(int entityKey)
@@ -155,13 +137,11 @@ namespace Slugs.Entities
         public TerminalPoint CreateTerminalPoint(SKPoint pt)
         {
 	        var point = new TerminalPoint(PadKind, pt);
-	        AddElement(point);
 	        return point;
         }
         public Focal CreateFocal(float focus, Slug slug)
         {
             var focal = new Focal(PadKind, focus, slug);
-            AddElement(focal);
 	        return focal;
         }
 

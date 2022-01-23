@@ -103,7 +103,7 @@ namespace Slugs.Renderer
 
         public void Draw()
         {
-	        foreach (var pad in Data.Pads.Values)
+	        foreach (var pad in Data.Pads)
 	        {
                 pad.Refresh();  
 				var slug = Pad.ActiveSlug;
