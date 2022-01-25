@@ -14,16 +14,16 @@ namespace Slugs.Entities
 	{
 		public override ElementKind ElementKind => ElementKind.RefPoint;
 		public override IElement EmptyElement => Empty;
-		public static RefPoint Empty = new RefPoint();
+		public static readonly RefPoint Empty = new RefPoint();
 		private RefPoint() : base(true) { SKPoint = SKPoint.Empty; }
 
 		public int TargetKey { get; private set; }
 
-		public override IPoint[] Points => IsEmpty ? new IPoint[] { } : new IPoint[] {Pad.TerminalPointAt(TargetKey)};
+        public override IPoint[] Points => IsEmpty ? new IPoint[] { } : new IPoint[] {Pad.TerminalPointFor(this)};
 		public override SKPoint SKPoint
 		{
-			get => Pad.TerminalPointAt(Key).SKPoint;
-			set => Pad.TerminalPointAt(Key).SKPoint = value;
+			get => Pad.TerminalPointFor(this).SKPoint;
+			set => Pad.TerminalPointFor(this).SKPoint = value;
 		}
 
 		public RefPoint(PadKind padKind, int targetKey) : base(padKind)
@@ -31,30 +31,30 @@ namespace Slugs.Entities
 			TargetKey = targetKey;
 		}
 
-		//   public bool ReplaceWith(IPoint pt)
-		//{
-		// Key = pt.Key;
-		// SelectionKind = PointKind.Reference;
-		// return true;
-		//   }
+        //   public bool ReplaceWith(IPoint pt)
+        //{
+        // Key = pt.Key;
+        // SelectionKind = PointKind.Reference;
+        // return true;
+        //   }
 
-		//public void CopyValuesFrom(IPoint from) // probably don't do things this way, replace IElement values instead
-		//{
-		// PadKind = from.PadKind;
-		// if (from.SelectionKind == SelectionKind.Terminal)
-		// {
-		//  SKPoint = from.SKPoint;
-		// }
-		//       else
-		// {
-		//  TargetKey = from.Key;
-		//  //_point = from.SKPoint;
-		// }
-		//}
-		//public static bool operator ==(RefPoint left, IPoint right) => left.Key == right.Key;
-		//public static bool operator !=(RefPoint left, IPoint right) => left.Key != right.Key;
-		//public override bool Equals(object obj) => obj is RefPoint value && this == value;
-		//public bool Equals(IPoint value) => this == value;
-		//public override int GetHashCode() => Key.GetHashCode();
-	}
+        //public void CopyValuesFrom(IPoint from) // probably don't do things this way, replace IElement values instead
+        //{
+        // PadKind = from.PadKind;
+        // if (from.SelectionKind == SelectionKind.Terminal)
+        // {
+        //  SKPoint = from.SKPoint;
+        // }
+        //       else
+        // {
+        //  TargetKey = from.Key;
+        //  //_point = from.SKPoint;
+        // }
+        //}
+        public static bool operator ==(RefPoint left, IPoint right) => left.Key == right.Key && (right is RefPoint value && left.TargetKey == value.TargetKey);
+        public static bool operator !=(RefPoint left, IPoint right) => left.Key != right.Key || (right is RefPoint value && left.TargetKey != value.TargetKey);
+        public override bool Equals(object obj) => obj is RefPoint value && this == value;
+        //public bool Equals(IPoint value) => this == value;
+        public override int GetHashCode() => Key.GetHashCode() + 17*TargetKey.GetHashCode();
+    }
 }

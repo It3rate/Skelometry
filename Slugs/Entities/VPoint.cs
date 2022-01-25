@@ -10,13 +10,13 @@ namespace Slugs.Entities
 	{
 		public override ElementKind ElementKind => ElementKind.RefPoint;
 		public override IElement EmptyElement => Empty;
-	    public static VPoint Empty = new VPoint();
+	    public static readonly VPoint Empty = new VPoint();
+        private VPoint():base(true) { }
 
         public int EntityKey { get; set; } // if motor index < 0, use cached point.
         public int TraitKey { get; set; }
         public int FocalKey { get; set; }
 
-        private VPoint():base(true) { }
         public VPoint(PadKind padKind, int entityKey, int traitKey, int focalKey) : base(padKind)
         {
 		    EntityKey = entityKey;

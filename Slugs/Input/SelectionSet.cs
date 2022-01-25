@@ -20,7 +20,7 @@ namespace Slugs.Input
 
 	    public float T { get; set; } = 1;
 	    public SKPoint OriginPosition { get; private set; }
-        public SKPoint SnapPosition
+        public SKPoint SnapOriginPosition
         {
 	        get => SelectionKind.HasSnap() ? _snapPosition : OriginPosition;
 	        private set => _snapPosition = value;
@@ -67,7 +67,7 @@ namespace Slugs.Input
         {
             _currentPosition = position;
             OriginPosition = position;
-	        SnapPosition = snapPoint?.SKPoint ?? position;
+	        SnapOriginPosition = snapPoint?.SKPoint ?? position;
 	        OriginIPoint = snapPoint ?? TerminalPoint.Empty;
 	        Selection = selection ?? TerminalPoint.Empty;
             _startPositions.Clear();
@@ -82,7 +82,7 @@ namespace Slugs.Input
 	        {
 		        pts[i].SKPoint = _startPositions[i] + dif;
 	        }
-            OriginIPoint.SKPoint = SnapPosition + dif; // this may or may not be in Points - maybe convert to list and always add it if not empty.
+            OriginIPoint.SKPoint = SnapOriginPosition + dif; // this may or may not be in Points - maybe convert to list and always add it if not empty.
 		    T = 1;
         }
 	    //public void Update(SKPoint newPosition, int entityKey, int traitKey, int focalKey, float t, ElementKind kind = ElementKind.None)
@@ -90,7 +90,7 @@ namespace Slugs.Input
 		   // _currentPosition = newPosition;
      //       OriginPosition = newPosition;
 		   // Selection.Update(PadKind, entityKey, traitKey, focalKey);
-		   // SnapPosition = Selection.SKPoint;
+		   // SnapOriginPosition = Selection.SKPoint;
      //       T = t;
 		   // SelectionKind = (kind == ElementKind.None) ? SelectionKind : kind;
 	    //}

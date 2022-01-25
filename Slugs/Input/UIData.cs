@@ -15,14 +15,15 @@ namespace Slugs.Input
 		public IEnumerable<Pad> Pads => _agent.Pads.Values;
 
         //public SelectionSet Origin { get; }
-	    public SelectionSet Current { get; } // Drag, Highlight, Selection, Clipboard
-	    public SelectionSet Highlight { get; }
+        public SelectionSet DownSet { get; }
+        public SelectionSet Current { get; } // Drag, Highlight, Selection, Clipboard
+        public SelectionSet Highlight { get; }
 	    public SelectionSet Selection { get; }
 
         private IElement DragElement { get; set; } =  TerminalPoint.Empty;
         public bool IsDraggingElement => !DragElement.IsEmpty;
         public bool IsDraggingPoint => Current.SelectionKind == ElementKind.RefPoint && IsDraggingElement;
-        public readonly List<SKPoint> DragSegment = new List<SKPoint>();
+        //public readonly List<SKPoint> DragSegment = new List<SKPoint>();
 
 
         public bool IsDown { get; private set; }
@@ -30,18 +31,15 @@ namespace Slugs.Input
 	    //public bool IsDraggingPoint => IsDragging && Origin.Extent == SelectionExtent.RefPoint;
 
         public SKPoint DownPoint => Current.OriginPosition;
-	    public IPoint StartHighlight => Current.OriginIPoint;
-
-	    public SKPoint CurrentPoint => Current.OriginPosition;
-	    public SKPoint SnapPoint => Current.SnapPosition;
-	    //public DragRef DragRef = new DragRef();
+	    public IPoint DownHighlight => DownSet.OriginIPoint;
+	    public SKPoint SnapPoint => Current.SnapOriginPosition;
 
 	    public bool HasHighlightPoint => !Highlight.OriginIPoint.IsEmpty;
 	    public IPoint HighlightPoint => Highlight.OriginIPoint;
 	    public bool HasHighlightLine => Highlight.SelectionKind == ElementKind.Trait;
         public Trait HighlightLine => HasHighlightLine ? (Trait)Highlight.Selection : Trait.Empty;
 
-	    //public SKPoint GetHighlightPoint() => Current.SnapPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
+	    //public SKPoint GetHighlightPoint() => Current.SnapOriginPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
 	    //public SKSegment GetHighlightLine() => HighlightLine.Segment;
 
 	    private readonly Agent _agent;
@@ -49,27 +47,31 @@ namespace Slugs.Input
         public UIData(Agent agent)
         {
 	        _agent = agent;
-		    //Origin = new SelectionSet(PadKind.Input);
+		    DownSet = new SelectionSet(PadKind.Input);
 		    Current = new SelectionSet(PadKind.Input);
 		    Selection = new SelectionSet(PadKind.Input);
             Highlight = new SelectionSet(PadKind.Input);
         }
 
-        private IElement GetHighlight(SKPoint p, Pad pad, SelectionSet ignoreSet = null)
+        private IElement GetHighlight(SKPoint p, SelectionSet targetSet, SelectionSet ignoreSet)
         {
 	        var points = ignoreSet?.Selection.Points;
-            IElement result = pad.GetSnapPoint(p, points);
+            IElement result = targetSet.Pad.GetSnapPoint(p, points);
 	        if (!result.IsEmpty)
 	        {
 				Highlight.Set(p, (IPoint) result);
 	        }
 	        else
 	        {
-		        result = pad.GetSnapTrait(p);
+		        result = targetSet.Pad.GetSnapTrait(p);
 		        if (!result.IsEmpty)
 		        {
 			        Highlight.Set(p, null, result);
 		        }
+		        else
+		        {
+			        Highlight.Set(p, null, null);
+                }
             }
 	        return result;
         }
@@ -101,7 +103,8 @@ namespace Slugs.Input
 
         public void Start(SKPoint actual)
         {
-	        DragElement = GetHighlight(actual, Current.Pad);
+	        DragElement = GetHighlight(actual, DownSet, null);
+	        GetHighlight(actual, Highlight, null);
             if (DragElement.IsEmpty)
             {
 	            var trait = CreateTrait(actual, Current.Pad);
@@ -114,7 +117,7 @@ namespace Slugs.Input
 	    public void Move(SKPoint actual)
 	    {
 		    Current.Update(actual);
-            GetHighlight(actual, Current.Pad);
+            GetHighlight(actual, Highlight, Current);
 		    UpdateDragElement(actual, Current);
 
      //       IsDragging = IsDown ? true : false;
@@ -134,8 +137,10 @@ namespace Slugs.Input
 	    }
 	    public void End(SKPoint actual)
 	    {
-		    UpdateDragElement(actual, Current);
+		    GetHighlight(actual, Highlight, null);
+            UpdateDragElement(actual, Current);
             Current.Clear();
+            DownSet.Clear();
             //UpdateHighlight(actual, Current);
             IsDown = false;
 		    IsDragging = false;

@@ -8,9 +8,8 @@ namespace Slugs.Entities
     {
 	    public override ElementKind ElementKind => ElementKind.Entity;
 	    public override IElement EmptyElement => Empty;
-	    public static Entity Empty = new Entity();
-
-        // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segmentBase of it is local.
+	    public static readonly Entity Empty = new Entity();
+	    private Entity() : base(true) { }
 
         public override IPoint[] Points => new IPoint[] {};
 
@@ -43,7 +42,6 @@ namespace Slugs.Entities
 
         #endregion
 
-	    private Entity() : base(PadKind.None) { }
         public Entity(PadKind padKind, params Trait[] traits) : base(padKind)
         {
 		    foreach (var trait in traits)

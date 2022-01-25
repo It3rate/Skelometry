@@ -61,11 +61,11 @@ namespace Slugs.Agents
             _data.Reset();
             //_data.DownPoint = SKPoint.Empty;
             //_data.OriginPosition = SKPoint.Empty;
-            //_data.SnapPosition = SKPoint.Empty;
+            //_data.SnapOriginPosition = SKPoint.Empty;
             //_data.DownPoint = SKPoint.Empty;
-            //_data.StartHighlight = RefPoint.Empty;
+            //_data.DownHighlight = RefPoint.Empty;
 
-            _data.DragSegment.Clear(); 
+            //_data.DragSegment.Clear(); 
             WorkingPad.Clear();
             //_data.DragRef.Clear();
 
@@ -78,7 +78,7 @@ namespace Slugs.Agents
             //UpdateHighlight(curPt, _data.Origin);
 		    //_data.OriginPosition = e.Location.ToSKPoint();
 		    //SetHighlight();
-		    //_data.DownPoint = _data.SnapPosition;
+		    //_data.DownPoint = _data.SnapOriginPosition;
 		    //_data.DragRef.Origin = _data.OriginPosition;
 		    //if (_data.HasHighlightPoint && CurrentKey != Keys.ControlKey)
 		    //{
@@ -92,8 +92,8 @@ namespace Slugs.Agents
       //      }
 		    //else
 		    //{
-			   // //_data.DragSegment.Add(_data.SnapPosition);
-			   // //_data.StartHighlight = _data.HighlightPoint;
+			   // //_data.DragSegment.Add(_data.SnapOriginPosition);
+			   // //_data.DownHighlight = _data.HighlightPoint;
 		    //}
 
 		    return true;
@@ -145,7 +145,7 @@ namespace Slugs.Agents
             {
                 if (final)
                 {
-                    //_data.DragRef.OffsetValues(_data.SnapPosition);
+                    //_data.DragRef.OffsetValues(_data.SnapOriginPosition);
                     if (_data.IsDraggingPoint && _data.HasHighlightPoint)
                     {
                         PadAt(PadKind.Input).MergePoints(_data.Current.OriginIPoint, _data.Highlight.OriginIPoint, _data.SnapPoint);
@@ -160,17 +160,19 @@ namespace Slugs.Agents
             }
             else if (_data.IsDown)
             {
-                WorkingPad.AddEntity(new SKSegment(_data.DownPoint, _data.SnapPoint), 0);
+                //WorkingPad.AddEntity(new SKSegment(_data.DownPoint, _data.SnapPoint), 0);
                 if (final)
                 {
-                    _data.DragSegment.Add(_data.SnapPoint);
-                    if (_data.DragSegment[0].DistanceTo(_data.DragSegment[1]) > 10)
+                    //_data.DragSegment.Add(_data.SnapPoint);
+                    var p0 = _data.Current.SnapOriginPosition;
+                    var p1 = _data.Current.OriginIPoint.SKPoint;
+                    if (p0.DistanceTo(p1) > 10)
                     {
-	                    var (entity, trait) = InputPad.AddEntity(new SKSegment(_data.DownPoint,  _data.DragSegment[1]), _traitIndexCounter++);
+	                    var (entity, trait) = InputPad.AddEntity(new SKSegment(p0,  p1), _traitIndexCounter++);
                         //var newDataMap = DataMap.CreateIn(InputPad, _data.DragSegment);
-                        if (!_data.StartHighlight.IsEmpty)
+                        if (!_data.DownHighlight.IsEmpty)
                         {
-	                        PadAt(PadKind.Input).MergePoints(trait.StartRef, _data.StartHighlight, _data.StartHighlight.SKPoint);
+	                        PadAt(PadKind.Input).MergePoints(trait.StartRef, _data.DownHighlight, _data.DownHighlight.SKPoint);
                         }
                         if (_data.HasHighlightPoint)
                         {
@@ -179,7 +181,7 @@ namespace Slugs.Agents
                         else if (_data.HasHighlightLine)
                         {
 	                        var highlightLine = _data.HighlightLine;
-	                        var (t, pt) = highlightLine.TFromPoint(_data.DragSegment[1]);
+	                        var (t, pt) = highlightLine.TFromPoint(p1);
                             var focal = InputPad.CreateFocal(t, Slug.Unit);
                             var vp = new VPoint(InputPad.PadKind, highlightLine.EntityKey, highlightLine.Key, focal.Key);
                             //InputPad.AddElement(vp);

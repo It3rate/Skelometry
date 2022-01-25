@@ -24,7 +24,7 @@ namespace Slugs.Entities
     public abstract class ElementBase : IElement
     {
 	    protected static int KeyCounter = 1;
-	    protected const int EmptyKeyValue = -99;
+	    public const int EmptyKeyValue = -99;
 	    public virtual bool IsEmpty => Key == EmptyKeyValue;
 	    public static bool IsEmptyKey(int key) => key == EmptyKeyValue;
 
@@ -58,7 +58,7 @@ namespace Slugs.Entities
 		{
 			Key = KeyCounter++;
 			PadKind = padKind;
-			if (padKind != PadKind.None) // used in empty definitions.
+			//if (padKind != PadKind.None) // used in empty definitions.
 			{
 				Pad.AddElement(this);
             }
@@ -88,5 +88,6 @@ namespace Slugs.Entities
 	{
 		public static bool HasSnap(this ElementKind kind) => (kind != ElementKind.None && kind != ElementKind.Terminal);
 		public static bool IsPoint(this ElementKind kind) => ElementKind.PointKind.HasFlag(kind);
+		public static bool IsTerminal(this ElementKind kind) => kind == ElementKind.Terminal;
     }
 }

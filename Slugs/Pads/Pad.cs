@@ -61,6 +61,10 @@ namespace Slugs.Entities
 
         public void AddElement(IElement element)
         {
+	        if (_elements.ContainsKey(element.Key))
+	        {
+		        _elements.Remove(element.Key);
+	        }
 	        _elements.Add(element.Key, element);
         }
 
@@ -76,8 +80,18 @@ namespace Slugs.Entities
 
         public IElement ElementAt(int key)
         {
-	        var success = _elements.TryGetValue(key, out IElement element);
-	        return success ? element : TerminalPoint.Empty;
+	        IElement result;
+	        if (key == ElementBase.EmptyKeyValue)
+	        {
+		        result = TerminalPoint.Empty;
+		        //throw new ArgumentOutOfRangeException("Empty key lookup.");
+	        }
+	        else
+	        {
+		        var success = _elements.TryGetValue(key, out IElement element);
+		        result = success ? element : TerminalPoint.Empty;
+	        }
+	        return result;
         }
         public bool HasElementAt(int key, out IElement element)
         {
@@ -113,16 +127,36 @@ namespace Slugs.Entities
         {
 	        _elements[key] = point;
         }
-        public TerminalPoint TerminalPointAt(int key)
+
+        public IPoint TerminalPointFor(IPoint point)
         {
-	        var success = _elements.TryGetValue(key, out var result);
-	        return success && result.ElementKind == ElementKind.Terminal ? (TerminalPoint)result : TerminalPoint.Empty;
+	        IPoint result = TerminalPoint.Empty;
+	        if (point is RefPoint refPoint)
+	        {
+		        var success = true;
+		        IElement element;
+		        while (success)
+		        {
+			        success = _elements.TryGetValue(refPoint.TargetKey, out element);
+			        if (element.ElementKind != ElementKind.RefPoint)
+			        {
+						result = element.ElementKind.IsTerminal() ? (IPoint)element : TerminalPoint.Empty;
+						break;
+			        }
+		        }
+	        }
+	        else if(point.ElementKind.IsTerminal())
+	        {
+		        result = (IPoint)point;
+	        }
+	        return result;
         }
+    
         public void MergePoints(IPoint from, IPoint to, SKPoint position)
         {
 	        to.SKPoint = position;
-	        var terminal = TerminalPointAt(to.Key);
-            var point = new RefPoint(PadKind, to.Key);
+	        var terminal = TerminalPointFor(to);
+            var point = new RefPoint(PadKind, terminal.Key);
             SetPointAt(from.Key, point);
         }
 

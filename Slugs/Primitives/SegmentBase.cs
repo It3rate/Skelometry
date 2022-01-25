@@ -80,25 +80,25 @@ namespace Slugs.Primitives
         public (float, SKPoint) TFromPoint(SKPoint point) => Segment.TFromPoint(point);
 	    public SKPoint[] EndArrow(float dist = 8f) => Segment.EndArrow(dist);
 
-	    //public IPoint GetVirtualPointFor(SKPoint point)
+        //public IPoint GetVirtualPointFor(SKPoint point)
         //{
         // var t = TFromPoint(point);
         // return new VirtualPoint(this, t);
         //}
 
-        //public static bool operator ==(SegmentBase left, SegmentBase right) =>
-        // left.StartKey == right.StartKey && left.EndKey == right.EndKey && left.SelectionKind == right.SelectionKind;
+        public static bool operator ==(SegmentBase left, SegmentBase right) =>
+	        left.Key == right.Key && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
 
-        //public static bool operator !=(SegmentBase left, SegmentBase right) =>
-        // left.StartKey != right.StartKey || left.EndKey != right.EndKey || left.SelectionKind != right.SelectionKind;
+        public static bool operator !=(SegmentBase left, SegmentBase right) =>
+	        left.Key != right.Key || left.StartKey != right.StartKey || left.EndKey != right.EndKey;
 
-        //public override bool Equals(object obj) => obj is SegmentBase value && this == value;
+        public override bool Equals(object obj) => obj is SegmentBase value && this == value;
 
-        //public bool Equals(SegmentBase value) =>
-        // StartKey.Equals(value.StartKey) && EndKey.Equals(value.EndKey) && SelectionKind.Equals(value.SelectionKind);
+        public bool Equals(SegmentBase value) =>
+	        Key == value.Key && StartKey == value.StartKey && EndKey == value.EndKey;
 
-        //public override int GetHashCode() =>
-        // StartKey.GetHashCode() * 29 + EndKey.GetHashCode() * 31 + (int)SelectionKind * 37;
+        public override int GetHashCode() =>
+	        Key.GetHashCode() * 17 + StartKey.GetHashCode()* 29 + EndKey.GetHashCode() * 31;
 
     }
 }
