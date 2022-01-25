@@ -6,13 +6,11 @@ using Slugs.Pads;
 
 namespace Slugs.Entities
 {
-	public class VPoint : ElementBase, IPoint
+	public class VPoint : PointBase
 	{
 		public override ElementKind ElementKind => ElementKind.RefPoint;
 		public override IElement EmptyElement => Empty;
 	    public static VPoint Empty = new VPoint();
-
-	    //public PointKind Kind { get; private set; } = PointKind.Virtual; // all points could be vpoints if adding cached SkPoint, not doing this atm as terminal points are external.
 
         public int EntityKey { get; set; } // if motor index < 0, use cached point.
         public int TraitKey { get; set; }
@@ -24,8 +22,10 @@ namespace Slugs.Entities
 		    EntityKey = entityKey;
 		    TraitKey = traitKey;
             FocalKey = focalKey;
-        } 
-        public SKPoint SKPoint
+        }
+
+        public override IPoint[] Points => IsEmpty ? new IPoint[] { } : new IPoint[] { this };
+        public override SKPoint SKPoint
         {
 	        get
 	        {
@@ -68,21 +68,21 @@ namespace Slugs.Entities
             PadKind = from.PadKind;
 	        if (from is VPoint vp)
 	        {
-		        //Kind = vp.Kind;
+		        //SelectionKind = vp.SelectionKind;
 		        EntityKey = vp.EntityKey;
 		        TraitKey = vp.TraitKey;
 		        FocalKey = vp.FocalKey;
 	        }
 	        else
 	        {
-		        //Kind = PointKind.Reference;
+		        //SelectionKind = PointKind.Reference;
 		        Key = from.Key;
 	        }
         }
-        public static bool operator ==(VPoint left, IPoint right) => left.Key == right.Key;
-        public static bool operator !=(VPoint left, IPoint right) => left.Key != right.Key;
-        public override bool Equals(object obj) => obj is VPoint value && this == value;
-        public bool Equals(IPoint value) => this == value;
-        public override int GetHashCode() => Key.GetHashCode();// 17 * 23 + PadKind.GetHashCode() * 29 + TraitKey.GetHashCode() * 31 + EntityKey.GetHashCode() * 37 + FocalKey.GetHashCode();
+        //public static bool operator ==(VPoint left, IPoint right) => left.Key == right.Key;
+        //public static bool operator !=(VPoint left, IPoint right) => left.Key != right.Key;
+        //public override bool Equals(object obj) => obj is VPoint value && this == value;
+        //public bool Equals(IPoint value) => this == value;
+        //public override int GetHashCode() => Key.GetHashCode();// 17 * 23 + PadKind.GetHashCode() * 29 + TraitKey.GetHashCode() * 31 + EntityKey.GetHashCode() * 37 + FocalKey.GetHashCode();
     }
 }

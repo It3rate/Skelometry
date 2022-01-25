@@ -12,10 +12,10 @@ namespace Slugs.Entities
 
         // todo: traits should be in their own list as they can be shared by many entities. Maybe just a trait kind index, and the segmentBase of it is local.
 
+        public override IPoint[] Points => new IPoint[] {};
+
         #region Traits
-
-	    private readonly HashSet<int> _traitKeys = new HashSet<int>();
-
+        private readonly HashSet<int> _traitKeys = new HashSet<int>();
 	    public IEnumerable<Trait> Traits
         {
 		    get
@@ -26,16 +26,18 @@ namespace Slugs.Entities
 			    }
 		    }
 	    }
-        public void EmbedTrait(Trait trait)
-	    {
-		    _traitKeys.Add(trait.Key);
-	    }
+	    public void EmbedTrait(Trait trait) => _traitKeys.Add(trait.Key);
+	    public void EmbedTrait(int key) => _traitKeys.Add(key);
+	    public void RemoveTrait(Trait trait) => _traitKeys.Remove(trait.Key);
+	    public void RemoveTrait(int key) => _traitKeys.Remove(key);
+	    public bool ContainsTrait(Trait trait) => _traitKeys.Contains(trait.Key);
+	    public bool ContainsTrait(int traitKey) => _traitKeys.Contains(traitKey);
 
-#endregion
+        #endregion
 
-		#region Bonds
+        #region Bonds
 
-	    private List<Bond> _bonds { get; } = new List<Bond>(); // Interactions
+        private List<Bond> _bonds { get; } = new List<Bond>(); // Interactions
 	    public IEnumerable<Bond> Bonds => _bonds;
 	    public Bond BondAt(int key) => _bonds[key];
 

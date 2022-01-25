@@ -26,6 +26,7 @@ namespace Slugs.Primitives
         }
 
         public SKSegment Segment => new SKSegment(StartPoint, EndPoint);
+        public override IPoint[] Points => IsEmpty ? new IPoint[] { } : new IPoint[] { StartRef, EndRef };
 
         protected SegmentBase(bool isEmpty):base(isEmpty){}
         public SegmentBase(PadKind padKind, IPoint start) : base(padKind)
@@ -86,18 +87,18 @@ namespace Slugs.Primitives
         //}
 
         //public static bool operator ==(SegmentBase left, SegmentBase right) =>
-        // left.StartKey == right.StartKey && left.EndKey == right.EndKey && left.Kind == right.Kind;
+        // left.StartKey == right.StartKey && left.EndKey == right.EndKey && left.SelectionKind == right.SelectionKind;
 
         //public static bool operator !=(SegmentBase left, SegmentBase right) =>
-        // left.StartKey != right.StartKey || left.EndKey != right.EndKey || left.Kind != right.Kind;
+        // left.StartKey != right.StartKey || left.EndKey != right.EndKey || left.SelectionKind != right.SelectionKind;
 
         //public override bool Equals(object obj) => obj is SegmentBase value && this == value;
 
         //public bool Equals(SegmentBase value) =>
-        // StartKey.Equals(value.StartKey) && EndKey.Equals(value.EndKey) && Kind.Equals(value.Kind);
+        // StartKey.Equals(value.StartKey) && EndKey.Equals(value.EndKey) && SelectionKind.Equals(value.SelectionKind);
 
         //public override int GetHashCode() =>
-        // StartKey.GetHashCode() * 29 + EndKey.GetHashCode() * 31 + (int)Kind * 37;
+        // StartKey.GetHashCode() * 29 + EndKey.GetHashCode() * 31 + (int)SelectionKind * 37;
 
     }
 }

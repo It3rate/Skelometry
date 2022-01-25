@@ -10,7 +10,9 @@ namespace Slugs.Entities
         public override IElement EmptyElement => Empty;
         public static readonly Bond Empty = new Bond();
 
-	    public int StartTraitKey { get; }
+        public override IPoint[] Points => new IPoint[] { };
+
+        public int StartTraitKey { get; }
 	    public Slug StartSlug { get; }
 	    public int EndTraitKey { get; }
 	    public Slug EndSlug { get; }

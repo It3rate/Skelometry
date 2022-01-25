@@ -12,15 +12,15 @@ namespace Slugs.Entities
 
         public Slug Range { get; }
 	    public float Focus { get; set; }
-	    //public PointKind Kind { get; set; }
-
         public float T => Range.IsZeroLength ? 0 : (float)(Range.Length() / Focus + Range.Start);
+
+        public override IPoint[] Points => new IPoint[] { };
 
         private Focal() : base(PadKind.None) {Range = Slug.Empty;}
         //public Focal(int padKind, float focus) : this(padKind, focus, Slug.Unit){}
 	    public Focal(PadKind padKind, float focus, Slug range) : base(padKind)
 	    {
-		    //Kind = PointKind.Terminal;
+		    //SelectionKind = PointKind.Terminal;
 		    Focus = focus;
 		    Range = range;
         }

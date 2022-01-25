@@ -10,15 +10,16 @@ namespace Slugs.Entities
     using System.Text;
     using System.Threading.Tasks;
 
-    public class TerminalPoint : ElementBase, IPoint
+    public class TerminalPoint : PointBase
     {
         public override ElementKind ElementKind => ElementKind.Terminal;
         public override IElement EmptyElement => Empty;
-        public static TerminalPoint Empty = new TerminalPoint();
-        //public PointKind Kind => PointKind.Terminal;
-        public SKPoint SKPoint { get; set; }
-
+        public static TerminalPoint Empty { get; } = new TerminalPoint();
         private TerminalPoint() : base(true) { SKPoint = SKPoint.Empty; }
+
+        public override IPoint[] Points => IsEmpty ? new IPoint[] { } : new IPoint[] { this };
+        public override SKPoint SKPoint { get; set; }
+
         public TerminalPoint(PadKind padKind, SKPoint point) : base(padKind)
         {
             SKPoint = point;
@@ -34,10 +35,10 @@ namespace Slugs.Entities
         {
 	        SKPoint = from.SKPoint;
         }
-        public static bool operator ==(TerminalPoint left, IPoint right) => left.Key == right.Key;
-        public static bool operator !=(TerminalPoint left, IPoint right) => left.Key != right.Key;
-        public override bool Equals(object obj) => obj is TerminalPoint value && this == value;
-        public bool Equals(IPoint value) => this == value;
-        public override int GetHashCode() => Key.GetHashCode();
+        //public static bool operator ==(TerminalPoint left, IPoint right) => left.Key == right.Key;
+        //public static bool operator !=(TerminalPoint left, IPoint right) => left.Key != right.Key;
+        //public override bool Equals(object obj) => obj is TerminalPoint value && this == value;
+        //public bool Equals(IPoint value) => this == value;
+        //public override int GetHashCode() => Key.GetHashCode();
     }
 }

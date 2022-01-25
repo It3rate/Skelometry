@@ -10,7 +10,7 @@
     {
 	    public int Index { get; }
 
-	    //public IElement Element { get; }
+	    //public IElement Selection { get; }
 
 	    public ElementType ElementType { get; set; } = ElementType.None;
 	    public ElementStyle ElementStyle { get; set; } = ElementStyle.None;
@@ -19,7 +19,7 @@
 
 	    //public ElementRecord(IElement element, PadKind padKind, int index = -1)
 	    //{
-		   // Element = element;
+		   // Selection = element;
 		   // PadKind = padKind;
 		   // Index = index;
 	    //}

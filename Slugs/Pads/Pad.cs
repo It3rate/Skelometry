@@ -1,7 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Drawing;
 using SkiaSharp;
 using Slugs.Agents;
-using Slugs.Input;
 using Slugs.Pads;
 using Slugs.Primitives;
 
@@ -10,8 +9,6 @@ namespace Slugs.Entities
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     public class Pad
     {
@@ -39,7 +36,7 @@ namespace Slugs.Entities
         {
 	        get
 	        {
-		        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint());
+		        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint() );
                 foreach (var kvp in values)
 		        {
 			        yield return (IPoint)kvp.Value;
@@ -77,6 +74,11 @@ namespace Slugs.Entities
 	        _elements.Clear();
         }
 
+        public IElement ElementAt(int key)
+        {
+	        var success = _elements.TryGetValue(key, out IElement element);
+	        return success ? element : TerminalPoint.Empty;
+        }
         public bool HasElementAt(int key, out IElement element)
         {
 	        _elements.TryGetValue(key, out element);
@@ -181,20 +183,22 @@ namespace Slugs.Entities
             }
         }
 
-        public List<IPoint> GetSnapPoints(SKPoint input, IPoint[] ignorePoints, float maxDist = SnapDistance)
+        public IPoint GetSnapPoint(SKPoint input, IPoint[] ignorePoints = null, float maxDist = SnapDistance)
         {
-            var result = new List<IPoint>();
-            foreach (var ptRef in Points) // use entities and traits rather than points?
+	        IPoint result = TerminalPoint.Empty;
+	        ignorePoints = ignorePoints ?? new IPoint[] { };
+            foreach (var ptRef in Points)
             {
-	            if (ptRef.PadKind == PadKind && !ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.SKPoint) < maxDist)
+	            if (!ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.SKPoint) < maxDist)
 	            {
-                    result.Add(ptRef);
+                    result = ptRef;
+                    break;
 	            }
             }
             return result;
         }
 
-        public Trait GetSnapLine(SKPoint point, float maxDist = SnapDistance)
+        public Trait GetSnapTrait(SKPoint point, float maxDist = SnapDistance)
         {
             var result = Trait.Empty;
             int lineIndex = 0;

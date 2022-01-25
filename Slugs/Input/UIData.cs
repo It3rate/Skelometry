@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using SkiaSharp;
 using Slugs.Agents;
 using Slugs.Entities;
@@ -13,14 +14,14 @@ namespace Slugs.Input
 	{
 		public IEnumerable<Pad> Pads => _agent.Pads.Values;
 
-        public SelectionSet Origin { get; }
-	    public SelectionSet Current { get; }
+        //public SelectionSet Origin { get; }
+	    public SelectionSet Current { get; } // Drag, Highlight, Selection, Clipboard
 	    public SelectionSet Highlight { get; }
 	    public SelectionSet Selection { get; }
 
-        public IElement DragElement { get; set; }
-        public bool IsDraggingElement => DragElement != null;
-        public bool IsDraggingPoint => Origin.Kind == ElementKind.RefPoint && IsDraggingElement;
+        private IElement DragElement { get; set; } =  TerminalPoint.Empty;
+        public bool IsDraggingElement => !DragElement.IsEmpty;
+        public bool IsDraggingPoint => Current.SelectionKind == ElementKind.RefPoint && IsDraggingElement;
         public readonly List<SKPoint> DragSegment = new List<SKPoint>();
 
 
@@ -28,99 +29,121 @@ namespace Slugs.Input
 	    public bool IsDragging { get; private set; }
 	    //public bool IsDraggingPoint => IsDragging && Origin.Extent == SelectionExtent.RefPoint;
 
-        public SKPoint DownPoint => Origin.OriginPoint;
-	    public IPoint StartHighlight => Origin.Snap;
+        public SKPoint DownPoint => Current.OriginPosition;
+	    public IPoint StartHighlight => Current.OriginIPoint;
 
-	    public SKPoint CurrentPoint => Current.OriginPoint;
-	    public SKPoint SnapPoint => Current.OriginSnap;
+	    public SKPoint CurrentPoint => Current.OriginPosition;
+	    public SKPoint SnapPoint => Current.SnapPosition;
 	    //public DragRef DragRef = new DragRef();
 
-	    public bool HasHighlightPoint => Current.Kind == ElementKind.RefPoint;
-	    public IPoint HighlightPoint => HasHighlightPoint ? (IPoint)Current.Snap : (IPoint)RefPoint.Empty;
-	    public bool HasHighlightLine => Current.Kind == ElementKind.Trait;
-        public Trait HighlightLine => HasHighlightLine ? Current.Snap.GetTrait() : Trait.Empty;
+	    public bool HasHighlightPoint => !Highlight.OriginIPoint.IsEmpty;
+	    public IPoint HighlightPoint => Highlight.OriginIPoint;
+	    public bool HasHighlightLine => Highlight.SelectionKind == ElementKind.Trait;
+        public Trait HighlightLine => HasHighlightLine ? (Trait)Highlight.Selection : Trait.Empty;
 
-	    public SKPoint GetHighlightPoint() => Current.OriginSnap; //HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
-	    public SKSegment GetHighlightLine() => HighlightLine.Segment;
+	    //public SKPoint GetHighlightPoint() => Current.SnapPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
+	    //public SKSegment GetHighlightLine() => HighlightLine.Segment;
 
 	    private readonly Agent _agent;
 
         public UIData(Agent agent)
         {
 	        _agent = agent;
-		    Origin = new SelectionSet(PadKind.Input);
+		    //Origin = new SelectionSet(PadKind.Input);
 		    Current = new SelectionSet(PadKind.Input);
 		    Selection = new SelectionSet(PadKind.Input);
             Highlight = new SelectionSet(PadKind.Input);
         }
 
-	    private IElement UpdateHighlight(PadKind padKind, SKPoint p, params SelectionSet[] sels)
+        private IElement GetHighlight(SKPoint p, Pad pad, SelectionSet ignoreSet = null)
+        {
+	        var points = ignoreSet?.Selection.Points;
+            IElement result = pad.GetSnapPoint(p, points);
+	        if (!result.IsEmpty)
+	        {
+				Highlight.Set(p, (IPoint) result);
+	        }
+	        else
+	        {
+		        result = pad.GetSnapTrait(p);
+		        if (!result.IsEmpty)
+		        {
+			        Highlight.Set(p, null, result);
+		        }
+            }
+	        return result;
+        }
+        private void UpdateDragElement(SKPoint p, SelectionSet sel)
 	    {
-		    IElement result = null;
-		    var pad = _agent.PadAt(padKind);
-		    var snap = pad.GetSnapPoints(p, Origin.Points);
-		    if (snap.Count > 0)
+		    if (!DragElement.IsEmpty)
 		    {
-			    result = snap[0];
-			    foreach (var sel in sels)
+			    switch (DragElement.ElementKind)
 			    {
-					sel.Update(p, snap[0], ElementKind.RefPoint);
+				    case ElementKind.Terminal:
+				    case ElementKind.RefPoint:
+				    case ElementKind.VPoint:
+                        sel.Update(p);//, (IPoint)DragElement, ElementKind.RefPoint);
+                        break;
+                    case ElementKind.Trait:
+	                    var trait = (Trait)DragElement;
+	                    var (t, _) = trait.TFromPoint(p);
+	                    sel.Update(p);//, trait.EntityKey, trait.Key, -1, t, ElementKind.Trait);
+                        break;
 			    }
 		    }
-		    else
-		    {
-			    var trait = pad.GetSnapLine(p);
-			    if (!trait.IsEmpty)
-			    {
-				    result = trait;
-                    var (t, _) = trait.TFromPoint(p);
-                    foreach (var sel in sels)
-                    {
-	                    sel.Update(p, trait.EntityKey, trait.Key, -1, t, ElementKind.Trait);
-                    }
-			    }
-		    }
-		    return result;
 	    }
+        // todo: Creating traits will depend on selected entity etc.
+        private Trait CreateTrait(SKPoint p, Pad pad)
+        {
+	        var entity = pad.CreateEntity();
+	        return pad.AddTrait(entity.Key, new SKSegment(p, p), 5);
+        }
 
         public void Start(SKPoint actual)
         {
-	        DragElement = UpdateHighlight(PadKind.Input, actual, Origin);
+	        DragElement = GetHighlight(actual, Current.Pad);
+            if (DragElement.IsEmpty)
+            {
+	            var trait = CreateTrait(actual, Current.Pad);
+	            DragElement = trait.EndRef;
+            }
+            Current.Set(actual, Highlight.OriginIPoint, DragElement);
+            //UpdateDragElement(actual, Current);
             IsDown = true;
-	    }
+        }
 	    public void Move(SKPoint actual)
 	    {
 		    Current.Update(actual);
-		    UpdateHighlight(PadKind.Input, actual, Current);
-		    UpdateHighlight(PadKind.Input, SKPoint.Empty, Highlight);
-            IsDragging = IsDown ? true : false;
-		    if (IsDraggingElement)
-		    {
-			    var orgPts = Origin.Points;
-			    var curPts = Current.Points;
-			    if (orgPts.Length > 0 && orgPts.Length == curPts.Length)
-			    {
-					var diff = (Current.OriginPoint - Origin.OriginPoint);
-					for (int i = 0; i < orgPts.Length; i++)
-					{
-						curPts[i].SKPoint = Origin.OriginPoint + diff;
-					}
-			    }
+            GetHighlight(actual, Current.Pad);
+		    UpdateDragElement(actual, Current);
 
-		    }
+     //       IsDragging = IsDown ? true : false;
+		   // if (IsDraggingElement)
+		   // {
+			  //  var orgPts = Origin.Points;
+			  //  var curPts = Current.Points;
+			  //  if (orgPts.Length > 0 && orgPts.Length == curPts.Length)
+			  //  {
+					//var diff = (Current.OriginPosition - Origin.OriginPosition);
+					//for (int i = 0; i < orgPts.Length; i++)
+					//{
+					//	curPts[i].SKPoint = Origin.OriginPosition + diff;
+					//}
+			  //  }
+		   // }
 	    }
 	    public void End(SKPoint actual)
 	    {
-		    UpdateHighlight(PadKind.Input, actual, Current);
+		    UpdateDragElement(actual, Current);
+            Current.Clear();
+            //UpdateHighlight(actual, Current);
             IsDown = false;
 		    IsDragging = false;
-		    DragElement = null;
+		    DragElement = TerminalPoint.Empty;
 	    }
 
 	    public void Reset()
 	    {
-		    Origin.Kind = ElementKind.None;
-		    Current.Kind = ElementKind.None;
         }
 	    public void CancelDrag(SKPoint actual, IPoint snap, ElementKind kind)
 	    {

@@ -7,7 +7,7 @@ namespace Slugs.Entities
 {
 	public interface IPoint : IElement, IEquatable<IPoint>
     {
-        //PointKind Kind { get; }
+        //PointKind SelectionKind { get; }
         SKPoint SKPoint { get; set; }
         //bool ReplaceWith(IPoint pt);
 	    //void CopyValuesFrom(IPoint from);
@@ -16,13 +16,16 @@ namespace Slugs.Entities
 	public abstract class PointBase : ElementBase, IPoint
 	{
 		public abstract SKPoint SKPoint { get; set; }
-		public PointBase(PadKind padKind) : base(padKind)
-		{
-		}
 
-		public abstract bool Equals(IPoint other);
+		protected PointBase(bool isEmpty) : base(isEmpty) { }
+		protected PointBase(PadKind padKind) : base(padKind) { }
 
-	}
+        public static bool operator ==(PointBase left, IPoint right) => left.Key == right.Key;
+        public static bool operator !=(PointBase left, IPoint right) => left.Key != right.Key;
+        public override bool Equals(object obj) => obj is PointBase value && this == value;
+        public bool Equals(IPoint value) => this == value;
+        public override int GetHashCode() => Key.GetHashCode();
+    }
 
     //[Flags]
     //public enum PointKind
