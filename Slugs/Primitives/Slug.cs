@@ -136,13 +136,10 @@ namespace Slugs.Primitives
 
         public static bool operator ==(Slug left, Slug right) => left.Push == right.Push && left.Pull == right.Pull;
         public static bool operator !=(Slug left, Slug right) => left.Push != right.Push || left.Pull != right.Pull;
-        public override bool Equals(object obj) => obj is Slug complex && this == complex;
+        public override bool Equals(object obj) => obj is Slug slug && this == slug;
         public bool Equals(Slug value) => this.Push.Equals(value.Push) && this.Pull.Equals(value.Pull);
-        public override int GetHashCode()
-        {
-	        int num = 99999997;
-	        return Push.GetHashCode() % num ^ Pull.GetHashCode();
-        }
+        public override int GetHashCode() => Push.GetHashCode() % 99999997 ^ Pull.GetHashCode();
+        
         public override string ToString() => string.Format((IFormatProvider)CultureInfo.CurrentCulture, "({0}, {1})", new object[2]
         {
 	        (object) this.Pull,

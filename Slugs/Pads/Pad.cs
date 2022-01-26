@@ -131,30 +131,38 @@ namespace Slugs.Entities
         public IPoint TerminalPointFor(IPoint point)
         {
 	        IPoint result = TerminalPoint.Empty;
-	        if (point is RefPoint refPoint)
+	        if (!point.IsEmpty)
 	        {
-		        var success = true;
-		        IElement element;
-		        while (success)
+		        if (point is RefPoint refPoint)
 		        {
-			        success = _elements.TryGetValue(refPoint.TargetKey, out element);
-			        if (element.ElementKind != ElementKind.RefPoint)
+			        var success = true;
+			        IElement element;
+			        while (success)
 			        {
-						result = element.ElementKind.IsTerminal() ? (IPoint)element : TerminalPoint.Empty;
-						break;
+				        success = _elements.TryGetValue(refPoint.TargetKey, out element);
+				        if (element.ElementKind != ElementKind.RefPoint)
+				        {
+					        result = element.ElementKind.IsTerminal() ? (IPoint) element : TerminalPoint.Empty;
+					        break;
+				        }
 			        }
 		        }
+		        else if (point.ElementKind.IsTerminal())
+		        {
+			        result = (IPoint) point;
+		        }
 	        }
-	        else if(point.ElementKind.IsTerminal())
-	        {
-		        result = (IPoint)point;
-	        }
+
 	        return result;
         }
-    
+
+        public void MergePoints(IPoint from, IPoint to) => MergePoints(from, to, SKPoint.Empty);
         public void MergePoints(IPoint from, IPoint to, SKPoint position)
         {
-	        to.SKPoint = position;
+	        if (!position.IsEmpty)
+	        {
+		        to.SKPoint = position;
+	        }
 	        var terminal = TerminalPointFor(to);
             var point = new RefPoint(PadKind, terminal.Key);
             SetPointAt(from.Key, point);

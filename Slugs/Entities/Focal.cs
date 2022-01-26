@@ -4,7 +4,7 @@ using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
-	public class Focal : ElementBase, IEquatable<Focal>
+	public class Focal : ElementBase
     {
 	    public override ElementKind ElementKind => ElementKind.Focal;
 	    public override IElement EmptyElement => Empty;
@@ -26,9 +26,8 @@ namespace Slugs.Entities
         }
 
 	    public static bool operator ==(Focal left, Focal right) => left.Key == right.Key && left.Range == right.Range && left.Focus == right.Focus;
-        public static bool operator !=(Focal left, Focal right) => left.Key != right.Key || left.Range == right.Range || left.Focus == right.Focus;
+        public static bool operator !=(Focal left, Focal right) => left.Key != right.Key || left.Range != right.Range || left.Focus != right.Focus;
 	    public override bool Equals(object obj) => obj is Focal value && this == value;
-	    public bool Equals(Focal value) => this == value;
 	    public override int GetHashCode() => Key.GetHashCode() + 17*Range.GetHashCode() + 23*Focus.GetHashCode();
     }
 }

@@ -63,26 +63,28 @@ namespace Slugs.Entities
 	        FocalKey = focalKey;
         }
 
-        public void CopyValuesFrom(IPoint from)
-        {
-            PadKind = from.PadKind;
-	        if (from is VPoint vp)
-	        {
-		        //SelectionKind = vp.SelectionKind;
-		        EntityKey = vp.EntityKey;
-		        TraitKey = vp.TraitKey;
-		        FocalKey = vp.FocalKey;
-	        }
-	        else
-	        {
-		        //SelectionKind = PointKind.Reference;
-		        Key = from.Key;
-	        }
-        }
-        //public static bool operator ==(VPoint left, IPoint right) => left.Key == right.Key;
-        //public static bool operator !=(VPoint left, IPoint right) => left.Key != right.Key;
-        //public override bool Equals(object obj) => obj is VPoint value && this == value;
-        //public bool Equals(IPoint value) => this == value;
-        //public override int GetHashCode() => Key.GetHashCode();// 17 * 23 + PadKind.GetHashCode() * 29 + TraitKey.GetHashCode() * 31 + EntityKey.GetHashCode() * 37 + FocalKey.GetHashCode();
+        //public void CopyValuesFrom(IPoint from)
+        //{
+        //    PadKind = from.PadKind;
+	       // if (from is VPoint vp)
+	       // {
+		      //  //SelectionKind = vp.SelectionKind;
+		      //  EntityKey = vp.EntityKey;
+		      //  TraitKey = vp.TraitKey;
+		      //  FocalKey = vp.FocalKey;
+	       // }
+	       // else
+	       // {
+		      //  //SelectionKind = PointKind.Reference;
+		      //  Key = from.Key;
+	       // }
+        //}
+        public static bool operator ==(VPoint left, VPoint right) =>
+	        left.Key == right.Key && left.EntityKey == right.EntityKey && left.TraitKey == right.TraitKey && left.FocalKey == right.FocalKey;
+        public static bool operator !=(VPoint left, VPoint right) =>
+	        left.Key != right.Key || left.EntityKey != right.EntityKey || left.TraitKey != right.TraitKey || left.FocalKey != right.FocalKey;
+
+        public override bool Equals(object obj) => obj is VPoint value && this == value;
+        public override int GetHashCode() => Key * 23 + EntityKey * 27 + TraitKey * 31 + FocalKey * 37;
     }
 }

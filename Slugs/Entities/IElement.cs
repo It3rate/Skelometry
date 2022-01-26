@@ -30,7 +30,7 @@ namespace Slugs.Entities
 
         public PadKind PadKind { get; set; }
         public Pad Pad => Agent.Current.PadAt(PadKind);
-		public int Key { get; set; }
+		public int Key { get; }
 
 		public abstract IElement EmptyElement { get; }
 		public abstract ElementKind ElementKind { get; }
@@ -51,17 +51,15 @@ namespace Slugs.Entities
         //public SKPoint[] SKPoints => null;
 
         protected ElementBase(bool isEmpty) // used to privately create an empty element
-		{
-			Key = EmptyKeyValue;
+        {
+	        PadKind = PadKind.None;
+            Key = EmptyKeyValue;
 		}
 		protected ElementBase(PadKind padKind)
 		{
 			Key = KeyCounter++;
 			PadKind = padKind;
-			//if (padKind != PadKind.None) // used in empty definitions.
-			{
-				Pad.AddElement(this);
-            }
+			Pad.AddElement(this);
         }
     }
     [Flags]

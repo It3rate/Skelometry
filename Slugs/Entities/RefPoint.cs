@@ -15,7 +15,11 @@ namespace Slugs.Entities
 		public override ElementKind ElementKind => ElementKind.RefPoint;
 		public override IElement EmptyElement => Empty;
 		public static readonly RefPoint Empty = new RefPoint();
-		private RefPoint() : base(true) { SKPoint = SKPoint.Empty; }
+
+		public RefPoint() : base(true)
+		{
+			SKPoint = SKPoint.Empty;
+		}
 
 		public int TargetKey { get; private set; }
 
@@ -23,7 +27,14 @@ namespace Slugs.Entities
 		public override SKPoint SKPoint
 		{
 			get => Pad.TerminalPointFor(this).SKPoint;
-			set => Pad.TerminalPointFor(this).SKPoint = value;
+			set
+			{
+                var tp = Pad.TerminalPointFor(this);
+                if (!tp.IsEmpty)
+                {
+	                tp.SKPoint = value;
+                }
+			}
 		}
 
 		public RefPoint(PadKind padKind, int targetKey) : base(padKind)
@@ -54,7 +65,6 @@ namespace Slugs.Entities
         public static bool operator ==(RefPoint left, IPoint right) => left.Key == right.Key && (right is RefPoint value && left.TargetKey == value.TargetKey);
         public static bool operator !=(RefPoint left, IPoint right) => left.Key != right.Key || (right is RefPoint value && left.TargetKey != value.TargetKey);
         public override bool Equals(object obj) => obj is RefPoint value && this == value;
-        //public bool Equals(IPoint value) => this == value;
-        public override int GetHashCode() => Key.GetHashCode() + 17*TargetKey.GetHashCode();
+        public override int GetHashCode() => PadKind.GetHashCode() * 31 + Key.GetHashCode() * 37 + TargetKey.GetHashCode() * 39;
     }
 }

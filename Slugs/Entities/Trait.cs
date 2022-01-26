@@ -16,18 +16,18 @@ namespace Slugs.Entities
 	    public override ElementKind ElementKind => ElementKind.Trait;
 	    public override IElement EmptyElement => Empty;
 	    public static readonly Trait Empty = new Trait();
-        private Trait() : base(true) {_entity = Entity.Empty; KindIndex = -1;}
+        private Trait() : base(true) { EntityKey = Entity.Empty.Key; KindIndex = -1;}
 
 	    public int KindIndex { get; }
 
-	    private Entity _entity { get; }
-        public int EntityKey => _entity.Key;
+	    private Entity _entity => Pad.EntityAt(EntityKey);
+        public int EntityKey { get; set; }
 
         public Trait(IPoint start, IPoint end, Entity entity, int traitKindIndex) : this(start.Key, end.Key, entity, traitKindIndex) {}
 
         public Trait(int startKey, int endKey, Entity entity, int traitKindIndex) : base(entity.PadKind, startKey, endKey)
         {
-	        _entity = entity;
+	        EntityKey = entity.Key;
 		    KindIndex = traitKindIndex;
         }
 
@@ -36,10 +36,11 @@ namespace Slugs.Entities
 	        var (t, projected) = TFromPoint(point);
             return new VPoint(_entity.PadKind, _entity.Key, Key, -1);
         }
-        public static bool operator ==(Trait left, Trait right) => left.Key == right.Key && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
-        public static bool operator !=(Trait left, Trait right) => left.Key != right.Key || left.StartKey == right.StartKey || left.EndKey == right.EndKey;
+        public static bool operator ==(Trait left, Trait right) => 
+	        left.Key == right.Key && left.EntityKey == right.EntityKey && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
+        public static bool operator !=(Trait left, Trait right) => 
+	        left.Key != right.Key || left.EntityKey != right.EntityKey || left.StartKey != right.StartKey || left.EndKey != right.EndKey;
         public override bool Equals(object obj) => obj is Trait value && this == value;
-        public bool Equals(Focal value) => this == value;
-        public override int GetHashCode() => Key.GetHashCode();
+        public override int GetHashCode() => Key * 17 + EntityKey * 23 + StartKey * 29 + EndKey * 31;
     }
 }

@@ -17,10 +17,6 @@ namespace Slugs.Agents
 
 	    public readonly Dictionary<PadKind, Pad> Pads = new Dictionary<PadKind, Pad>();
 
-        // todo: Move all collections to agents, maybe duplicate keys in entities etc if useful, though filters amount to the same.
-        //private readonly Dictionary<int, IPoint> _pointMap = new Dictionary<int, IPoint>();
-        private readonly Dictionary<int, Focal> _focalMap = new Dictionary<int, Focal>();
-
 	    public Pad WorkingPad => PadAt(PadKind.Working);
         public Pad InputPad => PadAt(PadKind.Input);
         public Pad PadAt(PadKind kind) => Pads[kind];
@@ -37,6 +33,7 @@ namespace Slugs.Agents
         public Agent(SlugRenderer renderer)
         {
             Current = this;
+            AddPad(PadKind.None); // for empty elements
             AddPad(PadKind.Working);
             AddPad(PadKind.Input);
             _data = new UIData(this);
@@ -47,6 +44,7 @@ namespace Slugs.Agents
             InputPad.AddTrait(entity.Key, new SKSegment(290, 100, 490, 300), 1);
 
             ClearMouse();
+            var t = new RefPoint();
         }
         public Pad AddPad(PadKind padKind)
         {
@@ -59,16 +57,7 @@ namespace Slugs.Agents
         public void ClearMouse()
         {
             _data.Reset();
-            //_data.DownPoint = SKPoint.Empty;
-            //_data.OriginPosition = SKPoint.Empty;
-            //_data.SnapOriginPosition = SKPoint.Empty;
-            //_data.DownPoint = SKPoint.Empty;
-            //_data.DownHighlight = RefPoint.Empty;
-
-            //_data.DragSegment.Clear(); 
             WorkingPad.Clear();
-            //_data.DragRef.Clear();
-
         }
 
         public bool MouseDown(MouseEventArgs e)
@@ -148,7 +137,7 @@ namespace Slugs.Agents
                     //_data.DragRef.OffsetValues(_data.SnapOriginPosition);
                     if (_data.IsDraggingPoint && _data.HasHighlightPoint)
                     {
-                        PadAt(PadKind.Input).MergePoints(_data.Current.OriginIPoint, _data.Highlight.OriginIPoint, _data.SnapPoint);
+                        InputPad.MergePoints(_data.Current.OriginIPoint, _data.Highlight.OriginIPoint, _data.SnapPoint);
                         //MergePoints(_data.Origin.Selection, _data.HighlightPoint, _data.OriginIPoint);
                     }
                     else if (_data.IsDraggingPoint && _data.HasHighlightLine)
@@ -160,23 +149,20 @@ namespace Slugs.Agents
             }
             else if (_data.IsDown)
             {
-                //WorkingPad.AddEntity(new SKSegment(_data.DownPoint, _data.SnapPoint), 0);
                 if (final)
                 {
-                    //_data.DragSegment.Add(_data.SnapPoint);
                     var p0 = _data.Current.SnapOriginPosition;
                     var p1 = _data.Current.OriginIPoint.SKPoint;
                     if (p0.DistanceTo(p1) > 10)
                     {
 	                    var (entity, trait) = InputPad.AddEntity(new SKSegment(p0,  p1), _traitIndexCounter++);
-                        //var newDataMap = DataMap.CreateIn(InputPad, _data.DragSegment);
                         if (!_data.DownHighlight.IsEmpty)
                         {
-	                        PadAt(PadKind.Input).MergePoints(trait.StartRef, _data.DownHighlight, _data.DownHighlight.SKPoint);
+	                        InputPad.MergePoints(trait.StartRef, _data.DownHighlight, _data.DownHighlight.SKPoint);
                         }
                         if (_data.HasHighlightPoint)
                         {
-	                        PadAt(PadKind.Input).MergePoints(trait.EndRef, _data.HighlightPoint, _data.SnapPoint);
+	                        InputPad.MergePoints(trait.EndRef, _data.HighlightPoint);
                         }
                         else if (_data.HasHighlightLine)
                         {
@@ -184,10 +170,7 @@ namespace Slugs.Agents
 	                        var (t, pt) = highlightLine.TFromPoint(p1);
                             var focal = InputPad.CreateFocal(t, Slug.Unit);
                             var vp = new VPoint(InputPad.PadKind, highlightLine.EntityKey, highlightLine.Key, focal.Key);
-                            //InputPad.AddElement(vp);
-                            //_pointMap.Add(vp.Key, vp);
-                            PadAt(PadKind.Input).SetPointAt(trait.EndRef.Key, vp);
-                            //trait.EndRef.ReplaceWith(vp);
+                            InputPad.SetPointAt(trait.EndRef.Key, vp);
                         }
                     }
                 }

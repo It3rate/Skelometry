@@ -5,7 +5,7 @@ using Slugs.Pads;
 
 namespace Slugs.Entities
 {
-	public interface IPoint : IElement, IEquatable<IPoint>
+	public interface IPoint : IElement
     {
         //PointKind SelectionKind { get; }
         SKPoint SKPoint { get; set; }
@@ -20,11 +20,10 @@ namespace Slugs.Entities
 		protected PointBase(bool isEmpty) : base(isEmpty) { }
 		protected PointBase(PadKind padKind) : base(padKind) { }
 
-        public static bool operator ==(PointBase left, IPoint right) => left.Key == right.Key;
-        public static bool operator !=(PointBase left, IPoint right) => left.Key != right.Key;
-        public override bool Equals(object obj) => obj is PointBase value && this == value;
-        public bool Equals(IPoint value) => this == value;
-        public override int GetHashCode() => Key.GetHashCode();
+        //public static bool operator ==(PointBase left, IPoint right) => left.Key == right.Key;
+        //public static bool operator !=(PointBase left, IPoint right) => left.Key != right.Key;
+        //public override bool Equals(object obj) => obj is PointBase value && this == value;
+        //public override int GetHashCode() => Key.GetHashCode();
     }
 
     //[Flags]

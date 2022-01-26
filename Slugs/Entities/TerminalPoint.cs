@@ -35,10 +35,9 @@ namespace Slugs.Entities
         {
 	        SKPoint = from.SKPoint;
         }
-        //public static bool operator ==(TerminalPoint left, IPoint right) => left.Key == right.Key;
-        //public static bool operator !=(TerminalPoint left, IPoint right) => left.Key != right.Key;
-        //public override bool Equals(object obj) => obj is TerminalPoint value && this == value;
-        //public bool Equals(IPoint value) => this == value;
-        //public override int GetHashCode() => Key.GetHashCode();
+        public static bool operator ==(TerminalPoint left, TerminalPoint right) => left.Key == right.Key && left.SKPoint == right.SKPoint;
+        public static bool operator !=(TerminalPoint left, TerminalPoint right) => left.Key != right.Key || left.SKPoint != right.SKPoint;
+        public override bool Equals(object obj) => obj is TerminalPoint value && this == value;
+        public override int GetHashCode() => Key * 17 + SKPoint.GetHashCode();
     }
 }

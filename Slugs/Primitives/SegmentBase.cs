@@ -97,8 +97,7 @@ namespace Slugs.Primitives
         public bool Equals(SegmentBase value) =>
 	        Key == value.Key && StartKey == value.StartKey && EndKey == value.EndKey;
 
-        public override int GetHashCode() =>
-	        Key.GetHashCode() * 17 + StartKey.GetHashCode()* 29 + EndKey.GetHashCode() * 31;
+        public override int GetHashCode() => Key * 17 + StartKey * 29 + EndKey * 31;
 
     }
 }
