@@ -52,7 +52,7 @@ namespace Slugs.Agents
 	        return Pads[padKind];
         }
 
-#region Mouse and Keyboard
+#region MousePosition and Keyboard
 
         public void ClearMouse()
         {
@@ -65,10 +65,10 @@ namespace Slugs.Agents
 	        var curPt = e.Location.ToSKPoint();
             _data.Start(curPt);
             //UpdateHighlight(curPt, _data.Origin);
-		    //_data.OriginPosition = e.Location.ToSKPoint();
+		    //_data.MousePosition = e.Location.ToSKPoint();
 		    //SetHighlight();
-		    //_data.DownPoint = _data.SnapOriginPosition;
-		    //_data.DragRef.Origin = _data.OriginPosition;
+		    //_data.DownPoint = _data.SnapPosition;
+		    //_data.DragRef.Origin = _data.MousePosition;
 		    //if (_data.HasHighlightPoint && CurrentKey != Keys.ControlKey)
 		    //{
       //          //_data.DragRef.Add(_data.HighlightPoints);
@@ -81,7 +81,7 @@ namespace Slugs.Agents
       //      }
 		    //else
 		    //{
-			   // //_data.DragSegment.Add(_data.SnapOriginPosition);
+			   // //_data.DragSegment.Add(_data.SnapPosition);
 			   // //_data.DownHighlight = _data.HighlightPoint;
 		    //}
 
@@ -90,7 +90,7 @@ namespace Slugs.Agents
 
 	    public bool MouseMove(MouseEventArgs e)
 	    {
-		    WorkingPad.Clear();
+		    //WorkingPad.Clear();
 		    _data.Move(e.Location.ToSKPoint());
 		    SetCreating();
 
@@ -130,52 +130,50 @@ namespace Slugs.Agents
         private bool SetCreating(bool final = false)
         {
             var result = false;
-            if (_data.IsDragging)
+            if (final)
             {
-                if (final)
-                {
-                    //_data.DragRef.OffsetValues(_data.SnapOriginPosition);
-                    if (_data.IsDraggingPoint && _data.HasHighlightPoint)
-                    {
-                        InputPad.MergePoints(_data.Current.OriginIPoint, _data.Highlight.OriginIPoint, _data.SnapPoint);
-                        //MergePoints(_data.Origin.Selection, _data.HighlightPoint, _data.OriginIPoint);
-                    }
-                    else if (_data.IsDraggingPoint && _data.HasHighlightLine)
-                    {
-                        //var dragPoint = _data.DragRef.PointRefs[0];
-                    }
-                    result = true;
-                }
+	            if (_data.IsDraggingPoint)
+	            {
+		            if (_data.HasHighlightPoint)
+		            {
+			            InputPad.MergePoints(_data.Current.SnapPoint, _data.Highlight.SnapPoint, _data.Highlight.SnapPosition);
+		            }
+		            else if (_data.IsDraggingPoint && _data.HasHighlightLine)
+		            {
+			            //var dragPoint = _data.DragRef.PointRefs[0];
+		            }
+		            result = true;
+	            }
+                else if (_data.IsDown)
+	            {
+		            var p0 = _data.Current.SnapPosition;
+		            var p1 = _data.Current.SnapPoint.SKPoint;
+		            if (p0.DistanceTo(p1) > 10)
+		            {
+			            var (entity, trait) = InputPad.AddEntity(new SKSegment(p0, p1), _traitIndexCounter++);
+			            if (!_data.Drag.SnapPoint.IsEmpty)
+			            {
+				            InputPad.MergePoints(trait.StartRef, _data.Drag.SnapPoint, _data.Drag.SnapPosition);
+			            }
+
+			            if (_data.HasHighlightPoint)
+			            {
+				            InputPad.MergePoints(trait.EndRef, _data.HighlightPoint);
+			            }
+			            else if (_data.HasHighlightLine)
+			            {
+				            var highlightLine = _data.HighlightLine;
+				            var (t, pt) = highlightLine.TFromPoint(p1);
+				            var focal = InputPad.CreateFocal(t, Slug.Unit);
+				            var vp = new VPoint(InputPad.PadKind, highlightLine.EntityKey, highlightLine.Key, focal.Key);
+				            InputPad.SetPointAt(trait.EndRef.Key, vp);
+			            }
+		            }
+
+		            result = true;
+	            }
             }
-            else if (_data.IsDown)
-            {
-                if (final)
-                {
-                    var p0 = _data.Current.SnapOriginPosition;
-                    var p1 = _data.Current.OriginIPoint.SKPoint;
-                    if (p0.DistanceTo(p1) > 10)
-                    {
-	                    var (entity, trait) = InputPad.AddEntity(new SKSegment(p0,  p1), _traitIndexCounter++);
-                        if (!_data.DownHighlight.IsEmpty)
-                        {
-	                        InputPad.MergePoints(trait.StartRef, _data.DownHighlight, _data.DownHighlight.SKPoint);
-                        }
-                        if (_data.HasHighlightPoint)
-                        {
-	                        InputPad.MergePoints(trait.EndRef, _data.HighlightPoint);
-                        }
-                        else if (_data.HasHighlightLine)
-                        {
-	                        var highlightLine = _data.HighlightLine;
-	                        var (t, pt) = highlightLine.TFromPoint(p1);
-                            var focal = InputPad.CreateFocal(t, Slug.Unit);
-                            var vp = new VPoint(InputPad.PadKind, highlightLine.EntityKey, highlightLine.Key, focal.Key);
-                            InputPad.SetPointAt(trait.EndRef.Key, vp);
-                        }
-                    }
-                }
-                result = true;
-            }
+
             return result;
         }
     }

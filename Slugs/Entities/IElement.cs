@@ -84,7 +84,6 @@ namespace Slugs.Entities
     }
 	public static class SelectionKindExtensions
 	{
-		public static bool HasSnap(this ElementKind kind) => (kind != ElementKind.None && kind != ElementKind.Terminal);
 		public static bool IsPoint(this ElementKind kind) => ElementKind.PointKind.HasFlag(kind);
 		public static bool IsTerminal(this ElementKind kind) => kind == ElementKind.Terminal;
     }

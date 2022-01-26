@@ -11,7 +11,7 @@ namespace Slugs.Primitives
 
         //public SKSegment(SKPoint start)
         //{
-	       // StartPoint = start;
+	       // SnapPoint = start;
 	       // EndPoint = start;
         //}
         public SKSegment(SKPoint start, SKPoint end)
