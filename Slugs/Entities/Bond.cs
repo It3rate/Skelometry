@@ -12,30 +12,30 @@ namespace Slugs.Entities
 
         public override IPoint[] Points => new IPoint[] { };
 
-        public int StartTraitKey { get; }
+        public int StartFocalKey { get; }
 	    public Slug StartSlug { get; }
-	    public int EndTraitKey { get; }
+	    public int EndFocalKey { get; }
 	    public Slug EndSlug { get; }
 
 	    private Bond() : base(true) // Empty ctor
 	    {
-		    StartTraitKey = -1;
+		    StartFocalKey = -1;
             StartSlug = Slug.Empty;
-		    EndTraitKey = -1;
+		    EndFocalKey = -1;
             EndSlug = Slug.Empty;
 	    }
 	    public Bond(Trait startTrait, Slug startSlug, Trait endTrait, Slug endSlug) : base(startTrait.PadKind)
 	    {
-		    StartTraitKey = startTrait.Key;
+		    StartFocalKey = startTrait.Key;
 		    StartSlug = startSlug;
-		    EndTraitKey = endTrait.Key;
+		    EndFocalKey = endTrait.Key;
 		    EndSlug = endSlug;
 	    }
 	    public static bool operator ==(Bond left, Bond right) => 
-		    left.Key == right.Key && left.StartTraitKey == right.StartTraitKey && left.EndTraitKey == right.EndTraitKey && left.StartSlug == right.StartSlug && left.EndSlug == right.EndSlug;
+		    left.Key == right.Key && left.StartFocalKey == right.StartFocalKey && left.EndFocalKey == right.EndFocalKey && left.StartSlug == right.StartSlug && left.EndSlug == right.EndSlug;
 	    public static bool operator !=(Bond left, Bond right) => 
-		    left.Key != right.Key || left.StartTraitKey != right.StartTraitKey || left.EndTraitKey != right.EndTraitKey || left.StartSlug != right.StartSlug || left.EndSlug != right.EndSlug;
+		    left.Key != right.Key || left.StartFocalKey != right.StartFocalKey || left.EndFocalKey != right.EndFocalKey || left.StartSlug != right.StartSlug || left.EndSlug != right.EndSlug;
 	    public override bool Equals(object obj) => obj is Bond value && this == value;
-	    public override int GetHashCode() => Key.GetHashCode() + 17 * Key + 23 * StartTraitKey + 27 * EndTraitKey + StartSlug.GetHashCode() + EndSlug.GetHashCode();
+	    public override int GetHashCode() => Key.GetHashCode() + 17 * Key + 23 * StartFocalKey + 27 * EndFocalKey + StartSlug.GetHashCode() + EndSlug.GetHashCode();
     }
 }

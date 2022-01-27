@@ -11,6 +11,9 @@ namespace Slugs.Entities
 	    public static readonly Focal Empty = new Focal();
         private Focal() : base(true) {Range = Slug.Empty;}
 
+        // maybe focals always link to a specific trait and entity?
+        public int EntityKey { get; }
+        public int TraitKey { get; }
         public Slug Range { get; }
 	    public float Focus { get; set; }
         public float T => Range.IsZeroLength ? 0 : (float)(Range.Length() / Focus + Range.Start);
