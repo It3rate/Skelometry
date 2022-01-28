@@ -15,17 +15,20 @@ namespace Slugs.Input
 		public IEnumerable<Pad> Pads => _agent.Pads.Values;
 
         //public SelectionSet Origin { get; }
-        public SelectionSet Drag { get; }
-        public SelectionSet Current { get; } // Drag, Highlight, Selection, Clipboard
-        public SelectionSet Highlight { get; }
-        public SelectionSet Selection { get; }
-        public SelectionSet Clipboard { get; }
+        public Dictionary<SelectionSetKind, SelectionSet> SelectionSets = new Dictionary<SelectionSetKind, SelectionSet>();
+        private void AddSelectionSet(PadKind padKind, SelectionSetKind kind) => SelectionSets.Add(kind, new SelectionSet(padKind, kind));
+        public SelectionSet SelectionSetFor(SelectionSetKind kind) => SelectionSets[kind];
+        public SelectionSet Begin => SelectionSets[SelectionSetKind.Begin];
+        public SelectionSet Current => SelectionSets[SelectionSetKind.Current];
+        public SelectionSet Highlight => SelectionSets[SelectionSetKind.Highlight];
+        public SelectionSet Selected => SelectionSets[SelectionSetKind.Selection];
+        public SelectionSet Clipboard => SelectionSets[SelectionSetKind.Clipboard];
 
         public bool IsDown { get; private set; }
 
-        //private IElement DragElement => Drag.Selection;
-        public bool IsDraggingElement => !Drag.Selection.IsEmpty;
-        public bool IsDraggingPoint => !Drag.SnapPoint.IsEmpty;
+        //private IElement DragElement => Begin.Selected;
+        public bool IsDraggingElement => !Begin.Selection.IsEmpty;
+        public bool IsDraggingPoint => !Begin.SnapPoint.IsEmpty;
 
 
 	    public bool HasHighlightPoint => !Highlight.SnapPoint.IsEmpty;
@@ -41,10 +44,11 @@ namespace Slugs.Input
         public UIData(Agent agent)
         {
 	        _agent = agent;
-		    Drag = new SelectionSet(PadKind.Input);
-		    Current = new SelectionSet(PadKind.Input);
-		    Selection = new SelectionSet(PadKind.Input);
-            Highlight = new SelectionSet(PadKind.Input);
+	        AddSelectionSet(PadKind.Input, SelectionSetKind.Begin);
+	        AddSelectionSet(PadKind.Input, SelectionSetKind.Current);
+	        AddSelectionSet(PadKind.Input, SelectionSetKind.Selection);
+	        AddSelectionSet(PadKind.Input, SelectionSetKind.Highlight);
+	        AddSelectionSet(PadKind.Input, SelectionSetKind.Clipboard);
         }
 
         private IElement GetHighlight(SKPoint p, SelectionSet targetSet, SelectionSet ignoreSet)
@@ -78,14 +82,14 @@ namespace Slugs.Input
 
         public void Start(SKPoint actual)
         {
-	        GetHighlight(actual, Drag, null);
+	        GetHighlight(actual, Begin, null);
 	        GetHighlight(actual, Highlight, null);
-            if (Drag.Selection.IsEmpty)
+            if (Begin.Selection.IsEmpty)
             {
 	            var trait = CreateTrait(actual, _agent.WorkingPad);
-	            Drag.Selection = trait.EndRef;
+	            Begin.Selection = trait.EndRef;
             }
-            Current.Set(actual, Highlight.SnapPoint, Drag.Selection);
+            Current.Set(actual, Highlight.SnapPoint, Begin.Selection);
             IsDown = true;
         }
 	    public void Move(SKPoint actual)
@@ -111,7 +115,7 @@ namespace Slugs.Input
 	    {
 		    GetHighlight(actual, Highlight, null);
             Current.Clear();
-            Drag.Clear();
+            Begin.Clear();
             //UpdateHighlight(actual, Current);
             IsDown = false;
 	    }

@@ -13,6 +13,44 @@ namespace Slugs.Input
     using System.Text;
     using System.Threading.Tasks;
 
+    public enum EditKind
+    {
+	    Create,
+	    Delete,
+	    Merge,
+	    Move,
+	    Extend,
+	    Duplicate,
+	    Connect,
+	    TempGroup,
+	    Group,
+	    Ungroup,
+    }
+
+    public enum SelectionKind
+    {
+        None,
+	    BeginPoint,
+	    BeginElement,
+	    CurrentPoint,
+	    CurrentElement,
+	    SelectedPoint,
+	    SelectedElement,
+	    HighlightPoint,
+	    HighlightElement,
+	    ClipboardPoint,
+	    ClipboardElement,
+
+	    LastCommand,
+	    ToolKind,
+    }
+    public enum UIMode
+    {
+	    Inspect,
+	    Edit,
+	    Interact,
+	    Animate,
+    }
     // recipes, data locations and constraints for possible commands.
     public interface IPattern
     {
@@ -39,8 +77,8 @@ namespace Slugs.Input
         public string Name { get; protected set; }
 	    public Keys Keys { get; protected set; }
 	    public EditKind EditKind { get; protected set; }
-	    public TargetKind SourceKind { get; protected set; }
-	    public TargetKind TargetKind { get; protected set; }
+	    public SelectionKind SourceKind { get; protected set; }
+	    public SelectionKind SelectionKind { get; protected set; }
 
         public EditPattern(Agent agent, Pad sourcePad, Pad targetPad)
 	    {
@@ -55,18 +93,18 @@ namespace Slugs.Input
 
     public class CreateTraitPattern : EditPattern
     {
-	    public override bool IsValid => true; //SourceSet.HasKind(SourceKind) && TargetSet.HadKind(TargetKind);
+	    public override bool IsValid => true; //SourceSet.HasKind(SourceKind) && TargetSet.HadKind(SelectionKind);
 	    //public override string Name => "Edit Pattern";
 	    //public override Keys Keys => Keys.Escape;
 	    //public override EditKind EditKind => EditKind.Create;
-	    //public override TargetKind TargetKind => TargetKind.WorkingElement;
+	    //public override SelectionKind SelectionKind => SelectionKind.WorkingElement;
 
         public CreateTraitPattern(Agent agent) : base(agent, agent.WorkingPad, agent.InputPad)
         {
 	        Name = "Edit Pattern";
             Keys = Keys.Escape;
 	        EditKind = EditKind.Create;
-	        TargetKind = TargetKind.WorkingElement;
+	        //SelectionKind = SelectionKind.WorkingElement;
         }
 	    public override ICommand CreateCommand()
 	    {
@@ -83,42 +121,4 @@ namespace Slugs.Input
 	    }
     }
 
-    public enum EditKind
-    {
-        Create,
-        Delete,
-        Merge,
-        Move,
-        Extend,
-        Duplicate,
-        Connect,
-        TempGroup,
-        Group,
-        Ungroup,
-    }
-
-    public enum TargetKind
-    {
-	    WorkingPoint,
-	    WorkingElement,
-        StartPoint,
-	    StartElement,
-	    CurrentPoint,
-	    CurrentElement,
-        SelectedPoint,
-	    SelectedElement,
-	    HighlightPoint,
-	    HighlightElement,
-	    ClipboardPoint,
-	    ClipboardElement,
-	    LastCommand,
-        ToolKind,
-    }
-    public enum UIMode
-    {
-	    Inspect,
-	    Edit,
-        Interact,
-	    Animate,
-    }
 }

@@ -16,17 +16,19 @@ namespace Slugs.Input
     {
 	    public PadKind PadKind { get; private set; }
 	    public Pad Pad => Agent.Current.PadAt(PadKind);
+        public SelectionSetKind SelectionSetKind { get; }
 
-	    public float T { get; set; } = 1;
+        public float T { get; set; } = 1;
 	    public SKPoint MousePosition { get; private set; }
         public SKPoint SnapPosition { get; private set; }
         private readonly List<SKPoint> _selectionPositions = new List<SKPoint>();
         public IPoint SnapPoint { get; private set; }
         public IElement Selection { get; set; }
 
-        public SelectionSet(PadKind padKind)
+        public SelectionSet(PadKind padKind, SelectionSetKind selectionSetKind)
         {
 	        PadKind = padKind;
+	        SelectionSetKind = selectionSetKind;
 	        Clear();
         }
 
@@ -59,5 +61,14 @@ namespace Slugs.Input
             Selection = TerminalPoint.Empty;
 		    _selectionPositions.Clear();
         }
+    }
+
+    public enum SelectionSetKind
+    {
+	    Begin,
+	    Current,
+	    Highlight,
+	    Selection, 
+	    Clipboard,
     }
 }
