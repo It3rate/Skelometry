@@ -23,7 +23,7 @@ namespace Slugs.Entities
 
 		public int TargetKey { get; private set; }
 
-        public override IPoint[] Points => IsEmpty ? new IPoint[] { } : new IPoint[] {Pad.TerminalPointFor(this)};
+        public override List<IPoint> Points => IsEmpty ? new List<IPoint>() : new List<IPoint> { Pad.TerminalPointFor(this)};
 		public override SKPoint SKPoint
 		{
 			get => Pad.TerminalPointFor(this).SKPoint;

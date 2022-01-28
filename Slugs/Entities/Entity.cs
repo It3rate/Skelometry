@@ -11,7 +11,7 @@ namespace Slugs.Entities
 	    public static readonly Entity Empty = new Entity();
 	    private Entity() : base(true) { }
 
-        public override IPoint[] Points => new IPoint[] {};
+        public override List<IPoint> Points => new List<IPoint> { };
 
         #region Traits
         private readonly HashSet<int> _traitKeys = new HashSet<int>();

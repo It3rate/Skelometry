@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SkiaSharp;
 using Slugs.Agents;
 using Slugs.Entities;
@@ -26,7 +27,7 @@ namespace Slugs.Primitives
         }
 
         public SKSegment Segment => new SKSegment(StartPoint, EndPoint);
-        public override IPoint[] Points => IsEmpty ? new IPoint[] { } : new IPoint[] { StartRef, EndRef };
+        public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartRef, EndRef };
 
         protected SegmentBase(bool isEmpty):base(isEmpty){}
         public SegmentBase(PadKind padKind, IPoint start) : base(padKind)

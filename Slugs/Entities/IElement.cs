@@ -17,8 +17,8 @@ namespace Slugs.Entities
         bool IsEmpty { get; }
 
         //IPoint[] TerminalPoints { get; }
-        IPoint[] Points { get; }
-        SKPoint[] SKPoints{ get; }
+        List<IPoint> Points { get; }
+        List<SKPoint> SKPoints{ get; }
     }
 
     public abstract class ElementBase : IElement
@@ -34,18 +34,18 @@ namespace Slugs.Entities
 
 		public abstract IElement EmptyElement { get; }
 		public abstract ElementKind ElementKind { get; }
-		public abstract IPoint[] Points { get; }
-		public SKPoint[] SKPoints
+		public abstract List<IPoint> Points { get; }
+		public List<SKPoint> SKPoints
 		{
 			get
 			{
 				var pts = Points;
-				var result = new List<SKPoint>(pts.Length);
+				var result = new List<SKPoint>(pts.Count);
 				foreach (var point in pts)
 				{
 					result.Add(point.SKPoint);
 				}
-				return result.ToArray();
+				return result;
 			}
 		}
         //public SKPoint[] SKPoints => null;

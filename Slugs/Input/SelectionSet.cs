@@ -45,7 +45,7 @@ namespace Slugs.Input
         {
 	        var dif = newPosition - MousePosition;
 	        var pts = Selection.Points;
-	        for (int i = 0; i < pts.Length; i++)
+	        for (int i = 0; i < pts.Count; i++)
 	        {
 		        pts[i].SKPoint = _selectionPositions[i] + dif;
 	        }

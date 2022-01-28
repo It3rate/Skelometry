@@ -17,7 +17,7 @@ namespace Slugs.Entities
         public static TerminalPoint Empty { get; } = new TerminalPoint();
         private TerminalPoint() : base(true) { SKPoint = SKPoint.Empty; }
 
-        public override IPoint[] Points => IsEmpty ? new IPoint[] { } : new IPoint[] { this };
+        public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { this };
         public override SKPoint SKPoint { get; set; }
 
         public TerminalPoint(PadKind padKind, SKPoint point) : base(padKind)

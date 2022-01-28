@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using OpenTK.Input;
 using SkiaSharp;
 using Slugs.Agents;
@@ -24,7 +25,7 @@ namespace Slugs.Entities
             FocalKey = focalKey;
         }
 
-        public override IPoint[] Points => IsEmpty ? new IPoint[] { } : new IPoint[] { this };
+        public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { this };
         public override SKPoint SKPoint
         {
 	        get

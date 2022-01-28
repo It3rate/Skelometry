@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Slugs.Pads;
 using Slugs.Primitives;
 
@@ -18,7 +19,7 @@ namespace Slugs.Entities
 	    public float Focus { get; set; }
         public float T => Range.IsZeroLength ? 0 : (float)(Range.Length() / Focus + Range.Start);
 
-        public override IPoint[] Points => new IPoint[] { };
+        public override List<IPoint> Points => new List<IPoint>();
 
         //public Focal(int padKind, float focus) : this(padKind, focus, Slug.Unit){}
 	    public Focal(PadKind padKind, float focus, Slug range) : base(padKind)

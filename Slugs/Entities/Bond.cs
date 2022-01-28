@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using Slugs.Pads;
 using Slugs.Primitives;
 
@@ -10,7 +11,7 @@ namespace Slugs.Entities
         public override IElement EmptyElement => Empty;
         public static readonly Bond Empty = new Bond();
 
-        public override IPoint[] Points => new IPoint[] { };
+        public override List<IPoint> Points => new List<IPoint>();
 
         public int StartFocalKey { get; }
 	    public Slug StartSlug { get; }
