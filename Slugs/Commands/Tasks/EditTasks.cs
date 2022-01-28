@@ -45,11 +45,17 @@ namespace Slugs.Commands.Tasks
         }
     }
 
-    public class RemoveElementTask : EditTask
+    public interface IPointTask
     {
-	    public RemoveElementTask(PadKind padKind) : base(padKind, SelectionKind.SelectedElement) { }
+	    int Key { get; }
     }
-    public class CreateTerminalPointTask : EditTask
+    public interface ICreateTask
+    {
+    }
+    public interface IChangeTask
+    {
+    }
+    public class CreateTerminalPointTask : EditTask, IPointTask, ICreateTask
     {
 	    public SKPoint Location { get; }
 
@@ -59,7 +65,7 @@ namespace Slugs.Commands.Tasks
             // create point, assign key
 	    }
     }
-    public class CreateRefPointTask : EditTask
+    public class CreateRefPointTask : EditTask, IPointTask, ICreateTask
     {
         public int TargetKey { get; }
 
@@ -69,7 +75,7 @@ namespace Slugs.Commands.Tasks
 	        // create ref, assign key
         }
     }
-    public class CreateVPointTask : EditTask
+    public class CreateVPointTask : EditTask, IPointTask, ICreateTask
     {
         public int SegmentKey { get; }
 	    public float T { get; }
@@ -81,7 +87,25 @@ namespace Slugs.Commands.Tasks
             // create vpoint, assign key
 	    }
     }
-    public class CreateSegmentTask : EditTask
+    public class MergePointsTask : EditTask, IPointTask, IChangeTask
+    {
+	    public int FromKey { get; }
+	    public int ToKey => Key;
+
+	    public MergePointsTask(PadKind padKind, int fromKey) : base(padKind, SelectionKind.HighlightPoint)
+	    {
+		    FromKey = fromKey;
+		    //merge points
+	    }
+	    public MergePointsTask(PadKind padKind, int fromKey, int toKey) : base(padKind, toKey)
+	    {
+		    FromKey = fromKey;
+		    //merge points
+	    }
+    }
+
+
+    public class CreateSegmentTask : EditTask, ICreateTask
     {
         public int StartPointKey { get; }
 	    public int EndPointKey { get; }
@@ -95,14 +119,14 @@ namespace Slugs.Commands.Tasks
 		    // create segment, assign key
 	    }
     }
-    public class CreateEntityTask : EditTask
+    public class CreateEntityTask : EditTask, ICreateTask
     {
 	    public CreateEntityTask(PadKind padKind) : base(padKind)
 	    {
             // create entity, assign key
 	    }
     }
-    public class DuplicateElementTask : EditTask
+    public class DuplicateElementTask : EditTask, ICreateTask
     {
         public int SourceKey { get; }
 
@@ -119,23 +143,11 @@ namespace Slugs.Commands.Tasks
 	        // dup element, assign key
         }
     }
-    public class MergePointsTask : EditTask
+    public class RemoveElementTask : EditTask
     {
-	    public int FromKey { get; }
-	    public int ToKey => Key;
-
-	    public MergePointsTask(PadKind padKind, int fromKey) : base(padKind, SelectionKind.HighlightPoint)
-	    {
-		    FromKey = fromKey;
-            //merge points
-	    }
-	    public MergePointsTask(PadKind padKind, int fromKey, int toKey) : base(padKind, toKey)
-	    {
-		    FromKey = fromKey;
-		    //merge points
-        }
+	    public RemoveElementTask(PadKind padKind) : base(padKind, SelectionKind.SelectedElement) { }
     }
-    public class GroupPointsTask : EditTask
+    public class GroupPointsTask : EditTask, ICreateTask
     {
         public List<int> FromKeys { get; }
 
@@ -156,7 +168,7 @@ namespace Slugs.Commands.Tasks
 		    // ungroup, map new keys, assign key
         }
     }
-    public class MoveElementTask : EditTask
+    public class MoveElementTask : EditTask, IChangeTask
     {
 	    public SKPoint Diff { get; } // always relative
 
@@ -169,7 +181,7 @@ namespace Slugs.Commands.Tasks
 		    Diff = diff;
 	    }
     }
-    public class MoveVPointTask : EditTask // add to start or end (not stretch)
+    public class MoveVPointTask : EditTask, IChangeTask // add to start or end (not stretch)
     {
 	    public int VPointKey => Key;
 	    public float T { get; } // always absolute
@@ -186,7 +198,7 @@ namespace Slugs.Commands.Tasks
 		    OriginalT = ((VPoint)Pad.PointAt(Key)).GetT();
 	    }
     }
-    public class StretchSegmentTask : EditTask
+    public class StretchSegmentTask : EditTask, IChangeTask
     {
 	    public float Length { get; }
 	    public SKPoint OriginalPosition { get; }

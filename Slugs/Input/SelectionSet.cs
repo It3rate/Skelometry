@@ -61,6 +61,20 @@ namespace Slugs.Input
             Selection = TerminalPoint.Empty;
 		    _selectionPositions.Clear();
         }
+
+	    public List<IPoint> AllPoints()
+	    {
+		    var result = new List<IPoint>();
+		    if (!SnapPoint.IsEmpty)
+		    {
+			    result.Add(SnapPoint);
+		    }
+		    if (!Selection.IsEmpty)
+		    {
+			    result.AddRange(Selection.Points);
+		    }
+		    return result;
+	    }
     }
 
     public enum SelectionSetKind

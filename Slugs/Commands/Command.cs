@@ -36,6 +36,8 @@ namespace Slugs.Commands
     public abstract class CommandBase : ICommand
     {
 	    public int CommandKey { get; }
+        // A command is a series of tasks which can run and be modified as they are added if the command is on the stack.
+        // They can have a duration, and can be 'scrubbed'.
 	    public List<ITask> Tasks { get; } = new List<ITask>();
 	    public bool IsContinuous { get; }
 

@@ -16,6 +16,10 @@ namespace Slugs.Commands.Tasks
         PadKind PadKind { get; }
         int TaskKey { get; }
         bool IsValid { get; }
+        void BeginTask();
+        void UpdateTask();
+        void CompleteTask();
+        void UnwindTask();
     }
 
     public abstract class TaskBase : ITask
@@ -31,6 +35,18 @@ namespace Slugs.Commands.Tasks
         public SelectionSet Clipboard => Agent.Current.Data.Clipboard;
 
         public int TaskKey { get; }
+        public abstract bool IsValid { get; }
+        public virtual void Initialize() { }
+
+        protected TaskBase(PadKind padKind)
+        {
+	        TaskKey = TaskCounter++;
+	        PadKind = padKind;
+        }
+        public virtual void BeginTask() { }
+        public virtual void UpdateTask() { }
+        public virtual void CompleteTask() { }
+        public virtual void UnwindTask() { }
 
         protected int ElementKeyForSelectionKind(SelectionKind kind)
         {
@@ -119,13 +135,5 @@ namespace Slugs.Commands.Tasks
 
             return result;
         }
-        public abstract bool IsValid { get; }
-	    public virtual void Initialize() { }
-
-	    protected TaskBase(PadKind padKind)
-	    {
-		    TaskKey = TaskCounter++;
-            PadKind = padKind;
-	    }
     }
 }

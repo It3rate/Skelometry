@@ -53,7 +53,8 @@ namespace Slugs.Input
 
         private IElement GetHighlight(SKPoint p, SelectionSet targetSet, SelectionSet ignoreSet)
         {
-	        var points = ignoreSet?.Selection.Points;
+	        var points = ignoreSet?.AllPoints().ToArray() ?? new IPoint[0];
+
             IElement result = targetSet.Pad.GetSnapPoint(p, points);
 	        if (!result.IsEmpty)
 	        {
@@ -113,7 +114,8 @@ namespace Slugs.Input
 	    }
 	    public void End(SKPoint actual)
 	    {
-		    GetHighlight(actual, Highlight, null);
+		    Current.Update(actual);
+            GetHighlight(actual, Highlight, Current);
             Current.Clear();
             Begin.Clear();
             //UpdateHighlight(actual, Current);
