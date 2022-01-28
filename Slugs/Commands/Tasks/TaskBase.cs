@@ -32,7 +32,94 @@ namespace Slugs.Commands.Tasks
 
         public int TaskKey { get; }
 
-	    public abstract bool IsValid { get; }
+        protected int ElementKeyForSelectionKind(SelectionKind kind)
+        {
+	        int result = ElementBase.EmptyKeyValue;
+	        switch (kind)
+	        {
+		        case SelectionKind.BeginPoint:
+			        result = Begin.SnapPoint.Key;
+			        break;
+		        case SelectionKind.BeginElement:
+			        result = Begin.Selection.Key;
+			        break;
+		        case SelectionKind.CurrentPoint:
+			        result = Current.SnapPoint.Key;
+			        break;
+		        case SelectionKind.CurrentElement:
+			        result = Current.Selection.Key;
+			        break;
+		        case SelectionKind.SelectedPoint:
+			        result = Selected.SnapPoint.Key;
+			        break;
+		        case SelectionKind.SelectedElement:
+			        result = Selected.Selection.Key;
+			        break;
+		        case SelectionKind.HighlightPoint:
+			        result = Highlight.SnapPoint.Key;
+			        break;
+		        case SelectionKind.HighlightElement:
+			        result = Highlight.Selection.Key;
+			        break;
+		        case SelectionKind.ClipboardPoint:
+			        result = Clipboard.SnapPoint.Key;
+			        break;
+		        case SelectionKind.ClipboardElement:
+			        result = Clipboard.Selection.Key;
+			        break;
+                default:
+	                break;
+	        }
+
+	        return result;
+        }
+        protected SelectionKind SelectionKindForElementKey(int key)
+        {
+	        SelectionKind result = SelectionKind.None;
+	        if (Begin.SnapPoint.Key == key)
+	        {
+		        result = SelectionKind.BeginPoint;
+	        }
+	        else if (Begin.Selection.Key == key)
+	        {
+		        result = SelectionKind.BeginElement;
+	        }
+	        else if (Current.SnapPoint.Key == key)
+	        {
+		        result = SelectionKind.CurrentPoint;
+	        }
+	        else if (Current.Selection.Key == key)
+	        {
+		        result = SelectionKind.CurrentElement;
+	        }
+	        else if (Selected.SnapPoint.Key == key)
+	        {
+		        result = SelectionKind.SelectedPoint;
+	        }
+	        else if (Selected.Selection.Key == key)
+	        {
+		        result = SelectionKind.SelectedElement;
+	        }
+	        else if (Highlight.SnapPoint.Key == key)
+	        {
+		        result = SelectionKind.HighlightPoint;
+	        }
+	        else if (Highlight.Selection.Key == key)
+	        {
+		        result = SelectionKind.HighlightElement;
+	        }
+	        else if (Clipboard.SnapPoint.Key == key)
+	        {
+		        result = SelectionKind.ClipboardPoint;
+	        }
+	        else if (Clipboard.Selection.Key == key)
+	        {
+		        result = SelectionKind.ClipboardElement;
+	        }
+
+            return result;
+        }
+        public abstract bool IsValid { get; }
 	    public virtual void Initialize() { }
 
 	    protected TaskBase(PadKind padKind)
