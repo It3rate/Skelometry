@@ -60,7 +60,7 @@ namespace Slugs.Agents
 	        return Pads[padKind];
         }
 
-#region MousePosition and Keyboard
+#region Position and Keyboard
 
         public void ClearMouse()
         {
@@ -70,8 +70,12 @@ namespace Slugs.Agents
 
         public bool MouseDown(MouseEventArgs e)
         {
-	        var curPt = e.Location.ToSKPoint();
-            Data.Start(curPt);
+	        var mousePoint = e.Location.ToSKPoint();
+            //Data.Start(curPt);
+            Data.GetHighlight(mousePoint, Data.Begin, null);
+            Data.GetHighlight(mousePoint, Data.Highlight, null);
+            Data.Selected.Set(mousePoint, Data.Highlight.Point, Data.Begin.Element);
+
             IsDown = true;
             return true;
 	    }
@@ -79,45 +83,59 @@ namespace Slugs.Agents
 	    public bool MouseMove(MouseEventArgs e)
 	    {
 		    //WorkingPad.Clear();
-		    var pt = e.Location.ToSKPoint();
-		    if (IsDown && !IsDragging && Data.Begin.Selection.IsEmpty)
+		    var mousePoint = e.Location.ToSKPoint();
+		    if (IsDown && !IsDragging && Data.Begin.Element.IsEmpty)
 		    {
-			    var trait = CreateTrait(WorkingPad, Data.Begin.MousePosition);
-			    Data.Selected.SnapPoint = trait.EndRef;
+			    var trait = CreateTrait(InputPad, Data.Begin.Position);
+			    //Data.Selected.Position = Data.Begin.Position;
+			    Data.Selected.Point = trait.EndRef;
 			    IsDragging = true;
 		    }
-		    Data.Move(pt);
-		    if (IsDragging)
+
+		    //Data.Move(pt);
+		    Data.Current.Update(mousePoint);
+            Data.GetHighlight(mousePoint, Data.Highlight, Data.Current);
+
+            if (IsDragging)
 		    {
-                Data.Selected.Update(pt);
+                Data.Selected.Update(mousePoint);
 		    }
 
 		    return true;
 	    }
 
-	    private Trait CreateTrait(Pad pad, SKPoint p)
-	    {
-		    var cmd = new AddTraitCommand(pad, p);
-            _editCommands.Do(cmd);
-            _activeCommand = cmd;
-            return cmd.AddedTrait;
-            //var entity = pad.CreateEntity();
-            //return pad.AddTrait(entity.Key, new SKSegment(p, p), 5);
-	    }
-
         public bool MouseUp(MouseEventArgs e)
 	    {
 		    WorkingPad.Clear();
-            Data.Move(e.Location.ToSKPoint());
-            SetCreating(true);
-		    Data.End(e.Location.ToSKPoint());
+            var mousePoint = e.Location.ToSKPoint();
 
-		    Data.Selected.Clear();
+		    Data.Current.Update(mousePoint);
+		    Data.GetHighlight(mousePoint, Data.Highlight, Data.Current);
+            //Data.Move(e.Location.ToSKPoint());
+            SetCreating(true);
+
+            //Data.End(e.Location.ToSKPoint());
+            //Data.Current.Update(mousePoint);
+            //Data.GetHighlight(mousePoint, Data.Highlight, Data.Current);
+            Data.Current.Clear();
+		    Data.Begin.Clear();
+
+            Data.Selected.Clear();
 
             ClearMouse();
 		    IsDown = false;
 		    IsDragging = false;
             return true;
+	    }
+
+	    private Trait CreateTrait(Pad pad, SKPoint p)
+	    {
+		    var cmd = new AddTraitCommand(pad, -1, p);
+            _editCommands.Do(cmd);
+            _activeCommand = cmd;
+            return cmd.AddedTrait;
+            //var entity = pad.CreateEntity();
+            //return pad.AddTrait(entity.Key, new SKSegment(p, p), 5);
 	    }
 
 	    private Keys CurrentKey;
@@ -148,7 +166,7 @@ namespace Slugs.Agents
 	            {
 		            if (Data.HasHighlightPoint)
 		            {
-			            InputPad.MergePoints(Data.Current.SnapPoint, Data.Highlight.SnapPoint, Data.Highlight.SnapPosition);
+			            InputPad.MergePoints(Data.Current.Point, Data.Highlight.Point, Data.Highlight.SnapPosition);
 		            }
 		            else if (Data.IsDraggingPoint && Data.HasHighlightLine)
 		            {
@@ -158,14 +176,14 @@ namespace Slugs.Agents
 	            }
                 else if (IsDown)
 	            {
-		            var p0 = Data.Current.SnapPosition;
-		            var p1 = Data.Current.SnapPoint.SKPoint;
-		            if (p0.DistanceTo(p1) > 10)
+		            var p0 = Data.Begin.SnapPosition;
+		            var p1 = Data.Current.Point.SKPoint;
+		            if (false && p0.DistanceTo(p1) > 10)
 		            {
 			            var (entity, trait) = InputPad.AddEntity(p0, p1, _traitIndexCounter++);
-			            if (!Data.Begin.SnapPoint.IsEmpty)
+			            if (!Data.Begin.Point.IsEmpty)
 			            {
-				            InputPad.MergePoints(trait.StartRef, Data.Begin.SnapPoint, Data.Begin.SnapPosition);
+				            InputPad.MergePoints(trait.StartRef, Data.Begin.Point, Data.Begin.SnapPosition);
 			            }
 
 			            if (Data.HasHighlightPoint)

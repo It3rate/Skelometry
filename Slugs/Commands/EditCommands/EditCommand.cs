@@ -10,7 +10,7 @@ namespace Slugs.Commands.EditCommands
 
     public class EditCommand : CommandBase
     {
-	    CommandStack<EditCommand> Stack { get; set; }
+	    new CommandStack<EditCommand> Stack { get; set; }
         public EditCommand(Pad pad) : base(pad){}
     }
 }

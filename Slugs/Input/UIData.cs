@@ -25,14 +25,14 @@ namespace Slugs.Input
         public SelectionSet Clipboard => SelectionSets[SelectionSetKind.Clipboard];
 
         //private IElement DragElement => Begin.Selected;
-        public bool IsDraggingElement => !Begin.Selection.IsEmpty;
-        public bool IsDraggingPoint => !Begin.SnapPoint.IsEmpty;
+        public bool IsDraggingElement => !Begin.Element.IsEmpty;
+        public bool IsDraggingPoint => !Begin.Point.IsEmpty;
 
 
-	    public bool HasHighlightPoint => !Highlight.SnapPoint.IsEmpty;
-	    public IPoint HighlightPoint => Highlight.SnapPoint;
-	    public bool HasHighlightLine => Highlight.Selection.ElementKind == ElementKind.Trait;
-        public Trait HighlightLine => HasHighlightLine ? (Trait)Highlight.Selection : Trait.Empty;
+	    public bool HasHighlightPoint => !Highlight.Point.IsEmpty;
+	    public IPoint HighlightPoint => Highlight.Point;
+	    public bool HasHighlightLine => Highlight.Element.ElementKind == ElementKind.Trait;
+        public Trait HighlightLine => HasHighlightLine ? (Trait)Highlight.Element : Trait.Empty;
 
 	    //public SKPoint GetHighlightPoint() => Current.SnapPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
 	    //public SKSegment GetHighlightLine() => HighlightLine.Segment;
@@ -49,7 +49,7 @@ namespace Slugs.Input
 	        AddSelectionSet(PadKind.Input, SelectionSetKind.Clipboard);
         }
 
-        private IElement GetHighlight(SKPoint p, SelectionSet targetSet, SelectionSet ignoreSet)
+        public IElement GetHighlight(SKPoint p, SelectionSet targetSet, SelectionSet ignoreSet)
         {
 	        var points = ignoreSet?.AllPoints().ToArray() ?? new IPoint[0];
 
@@ -73,40 +73,6 @@ namespace Slugs.Input
 	        return result;
         }
         // todo: Creating traits will depend on selected entity etc.
-
-        public void Start(SKPoint actual)
-        {
-	        GetHighlight(actual, Begin, null);
-	        GetHighlight(actual, Highlight, null);
-            Current.Set(actual, Highlight.SnapPoint, Begin.Selection);
-        }
-	    public void Move(SKPoint actual)
-	    {
-		    Current.Update(actual);
-            Selected.Update(actual);
-            GetHighlight(actual, Highlight, Current);
-     //       IsDragging = IsDown ? true : false;
-		   // if (IsDraggingElement)
-		   // {
-			  //  var orgPts = Origin.Points;
-			  //  var curPts = Current.Points;
-			  //  if (orgPts.Length > 0 && orgPts.Length == curPts.Length)
-			  //  {
-					//var diff = (Current.MousePosition - Origin.MousePosition);
-					//for (int i = 0; i < orgPts.Length; i++)
-					//{
-					//	curPts[i].SKPoint = Origin.MousePosition + diff;
-					//}
-			  //  }
-		   // }
-	    }
-	    public void End(SKPoint actual)
-	    {
-		    Current.Update(actual);
-            GetHighlight(actual, Highlight, Current);
-            Current.Clear();
-            Begin.Clear();
-	    }
 
 	    public void Reset()
 	    {

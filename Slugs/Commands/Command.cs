@@ -1,4 +1,5 @@
-﻿using Slugs.Agents;
+﻿using SkiaSharp;
+using Slugs.Agents;
 using Slugs.Commands.Tasks;
 using Slugs.Entities;
 
@@ -28,15 +29,22 @@ namespace Slugs.Commands
         bool IsActive { get; }
 
         void Execute();
-        event EventHandler OnExecute;
-
+        void Update(SKPoint point);
         void Unexecute();
-	    event EventHandler OnUnexecute;
-
         void Completed();
-        event EventHandler OnCompleted;
 
-	    ICommand Duplicate();
+        void AddTask(ITask task); 
+        void AddTasks(params ITask[] tasks);
+        void AddTaskAndRun(ITask task);
+        void AddTasksAndRun(params ITask[] tasks);
+        void RunToEnd();
+
+        // event EventHandler OnExecute;
+        // event EventHandler OnUpdate;
+        // event EventHandler OnUnexecute;
+        // event EventHandler OnCompleted;
+
+        ICommand Duplicate();
 	    bool TryMergeWith(ICommand command);
 	    // temporal elements: start time, end time etc
     }
@@ -53,6 +61,7 @@ namespace Slugs.Commands
         // A command is a series of tasks which can run and be modified as they are added if the command is on the stack.
         // They can have a duration, and can be 'scrubbed'.
         public List<ITask> Tasks { get; } = new List<ITask>();
+        protected int _taskIndex = 0;
         public bool IsContinuous { get; }
         public bool IsRetainedCommand { get; } = true;
 
@@ -61,9 +70,10 @@ namespace Slugs.Commands
 	    public TimeSpan Duration { get; }
 	    public bool IsActive { get; }
 
-	    public event EventHandler OnExecute;
-	    public event EventHandler OnUnexecute;
-	    public event EventHandler OnCompleted;
+	    //public event EventHandler OnExecute;
+	    //public event EventHandler OnUpdate;
+	    //public event EventHandler OnUnexecute;
+	    //public event EventHandler OnCompleted;
 
 	    public CommandBase(Pad pad)
 	    {
@@ -78,20 +88,57 @@ namespace Slugs.Commands
             // select new element
             //foreach (var task in Tasks)
             //{
-	           // task.RunTask();
+            // task.RunTask();
             //}
+	    }
+	    public virtual void Update(SKPoint point)
+	    {
 	    }
         public virtual void Unexecute()
         {
-	        foreach (var task in Tasks)
+	        while(_taskIndex > 0)
 	        {
-		        task.UnRunTask();
+		        _taskIndex--;
+		        Tasks[_taskIndex].UnRunTask();
 	        }
         }
 
         public virtual void Completed()
 	    {
 	    }
+
+        public void AddTask(ITask task)
+        {
+	        Tasks.Add(task);
+        }
+        public void AddTasks(params ITask[] tasks)
+        {
+	        foreach (var task in tasks)
+	        {
+		        Tasks.Add(task);
+	        }
+        }
+        public void AddTaskAndRun(ITask task)
+        {
+	        Tasks.Add(task);
+            RunToEnd();
+        }
+        public void AddTasksAndRun(params ITask[] tasks)
+        {
+	        foreach (var task in tasks)
+	        {
+		        Tasks.Add(task);
+	        }
+	        RunToEnd();
+        }
+        public void RunToEnd()
+        {
+	        while (_taskIndex < Tasks.Count)
+	        {
+		        Tasks[_taskIndex].RunTask();
+		        _taskIndex++;
+	        }
+        }
 
         public virtual ICommand Duplicate()
         {

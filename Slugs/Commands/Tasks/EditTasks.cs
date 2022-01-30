@@ -14,35 +14,35 @@ namespace Slugs.Commands.Tasks
 
     public abstract class EditTask : TaskBase
     {
-	    public int Key { get; }
+	    //public int Key { get; }
         public List<int> PreviousSelection = new List<int>();
-	    public SelectionKind BasedOn { get; protected set; }
+	    //public SelectionKind BasedOn { get; protected set; }
         public override bool IsValid => true;
 
         protected EditTask(PadKind padKind) : base(padKind)
         {
-	        Key = ElementBase.EmptyKeyValue;
-	        BasedOn = SelectionKind.None;
+	        //Key = ElementBase.EmptyKeyValue;
+	        //BasedOn = SelectionKind.None;
 	        Initialize();
         }
-        protected EditTask(PadKind padKind, SelectionKind basedOn) : base(padKind)
-        {
-	        BasedOn = basedOn;
-	        Key = ElementKeyForSelectionKind(basedOn);
-	        Initialize();
-        }
-        protected EditTask(PadKind padKind, int key) : base(padKind)
-        {
-	        Key = key;
-	        BasedOn = SelectionKindForElementKey(key);
-	        Initialize();
-        }
+        //protected EditTask(PadKind padKind, SelectionKind basedOn) : base(padKind)
+        //{
+	       // //BasedOn = basedOn;
+	       // //Key = ElementKeyForSelectionKind(basedOn);
+	       // Initialize();
+        //}
+        //protected EditTask(PadKind padKind, int key) : base(padKind)
+        //{
+	       // Key = key;
+	       // BasedOn = SelectionKindForElementKey(key);
+	       // Initialize();
+        //}
 
         public override void Initialize()
         {
 	        base.Initialize();
             // record previous selection
-            PreviousSelection.Add(Selected.Selection.Key);
+            PreviousSelection.Add(Selected.Element.Key);
         }
     }
 
@@ -123,20 +123,22 @@ namespace Slugs.Commands.Tasks
     public class MergePointsTask : EditTask, IPointTask, IChangeTask
     {
 	    public int FromKey { get; }
-	    public int ToKey => Key;
+	    public int ToKey { get; }
+    
 	    public int PointKey { get; }
 
         private VPoint Point { get; set; }
 
-        public MergePointsTask(PadKind padKind, int fromKey) : base(padKind, SelectionKind.HighlightPoint)
+     //   public MergePointsTask(PadKind padKind, int fromKey) : base(padKind, SelectionKind.HighlightPoint)
+	    //{
+		   // FromKey = fromKey;
+		   // //merge points
+	    //}
+	    public MergePointsTask(PadKind padKind, int fromKey, int toKey) : base(padKind)
 	    {
 		    FromKey = fromKey;
+		    ToKey = toKey;
 		    //merge points
-	    }
-	    public MergePointsTask(PadKind padKind, int fromKey, int toKey) : base(padKind, toKey)
-	    {
-		    FromKey = fromKey;
-            //merge points
 	    }
 	    public void UpdateLocation(SKPoint location)
 	    {
@@ -146,19 +148,22 @@ namespace Slugs.Commands.Tasks
     
     public class CreateSegmentTask : EditTask, ICreateTask
     {
-        public int StartPointKey { get; }
-	    public int EndPointKey { get; }
+	    public int EntityKey { get; set; }
+        public int StartPointKey { get; set; }
+	    public int EndPointKey { get; set; }
 	    public ElementKind SegmentKind { get; }
 
 	    public SegmentBase Segment;
 
-        public CreateSegmentTask(PadKind padKind, int startPointKey, int endPointKey, ElementKind segmentKind) : base(padKind, SelectionKind.BeginElement)
-	    {
+        public CreateSegmentTask(PadKind padKind, int entityKey, int startPointKey, int endPointKey, ElementKind segmentKind) : 
+	        base(padKind)
+        {
+	        EntityKey = entityKey;
 		    StartPointKey = startPointKey;
 		    EndPointKey = endPointKey;
 		    SegmentKind = segmentKind;
-		    // create segment, assign key
-	    }
+            // create segment, assign key
+        }
 
         public override void RunTask()
         {
@@ -166,38 +171,55 @@ namespace Slugs.Commands.Tasks
 	        switch (SegmentKind)
 	        {
                 case ElementKind.Trait:
-	                Segment = Pad.AddTrait(-1, StartPointKey, EndPointKey, 66);
+	                Segment = Pad.AddTrait(EntityKey, StartPointKey, EndPointKey, 66);
 	                break;
-	        }
+                case ElementKind.Focal:
+	                break;
+                case ElementKind.Bond:
+	                break;
+            }
         }
     }
     public class CreateEntityTask : EditTask, ICreateTask
     {
-	    public CreateEntityTask(PadKind padKind) : base(padKind)
+	    public int EntityKey { get; set; }
+        public CreateEntityTask(PadKind padKind) : base(padKind)
 	    {
             // create entity, assign key
 	    }
+
+        public override void RunTask()
+        {
+	        base.RunTask();
+	        var entity = new Entity(PadKind);
+	        EntityKey = entity.Key;
+        }
     }
     public class DuplicateElementTask : EditTask, ICreateTask
     {
         public int SourceKey { get; }
 
-        public DuplicateElementTask(PadKind padKind) : base(padKind)
-        {
-	        BasedOn = SelectionKind.SelectedElement;
-            SourceKey = ElementKeyForSelectionKind(SelectionKind.SelectedElement);
-            // dup element, assign key
-        }
+        //public DuplicateElementTask(PadKind padKind) : base(padKind)
+        //{
+	       // BasedOn = SelectionKind.SelectedElement;
+        //    SourceKey = ElementKeyForSelectionKind(SelectionKind.SelectedElement);
+        //    // dup element, assign key
+        //}
         public DuplicateElementTask(PadKind padKind, int sourceKey) : base(padKind)
         {
 	        SourceKey = sourceKey;
-	        BasedOn = SelectionKindForElementKey(sourceKey);
+	        //BasedOn = SelectionKindForElementKey(sourceKey);
 	        // dup element, assign key
         }
     }
     public class RemoveElementTask : EditTask
     {
-	    public RemoveElementTask(PadKind padKind) : base(padKind, SelectionKind.SelectedElement) { }
+	    public int ElementKey { get; }
+
+	    public RemoveElementTask(PadKind padKind, int key) : base(padKind)
+	    {
+		    ElementKey = key;
+	    }
     }
     public class GroupPointsTask : EditTask, ICreateTask
     {
@@ -222,68 +244,71 @@ namespace Slugs.Commands.Tasks
     }
     public class MoveElementTask : EditTask, IChangeTask
     {
-	    public SKPoint Diff { get; } // always relative
+	    public int ElementKey { get; set; }
+        public SKPoint Diff { get; } // always relative
 
-	    public MoveElementTask(PadKind padKind, SKPoint diff) : base(padKind, SelectionKind.SelectedElement)
+	    public MoveElementTask(PadKind padKind, int key, SKPoint diff) : base(padKind)
 	    {
-		    Diff = diff;
-	    }
-	    public MoveElementTask(PadKind padKind, int key, SKPoint diff) : base(padKind, key)
-	    {
+		    ElementKey = key;
 		    Diff = diff;
 	    }
     }
     public class MoveVPointTask : EditTask, IChangeTask // add to start or end (not stretch)
     {
-	    public int VPointKey => Key;
+	    public int VPointKey { get; set; }
 	    public float T { get; } // always absolute
 	    public float OriginalT { get; }
 
-	    public MoveVPointTask(PadKind padKind, float t) : base(padKind, SelectionKind.SelectedPoint)
+	    //public MoveVPointTask(PadKind padKind, float t) : base(padKind, SelectionKind.SelectedPoint)
+	    //{
+		   // T = t;
+		   // OriginalT = ((VPoint)Pad.PointAt(VPointKey)).GetT();
+	    //}
+	    public MoveVPointTask(PadKind padKind, int vPointKey, float t) : base(padKind)
 	    {
+		    VPointKey = vPointKey;
 		    T = t;
-		    OriginalT = ((VPoint)Pad.PointAt(Key)).GetT();
-	    }
-	    public MoveVPointTask(PadKind padKind, int vPointKey, float t) : base(padKind, vPointKey)
-	    {
-		    T = t;
-		    OriginalT = ((VPoint)Pad.PointAt(Key)).GetT();
+		    OriginalT = ((VPoint)Pad.PointAt(VPointKey)).GetT();
 	    }
     }
     public class StretchSegmentTask : EditTask, IChangeTask
     {
-	    public float Length { get; }
+	    public int PointKey { get; set; }
+        public float Length { get; }
 	    public SKPoint OriginalPosition { get; }
 
-	    public StretchSegmentTask(PadKind padKind, float length) : base(padKind, SelectionKind.SelectedPoint)
+	    //public StretchSegmentTask(PadKind padKind, float length) : base(padKind, SelectionKind.SelectedPoint)
+	    //{
+		   // Length = length;
+		   // OriginalPosition = Pad.PointAt(Key).SKPoint;
+	    //}
+	    public StretchSegmentTask(PadKind padKind, int key, float length) : base(padKind)
 	    {
-		    Length = length;
-		    OriginalPosition = Pad.PointAt(Key).SKPoint;
-	    }
-	    public StretchSegmentTask(PadKind padKind, int key, float length) : base(padKind, key)
-	    {
-		    Length = length;
-		    OriginalPosition = Pad.PointAt(Key).SKPoint;
+            PointKey = key;
+            Length = length;
+		    OriginalPosition = Pad.PointAt(PointKey).SKPoint;
 	    }
     }
     public class AppendSelectionTask : EditTask
     {
-	    public int KeyToAppend => Key;
-        public AppendSelectionTask(PadKind padKind) : base(padKind, SelectionKind.HighlightElement)
+	    public int KeyToAppend { get; }
+     //   public AppendSelectionTask(PadKind padKind) : base(padKind, SelectionKind.HighlightElement)
+	    //{
+	    //}
+	    public AppendSelectionTask(PadKind padKind, int keyToAppend) : base(padKind)
 	    {
-	    }
-	    public AppendSelectionTask(PadKind padKind, int keyToAppend) : base(padKind, keyToAppend)
-	    {
+		    KeyToAppend = keyToAppend;
 	    }
     }
     public class RemoveSelectionTask : EditTask
     {
-	    public int KeyToRemove => Key;
-        public RemoveSelectionTask(PadKind padKind) : base(padKind, SelectionKind.HighlightElement)
+	    public int KeyToRemove { get; }
+     //   public RemoveSelectionTask(PadKind padKind) : base(padKind, SelectionKind.HighlightElement)
+	    //{
+	    //}
+	    public RemoveSelectionTask(PadKind padKind, int keyToRemove) : base(padKind)
 	    {
-	    }
-	    public RemoveSelectionTask(PadKind padKind, int keyToRemove) : base(padKind, keyToRemove)
-	    {
+		    KeyToRemove = keyToRemove;
 	    }
     }
     //public class MultiSelectionTask : EditTask // probably multi-selections with always be temporary groups (or a fixed group on Working), so this may not be needed.

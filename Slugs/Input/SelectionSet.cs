@@ -18,12 +18,12 @@ namespace Slugs.Input
 	    public Pad Pad => Agent.Current.PadAt(PadKind);
         public SelectionSetKind SelectionSetKind { get; }
 
-        public float T { get; set; } = 1;
-	    public SKPoint MousePosition { get; private set; }
-        public SKPoint SnapPosition { get; private set; }
-        private readonly List<SKPoint> _selectionPositions = new List<SKPoint>();
-        public IPoint SnapPoint { get; set; }
-        public IElement Selection { get; set; }
+	    public SKPoint Position { get; set; }
+        public SKPoint SnapPosition => Point.IsEmpty ? Position : Point.SKPoint;
+        public IPoint Point { get; set; } = TerminalPoint.Empty;
+        public IElement Element { get; set; }
+
+        private readonly List<SKPoint> _elementPositions = new List<SKPoint>();
 
         public SelectionSet(PadKind padKind, SelectionSetKind selectionSetKind)
         {
@@ -34,40 +34,39 @@ namespace Slugs.Input
 
         public void Set(SKPoint position, IPoint snapPoint = null, IElement selection = null)
         {
-            MousePosition = position;
-	        SnapPosition = snapPoint?.SKPoint ?? position;
-	        SnapPoint = snapPoint ?? TerminalPoint.Empty;
-	        Selection = selection ?? TerminalPoint.Empty;
-            _selectionPositions.Clear();
-	        _selectionPositions.AddRange(Selection.SKPoints);
+            Position = position;
+	        //SnapPosition = snapPoint?.SKPoint ?? position;
+	        Point = snapPoint ?? TerminalPoint.Empty;
+	        Element = selection ?? TerminalPoint.Empty;
+            _elementPositions.Clear();
+	        _elementPositions.AddRange(Element.SKPoints);
         }
         public void Update(SKPoint newPosition)
         {
-	        var dif = newPosition - MousePosition;
-	        var pts = Selection.Points;
+	        var dif = newPosition - Position;
+	        var pts = Element.Points;
 	        for (int i = 0; i < pts.Count; i++)
 	        {
-		        pts[i].SKPoint = _selectionPositions[i] + dif;
+		        pts[i].SKPoint = _elementPositions[i] + dif;
 	        }
-            SnapPoint.SKPoint = SnapPosition + dif; // this may or may not be in Points - maybe convert to list and always add it if not empty.
+            Point.SKPoint = Position + dif; // this may or may not be in Points - maybe convert to list and always add it if not empty.
         }
 
 	    public void Clear()
 	    {
-		    T = 1;
-			MousePosition = SKPoint.Empty;
-            SnapPosition = SKPoint.Empty;
-            SnapPoint = TerminalPoint.Empty;
-            Selection = TerminalPoint.Empty;
-		    _selectionPositions.Clear();
+			Position = SKPoint.Empty;
+            //SnapPosition = SKPoint.Empty;
+            Point = TerminalPoint.Empty;
+            Element = TerminalPoint.Empty;
+		    _elementPositions.Clear();
         }
 
 	    public List<IPoint> AllPoints()
 	    {
-		    var result = Selection.Points;
-		    if (!SnapPoint.IsEmpty)
+		    var result = Element.Points;
+		    if (!Point.IsEmpty)
 		    {
-			    result.Add(SnapPoint);
+			    result.Add(Point);
 		    }
 		    return result;
 	    }

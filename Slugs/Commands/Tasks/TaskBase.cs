@@ -14,6 +14,8 @@ namespace Slugs.Commands.Tasks
     public interface ITask
     {
 	    ICommand Command { get; }
+	    Pad Pad { get; }
+	    PadKind PadKind { get; }
         int TaskKey { get; }
         bool IsValid { get; }
         void RunTask();
@@ -40,8 +42,8 @@ namespace Slugs.Commands.Tasks
 
         protected TaskBase(PadKind padKind)
         {
-	        TaskKey = TaskCounter++;
 	        PadKind = padKind;
+	        TaskKey = TaskCounter++;
         }
         public virtual void RunTask() { }
         public virtual void UnRunTask() { }
@@ -52,34 +54,34 @@ namespace Slugs.Commands.Tasks
 	        switch (kind)
 	        {
 		        case SelectionKind.BeginPoint:
-			        result = Begin.SnapPoint.Key;
+			        result = Begin.Point.Key;
 			        break;
 		        case SelectionKind.BeginElement:
-			        result = Begin.Selection.Key;
+			        result = Begin.Element.Key;
 			        break;
 		        case SelectionKind.CurrentPoint:
-			        result = Current.SnapPoint.Key;
+			        result = Current.Point.Key;
 			        break;
 		        case SelectionKind.CurrentElement:
-			        result = Current.Selection.Key;
+			        result = Current.Element.Key;
 			        break;
 		        case SelectionKind.SelectedPoint:
-			        result = Selected.SnapPoint.Key;
+			        result = Selected.Point.Key;
 			        break;
 		        case SelectionKind.SelectedElement:
-			        result = Selected.Selection.Key;
+			        result = Selected.Element.Key;
 			        break;
 		        case SelectionKind.HighlightPoint:
-			        result = Highlight.SnapPoint.Key;
+			        result = Highlight.Point.Key;
 			        break;
 		        case SelectionKind.HighlightElement:
-			        result = Highlight.Selection.Key;
+			        result = Highlight.Element.Key;
 			        break;
 		        case SelectionKind.ClipboardPoint:
-			        result = Clipboard.SnapPoint.Key;
+			        result = Clipboard.Point.Key;
 			        break;
 		        case SelectionKind.ClipboardElement:
-			        result = Clipboard.Selection.Key;
+			        result = Clipboard.Element.Key;
 			        break;
                 default:
 	                break;
@@ -90,43 +92,43 @@ namespace Slugs.Commands.Tasks
         protected SelectionKind SelectionKindForElementKey(int key)
         {
 	        SelectionKind result = SelectionKind.None;
-	        if (Begin.SnapPoint.Key == key)
+	        if (Begin.Point.Key == key)
 	        {
 		        result = SelectionKind.BeginPoint;
 	        }
-	        else if (Begin.Selection.Key == key)
+	        else if (Begin.Element.Key == key)
 	        {
 		        result = SelectionKind.BeginElement;
 	        }
-	        else if (Current.SnapPoint.Key == key)
+	        else if (Current.Point.Key == key)
 	        {
 		        result = SelectionKind.CurrentPoint;
 	        }
-	        else if (Current.Selection.Key == key)
+	        else if (Current.Element.Key == key)
 	        {
 		        result = SelectionKind.CurrentElement;
 	        }
-	        else if (Selected.SnapPoint.Key == key)
+	        else if (Selected.Point.Key == key)
 	        {
 		        result = SelectionKind.SelectedPoint;
 	        }
-	        else if (Selected.Selection.Key == key)
+	        else if (Selected.Element.Key == key)
 	        {
 		        result = SelectionKind.SelectedElement;
 	        }
-	        else if (Highlight.SnapPoint.Key == key)
+	        else if (Highlight.Point.Key == key)
 	        {
 		        result = SelectionKind.HighlightPoint;
 	        }
-	        else if (Highlight.Selection.Key == key)
+	        else if (Highlight.Element.Key == key)
 	        {
 		        result = SelectionKind.HighlightElement;
 	        }
-	        else if (Clipboard.SnapPoint.Key == key)
+	        else if (Clipboard.Point.Key == key)
 	        {
 		        result = SelectionKind.ClipboardPoint;
 	        }
-	        else if (Clipboard.Selection.Key == key)
+	        else if (Clipboard.Element.Key == key)
 	        {
 		        result = SelectionKind.ClipboardElement;
 	        }
