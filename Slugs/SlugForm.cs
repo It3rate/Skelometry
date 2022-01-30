@@ -95,7 +95,7 @@ namespace Slugs
 
         private void Redraw()
         {
-	        //_renderer.Agent = _agent;
+	        //_renderer.Agent = Agent;
 	        _control.Invalidate();
         }
 

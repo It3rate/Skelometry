@@ -24,8 +24,6 @@ namespace Slugs.Input
         public SelectionSet Selected => SelectionSets[SelectionSetKind.Selection];
         public SelectionSet Clipboard => SelectionSets[SelectionSetKind.Clipboard];
 
-        public bool IsDown { get; private set; }
-
         //private IElement DragElement => Begin.Selected;
         public bool IsDraggingElement => !Begin.Selection.IsEmpty;
         public bool IsDraggingPoint => !Begin.SnapPoint.IsEmpty;
@@ -75,27 +73,17 @@ namespace Slugs.Input
 	        return result;
         }
         // todo: Creating traits will depend on selected entity etc.
-        private Trait CreateTrait(SKPoint p, Pad pad)
-        {
-	        var entity = pad.CreateEntity();
-	        return pad.AddTrait(entity.Key, new SKSegment(p, p), 5);
-        }
 
         public void Start(SKPoint actual)
         {
 	        GetHighlight(actual, Begin, null);
 	        GetHighlight(actual, Highlight, null);
-            if (Begin.Selection.IsEmpty)
-            {
-	            var trait = CreateTrait(actual, _agent.WorkingPad);
-	            Begin.Selection = trait.EndRef;
-            }
             Current.Set(actual, Highlight.SnapPoint, Begin.Selection);
-            IsDown = true;
         }
 	    public void Move(SKPoint actual)
 	    {
 		    Current.Update(actual);
+            Selected.Update(actual);
             GetHighlight(actual, Highlight, Current);
      //       IsDragging = IsDown ? true : false;
 		   // if (IsDraggingElement)
@@ -118,8 +106,6 @@ namespace Slugs.Input
             GetHighlight(actual, Highlight, Current);
             Current.Clear();
             Begin.Clear();
-            //UpdateHighlight(actual, Current);
-            IsDown = false;
 	    }
 
 	    public void Reset()
@@ -127,7 +113,6 @@ namespace Slugs.Input
         }
 	    public void CancelDrag(SKPoint actual, IPoint snap, ElementKind kind)
 	    {
-		    IsDown = false;
 	    }
         public void SetHighlight(SKPoint actual, IPoint snap, ElementKind kind)
 	    {

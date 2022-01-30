@@ -23,9 +23,9 @@ namespace Slugs.Entities
 	    private Entity _entity => Pad.EntityAt(EntityKey); // trait doesn't have entity as multiple entities can hold the same trait
         public int EntityKey { get; set; }
 
-        public Trait(IPoint start, IPoint end, Entity entity, int traitKindIndex) : this(start.Key, end.Key, entity, traitKindIndex) {}
+        public Trait(Entity entity, IPoint start, IPoint end, int traitKindIndex) : this(entity, start.Key, end.Key, traitKindIndex) {}
 
-        public Trait(int startKey, int endKey, Entity entity, int traitKindIndex) : base(entity.PadKind, startKey, endKey)
+        public Trait(Entity entity, int startKey, int endKey, int traitKindIndex) : base(entity.PadKind, startKey, endKey)
         {
 	        EntityKey = entity.Key;
 		    KindIndex = traitKindIndex;

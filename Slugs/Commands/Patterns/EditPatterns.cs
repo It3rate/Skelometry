@@ -49,8 +49,8 @@ namespace Slugs.Commands.Patterns
         private IPointTask StartPoint { get; }
         private IPointTask EndPoint { get; }
         private CreateSegmentTask CreateTrait { get; }
-        private IChangeTask MoveEndPoint { get; }
-        private IPointTask MergeEndPoint { get; }
+        private MoveElementTask MoveEndPoint { get; } // or just directly change Endpoint?
+        private MergePointsTask MergeEndPoint { get; }
 
 
         public override bool IsValid => true; //SourceSet.HasKind(SourceKind) && TargetSet.HadKind(SelectionKind);

@@ -1,4 +1,6 @@
-﻿using Slugs.Commands.Tasks;
+﻿using Slugs.Agents;
+using Slugs.Commands.Tasks;
+using Slugs.Entities;
 
 namespace Slugs.Commands
 {
@@ -10,9 +12,15 @@ namespace Slugs.Commands
 
     public interface ICommand
     {
+        Pad Pad { get; }
+        ICommandStack Stack { get; set; }
+
         int CommandKey { get; }
         List<ITask> Tasks { get; }
         bool IsContinuous { get; }
+        bool IsRetainedCommand { get; }
+
+        IElement ElementAt(int key);
 
         DateTime StartTime { get; }
         DateTime EndTime { get; }
@@ -36,12 +44,19 @@ namespace Slugs.Commands
     public abstract class CommandBase : ICommand
     {
 	    public int CommandKey { get; }
+	    public Pad Pad { get; }
+
+	    public ICommandStack Stack { get; set; }
+
+        public IElement ElementAt(int key) => Pad.ElementAt(key);
+
         // A command is a series of tasks which can run and be modified as they are added if the command is on the stack.
         // They can have a duration, and can be 'scrubbed'.
-	    public List<ITask> Tasks { get; } = new List<ITask>();
-	    public bool IsContinuous { get; }
+        public List<ITask> Tasks { get; } = new List<ITask>();
+        public bool IsContinuous { get; }
+        public bool IsRetainedCommand { get; } = true;
 
-	    public DateTime StartTime { get; }
+        public DateTime StartTime { get; }
 	    public DateTime EndTime { get; }
 	    public TimeSpan Duration { get; }
 	    public bool IsActive { get; }
@@ -50,31 +65,41 @@ namespace Slugs.Commands
 	    public event EventHandler OnUnexecute;
 	    public event EventHandler OnCompleted;
 
-	    public void Execute()
+	    public CommandBase(Pad pad)
+	    {
+		    Pad = pad;
+	    }
+
+	    public virtual void Execute()
 	    {
             // remember selection state
             // stamp times
             // run tasks
             // select new element
-            throw new NotImplementedException();
+            //foreach (var task in Tasks)
+            //{
+	           // task.RunTask();
+            //}
 	    }
-	    public void Unexecute()
+        public virtual void Unexecute()
+        {
+	        foreach (var task in Tasks)
+	        {
+		        task.UnRunTask();
+	        }
+        }
+
+        public virtual void Completed()
 	    {
-		    throw new NotImplementedException();
 	    }
 
-	    public void Completed()
-	    {
-		    throw new NotImplementedException();
-	    }
-
-	    public ICommand Duplicate()
-	    {
-		    throw new NotImplementedException();
-	    }
-	    public bool TryMergeWith(ICommand command)
-	    {
-		    throw new NotImplementedException();
-	    }
+        public virtual ICommand Duplicate()
+        {
+	        return null;
+        }
+        public virtual bool TryMergeWith(ICommand command)
+        {
+	        return false;
+        }
     }
 }

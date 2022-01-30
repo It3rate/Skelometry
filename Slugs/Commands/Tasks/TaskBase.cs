@@ -13,21 +13,21 @@ namespace Slugs.Commands.Tasks
 
     public interface ITask
     {
-        PadKind PadKind { get; }
+	    ICommand Command { get; }
         int TaskKey { get; }
         bool IsValid { get; }
-        void BeginTask();
-        void UpdateTask();
-        void CompleteTask();
-        void UnwindTask();
+        void RunTask();
+        void UnRunTask();
+        //void OnAddedToCommand(ICommand command);
     }
 
     public abstract class TaskBase : ITask
     {
 	    private static int TaskCounter = 1;
 
+	    public ICommand Command { get; }
+	    public Pad Pad => Agent.Current.PadAt(PadKind);
         public PadKind PadKind { get; }
-        public Pad Pad => Agent.Current.PadAt(PadKind);
         public SelectionSet Begin => Agent.Current.Data.Begin;
         public SelectionSet Current => Agent.Current.Data.Current;
         public SelectionSet Highlight => Agent.Current.Data.Highlight;
@@ -43,10 +43,8 @@ namespace Slugs.Commands.Tasks
 	        TaskKey = TaskCounter++;
 	        PadKind = padKind;
         }
-        public virtual void BeginTask() { }
-        public virtual void UpdateTask() { }
-        public virtual void CompleteTask() { }
-        public virtual void UnwindTask() { }
+        public virtual void RunTask() { }
+        public virtual void UnRunTask() { }
 
         protected int ElementKeyForSelectionKind(SelectionKind kind)
         {

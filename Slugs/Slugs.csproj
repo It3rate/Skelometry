@@ -93,6 +93,8 @@
     <Compile Include="Agents\IAgent.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\CommandStack.cs" />
+    <Compile Include="Commands\EditCommands\AddTraitCommand.cs" />
+    <Compile Include="Commands\EditCommands\EditCommand.cs" />
     <Compile Include="Commands\Patterns\EditPatterns.cs" />
     <Compile Include="Commands\Patterns\IPattern.cs" />
     <Compile Include="Commands\Tasks\EditTasks.cs" />

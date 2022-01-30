@@ -22,7 +22,7 @@ namespace Slugs.Input
 	    public SKPoint MousePosition { get; private set; }
         public SKPoint SnapPosition { get; private set; }
         private readonly List<SKPoint> _selectionPositions = new List<SKPoint>();
-        public IPoint SnapPoint { get; private set; }
+        public IPoint SnapPoint { get; set; }
         public IElement Selection { get; set; }
 
         public SelectionSet(PadKind padKind, SelectionSetKind selectionSetKind)
@@ -64,14 +64,10 @@ namespace Slugs.Input
 
 	    public List<IPoint> AllPoints()
 	    {
-		    var result = new List<IPoint>();
+		    var result = Selection.Points;
 		    if (!SnapPoint.IsEmpty)
 		    {
 			    result.Add(SnapPoint);
-		    }
-		    if (!Selection.IsEmpty)
-		    {
-			    result.AddRange(Selection.Points);
 		    }
 		    return result;
 	    }

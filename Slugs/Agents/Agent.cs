@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using Slugs.Commands;
+using Slugs.Commands.EditCommands;
 using Slugs.Entities;
 using Slugs.Input;
 using Slugs.Pads;
@@ -15,13 +17,16 @@ namespace Slugs.Agents
     {
 	    public static Agent Current { get; private set; }
 
+        public UIData Data;
+        private CommandStack<EditCommand> _editCommands;
+        private EditCommand _activeCommand;
+
 	    public readonly Dictionary<PadKind, Pad> Pads = new Dictionary<PadKind, Pad>();
 
 	    public Pad WorkingPad => PadAt(PadKind.Working);
         public Pad InputPad => PadAt(PadKind.Input);
         public Pad PadAt(PadKind kind) => Pads[kind];
 
-        public UIData Data;
         private readonly SlugRenderer _renderer;
         public RenderStatus RenderStatus { get; }
 
@@ -29,6 +34,8 @@ namespace Slugs.Agents
         public int ScrollRight { get; set; }
 
         private int _traitIndexCounter = 4096;
+        public bool IsDown { get; private set; }
+        public bool IsDragging { get; private set; }
 
         public Agent(SlugRenderer renderer)
         {
@@ -37,11 +44,12 @@ namespace Slugs.Agents
             AddPad(PadKind.Working);
             AddPad(PadKind.Input);
             Data = new UIData(this);
+            _editCommands = new CommandStack<EditCommand>(this);
 
             _renderer = renderer;
             _renderer.Data = Data;
-            var (entity, trait) = InputPad.AddEntity(new SKSegment( 200, 100, 400, 300), 1);
-            InputPad.AddTrait(entity.Key, new SKSegment(290, 100, 490, 300), 1);
+            var (entity, trait) = InputPad.AddEntity(new SKPoint(200, 100), new SKPoint(400, 300), 1);
+            InputPad.AddTrait(entity.Key, new SKPoint(290, 100), new SKPoint( 490, 300), 1);
 
             ClearMouse();
             var t = new RefPoint();
@@ -64,48 +72,52 @@ namespace Slugs.Agents
         {
 	        var curPt = e.Location.ToSKPoint();
             Data.Start(curPt);
-            //UpdateHighlight(curPt, Data.Origin);
-		    //Data.MousePosition = e.Location.ToSKPoint();
-		    //SetHighlight();
-		    //Data.DownPoint = Data.SnapPosition;
-		    //Data.DragRef.Origin = Data.MousePosition;
-		    //if (Data.HasHighlightPoint && CurrentKey != Keys.ControlKey)
-		    //{
-      //          //Data.DragRef.Add(Data.HighlightPoints);
-      //          //Data.IsDraggingElement = true;
-      //      }
-		    //else if (!Data.HighlightLine.IsEmpty && CurrentKey != Keys.ControlKey)
-		    //{
-			   // //Data.DragRef.Add(Data.HighlightLine.StartRef, Data.HighlightLine.EndRef, true);
-			   // //Data.IsDraggingElement = true;
-      //      }
-		    //else
-		    //{
-			   // //Data.DragSegment.Add(Data.SnapPosition);
-			   // //Data.DownHighlight = Data.HighlightPoint;
-		    //}
-
-		    return true;
+            IsDown = true;
+            return true;
 	    }
 
 	    public bool MouseMove(MouseEventArgs e)
 	    {
 		    //WorkingPad.Clear();
-		    Data.Move(e.Location.ToSKPoint());
-		    SetCreating();
+		    var pt = e.Location.ToSKPoint();
+		    if (IsDown && !IsDragging && Data.Begin.Selection.IsEmpty)
+		    {
+			    var trait = CreateTrait(WorkingPad, Data.Begin.MousePosition);
+			    Data.Selected.SnapPoint = trait.EndRef;
+			    IsDragging = true;
+		    }
+		    Data.Move(pt);
+		    if (IsDragging)
+		    {
+                Data.Selected.Update(pt);
+		    }
 
 		    return true;
 	    }
 
-	    public bool MouseUp(MouseEventArgs e)
+	    private Trait CreateTrait(Pad pad, SKPoint p)
+	    {
+		    var cmd = new AddTraitCommand(pad, p);
+            _editCommands.Do(cmd);
+            _activeCommand = cmd;
+            return cmd.AddedTrait;
+            //var entity = pad.CreateEntity();
+            //return pad.AddTrait(entity.Key, new SKSegment(p, p), 5);
+	    }
+
+        public bool MouseUp(MouseEventArgs e)
 	    {
 		    WorkingPad.Clear();
             Data.Move(e.Location.ToSKPoint());
             SetCreating(true);
 		    Data.End(e.Location.ToSKPoint());
 
-		    ClearMouse();
-		    return true;
+		    Data.Selected.Clear();
+
+            ClearMouse();
+		    IsDown = false;
+		    IsDragging = false;
+            return true;
 	    }
 
 	    private Keys CurrentKey;
@@ -144,13 +156,13 @@ namespace Slugs.Agents
 		            }
 		            result = true;
 	            }
-                else if (Data.IsDown)
+                else if (IsDown)
 	            {
 		            var p0 = Data.Current.SnapPosition;
 		            var p1 = Data.Current.SnapPoint.SKPoint;
 		            if (p0.DistanceTo(p1) > 10)
 		            {
-			            var (entity, trait) = InputPad.AddEntity(new SKSegment(p0, p1), _traitIndexCounter++);
+			            var (entity, trait) = InputPad.AddEntity(p0, p1, _traitIndexCounter++);
 			            if (!Data.Begin.SnapPoint.IsEmpty)
 			            {
 				            InputPad.MergePoints(trait.StartRef, Data.Begin.SnapPoint, Data.Begin.SnapPosition);

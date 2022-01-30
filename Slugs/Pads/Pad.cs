@@ -175,19 +175,26 @@ namespace Slugs.Entities
 	        return focal;
         }
 
-        public (Entity, Trait) AddEntity(SKSegment seg, int traitKindIndex)
+        public (Entity, Trait) AddEntity(SKPoint startPoint, SKPoint endPoint, int traitKindIndex)
         {
 	        var entity = CreateEntity();
-	        var trait = AddTrait(entity.Key, seg, traitKindIndex);
+	        var trait = AddTrait(entity.Key, startPoint, endPoint, traitKindIndex);
 	        return (entity, trait);
         }
-        public Trait AddTrait(int entityKey, SKSegment seg, int traitKindIndex)
+        public Trait AddTrait(int entityKey, SKPoint startPoint, SKPoint endPoint, int traitKindIndex)
         {
 	        var entity = GetOrCreateEntity(entityKey);
-	        var start = CreateTerminalPoint(seg.StartPoint);
-	        var end = CreateTerminalPoint(seg.EndPoint);
-	        var trait = new Trait(start, end, entity, traitKindIndex);
-            entity.EmbedTrait(trait);
+	        var start = CreateTerminalPoint(startPoint);
+	        var end = CreateTerminalPoint(endPoint);
+	        var trait = new Trait(entity, start, end, traitKindIndex);
+	        entity.EmbedTrait(trait);
+	        return trait;
+        }
+        public Trait AddTrait(int entityKey, int startPointKey, int endPointKey, int traitKindIndex)
+        {
+	        var entity = GetOrCreateEntity(entityKey);
+	        var trait = new Trait(entity, startPointKey, endPointKey, traitKindIndex);
+	        entity.EmbedTrait(trait);
 	        return trait;
         }
         public void Clear()
