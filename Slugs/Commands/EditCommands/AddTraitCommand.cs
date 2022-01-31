@@ -15,30 +15,34 @@ namespace Slugs.Commands.EditCommands
     // StretchSegmentTask
     public class AddTraitCommand : EditCommand
     {
-	    private IPointTask StartPointTask { get; }
-	    private IPointTask EndPointTask { get; }
-	    private CreateEntityTask EntityTask { get; set; }
-	    private CreateSegmentTask TraitTask { get; set; }
+	    public IPointTask StartPointTask { get; }
+	    public IPointTask EndPointTask { get; }
+	    public CreateSegmentTask TraitTask { get; set; }
+	    //public CreateEntityTask EntityTask { get; set; }
         //private MoveElementTask MoveEndPoint { get; } // or just directly change Endpoint?
-        private MergePointsTask MergeEndPoint { get; set; }
+        //public MergePointsTask MergeEndPoint { get; set; }
 
         public Trait AddedTrait => (Trait)TraitTask?.Segment ?? Trait.Empty;
         public int EntityKey { get; }
 
-        public AddTraitCommand(Pad pad, int entityKey, SKPoint start):
-	        this(entityKey, new CreateTerminalPointTask(pad.PadKind, start), new CreateTerminalPointTask(pad.PadKind, start)){}
+        public AddTraitCommand(Pad pad, int entityKey, SKPoint start) :
+	        this(entityKey, new CreateTerminalPointTask(pad.PadKind, start), new CreateTerminalPointTask(pad.PadKind, start)) { }
 
-	    public AddTraitCommand(int entityKey, IPointTask startPointTask, IPointTask endPointTask) : base(startPointTask.Pad)
+        public AddTraitCommand(int entityKey, IPoint startPoint) : 
+	        this(entityKey, new CreateRefPointTask(startPoint.PadKind, startPoint.Key)) { }
+
+        public AddTraitCommand(int entityKey, IPointTask startPointTask, IPointTask endPointTask = null) : base(startPointTask.Pad)
         {
             StartPointTask = startPointTask;
-	        EndPointTask = endPointTask;
-	        AddTasksAndRun(StartPointTask, EndPointTask);
+            AddTaskAndRun(StartPointTask);
+            EndPointTask = endPointTask ?? new CreateTerminalPointTask(Pad.PadKind, Pad.PointAt(startPointTask.PointKey).SKPoint);
+	        AddTaskAndRun(EndPointTask);
 	        EntityKey = entityKey;
 	        if (Pad.EntityAt(EntityKey).IsEmpty)
 	        {
-                EntityTask = new CreateEntityTask(Pad.PadKind);
-                AddTaskAndRun(EntityTask);
-                EntityKey = EntityTask.EntityKey;
+                var entityTask = new CreateEntityTask(Pad.PadKind);
+                AddTaskAndRun(entityTask);
+                EntityKey = entityTask.EntityKey;
 	        }
         }
 
@@ -57,7 +61,7 @@ namespace Slugs.Commands.EditCommands
 	        TraitTask = new CreateSegmentTask(Pad.PadKind, EntityKey, StartPointTask.PointKey, EndPointTask.PointKey, ElementKind.Trait);
 	        AddTaskAndRun(TraitTask);
 
-	        MergeEndPoint = new MergePointsTask(Pad.PadKind, -1, -1);
+	        //MergeEndPoint = new MergePointsTask(Pad.PadKind, -1, -1);
         }
 
         public override void Update(SKPoint point)

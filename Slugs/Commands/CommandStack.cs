@@ -16,7 +16,7 @@ namespace Slugs.Commands
         int RedoSize { get; }
         bool CanRepeat { get; }
 
-        void Do(ICommand command);
+        ICommand Do(ICommand command);
         ICommand PreviousCommand();
         bool Undo();
         void UndoAll();
@@ -45,13 +45,13 @@ namespace Slugs.Commands
 		    Agent = agent;
 	    }
 
-	    public void Do(ICommand command)
+	    public ICommand Do(ICommand command)
 	    {
             // should always pick up correct type of command override for Do
 		    throw new ArgumentException("command must match generic type of command stack");
 	    }
 
-        public void Do(TCommand command)
+        public TCommand Do(TCommand command)
 	    {
 		    command.Stack = (ICommandStack)this;
 		    if (command.IsRetainedCommand)
@@ -60,6 +60,7 @@ namespace Slugs.Commands
 			    // try merging with previous command
 			    AddAndExecuteCommand(command);
 		    }
+		    return command;
 	    }
 
 	    public ICommand PreviousCommand() => CanUndo ? (ICommand)_stack[_stackIndex - 1] : null;

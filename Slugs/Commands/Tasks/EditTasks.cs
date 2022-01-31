@@ -49,7 +49,6 @@ namespace Slugs.Commands.Tasks
     public interface IPointTask : ITask
     {
 	    int PointKey { get; }
-	    void UpdateLocation(SKPoint location);
     }
     public interface ICreateTask
     {
@@ -80,26 +79,27 @@ namespace Slugs.Commands.Tasks
             Pad.RemoveElement(Point.Key);
             // todo: decrement key counter on undo
 	    }
-
-	    public void UpdateLocation(SKPoint location)
-	    {
-		    Location = location;
-		    Point.SKPoint = Location;
-	    }
     }
     public class CreateRefPointTask : EditTask, IPointTask, ICreateTask
     {
 	    public int TargetKey { get; }
-	    public int PointKey { get; }
+	    public int PointKey => Point.Key;
         private RefPoint Point { get; set; }
         public CreateRefPointTask(PadKind padKind, int targetKey) : base(padKind)
         {
 	        TargetKey = targetKey;
             // create ref, assign key
         }
-        public void UpdateLocation(SKPoint location)
+        public override void RunTask()
         {
-	        Point.SKPoint = location;
+	        Point = Pad.CreateRefPoint(TargetKey);
+        }
+
+        public override void UnRunTask()
+        {
+	        //Location = Point.SKPoint; // get location in case it has been updated
+	        Pad.RemoveElement(PointKey);
+	        // todo: decrement key counter on undo
         }
     }
     public class CreateVPointTask : EditTask, IPointTask, ICreateTask
@@ -114,10 +114,6 @@ namespace Slugs.Commands.Tasks
 		    SegmentKey = segmentkey;
 		    T = t;
             // create vpoint, assign key
-	    }
-	    public void UpdateLocation(SKPoint location)
-	    {
-		    Point.SKPoint = location;
 	    }
     }
     public class MergePointsTask : EditTask, IPointTask, IChangeTask
@@ -140,9 +136,11 @@ namespace Slugs.Commands.Tasks
 		    ToKey = toKey;
 		    //merge points
 	    }
-	    public void UpdateLocation(SKPoint location)
+
+	    public override void RunTask()
 	    {
-		    Point.SKPoint = location;
+		    base.RunTask();
+            Pad.MergePoints(FromKey, ToKey);
 	    }
     }
     

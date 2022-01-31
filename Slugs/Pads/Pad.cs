@@ -153,6 +153,11 @@ namespace Slugs.Entities
 	            SetPointAt(from.Key, point);
 	        }
         }
+        public void MergePoints(int fromKey, int toKey)
+        {
+	        var terminal = TerminalPointFor(PointAt(toKey));
+	        SetPointAt(fromKey, terminal);
+        }
 
         public Entity CreateEntity(params Trait[] traits)
         {
@@ -167,6 +172,11 @@ namespace Slugs.Entities
         public TerminalPoint CreateTerminalPoint(SKPoint pt)
         {
 	        var point = new TerminalPoint(PadKind, pt);
+	        return point;
+        }
+        public RefPoint CreateRefPoint(int targetKey)
+        {
+	        var point = new RefPoint(PadKind, targetKey);
 	        return point;
         }
         public Focal CreateFocal(float focus, Slug slug)

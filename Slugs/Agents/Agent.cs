@@ -5,6 +5,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Slugs.Commands;
 using Slugs.Commands.EditCommands;
+using Slugs.Commands.Tasks;
 using Slugs.Entities;
 using Slugs.Input;
 using Slugs.Pads;
@@ -67,11 +68,13 @@ namespace Slugs.Agents
             Data.Reset();
             WorkingPad.Clear();
         }
-
+        
         public bool MouseDown(MouseEventArgs e)
         {
+            // Add to selection if ctrl down etc.
+
 	        var mousePoint = e.Location.ToSKPoint();
-            //Data.Start(curPt);
+
             Data.GetHighlight(mousePoint, Data.Begin, null);
             Data.GetHighlight(mousePoint, Data.Highlight, null);
             Data.Selected.Set(mousePoint, Data.Highlight.Point, Data.Begin.Element);
@@ -82,45 +85,71 @@ namespace Slugs.Agents
 
 	    public bool MouseMove(MouseEventArgs e)
 	    {
-		    //WorkingPad.Clear();
+            // if > that min length, either create element, or drag existing, based on highlight - p0 based on highlight, keys and selection
+            // Create:
+            //      - creating tool, p0 is either terminal (no highlight), refPoint if highlight point, or vPoint if line selected (also check key mods)
+            //      - if highlighting point or element, start dragging it
+            //      - if no highlight, start selection rect
+            // Drag Element:
+            //      - may be rect select if mode isn't create, p0 is start point
+            // Rect Select:
+            //      - live reset contents to selection by bounds (also done in up).
+            // Suppress Select Element:
+            //      - cancels click select if length > select max
+
+            // AddTrait, AddBond, AddFocal, MoveElement, SelectRect 
+            var result = false;
 		    var mousePoint = e.Location.ToSKPoint();
-		    if (IsDown && !IsDragging && Data.Begin.Element.IsEmpty)
-		    {
-			    var trait = CreateTrait(InputPad, Data.Begin.Position);
-			    //Data.Selected.Position = Data.Begin.Position;
-			    Data.Selected.Point = trait.EndRef;
-			    IsDragging = true;
-		    }
-
-		    //Data.Move(pt);
-		    Data.Current.Update(mousePoint);
+		    Data.Current.UpdatePositions(mousePoint);
             Data.GetHighlight(mousePoint, Data.Highlight, Data.Current);
-
-            if (IsDragging)
-		    {
-                Data.Selected.Update(mousePoint);
-		    }
-
-		    return true;
+            if (IsDown)
+            {
+                result = MouseDrag(mousePoint);
+            }
+            return true;
 	    }
 
-        public bool MouseUp(MouseEventArgs e)
+	    public bool MouseDrag(SKPoint mousePoint)
 	    {
+		    if (!IsDragging && Data.Begin.Element.IsEmpty)
+		    {
+			    var cmd = Data.Begin.Point.IsEmpty ? 
+				    new AddTraitCommand(InputPad, -1, Data.Begin.Position) :
+				    new AddTraitCommand(-1, Data.Begin.Point);
+			    _activeCommand = _editCommands.Do(cmd);
+			    Data.Selected.Point = cmd.AddedTrait.EndRef;
+		    }
+		    Data.Selected.UpdatePositions(mousePoint);
+			IsDragging = true;
+            return true;
+	    }
+
+	    public bool MouseUp(MouseEventArgs e)
+	    {
+            // If dragging or creating, check for last point merge
+            // If rect select, add contents to selection (also done in move).
+            // If not dragging or creating and dist < selMax, click select
+
+            // MergeEndPoint, SetSelection (Click or Rect)
 		    WorkingPad.Clear();
             var mousePoint = e.Location.ToSKPoint();
 
-		    Data.Current.Update(mousePoint);
+		    Data.Current.UpdatePositions(mousePoint);
 		    Data.GetHighlight(mousePoint, Data.Highlight, Data.Current);
-            //Data.Move(e.Location.ToSKPoint());
             SetCreating(true);
+            if (!Data.Highlight.Point.IsEmpty)
+            {
+	            if (_activeCommand is AddTraitCommand atc)
+	            {
+                    atc.AddTaskAndRun(new MergePointsTask(atc.Pad.PadKind, atc.EndPointTask.PointKey, Data.Highlight.Point.Key));
+	            }
+            }
 
-            //Data.End(e.Location.ToSKPoint());
-            //Data.Current.Update(mousePoint);
-            //Data.GetHighlight(mousePoint, Data.Highlight, Data.Current);
+
+            _activeCommand = null;
             Data.Current.Clear();
 		    Data.Begin.Clear();
-
-            Data.Selected.Clear();
+		    Data.Selected.Clear();
 
             ClearMouse();
 		    IsDown = false;
@@ -128,15 +157,6 @@ namespace Slugs.Agents
             return true;
 	    }
 
-	    private Trait CreateTrait(Pad pad, SKPoint p)
-	    {
-		    var cmd = new AddTraitCommand(pad, -1, p);
-            _editCommands.Do(cmd);
-            _activeCommand = cmd;
-            return cmd.AddedTrait;
-            //var entity = pad.CreateEntity();
-            //return pad.AddTrait(entity.Key, new SKSegment(p, p), 5);
-	    }
 
 	    private Keys CurrentKey;
 	    public bool KeyDown(KeyEventArgs e)

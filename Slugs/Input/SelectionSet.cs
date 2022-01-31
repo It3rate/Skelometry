@@ -41,7 +41,7 @@ namespace Slugs.Input
             _elementPositions.Clear();
 	        _elementPositions.AddRange(Element.SKPoints);
         }
-        public void Update(SKPoint newPosition)
+        public void UpdatePositions(SKPoint newPosition)
         {
 	        var dif = newPosition - Position;
 	        var pts = Element.Points;
