@@ -19,6 +19,8 @@ namespace Slugs.Entities
         //IPoint[] TerminalPoints { get; }
         List<IPoint> Points { get; }
         List<SKPoint> SKPoints{ get; }
+
+        void MoveTo(SKPoint position);
     }
 
     public abstract class ElementBase : IElement
@@ -43,12 +45,11 @@ namespace Slugs.Entities
 				var result = new List<SKPoint>(pts.Count);
 				foreach (var point in pts)
 				{
-					result.Add(point.SKPoint);
+					result.Add(point.Position);
 				}
 				return result;
 			}
 		}
-        //public SKPoint[] SKPoints => null;
 
         protected ElementBase(bool isEmpty) // used to privately create an empty element
         {
@@ -61,7 +62,15 @@ namespace Slugs.Entities
 			PadKind = padKind;
 			Pad.AddElement(this);
         }
+	    public virtual void MoveTo(SKPoint position)
+	    {
+		    foreach (var point in Points)
+		    {
+			    point.Position = position;
+		    }
+	    }
     }
+
     [Flags]
 	public enum ElementKind
 	{

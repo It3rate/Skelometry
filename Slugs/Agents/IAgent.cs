@@ -8,7 +8,7 @@ namespace Slugs.Agents
     public interface IAgent
     {
         RenderStatus RenderStatus { get; }
-        //SKPoint this[IPoint point] { get; set; }
+        //Position this[IPoint point] { get; set; }
 
         Pad PadAt(PadKind padKind);
 

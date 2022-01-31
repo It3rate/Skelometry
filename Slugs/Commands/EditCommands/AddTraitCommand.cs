@@ -13,11 +13,13 @@ namespace Slugs.Commands.EditCommands
     // MoveElementTask
     // MoveVPointTask
     // StretchSegmentTask
-    public class AddTraitCommand : EditCommand
+    public class AddTraitCommand : EditCommand, IDraggablePointCommand
     {
 	    public IPointTask StartPointTask { get; }
 	    public IPointTask EndPointTask { get; }
-	    public CreateSegmentTask TraitTask { get; set; }
+	    public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
+
+        public CreateSegmentTask TraitTask { get; set; }
 	    //public CreateEntityTask EntityTask { get; set; }
         //private MoveElementTask MoveEndPoint { get; } // or just directly change Endpoint?
         //public MergePointsTask MergeEndPoint { get; set; }
@@ -35,7 +37,7 @@ namespace Slugs.Commands.EditCommands
         {
             StartPointTask = startPointTask;
             AddTaskAndRun(StartPointTask);
-            EndPointTask = endPointTask ?? new CreateTerminalPointTask(Pad.PadKind, Pad.PointAt(startPointTask.PointKey).SKPoint);
+            EndPointTask = endPointTask ?? new CreateTerminalPointTask(Pad.PadKind, Pad.PointAt(startPointTask.PointKey).Position);
 	        AddTaskAndRun(EndPointTask);
 	        EntityKey = entityKey;
 	        if (Pad.EntityAt(EntityKey).IsEmpty)
@@ -52,7 +54,7 @@ namespace Slugs.Commands.EditCommands
         public void MoveEndPoint(SKPoint location)
 	    {
 		    IPoint point = (IPoint)ElementAt(EndPointTask.PointKey);
-		    point.SKPoint = location;
+		    point.Position = location;
 	    }
 
         public override void Execute()

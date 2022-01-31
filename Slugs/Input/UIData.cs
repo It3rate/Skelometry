@@ -34,7 +34,7 @@ namespace Slugs.Input
 	    public bool HasHighlightLine => Highlight.Element.ElementKind == ElementKind.Trait;
         public Trait HighlightLine => HasHighlightLine ? (Trait)Highlight.Element : Trait.Empty;
 
-	    //public SKPoint GetHighlightPoint() => Current.SnapPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].SKPoint : SKPoint.Empty;
+	    //public Position GetHighlightPoint() => Current.SnapPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].Position : Position.Empty;
 	    //public SKSegment GetHighlightLine() => HighlightLine.Segment;
 
 	    private readonly Agent _agent;

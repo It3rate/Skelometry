@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using OpenTK.Graphics.OpenGL;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Slugs.Commands;
@@ -101,7 +102,7 @@ namespace Slugs.Agents
             var result = false;
 		    var mousePoint = e.Location.ToSKPoint();
 		    Data.Current.UpdatePositions(mousePoint);
-            Data.GetHighlight(mousePoint, Data.Highlight, Data.Current);
+            Data.GetHighlight(mousePoint, Data.Highlight, Data.Selected);
             if (IsDown)
             {
                 result = MouseDrag(mousePoint);
@@ -109,18 +110,39 @@ namespace Slugs.Agents
             return true;
 	    }
 
+	    private float _minDragDistance = 10f;
 	    public bool MouseDrag(SKPoint mousePoint)
 	    {
-		    if (!IsDragging && Data.Begin.Element.IsEmpty)
+		    if (!IsDragging)
 		    {
-			    var cmd = Data.Begin.Point.IsEmpty ? 
-				    new AddTraitCommand(InputPad, -1, Data.Begin.Position) :
-				    new AddTraitCommand(-1, Data.Begin.Point);
-			    _activeCommand = _editCommands.Do(cmd);
-			    Data.Selected.Point = cmd.AddedTrait.EndRef;
+				var dist = (mousePoint - Data.Begin.Position).Length;
+				if (dist > _minDragDistance)
+				{
+					var createObject = !Data.Begin.HasSelection || KeyIsDownControl;
+					if (createObject)
+					{
+                        // create Trait if terminal or ref point, create Bond or Focal it VPoint.
+	                    var cmd = Data.Begin.Point.IsEmpty ? 
+							new AddTraitCommand(Data.Begin.Pad, -1, Data.Begin.Position) :
+							new AddTraitCommand(-1, Data.Begin.Point);
+						_activeCommand = _editCommands.Do(cmd);
+						Data.Selected.Point = cmd.AddedTrait.EndRef;
+					}
+					else if(Data.Begin.HasSelection) // drag existing object
+					{
+						IElement sel = !Data.Begin.Point.IsEmpty ? Data.Begin.Point : Data.Begin.Element;
+                        var cmd = new MoveElementCommand(Data.Begin.Pad, sel.Key);
+                        _activeCommand = _editCommands.Do(cmd);
+                        Data.Selected.Element = sel;
+					}
+					else // rect select
+					{
+
+					}
+					IsDragging = true;
+				}
 		    }
 		    Data.Selected.UpdatePositions(mousePoint);
-			IsDragging = true;
             return true;
 	    }
 
@@ -135,8 +157,8 @@ namespace Slugs.Agents
             var mousePoint = e.Location.ToSKPoint();
 
 		    Data.Current.UpdatePositions(mousePoint);
-		    Data.GetHighlight(mousePoint, Data.Highlight, Data.Current);
-            SetCreating(true);
+		    Data.GetHighlight(mousePoint, Data.Highlight, Data.Selected);
+            FinalizeCommand(true);
             if (!Data.Highlight.Point.IsEmpty)
             {
 	            if (_activeCommand is AddTraitCommand atc)
@@ -144,7 +166,6 @@ namespace Slugs.Agents
                     atc.AddTaskAndRun(new MergePointsTask(atc.Pad.PadKind, atc.EndPointTask.PointKey, Data.Highlight.Point.Key));
 	            }
             }
-
 
             _activeCommand = null;
             Data.Current.Clear();
@@ -159,7 +180,10 @@ namespace Slugs.Agents
 
 
 	    private Keys CurrentKey;
-	    public bool KeyDown(KeyEventArgs e)
+	    private bool KeyIsDownControl => (CurrentKey & Keys.ControlKey) != 0;
+	    private bool KeyIsDownAlt => (CurrentKey & Keys.Alt) != 0;
+	    private bool KeyIsDownShift => (CurrentKey & Keys.ShiftKey) != 0;
+        public bool KeyDown(KeyEventArgs e)
 	    {
 		    CurrentKey = e.KeyCode;
 		    return true;
@@ -177,51 +201,15 @@ namespace Slugs.Agents
         {
         }
 
-        private bool SetCreating(bool final = false)
+        private bool FinalizeCommand(bool final = false)
         {
             var result = false;
-            if (final)
+            // merge points if dragging any kind of point onto a valid existing point.
+            if (Data.HasHighlightPoint && _activeCommand is IDraggablePointCommand cmd)
             {
-	            if (Data.IsDraggingPoint)
-	            {
-		            if (Data.HasHighlightPoint)
-		            {
-			            InputPad.MergePoints(Data.Current.Point, Data.Highlight.Point, Data.Highlight.SnapPosition);
-		            }
-		            else if (Data.IsDraggingPoint && Data.HasHighlightLine)
-		            {
-			            //var dragPoint = Data.DragRef.PointRefs[0];
-		            }
-		            result = true;
-	            }
-                else if (IsDown)
-	            {
-		            var p0 = Data.Begin.SnapPosition;
-		            var p1 = Data.Current.Point.SKPoint;
-		            if (false && p0.DistanceTo(p1) > 10)
-		            {
-			            var (entity, trait) = InputPad.AddEntity(p0, p1, _traitIndexCounter++);
-			            if (!Data.Begin.Point.IsEmpty)
-			            {
-				            InputPad.MergePoints(trait.StartRef, Data.Begin.Point, Data.Begin.SnapPosition);
-			            }
-
-			            if (Data.HasHighlightPoint)
-			            {
-				            InputPad.MergePoints(trait.EndRef, Data.HighlightPoint);
-			            }
-			            else if (Data.HasHighlightLine)
-			            {
-				            var highlightLine = Data.HighlightLine;
-				            var (t, pt) = highlightLine.TFromPoint(p1);
-				            var focal = InputPad.CreateFocal(t, Slug.Unit);
-				            var vp = new VPoint(InputPad.PadKind, highlightLine.EntityKey, highlightLine.Key, focal.Key);
-				            InputPad.SetPointAt(trait.EndRef.Key, vp);
-			            }
-		            }
-
-		            result = true;
-	            }
+	            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, cmd.DraggablePoint.Key, Data.Highlight.Point.Key));
+                //cmd.Pad.MergePoints(cmd.DraggablePoint, Data.Highlight.Point, Data.Highlight.SnapPosition);
+	            result = true;
             }
 
             return result;

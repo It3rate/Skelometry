@@ -9,7 +9,7 @@ namespace Slugs.Primitives
         public SKPoint EndPoint { get; private set; }
         public static readonly SKSegment Empty = new SKSegment(SKPoint.Empty, SKPoint.Empty);
 
-        //public SKSegment(SKPoint start)
+        //public SKSegment(Position start)
         //{
 	       // Point = start;
 	       // EndPoint = start;

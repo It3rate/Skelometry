@@ -26,7 +26,7 @@ namespace Slugs.Entities
         }
 
         public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { this };
-        public override SKPoint SKPoint
+        public override SKPoint Position
         {
 	        get
 	        {
@@ -34,7 +34,12 @@ namespace Slugs.Entities
                 var focal = Pad.FocalAt(FocalKey);
                 return trait.IsEmpty ? SKPoint.Empty : trait.PointAlongLine(focal.T);
 	        }
-	        set => throw new InvalidOperationException("Can't set location of virtual point."); // not impossible to adjust terminal points?
+	        set
+	        {
+		        var trait = Pad.TraitAt(TraitKey);
+		        var focal = Pad.FocalAt(FocalKey);
+		        focal.Focus = trait.TFromPoint(value).Item1;
+	        }
         }
 
         public Entity GetEntity() => Pad.EntityAt(EntityKey);

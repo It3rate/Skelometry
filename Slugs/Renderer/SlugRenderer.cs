@@ -122,7 +122,7 @@ namespace Slugs.Renderer
 
             if (Data.HasHighlightPoint)
 			{
-				DrawRoundBox(Data.HighlightPoint.SKPoint, Pens.HoverPen);
+				DrawRoundBox(Data.HighlightPoint.Position, Pens.HoverPen);
 			}
 
 			if (Data.HasHighlightLine)
@@ -295,17 +295,17 @@ namespace Slugs.Renderer
     }
     public static class SkiaExtensions
     {
-	    //public static SKPoint[] SKPoints(this IEnumerable<VisPoint> points)
+	    //public static Position[] SKPoints(this IEnumerable<VisPoint> points)
 	    //{
-		   // var result = new SKPoint[points.Count()];
+		   // var result = new Position[points.Count()];
 		   // int index = 0;
 		   // foreach (var visPoint in points)
 		   // {
-			  //  result[index++] = visPoint.SKPoint();
+			  //  result[index++] = visPoint.Position();
      //       }
 		   // return result;
 	    //}
-	    //public static SKPoint SKPoint(this VisPoint point) => new SKPoint(point.X, point.Y);
+	    //public static Position Position(this VisPoint point) => new Position(point.X, point.Y);
 	    //public static SKRect SKRect(this VisRectangle rect) => new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom);
     }
 }

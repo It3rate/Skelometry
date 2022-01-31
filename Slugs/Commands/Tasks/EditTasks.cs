@@ -49,6 +49,7 @@ namespace Slugs.Commands.Tasks
     public interface IPointTask : ITask
     {
 	    int PointKey { get; }
+	    IPoint IPoint { get; }
     }
     public interface ICreateTask
     {
@@ -60,9 +61,10 @@ namespace Slugs.Commands.Tasks
     {
 	    public SKPoint Location { get; private set; }
 	    public int PointKey => Point?.Key ?? TerminalPoint.EmptyKeyValue;
-        private TerminalPoint Point { get; set; }
+	    public TerminalPoint Point { get; set; }
+	    public IPoint IPoint => Point;
 
-	    public CreateTerminalPointTask(PadKind padKind, SKPoint point) : base(padKind)
+        public CreateTerminalPointTask(PadKind padKind, SKPoint point) : base(padKind)
 	    {
 		    Location = point;
             // create point, assign key
@@ -75,7 +77,7 @@ namespace Slugs.Commands.Tasks
 
 	    public override void UnRunTask()
 	    {
-		    //Location = Point.SKPoint; // get location in case it has been updated
+		    //Location = Point.Position; // get location in case it has been updated
             Pad.RemoveElement(Point.Key);
             // todo: decrement key counter on undo
 	    }
@@ -85,6 +87,7 @@ namespace Slugs.Commands.Tasks
 	    public int TargetKey { get; }
 	    public int PointKey => Point.Key;
         private RefPoint Point { get; set; }
+        public IPoint IPoint => Point;
         public CreateRefPointTask(PadKind padKind, int targetKey) : base(padKind)
         {
 	        TargetKey = targetKey;
@@ -97,7 +100,7 @@ namespace Slugs.Commands.Tasks
 
         public override void UnRunTask()
         {
-	        //Location = Point.SKPoint; // get location in case it has been updated
+	        //Location = Point.Position; // get location in case it has been updated
 	        Pad.RemoveElement(PointKey);
 	        // todo: decrement key counter on undo
         }
@@ -108,6 +111,7 @@ namespace Slugs.Commands.Tasks
         public int SegmentKey { get; }
 	    public float T { get; }
 	    private VPoint Point { get; set; }
+	    public IPoint IPoint => Point;
 
         public CreateVPointTask(PadKind padKind, int segmentkey, float t) : base(padKind)
 	    {
@@ -124,13 +128,14 @@ namespace Slugs.Commands.Tasks
 	    public int PointKey { get; }
 
         private VPoint Point { get; set; }
+        public IPoint IPoint => Point;
 
-     //   public MergePointsTask(PadKind padKind, int fromKey) : base(padKind, SelectionKind.HighlightPoint)
-	    //{
-		   // FromKey = fromKey;
-		   // //merge points
-	    //}
-	    public MergePointsTask(PadKind padKind, int fromKey, int toKey) : base(padKind)
+        //   public MergePointsTask(PadKind padKind, int fromKey) : base(padKind, SelectionKind.HighlightPoint)
+        //{
+        // FromKey = fromKey;
+        // //merge points
+        //}
+        public MergePointsTask(PadKind padKind, int fromKey, int toKey) : base(padKind)
 	    {
 		    FromKey = fromKey;
 		    ToKey = toKey;
@@ -278,13 +283,13 @@ namespace Slugs.Commands.Tasks
 	    //public StretchSegmentTask(PadKind padKind, float length) : base(padKind, SelectionKind.SelectedPoint)
 	    //{
 		   // Length = length;
-		   // OriginalPosition = Pad.PointAt(Key).SKPoint;
+		   // OriginalPosition = Pad.PointAt(Key).Position;
 	    //}
 	    public StretchSegmentTask(PadKind padKind, int key, float length) : base(padKind)
 	    {
             PointKey = key;
             Length = length;
-		    OriginalPosition = Pad.PointAt(PointKey).SKPoint;
+		    OriginalPosition = Pad.PointAt(PointKey).Position;
 	    }
     }
     public class AppendSelectionTask : EditTask

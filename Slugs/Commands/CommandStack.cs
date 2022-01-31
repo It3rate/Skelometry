@@ -1,4 +1,5 @@
 ﻿using Slugs.Agents;
+using Slugs.Commands.EditCommands;
 
 namespace Slugs.Commands
 {

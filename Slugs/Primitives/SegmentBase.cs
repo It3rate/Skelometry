@@ -17,13 +17,13 @@ namespace Slugs.Primitives
 
         public SKPoint StartPoint
         {
-	        get => StartRef.SKPoint;
-	        set => StartRef.SKPoint = value;
+	        get => StartRef.Position;
+	        set => StartRef.Position = value;
         }
         public SKPoint EndPoint
         {
-	        get => EndRef.SKPoint;
-	        set => EndRef.SKPoint = value;
+	        get => EndRef.Position;
+	        set => EndRef.Position = value;
         }
 
         public SKSegment Segment => new SKSegment(StartPoint, EndPoint);
@@ -81,7 +81,7 @@ namespace Slugs.Primitives
         public (float, SKPoint) TFromPoint(SKPoint point) => Segment.TFromPoint(point);
 	    public SKPoint[] EndArrow(float dist = 8f) => Segment.EndArrow(dist);
 
-        //public IPoint GetVirtualPointFor(SKPoint point)
+        //public IPoint GetVirtualPointFor(Position point)
         //{
         // var t = TFromPoint(point);
         // return new VirtualPoint(this, t);

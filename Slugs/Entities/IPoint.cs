@@ -8,14 +8,14 @@ namespace Slugs.Entities
 	public interface IPoint : IElement
     {
         //PointKind SelectionKind { get; }
-        SKPoint SKPoint { get; set; }
+        SKPoint Position { get; set; }
         //bool ReplaceWith(IPoint pt);
 	    //void CopyValuesFrom(IPoint from);
     }
 
 	public abstract class PointBase : ElementBase, IPoint
 	{
-		public abstract SKPoint SKPoint { get; set; }
+		public abstract SKPoint Position { get; set; }
 
 		protected PointBase(bool isEmpty) : base(isEmpty) { }
 		protected PointBase(PadKind padKind) : base(padKind) { }

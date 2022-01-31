@@ -18,21 +18,21 @@ namespace Slugs.Entities
 
 		public RefPoint() : base(true)
 		{
-			SKPoint = SKPoint.Empty;
+			Position = SKPoint.Empty;
 		}
 
 		public int TargetKey { get; private set; }
 
         public override List<IPoint> Points => IsEmpty ? new List<IPoint>() : new List<IPoint> { Pad.TerminalPointFor(this)};
-		public override SKPoint SKPoint
+		public override SKPoint Position
 		{
-			get => Pad.TerminalPointFor(this).SKPoint;
+			get => Pad.TerminalPointFor(this).Position;
 			set
 			{
                 var tp = Pad.TerminalPointFor(this);
                 if (!tp.IsEmpty)
                 {
-	                tp.SKPoint = value;
+	                tp.Position = value;
                 }
 			}
 		}
@@ -54,12 +54,12 @@ namespace Slugs.Entities
         // PadKind = from.PadKind;
         // if (from.SelectionKind == SelectionKind.Terminal)
         // {
-        //  SKPoint = from.SKPoint;
+        //  Position = from.Position;
         // }
         //       else
         // {
         //  TargetKey = from.Key;
-        //  //_point = from.SKPoint;
+        //  //_point = from.Position;
         // }
         //}
         public static bool operator ==(RefPoint left, IPoint right) => left.Key == right.Key && (right is RefPoint value && left.TargetKey == value.TargetKey);

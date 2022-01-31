@@ -19,11 +19,28 @@ namespace Slugs.Input
         public SelectionSetKind SelectionSetKind { get; }
 
 	    public SKPoint Position { get; set; }
-        public SKPoint SnapPosition => Point.IsEmpty ? Position : Point.SKPoint;
-        public IPoint Point { get; set; } = TerminalPoint.Empty;
-        public IElement Element { get; set; }
-
+        public SKPoint SnapPosition => Point.IsEmpty ? Position : Point.Position;
+        private IPoint _point = TerminalPoint.Empty;
+        public IPoint Point
+        {
+	        get => _point;
+	        set { _point = value; Position = _point.Position; }
+        }
         private readonly List<SKPoint> _elementPositions = new List<SKPoint>();
+        private IElement _element;
+        public IElement Element
+        {
+	        get => _element;
+	        set
+	        {
+		        _element = value;
+		        _elementPositions.Clear();
+		        _elementPositions.AddRange(Element.SKPoints);
+	        }
+        }
+
+        public bool HasSelection => !Point.IsEmpty || !Element.IsEmpty;
+
 
         public SelectionSet(PadKind padKind, SelectionSetKind selectionSetKind)
         {
@@ -35,7 +52,7 @@ namespace Slugs.Input
         public void Set(SKPoint position, IPoint snapPoint = null, IElement selection = null)
         {
             Position = position;
-	        //SnapPosition = snapPoint?.SKPoint ?? position;
+	        //SnapPosition = snapPoint?.Position ?? position;
 	        Point = snapPoint ?? TerminalPoint.Empty;
 	        Element = selection ?? TerminalPoint.Empty;
             _elementPositions.Clear();
@@ -47,15 +64,15 @@ namespace Slugs.Input
 	        var pts = Element.Points;
 	        for (int i = 0; i < pts.Count; i++)
 	        {
-		        pts[i].SKPoint = _elementPositions[i] + dif;
+		        pts[i].Position = _elementPositions[i] + dif;
 	        }
-            Point.SKPoint = Position + dif; // this may or may not be in Points - maybe convert to list and always add it if not empty.
+            Point.Position = Position + dif; // this may or may not be in Points - maybe convert to list and always add it if not empty.
         }
 
 	    public void Clear()
 	    {
 			Position = SKPoint.Empty;
-            //SnapPosition = SKPoint.Empty;
+            //SnapPosition = Position.Empty;
             Point = TerminalPoint.Empty;
             Element = TerminalPoint.Empty;
 		    _elementPositions.Clear();

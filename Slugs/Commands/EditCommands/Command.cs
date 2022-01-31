@@ -1,17 +1,12 @@
-﻿using SkiaSharp;
-using Slugs.Agents;
+﻿using System;
+using System.Collections.Generic;
+using SkiaSharp;
 using Slugs.Commands.Tasks;
 using Slugs.Entities;
 
-namespace Slugs.Commands
+namespace Slugs.Commands.EditCommands
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public interface ICommand
+	public interface ICommand
     {
         Pad Pad { get; }
         ICommandStack Stack { get; set; }

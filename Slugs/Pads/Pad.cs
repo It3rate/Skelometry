@@ -147,7 +147,7 @@ namespace Slugs.Entities
 	        {
 		        if (!position.IsEmpty)
 		        {
-			        terminal.SKPoint = position;
+			        terminal.Position = position;
 		        }
 	            var point = new RefPoint(PadKind, terminal.Key);
 	            SetPointAt(from.Key, point);
@@ -234,7 +234,7 @@ namespace Slugs.Entities
 	        ignorePoints = ignorePoints ?? new IPoint[] { };
             foreach (var ptRef in Points)
             {
-	            if (!ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.SKPoint) < maxDist)
+	            if (!ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.Position) < maxDist)
 	            {
                     result = ptRef;
                     break;
