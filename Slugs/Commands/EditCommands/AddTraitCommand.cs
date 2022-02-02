@@ -8,7 +8,7 @@ namespace Slugs.Commands.EditCommands
     // CreateTerminalPointTask
     // CreateRefPointTask
     // CreateVPointTask
-    // CreateSegmentTask
+    // CreateTraitTask
     // CreateEntityTask
     // MoveElementTask
     // MoveVPointTask
@@ -19,12 +19,9 @@ namespace Slugs.Commands.EditCommands
 	    public IPointTask EndPointTask { get; }
 	    public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
 
-        public CreateSegmentTask TraitTask { get; set; }
-	    //public CreateEntityTask EntityTask { get; set; }
-        //private MoveElementTask MoveEndPoint { get; } // or just directly change Endpoint?
-        //public MergePointsTask MergeEndPoint { get; set; }
+        public CreateTraitTask TraitTask { get; set; }
 
-        public Trait AddedTrait => (Trait)TraitTask?.Segment ?? Trait.Empty;
+        public Trait AddedTrait => TraitTask?.Trait ?? Trait.Empty;
         public int EntityKey { get; }
 
         public AddTraitCommand(Pad pad, int entityKey, SKPoint start) :
@@ -51,19 +48,11 @@ namespace Slugs.Commands.EditCommands
         // maybe tasks need to be start/update/complete, where eg merge endpoints is on complete, and MoveElementTask is available for updates.
         // this makes tasks continuous like animation or transform commands.
 
-        public void MoveEndPoint(SKPoint location)
-	    {
-		    IPoint point = (IPoint)ElementAt(EndPointTask.PointKey);
-		    point.Position = location;
-	    }
-
         public override void Execute()
         {
 	        base.Execute();
-	        TraitTask = new CreateSegmentTask(Pad.PadKind, EntityKey, StartPointTask.PointKey, EndPointTask.PointKey, ElementKind.Trait);
+	        TraitTask = new CreateTraitTask(Pad.PadKind, EntityKey, StartPointTask.PointKey, EndPointTask.PointKey);
 	        AddTaskAndRun(TraitTask);
-
-	        //MergeEndPoint = new MergePointsTask(Pad.PadKind, -1, -1);
         }
 
         public override void Update(SKPoint point)

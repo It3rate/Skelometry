@@ -18,23 +18,25 @@ namespace Slugs.Entities
 	    public static readonly Trait Empty = new Trait();
         private Trait() : base(true) { EntityKey = Entity.Empty.Key; KindIndex = -1;}
 
-	    public int KindIndex { get; }
+	    public override SKPoint StartPosition => StartPoint.Position;
+	    public override SKPoint EndPosition => EndPoint.Position;
+	    public override SKSegment Segment => new SKSegment(StartPosition, EndPosition);
 
+	    public int KindIndex { get; }
 	    private Entity _entity => Pad.EntityAt(EntityKey); // trait doesn't have entity as multiple entities can hold the same trait
         public int EntityKey { get; set; }
 
         public Trait(Entity entity, IPoint start, IPoint end, int traitKindIndex) : this(entity, start.Key, end.Key, traitKindIndex) {}
-
         public Trait(Entity entity, int startKey, int endKey, int traitKindIndex) : base(entity.PadKind, startKey, endKey)
         {
-	        EntityKey = entity.Key;
+            EntityKey = entity.Key;
 		    KindIndex = traitKindIndex;
         }
 
-        public VPoint VPointFrom(SKPoint point)
+        public PointOnTrait PointOnTraitFrom(SKPoint point)
         {
 	        var (t, projected) = TFromPoint(point);
-            return new VPoint(_entity.PadKind, _entity.Key, Key, -1);
+            return new PointOnTrait(_entity.PadKind, Key, -1);
         }
         public static bool operator ==(Trait left, Trait right) => 
 	        left.Key == right.Key && left.EntityKey == right.EntityKey && left.StartKey == right.StartKey && left.EndKey == right.EndKey;

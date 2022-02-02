@@ -35,9 +35,10 @@ namespace Slugs.Agents
         public int ScrollLeft { get; set; }
         public int ScrollRight { get; set; }
 
-        private int _traitIndexCounter = 4096;
         public bool IsDown { get; private set; }
         public bool IsDragging { get; private set; }
+
+        private List<int> _ignoreList = new List<int>();
 
         public Agent(SlugRenderer renderer)
         {
@@ -64,20 +65,14 @@ namespace Slugs.Agents
 
 #region Position and Keyboard
 
-        public void ClearMouse()
-        {
-            Data.Reset();
-            WorkingPad.Clear();
-        }
-        
         public bool MouseDown(MouseEventArgs e)
         {
             // Add to selection if ctrl down etc.
 
 	        var mousePoint = e.Location.ToSKPoint();
 
-            Data.GetHighlight(mousePoint, Data.Begin, null);
-            Data.GetHighlight(mousePoint, Data.Highlight, null);
+            Data.GetHighlight(mousePoint, Data.Begin, _ignoreList);
+            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList);
             Data.Selected.Set(mousePoint, Data.Highlight.Point, Data.Begin.Element);
 
             IsDown = true;
@@ -102,7 +97,7 @@ namespace Slugs.Agents
             var result = false;
 		    var mousePoint = e.Location.ToSKPoint();
 		    Data.Current.UpdatePositions(mousePoint);
-            Data.GetHighlight(mousePoint, Data.Highlight, Data.Selected);
+            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList);
             if (IsDown)
             {
                 result = MouseDrag(mousePoint);
@@ -121,12 +116,36 @@ namespace Slugs.Agents
 					var createObject = !Data.Begin.HasSelection || KeyIsDownControl;
 					if (createObject)
 					{
-                        // create Trait if terminal or ref point, create Bond or Focal it VPoint.
-	                    var cmd = Data.Begin.Point.IsEmpty ? 
-							new AddTraitCommand(Data.Begin.Pad, -1, Data.Begin.Position) :
-							new AddTraitCommand(-1, Data.Begin.Point);
-						_activeCommand = _editCommands.Do(cmd);
-						Data.Selected.Point = cmd.AddedTrait.EndRef;
+                        // create Trait if terminal or ref point, create Bond or Focal it PointOnTrait.
+                        // trait to same trait is focal, trait to other trait is bond, all others are new traits.
+                        var pKind = Data.Begin.Point.ElementKind;
+                        var eKind = Data.Begin.Element.ElementKind;
+                        var makeTrait = eKind.IsNone() || eKind.IsPoint();
+                        var makeBond =  eKind == ElementKind.Focal;
+                        var makeFocal = eKind == ElementKind.Trait;
+                        var point = eKind.IsPoint() ? (IPoint) Data.Begin.Element : Data.Begin.Point;
+                        EditCommand cmd;
+                        if (eKind.IsNone() || eKind.IsPoint()) // make trait if starting new or connecting to an existing point (maybe not second)
+                        {
+	                        var traitCmd = Data.Begin.HasPoint ? 
+		                        new AddTraitCommand(-1, Data.Begin.Point) :
+		                        new AddTraitCommand(Data.Begin.Pad, -1, Data.Begin.Position);
+	                        cmd = traitCmd;
+							_activeCommand = _editCommands.Do(cmd);
+							_ignoreList.Add(traitCmd.AddedTrait.Key);
+							_ignoreList.Add(traitCmd.AddedTrait.EndKey);
+
+                            Data.Selected.Point = traitCmd.AddedTrait.EndPoint;
+							// need to ignore 
+                        }
+                        else if (eKind == ElementKind.Trait) // make focal if creating something on a trait
+                        {
+	                        cmd = null;//new AddFocalCommand();
+                        }
+                        else
+                        {
+	                        cmd = null;
+                        }
 					}
 					else if(Data.Begin.HasSelection) // drag existing object
 					{
@@ -152,34 +171,22 @@ namespace Slugs.Agents
             // If rect select, add contents to selection (also done in move).
             // If not dragging or creating and dist < selMax, click select
 
-            // MergeEndPoint, SetSelection (Click or Rect)
-		    WorkingPad.Clear();
             var mousePoint = e.Location.ToSKPoint();
 
 		    Data.Current.UpdatePositions(mousePoint);
-		    Data.GetHighlight(mousePoint, Data.Highlight, Data.Selected);
-            FinalizeCommand(true);
-            if (!Data.Highlight.Point.IsEmpty)
+		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList);
+
+            // Merge points if needed.
+            if (Data.HasHighlightPoint && _activeCommand is IDraggablePointCommand cmd)
             {
-	            if (_activeCommand is AddTraitCommand atc)
-	            {
-                    atc.AddTaskAndRun(new MergePointsTask(atc.Pad.PadKind, atc.EndPointTask.PointKey, Data.Highlight.Point.Key));
-	            }
+	            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, cmd.DraggablePoint.Key, Data.Highlight.Point.Key));
             }
-
-            _activeCommand = null;
-            Data.Current.Clear();
-		    Data.Begin.Clear();
-		    Data.Selected.Clear();
-
             ClearMouse();
-		    IsDown = false;
-		    IsDragging = false;
+
             return true;
 	    }
 
-
-	    private Keys CurrentKey;
+        private Keys CurrentKey;
 	    private bool KeyIsDownControl => (CurrentKey & Keys.ControlKey) != 0;
 	    private bool KeyIsDownAlt => (CurrentKey & Keys.Alt) != 0;
 	    private bool KeyIsDownShift => (CurrentKey & Keys.ShiftKey) != 0;
@@ -197,22 +204,20 @@ namespace Slugs.Agents
 
 #endregion
 
+	    public void ClearMouse()
+	    {
+		    IsDown = false;
+		    IsDragging = false;
+            _activeCommand = null;
+            _ignoreList.Clear();
+            Data.Current.Clear();
+		    Data.Begin.Clear();
+		    Data.Selected.Clear();
+		    WorkingPad.Clear();
+	    }
 	    public void Clear()
         {
         }
 
-        private bool FinalizeCommand(bool final = false)
-        {
-            var result = false;
-            // merge points if dragging any kind of point onto a valid existing point.
-            if (Data.HasHighlightPoint && _activeCommand is IDraggablePointCommand cmd)
-            {
-	            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, cmd.DraggablePoint.Key, Data.Highlight.Point.Key));
-                //cmd.Pad.MergePoints(cmd.DraggablePoint, Data.Highlight.Point, Data.Highlight.SnapPosition);
-	            result = true;
-            }
-
-            return result;
-        }
     }
 }

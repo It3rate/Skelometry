@@ -181,8 +181,9 @@ namespace Slugs.Entities
         }
         public Focal CreateFocal(float focus, Slug slug)
         {
-            var focal = new Focal(PadKind, focus, slug);
-	        return focal;
+	        throw new NotImplementedException();
+	        //   var focal = new Focal(PadKind, focus, slug);
+	        //return focal;
         }
 
         public (Entity, Trait) AddEntity(SKPoint startPoint, SKPoint endPoint, int traitKindIndex)
@@ -228,13 +229,12 @@ namespace Slugs.Entities
             }
         }
 
-        public IPoint GetSnapPoint(SKPoint input, IPoint[] ignorePoints = null, float maxDist = SnapDistance)
+        public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, float maxDist = SnapDistance)
         {
 	        IPoint result = TerminalPoint.Empty;
-	        ignorePoints = ignorePoints ?? new IPoint[] { };
             foreach (var ptRef in Points)
             {
-	            if (!ignorePoints.Contains(ptRef) && input.SquaredDistanceTo(ptRef.Position) < maxDist)
+	            if (!ignorePoints.Contains(ptRef.Key) && input.SquaredDistanceTo(ptRef.Position) < maxDist)
 	            {
                     result = ptRef;
                     break;
@@ -243,23 +243,30 @@ namespace Slugs.Entities
             return result;
         }
 
-        public Trait GetSnapTrait(SKPoint point, float maxDist = SnapDistance)
+        public Trait GetSnapTrait(SKPoint point, List<int> ignoreKeys, float maxDist = SnapDistance)
         {
             var result = Trait.Empty;
             int lineIndex = 0;
             foreach (var entity in Entities)
             {
-	            foreach (var trait in entity.Traits)
+	            if (!ignoreKeys.Contains(entity.Key))
 	            {
-                    var closest = trait.ProjectPointOnto(point);
-                    var dist = point.SquaredDistanceTo(closest);
-                    if (dist < maxDist)
-                    {
-                        result = trait;
-                        goto End;
-                    }
-                    lineIndex++;
-                }
+		            foreach (var trait in entity.Traits)
+		            {
+			            if (!ignoreKeys.Contains(trait.Key))
+			            {
+				            var closest = trait.ProjectPointOnto(point);
+				            var dist = point.SquaredDistanceTo(closest);
+				            if (dist < maxDist)
+				            {
+					            result = trait;
+					            goto End;
+				            }
+
+				            lineIndex++;
+			            }
+		            }
+	            }
             }
 			End:
             return result;

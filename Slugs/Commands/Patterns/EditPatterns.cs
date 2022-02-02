@@ -49,7 +49,7 @@ namespace Slugs.Commands.Patterns
         // merge p1 to highlight point as needed
         private IPointTask StartPoint { get; }
         private IPointTask EndPoint { get; }
-        private CreateSegmentTask CreateTrait { get; }
+        private CreateTraitTask CreateTrait { get; }
         private MoveElementTask MoveEndPoint { get; } // or just directly change Endpoint?
         private MergePointsTask MergeEndPoint { get; }
 

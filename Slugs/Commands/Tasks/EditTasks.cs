@@ -2,7 +2,6 @@
 using Slugs.Entities;
 using Slugs.Input;
 using Slugs.Pads;
-using Slugs.Primitives;
 
 namespace Slugs.Commands.Tasks
 {
@@ -45,7 +44,6 @@ namespace Slugs.Commands.Tasks
             PreviousSelection.Add(Selected.Element.Key);
         }
     }
-
     public interface IPointTask : ITask
     {
 	    int PointKey { get; }
@@ -57,147 +55,7 @@ namespace Slugs.Commands.Tasks
     public interface IChangeTask
     {
     }
-    public class CreateTerminalPointTask : EditTask, IPointTask, ICreateTask
-    {
-	    public SKPoint Location { get; private set; }
-	    public int PointKey => Point?.Key ?? TerminalPoint.EmptyKeyValue;
-	    public TerminalPoint Point { get; set; }
-	    public IPoint IPoint => Point;
 
-        public CreateTerminalPointTask(PadKind padKind, SKPoint point) : base(padKind)
-	    {
-		    Location = point;
-            // create point, assign key
-        }
-
-	    public override void RunTask()
-	    {
-		    Point = Pad.CreateTerminalPoint(Location);
-	    }
-
-	    public override void UnRunTask()
-	    {
-		    //Location = Point.Position; // get location in case it has been updated
-            Pad.RemoveElement(Point.Key);
-            // todo: decrement key counter on undo
-	    }
-    }
-    public class CreateRefPointTask : EditTask, IPointTask, ICreateTask
-    {
-	    public int TargetKey { get; }
-	    public int PointKey => Point.Key;
-        private RefPoint Point { get; set; }
-        public IPoint IPoint => Point;
-        public CreateRefPointTask(PadKind padKind, int targetKey) : base(padKind)
-        {
-	        TargetKey = targetKey;
-            // create ref, assign key
-        }
-        public override void RunTask()
-        {
-	        Point = Pad.CreateRefPoint(TargetKey);
-        }
-
-        public override void UnRunTask()
-        {
-	        //Location = Point.Position; // get location in case it has been updated
-	        Pad.RemoveElement(PointKey);
-	        // todo: decrement key counter on undo
-        }
-    }
-    public class CreateVPointTask : EditTask, IPointTask, ICreateTask
-    {
-	    public int PointKey { get; }
-        public int SegmentKey { get; }
-	    public float T { get; }
-	    private VPoint Point { get; set; }
-	    public IPoint IPoint => Point;
-
-        public CreateVPointTask(PadKind padKind, int segmentkey, float t) : base(padKind)
-	    {
-		    SegmentKey = segmentkey;
-		    T = t;
-            // create vpoint, assign key
-	    }
-    }
-    public class MergePointsTask : EditTask, IPointTask, IChangeTask
-    {
-	    public int FromKey { get; }
-	    public int ToKey { get; }
-    
-	    public int PointKey { get; }
-
-        private VPoint Point { get; set; }
-        public IPoint IPoint => Point;
-
-        //   public MergePointsTask(PadKind padKind, int fromKey) : base(padKind, SelectionKind.HighlightPoint)
-        //{
-        // FromKey = fromKey;
-        // //merge points
-        //}
-        public MergePointsTask(PadKind padKind, int fromKey, int toKey) : base(padKind)
-	    {
-		    FromKey = fromKey;
-		    ToKey = toKey;
-		    //merge points
-	    }
-
-	    public override void RunTask()
-	    {
-		    base.RunTask();
-            Pad.MergePoints(FromKey, ToKey);
-	    }
-    }
-    
-    public class CreateSegmentTask : EditTask, ICreateTask
-    {
-	    public int EntityKey { get; set; }
-        public int StartPointKey { get; set; }
-	    public int EndPointKey { get; set; }
-	    public ElementKind SegmentKind { get; }
-
-	    public SegmentBase Segment;
-
-        public CreateSegmentTask(PadKind padKind, int entityKey, int startPointKey, int endPointKey, ElementKind segmentKind) : 
-	        base(padKind)
-        {
-	        EntityKey = entityKey;
-		    StartPointKey = startPointKey;
-		    EndPointKey = endPointKey;
-		    SegmentKind = segmentKind;
-            // create segment, assign key
-        }
-
-        public override void RunTask()
-        {
-	        base.RunTask();
-	        switch (SegmentKind)
-	        {
-                case ElementKind.Trait:
-	                Segment = Pad.AddTrait(EntityKey, StartPointKey, EndPointKey, 66);
-	                break;
-                case ElementKind.Focal:
-	                break;
-                case ElementKind.Bond:
-	                break;
-            }
-        }
-    }
-    public class CreateEntityTask : EditTask, ICreateTask
-    {
-	    public int EntityKey { get; set; }
-        public CreateEntityTask(PadKind padKind) : base(padKind)
-	    {
-            // create entity, assign key
-	    }
-
-        public override void RunTask()
-        {
-	        base.RunTask();
-	        var entity = new Entity(PadKind);
-	        EntityKey = entity.Key;
-        }
-    }
     public class DuplicateElementTask : EditTask, ICreateTask
     {
         public int SourceKey { get; }
@@ -245,33 +103,17 @@ namespace Slugs.Commands.Tasks
 		    // ungroup, map new keys, assign key
         }
     }
-    public class MoveElementTask : EditTask, IChangeTask
+    public class MovePointOnTraitTask : EditTask, IChangeTask // add to start or end (not stretch)
     {
-	    public int ElementKey { get; set; }
-        public SKPoint Diff { get; } // always relative
-
-	    public MoveElementTask(PadKind padKind, int key, SKPoint diff) : base(padKind)
-	    {
-		    ElementKey = key;
-		    Diff = diff;
-	    }
-    }
-    public class MoveVPointTask : EditTask, IChangeTask // add to start or end (not stretch)
-    {
-	    public int VPointKey { get; set; }
+	    public int PointKey { get; set; }
 	    public float T { get; } // always absolute
 	    public float OriginalT { get; }
 
-	    //public MoveVPointTask(PadKind padKind, float t) : base(padKind, SelectionKind.SelectedPoint)
-	    //{
-		   // T = t;
-		   // OriginalT = ((VPoint)Pad.PointAt(VPointKey)).GetT();
-	    //}
-	    public MoveVPointTask(PadKind padKind, int vPointKey, float t) : base(padKind)
+	    public MovePointOnTraitTask(PadKind padKind, int pointKey, float t) : base(padKind)
 	    {
-		    VPointKey = vPointKey;
+		    PointKey = pointKey;
 		    T = t;
-		    OriginalT = ((VPoint)Pad.PointAt(VPointKey)).GetT();
+		    OriginalT = ((PointOnTrait)Pad.PointAt(PointKey)).GetT();
 	    }
     }
     public class StretchSegmentTask : EditTask, IChangeTask

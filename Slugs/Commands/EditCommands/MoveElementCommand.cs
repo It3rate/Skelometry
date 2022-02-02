@@ -23,14 +23,14 @@ namespace Slugs.Commands.EditCommands
             MoveTask = new MoveElementTask(Pad.PadKind, elementKey, SKPoint.Empty);
             AddTaskAndRun(MoveTask);
         }
-	    public virtual void Execute()
+	    public override void Execute()
 	    {
             // Add move task
 	    }
-	    public virtual void Update(SKPoint point)
+	    public override void Update(SKPoint point)
 	    {
 	    }
-	    public virtual void Completed()
+	    public override void Completed()
 	    {
 	    }
 

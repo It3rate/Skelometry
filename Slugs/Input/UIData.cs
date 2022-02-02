@@ -35,7 +35,7 @@ namespace Slugs.Input
         public Trait HighlightLine => HasHighlightLine ? (Trait)Highlight.Element : Trait.Empty;
 
 	    //public Position GetHighlightPoint() => Current.SnapPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].Position : Position.Empty;
-	    //public SKSegment GetHighlightLine() => HighlightLine.Segment;
+	    //public SKSegment GetHighlightLine() => HighlightLine.Trait;
 
 	    private readonly Agent _agent;
 
@@ -49,18 +49,16 @@ namespace Slugs.Input
 	        AddSelectionSet(PadKind.Input, SelectionSetKind.Clipboard);
         }
 
-        public IElement GetHighlight(SKPoint p, SelectionSet targetSet, SelectionSet ignoreSet)
+        public IElement GetHighlight(SKPoint p, SelectionSet targetSet, List<int> ignoreKeys)
         {
-	        var points = ignoreSet?.AllPoints().ToArray() ?? new IPoint[0];
-
-            IElement result = targetSet.Pad.GetSnapPoint(p, points);
+	        IElement result = targetSet.Pad.GetSnapPoint(p, ignoreKeys);
 	        if (!result.IsEmpty)
 	        {
 		        targetSet.Set(p, (IPoint) result);
 	        }
 	        else
 	        {
-		        result = targetSet.Pad.GetSnapTrait(p);
+		        result = targetSet.Pad.GetSnapTrait(p, ignoreKeys);
 		        if (!result.IsEmpty)
 		        {
 			        targetSet.Set(p, null, result);

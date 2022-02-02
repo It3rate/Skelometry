@@ -77,7 +77,7 @@ namespace Slugs.Entities
 		None,
 		Terminal,
 		RefPoint,
-		VPoint,
+		PointOnTrait,
         Trait,
 		Focal,
 		Bond,
@@ -88,12 +88,13 @@ namespace Slugs.Entities
         PadProjection,
         Grid,
 
-        PointKind = RefPoint | Terminal | VPoint,
+        PointKind = RefPoint | Terminal | PointOnTrait,
         SegmentKind = Trait | Focal | Bond,
     }
 	public static class SelectionKindExtensions
 	{
+		public static bool IsNone(this ElementKind kind) => kind == ElementKind.None;
 		public static bool IsPoint(this ElementKind kind) => ElementKind.PointKind.HasFlag(kind);
-		public static bool IsTerminal(this ElementKind kind) => kind == ElementKind.Terminal;
+        public static bool IsTerminal(this ElementKind kind) => kind == ElementKind.Terminal;
     }
 }

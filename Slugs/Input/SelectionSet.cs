@@ -40,6 +40,8 @@ namespace Slugs.Input
         }
 
         public bool HasSelection => !Point.IsEmpty || !Element.IsEmpty;
+        public bool HasPoint => !Point.IsEmpty;
+        public bool HasElement => !Element.IsEmpty;
 
 
         public SelectionSet(PadKind padKind, SelectionSetKind selectionSetKind)
