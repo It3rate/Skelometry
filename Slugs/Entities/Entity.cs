@@ -13,6 +13,7 @@ namespace Slugs.Entities
 
         public override List<IPoint> Points => new List<IPoint> { };
 
+        // todo: also store focal and bond lists in entities and traits (globally stored in Pads). Need to sync add and remove as needed when traits are adjusted.
         #region Traits
         private readonly HashSet<int> _traitKeys = new HashSet<int>();
 	    public IEnumerable<Trait> Traits
@@ -25,7 +26,28 @@ namespace Slugs.Entities
 			    }
 		    }
 	    }
-	    public void EmbedTrait(Trait trait) => _traitKeys.Add(trait.Key);
+	    private readonly HashSet<int> _focalKeys = new HashSet<int>();
+	    public IEnumerable<Focal> Focals
+        {
+		    get
+		    {
+			    foreach (var key in _focalKeys)
+			    {
+				    yield return Pad.FocalAt(key);
+			    }
+		    }
+	    }
+	    public void AddFocal(Focal focal)
+	    {
+		    _focalKeys.Add(focal.Key);
+		    focal.Trait.AddFocal(focal);
+	    }
+	    public void RemoveFocal(Focal focal)
+	    {
+		    _focalKeys.Remove(focal.Key);
+		    focal.Trait.RemoveFocal(focal);
+	    }
+        public void EmbedTrait(Trait trait) => _traitKeys.Add(trait.Key);
 	    public void EmbedTrait(int key) => _traitKeys.Add(key);
 	    public void RemoveTrait(Trait trait) => _traitKeys.Remove(trait.Key);
 	    public void RemoveTrait(int key) => _traitKeys.Remove(key);

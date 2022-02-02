@@ -5,7 +5,7 @@ namespace Slugs.Primitives
 {
 	public struct Slug : IEquatable<Slug>
     {
-        // This should all be done with ints, setting a unit size abs(push-pull), and a max value. I think.
+        // This should all be done with ints, setting a unit size abs(fore-aft), and a max value. I think.
 
         public static readonly Slug Empty = new Slug(0.0, 1.0, true); // instead of empty, perhaps the fall back slug is always Unit?
 
@@ -16,44 +16,44 @@ namespace Slugs.Primitives
 	    public static readonly Slug Max = new Slug(double.MaxValue, double.MaxValue);
 	    public static readonly Slug Min = new Slug(double.MinValue, double.MinValue);
 
-        public double Pull { get; set; } // should be able to make these int and everything rational
-	    public double Push { get; set; }
+        public double Aft { get; set; } // should be able to make these int and everything rational
+	    public double Fore { get; set; }
 	    private readonly bool _hasValue;
 
-	    public float Natural => (float)Push;
-	    public float Complex => (float)Pull;
-	    public float End => (float)Push;
-	    public float Start => (float)Pull;
+	    public float Natural => (float)Fore;
+	    public float Complex => (float)Aft;
+	    public float End => (float)Fore;
+	    public float Start => (float)Aft;
 
-        public Slug(int pull, int push)
+        public Slug(int aft, int fore)
 	    {
 		    _hasValue = true;
-		    Pull = pull;
-		    Push = push;
+		    Aft = aft;
+		    Fore = fore;
 	    }
-        public Slug(double pull, double push)
+        public Slug(double aft, double fore)
 	    {
 		    _hasValue = true;
-            Pull = pull;
-		    Push = push;
+            Aft = aft;
+		    Fore = fore;
 	    }
 	    public Slug(Slug value)
 	    {
 		    _hasValue = true;
-            Pull = value.Pull;
-		    Push = value.Push;
+            Aft = value.Aft;
+		    Fore = value.Fore;
 	    }
 
-	    private Slug(double pull, double push, bool isEmpty) // empty ctor
+	    private Slug(double aft, double fore, bool isEmpty) // empty ctor
 	    {
 		    _hasValue = !isEmpty;
-		    Pull = pull;
-		    Push = push;
+		    Aft = aft;
+		    Fore = fore;
 	    }
 
         public bool IsEmpty => _hasValue;
 
-	    public Slug Clone() => new Slug(Pull, Push);
+	    public Slug Clone() => new Slug(Aft, Fore);
 
 	    public double Length() => Slug.Length(this);
         public double AbsLength() => Slug.AbsLength(this);
@@ -63,47 +63,47 @@ namespace Slugs.Primitives
         public Slug Normalize() => Slug.Normalize(this);
         public Slug NormalizeTo(Slug value) => Slug.NormalizeTo(this, value);
 
-        public bool IsZero => Push == 0 && Pull == 0;
-        public bool IsZeroLength => (Push == Pull);
-	    public bool IsForward => Push >= Pull;
-	    public double Direction => Push >= Pull ? 1.0 : -1.0;
+        public bool IsZero => Fore == 0 && Aft == 0;
+        public bool IsZeroLength => (Fore == Aft);
+	    public bool IsForward => Fore >= Aft;
+	    public double Direction => Fore >= Aft ? 1.0 : -1.0;
 
         // because everything is segments, can add 'prepositions' (before, after, between, entering, leaving, near etc)
-        public bool IsWithin(Slug value) => Pull >= value.Pull && Push <= value.Push; // todo: account for line direction
-        public bool IsBetween(Slug value) => Pull > value.Pull && Push < value.Push;
-        public bool IsBefore(Slug value) => Pull < value.Pull && Push < value.Pull;
-        public bool IsAfter(Slug value) => Pull > value.Push && Push > value.Push;
-        public bool IsBeginning(Slug value) => Pull <= value.Pull && Push > value.Pull;
-        public bool IsEnding(Slug value) => Pull >= value.Push && Push > value.Push;
-        public bool IsTouching(Slug value) => (Pull >= value.Pull && Pull <= value.Push) || (Push >= value.Pull && Push <= value.Push);
+        public bool IsWithin(Slug value) => Aft >= value.Aft && Fore <= value.Fore; // todo: account for line direction
+        public bool IsBetween(Slug value) => Aft > value.Aft && Fore < value.Fore;
+        public bool IsBefore(Slug value) => Aft < value.Aft && Fore < value.Aft;
+        public bool IsAfter(Slug value) => Aft > value.Fore && Fore > value.Fore;
+        public bool IsBeginning(Slug value) => Aft <= value.Aft && Fore > value.Aft;
+        public bool IsEnding(Slug value) => Aft >= value.Fore && Fore > value.Fore;
+        public bool IsTouching(Slug value) => (Aft >= value.Aft && Aft <= value.Fore) || (Fore >= value.Aft && Fore <= value.Fore);
         public bool IsNotTouching(Slug value) => !IsTouching(value);
 
 
 
-        public static Slug operator -(Slug value) => new Slug(-value.Pull, -value.Push);
+        public static Slug operator -(Slug value) => new Slug(-value.Aft, -value.Fore);
 
-        public static Slug operator +(Slug a, double value) => new Slug(a.Pull + value, a.Push + value);
-        public static Slug operator -(Slug a, double value) => new Slug(a.Pull - value, a.Push - value);
-        public static Slug operator *(Slug a, double value) => new Slug(a.Pull * value, a.Push * value);
-        public static Slug operator /(Slug a, double value) => new Slug(value == 0 ? double.MaxValue : a.Pull / value, value == 0 ? double.MaxValue : a.Push / value);
+        public static Slug operator +(Slug a, double value) => new Slug(a.Aft + value, a.Fore + value);
+        public static Slug operator -(Slug a, double value) => new Slug(a.Aft - value, a.Fore - value);
+        public static Slug operator *(Slug a, double value) => new Slug(a.Aft * value, a.Fore * value);
+        public static Slug operator /(Slug a, double value) => new Slug(value == 0 ? double.MaxValue : a.Aft / value, value == 0 ? double.MaxValue : a.Fore / value);
 
-        public static Slug operator +(Slug a, Slug b) => new Slug(a.Pull + b.Pull, b.Pull + b.Push);
-        public static Slug operator -(Slug a, Slug b) =>  new Slug(a.Pull - b.Pull, b.Pull - b.Push);
-        public static Slug operator *(Slug a, Slug b) => new Slug(a.Pull * b.Pull - a.Push * b.Push, a.Pull * b.Push + a.Push * b.Pull);
+        public static Slug operator +(Slug a, Slug b) => new Slug(a.Aft + b.Aft, b.Aft + b.Fore);
+        public static Slug operator -(Slug a, Slug b) =>  new Slug(a.Aft - b.Aft, b.Aft - b.Fore);
+        public static Slug operator *(Slug a, Slug b) => new Slug(a.Aft * b.Aft - a.Fore * b.Fore, a.Aft * b.Fore + a.Fore * b.Aft);
         public static Slug operator /(Slug a, Slug b)
         {
-            var acbd = a.Pull * b.Push + a.Push * b.Pull;
-            var bc_ad = a.Push * b.Pull - a.Pull * b.Push;
-            var c2d2 = b.Pull * b.Pull + b.Push * b.Push;
+            var acbd = a.Aft * b.Fore + a.Fore * b.Aft;
+            var bc_ad = a.Fore * b.Aft - a.Aft * b.Fore;
+            var c2d2 = b.Aft * b.Aft + b.Fore * b.Fore;
             return c2d2 == 0 ? Max : new Slug(acbd/c2d2, bc_ad/c2d2);
         }
 
-        // Need to decide if pull's positive points left or not. Probably does, but this will affect other calculations.
-        public static double Length(Slug value) => value.Push - -value.Pull;
-        public static double AbsLength(Slug value) => Math.Abs(value.Push - -value.Pull);
-        public static Slug Conjugate(Slug a) => new Slug(a.Push, -a.Pull);
-        public static Slug Reciprocal(Slug value) => value.Push == 0.0 && value.Pull == 0.0 ? Slug.Zero : Slug.Unit / value;
-        public static Slug Square(Slug a) => new Slug(a.Pull * a.Pull + (a.Push * a.Push) * -1, 0); // value * value;
+        // Need to decide if aft's positive points left or not. Probably does, but this will affect other calculations.
+        public static double Length(Slug value) => value.Fore - -value.Aft;
+        public static double AbsLength(Slug value) => Math.Abs(value.Fore - -value.Aft);
+        public static Slug Conjugate(Slug a) => new Slug(a.Fore, -a.Aft);
+        public static Slug Reciprocal(Slug value) => value.Fore == 0.0 && value.Aft == 0.0 ? Slug.Zero : Slug.Unit / value;
+        public static Slug Square(Slug a) => new Slug(a.Aft * a.Aft + (a.Fore * a.Fore) * -1, 0); // value * value;
         
         public static Slug Normalize(Slug value)
         {
@@ -117,7 +117,7 @@ namespace Slugs.Primitives
 	        //else
 	        //{
 		       // double scale = 1.0 / value.AbsLength();
-		       // result = new Range(value.Pull * scale, value.Push * scale);
+		       // result = new Range(value.Aft * scale, value.Fore * scale);
 	        //}
 
 	        //return result;
@@ -127,23 +127,23 @@ namespace Slugs.Primitives
 	        return from.Normalize() * to;
 	        //var norm = Normalize(value);
 	        //var scale = value.Length();
-	        //var result = new Range(norm.Pull * scale, norm.Push * scale);
+	        //var result = new Range(norm.Aft * scale, norm.Fore * scale);
 
-	        //var offset = value.Pull - result.Pull;
+	        //var offset = value.Aft - result.Aft;
 	        //result.Offset((int)offset); // not sure if measure needs to be offset or multiplied here, probably everything needs to be wedged etc.
 	        //return result;
         }
 
-        public static bool operator ==(Slug left, Slug right) => left.Push == right.Push && left.Pull == right.Pull;
-        public static bool operator !=(Slug left, Slug right) => left.Push != right.Push || left.Pull != right.Pull;
+        public static bool operator ==(Slug left, Slug right) => left.Fore == right.Fore && left.Aft == right.Aft;
+        public static bool operator !=(Slug left, Slug right) => left.Fore != right.Fore || left.Aft != right.Aft;
         public override bool Equals(object obj) => obj is Slug slug && this == slug;
-        public bool Equals(Slug value) => this.Push.Equals(value.Push) && this.Pull.Equals(value.Pull);
-        public override int GetHashCode() => Push.GetHashCode() % 99999997 ^ Pull.GetHashCode();
+        public bool Equals(Slug value) => this.Fore.Equals(value.Fore) && this.Aft.Equals(value.Aft);
+        public override int GetHashCode() => Fore.GetHashCode() % 99999997 ^ Aft.GetHashCode();
         
         public override string ToString() => string.Format((IFormatProvider)CultureInfo.CurrentCulture, "({0}, {1})", new object[2]
         {
-	        (object) this.Pull,
-	        (object) this.Push
+	        (object) this.Aft,
+	        (object) this.Fore
         });
     }
 }

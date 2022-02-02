@@ -11,41 +11,48 @@ namespace Slugs.Entities
 	    public override ElementKind ElementKind => ElementKind.Focal;
 	    public override IElement EmptyElement => Empty;
 	    public static readonly Focal Empty = new Focal();
-        private Focal() : base(true) {Slug = Slug.Empty;}
+        private Focal() : base(true) {}
 
         public int TraitKey { get; }
         public Trait Trait => Pad.TraitAt(TraitKey);
-        public Slug Slug { get; }
-	    public float Focus { get; set; }
-        public float T => Slug.IsZeroLength ? 0 : (float)(Slug.Length() / Focus + Slug.Start);
 
+        public PointOnTrait StartPoint => (PointOnTrait)Pad.PointAt(StartKey); // todo: make this base class for segment elements.
+        public PointOnTrait EndPoint => (PointOnTrait)Pad.PointAt(EndKey);
         public override SKPoint StartPosition => Trait.PointAlongLine(Slug.Start);
         public override SKPoint EndPosition => Trait.PointAlongLine(Slug.End);
-        public override SKSegment Segment => new SKSegment(StartPosition, EndPosition);
 
-        public override List<IPoint> Points => new List<IPoint>();
+        public Slug Slug => new Slug(StartPoint.T, EndPoint.T);
 
-        // focals (vpoint segments) are really just a trait ref and a slug. A bond is just a focal with a second trait ref.
+        public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
+
         // trait instances in an entity are traits with a unit, that are contained in one or more entities.
-
         // maybe a bond is just two focals connected (on the same or different traits),
         //    with the option of intermediate repetition, scaling and directionality (causation)
-        public Focal(PadKind padKind, PointOnTrait start, PointOnTrait end, float focus) : base(padKind, start.Key, end.Key)
+
+        public Focal(Trait trait, float startT, float endT) : base(trait.PadKind)
         {
-	        Focus = focus;
-	        Slug = new Slug(start.GetT(), end.GetT());
+	        TraitKey = trait.Key;
+            var startPoint = new PointOnTrait(PadKind, TraitKey, startT);
+	        StartKey = startPoint.Key;
+	        var endPoint = new PointOnTrait(PadKind, TraitKey, endT);
+            EndKey = endPoint.Key;
+        }
+        public Focal(Trait trait, PointOnTrait startPoint, PointOnTrait endPoint) : base(trait.PadKind)
+        {
+	        TraitKey = trait.Key;
+	        StartKey = startPoint.Key;
+	        EndKey = endPoint.Key;
+        }
+        public Focal(PadKind padKind, int traitKey, int startKey, int endKey) : base(padKind)
+        {
+	        TraitKey = traitKey;
+	        StartKey = startKey;
+	        EndKey = endKey;
         }
 
-        public Focal(PadKind padKind, Slug slug, float focus) : base(padKind, -1, -1)
-        {
-		    Slug = slug;
-		    Focus = focus;
-            //StartKey = new PointOnTrait(padKind,); // does this need to be TraitPoints and FocalPoints?
-        }
-
-	    public static bool operator ==(Focal left, Focal right) => left.Key == right.Key && left.Slug == right.Slug && left.Focus == right.Focus;
-        public static bool operator !=(Focal left, Focal right) => left.Key != right.Key || left.Slug != right.Slug || left.Focus != right.Focus;
+        public static bool operator ==(Focal left, Focal right) => left.Key == right.Key && left.TraitKey == right.TraitKey && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
+        public static bool operator !=(Focal left, Focal right) => left.Key != right.Key || left.TraitKey != right.TraitKey || left.StartKey != right.StartKey || left.EndKey != right.EndKey;
 	    public override bool Equals(object obj) => obj is Focal value && this == value;
-	    public override int GetHashCode() => Key.GetHashCode() + 17*Slug.GetHashCode() + 23*Focus.GetHashCode();
+	    public override int GetHashCode() => 13 * Key + 17 * TraitKey + 23 * StartKey + 29 * EndKey;
     }
 }

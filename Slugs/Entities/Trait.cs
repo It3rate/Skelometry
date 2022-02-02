@@ -18,19 +18,48 @@ namespace Slugs.Entities
 	    public static readonly Trait Empty = new Trait();
         private Trait() : base(true) { EntityKey = Entity.Empty.Key; KindIndex = -1;}
 
-	    public override SKPoint StartPosition => StartPoint.Position;
+        public IPoint StartPoint => Pad.PointAt(StartKey); // todo: make this base class for segment elements.
+        public IPoint EndPoint => Pad.PointAt(EndKey);
+        public override SKPoint StartPosition => StartPoint.Position;
 	    public override SKPoint EndPosition => EndPoint.Position;
-	    public override SKSegment Segment => new SKSegment(StartPosition, EndPosition);
+
+        public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
 
 	    public int KindIndex { get; }
 	    private Entity _entity => Pad.EntityAt(EntityKey); // trait doesn't have entity as multiple entities can hold the same trait
         public int EntityKey { get; set; }
 
+
+
         public Trait(Entity entity, IPoint start, IPoint end, int traitKindIndex) : this(entity, start.Key, end.Key, traitKindIndex) {}
-        public Trait(Entity entity, int startKey, int endKey, int traitKindIndex) : base(entity.PadKind, startKey, endKey)
+        public Trait(Entity entity, int startKey, int endKey, int traitKindIndex) : base(entity.PadKind)
         {
             EntityKey = entity.Key;
+            StartKey = startKey;
+            EndKey = endKey;
 		    KindIndex = traitKindIndex;
+        }
+
+        private readonly HashSet<int> _focalKeys = new HashSet<int>();
+        public IEnumerable<Focal> Focals
+        {
+	        get
+	        {
+		        foreach (var key in _focalKeys)
+		        {
+			        yield return Pad.FocalAt(key);
+		        }
+	        }
+        }
+        public void AddFocal(Focal focal)
+        {
+	        _focalKeys.Add(focal.Key);
+	        _entity.AddFocal(focal);
+        }
+        public void RemoveFocal(Focal focal)
+        {
+	        _focalKeys.Remove(focal.Key);
+	        _entity.RemoveFocal(focal);
         }
 
         public PointOnTrait PointOnTraitFrom(SKPoint point)

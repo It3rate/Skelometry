@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
 using Slugs.Commands.Tasks;
 using Slugs.Entities;
+using Slugs.Pads;
 
 namespace Slugs.Commands.EditCommands
 {
@@ -12,32 +13,28 @@ namespace Slugs.Commands.EditCommands
 
     public class AddFocalCommand : EditCommand
     {
-        public IPointTask StartPointTask { get; }
-        public IPointTask EndPointTask { get; }
+        public CreatePointOnTraitTask StartPointTask { get; }
+        public CreatePointOnTraitTask EndPointTask { get; }
         public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
-
         public CreateFocalTask FocalTask { get; set; }
 
         public Focal AddedFocal => (Focal)FocalTask?.Focal ?? Focal.Empty;
-        public int EntityKey { get; }
 
-        public AddFocalCommand(int entityKey, PointOnTrait startPoint) :
-            this(entityKey, new CreateRefPointTask(startPoint.PadKind, startPoint.Key))
+        public int TraitKey { get; }
+        public Trait Trait => Pad.TraitAt(TraitKey);
+
+        public AddFocalCommand(Trait trait, float startT, float endT) :
+            this(trait.Key, new CreatePointOnTraitTask(trait, startT), new CreatePointOnTraitTask(trait, endT))
         { }
 
-        public AddFocalCommand(int entityKey, IPointTask startPointTask, IPointTask endPointTask = null) : base(startPointTask.Pad)
+        public AddFocalCommand(int traitKey, CreatePointOnTraitTask startPointTask, CreatePointOnTraitTask endPointTask) : base(startPointTask.Pad)
         {
-            StartPointTask = startPointTask;
-            AddTaskAndRun(StartPointTask);
-            EndPointTask = endPointTask ?? new CreateTerminalPointTask(Pad.PadKind, Pad.PointAt(startPointTask.PointKey).Position);
-            AddTaskAndRun(EndPointTask);
-            EntityKey = entityKey;
-            if (Pad.EntityAt(EntityKey).IsEmpty)
-            {
-                var entityTask = new CreateEntityTask(Pad.PadKind);
-                AddTaskAndRun(entityTask);
-                EntityKey = entityTask.EntityKey;
-            }
+            TraitKey = traitKey;
+
+	        StartPointTask = startPointTask;// new CreatePointOnTraitTask(Trait, startT);
+	        AddTaskAndRun(StartPointTask);
+	        EndPointTask = endPointTask; //new CreatePointOnTraitTask(Trait, endT);
+	        AddTaskAndRun(EndPointTask);
         }
 
         // maybe tasks need to be start/update/complete, where eg merge endpoints is on complete, and MoveElementTask is available for updates.
@@ -46,6 +43,8 @@ namespace Slugs.Commands.EditCommands
         public override void Execute()
         {
             base.Execute();
+            FocalTask = new CreateFocalTask(PadKind, TraitKey, StartPointTask.PointOnTrait, EndPointTask.PointOnTrait);
+            AddTaskAndRun(FocalTask);
             //FocalTask = new CreateTraitTask(Pad.PadKind, EntityKey, StartPointTask.PointKey, EndPointTask.PointKey, ElementKind.Trait);
             //AddTaskAndRun(FocalTask);
         }

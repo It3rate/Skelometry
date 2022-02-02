@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using SkiaSharp;
 using Slugs.Commands.Tasks;
 using Slugs.Entities;
+using Slugs.Pads;
 
 namespace Slugs.Commands.EditCommands
 {
 	public interface ICommand
     {
         Pad Pad { get; }
+        PadKind PadKind { get; }
         ICommandStack Stack { get; set; }
 
         int CommandKey { get; }
@@ -48,6 +50,7 @@ namespace Slugs.Commands.EditCommands
     {
 	    public int CommandKey { get; }
 	    public Pad Pad { get; }
+	    public PadKind PadKind => Pad.PadKind;
 
 	    public ICommandStack Stack { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using Slugs.Entities;
+﻿using Slugs.Agents;
+using Slugs.Entities;
 using Slugs.Pads;
 using Slugs.Primitives;
 
@@ -12,27 +13,27 @@ namespace Slugs.Commands.Tasks
 
     public class CreateFocalTask : EditTask, ICreateTask
     {
-	    public int EntityKey { get; set; }
-	    public int StartPointKey { get; set; }
-	    public int EndPointKey { get; set; }
-	    public ElementKind SegmentKind => ElementKind.Focal;
+	    public int TraitKey { get; set; }
+	    public Trait Trait => Pad.TraitAt(TraitKey);
 
-	    public SegmentBase Segment;
+        public ElementKind SegmentKind => ElementKind.Focal;
+	    public int StartPointKey { get; }
+	    public int EndPointKey { get; }
+        public SegmentBase Segment;
         public Focal Focal { get; private set; }
 
-	    public CreateFocalTask(PadKind padKind, int entityKey, int startPointKey, int endPointKey) :
-		    base(padKind)
+	    public CreateFocalTask(PadKind padKind, int traitKey, PointOnTrait startPoint, PointOnTrait endPoint) : base(padKind)
 	    {
-		    EntityKey = entityKey;
-		    StartPointKey = startPointKey;
-		    EndPointKey = endPointKey;
-		    // create segment, assign key
-	    }
+		    TraitKey = traitKey;
+		    StartPointKey = startPoint.Key;
+		    EndPointKey = endPoint.Key;
+        }
 
 	    public override void RunTask()
 	    {
 		    base.RunTask();
-		    //Segment = Pad.AddTrait(EntityKey, StartPointKey, EndPointKey, 66);
+		    Focal = new Focal(PadKind, TraitKey, StartPointKey, EndPointKey);
+			Trait.AddFocal(Focal);
 	    }
     }
 }

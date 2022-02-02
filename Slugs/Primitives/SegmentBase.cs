@@ -11,32 +11,15 @@ namespace Slugs.Primitives
     {
 	    public int StartKey { get; protected set; }
 	    public int EndKey { get; protected set; }
-	    public IPoint StartPoint => Pad.PointAt(StartKey); // todo: make this base class for segment elements.
-	    public IPoint EndPoint => Pad.PointAt(EndKey);
-	    public abstract SKPoint StartPosition { get; }//protected set; }
+        public abstract SKPoint StartPosition { get; }//protected set; }
 	    public abstract SKPoint EndPosition { get; } //protected set; }
 
-	    //public SKPoint StartPosition
-        //{
-        // get => StartPoint.Position;
-        // set => StartPoint.Position = value;
-        //}
-        //public SKPoint EndPosition
-        //{
-        // get => EndPoint.Position;
-        // set => EndPoint.Position = value;
-        //}
-
-        public abstract SKSegment Segment { get; }//=> new SKSegment(StartPosition, EndPosition);
-
-        public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
+	    public SKSegment Segment => new SKSegment(StartPosition, EndPosition);
 
         protected SegmentBase(bool isEmpty) : base(isEmpty) { }
         //protected SegmentBase(PadKind padKind) : base(padKind) { }
-        protected SegmentBase(PadKind padKind, int startKey, int endKey) : base(padKind)
+        protected SegmentBase(PadKind padKind) : base(padKind)
         {
-	        StartKey = startKey;
-	        EndKey = endKey;
         }
 
         public float Length() => Segment.Length;
@@ -73,18 +56,6 @@ namespace Slugs.Primitives
         // a.EndPosition = a.EndPosition.Divide(value);
         // return a;
         //}
-        public static bool operator ==(SegmentBase left, SegmentBase right) =>
-            left.Key == right.Key && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
-
-        public static bool operator !=(SegmentBase left, SegmentBase right) =>
-            left.Key != right.Key || left.StartKey != right.StartKey || left.EndKey != right.EndKey;
-
-        public override bool Equals(object obj) => obj is SegmentBase value && this == value;
-
-        public bool Equals(SegmentBase value) =>
-            Key == value.Key && StartKey == value.StartKey && EndKey == value.EndKey;
-
-        public override int GetHashCode() => Key * 17 + StartKey * 29 + EndKey * 31;
 
     }
 }

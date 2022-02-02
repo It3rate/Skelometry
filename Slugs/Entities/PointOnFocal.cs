@@ -6,7 +6,7 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    public class FocalPoint
+    public class PointOnFocal// : IPoint
     {
 	    public int TraitKey { get; set; }
         public float T { get; set; }

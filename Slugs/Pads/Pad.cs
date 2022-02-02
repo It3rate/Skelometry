@@ -222,8 +222,8 @@ namespace Slugs.Entities
                     //var unit = SlugFromIndex(entity.SlugIndex);
                     //var line = InputFromIndex(entity.DataMapIndex);
                     //var norm = unit / 10.0;
-                    //var multStart = line.PointAlongLine(0, 1, norm.IsForward ? -(float)norm.Pull : (float)norm.Push);
-                    //var multEnd = line.PointAlongLine(0, 1, norm.IsForward ? (float)norm.Push : -(float)norm.Pull);
+                    //var multStart = line.PointAlongLine(0, 1, norm.IsForward ? -(float)norm.Aft : (float)norm.Fore);
+                    //var multEnd = line.PointAlongLine(0, 1, norm.IsForward ? (float)norm.Fore : -(float)norm.Aft);
                     //_output.AddEntity(new SKSegment(multStart, multEnd));
                 }
             }
@@ -262,7 +262,6 @@ namespace Slugs.Entities
 					            result = trait;
 					            goto End;
 				            }
-
 				            lineIndex++;
 			            }
 		            }

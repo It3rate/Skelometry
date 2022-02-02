@@ -104,12 +104,12 @@
     <Compile Include="Commands\Tasks\CreateRefPointTask.cs" />
     <Compile Include="Commands\Tasks\CreateTraitTask.cs" />
     <Compile Include="Commands\Tasks\CreateTerminalPointTask.cs" />
-    <Compile Include="Commands\Tasks\CreateVPointTask.cs" />
+    <Compile Include="Commands\Tasks\CreatePointOnTraitTask.cs" />
     <Compile Include="Commands\Tasks\EditTasks.cs" />
     <Compile Include="Commands\Tasks\MergePointsTask.cs" />
     <Compile Include="Commands\Tasks\MoveElementTask.cs" />
     <Compile Include="Commands\Tasks\TaskBase.cs" />
-    <Compile Include="Entities\FocalPoint.cs" />
+    <Compile Include="Entities\PointOnFocal.cs" />
     <Compile Include="Entities\RefPoint.cs" />
     <Compile Include="Entities\TerminalPoint.cs" />
     <Compile Include="Entities\Trait.cs" />
