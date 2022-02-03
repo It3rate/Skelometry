@@ -109,6 +109,7 @@
     <Compile Include="Commands\Tasks\MergePointsTask.cs" />
     <Compile Include="Commands\Tasks\MoveElementTask.cs" />
     <Compile Include="Commands\Tasks\TaskBase.cs" />
+    <Compile Include="Entities\Group.cs" />
     <Compile Include="Entities\PointOnFocal.cs" />
     <Compile Include="Entities\RefPoint.cs" />
     <Compile Include="Entities\TerminalPoint.cs" />
