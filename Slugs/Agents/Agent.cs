@@ -73,7 +73,8 @@ namespace Slugs.Agents
 
             Data.GetHighlight(mousePoint, Data.Begin, _ignoreList);
             Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList);
-            Data.Selected.Set(mousePoint, Data.Highlight.Point, Data.Begin.Element);
+            Data.Selected.SetPoint(mousePoint, Data.Highlight.Point);
+            Data.Selected.SetElements(Data.Begin.Elements);
 
             IsDown = true;
             return true;
@@ -119,11 +120,11 @@ namespace Slugs.Agents
                         // create Trait if terminal or ref point, create Bond or Focal it PointOnTrait.
                         // trait to same trait is focal, trait to other trait is bond, all others are new traits.
                         var pKind = Data.Begin.Point.ElementKind;
-                        var eKind = Data.Begin.Element.ElementKind;
+                        var eKind = Data.Begin.ElementKind;
                         var makeTrait = eKind.IsNone() || eKind.IsPoint();
                         var makeBond =  eKind == ElementKind.Focal;
                         var makeFocal = eKind == ElementKind.Trait;
-                        var point = eKind.IsPoint() ? (IPoint) Data.Begin.Element : Data.Begin.Point;
+                        var point = eKind.IsPoint() ? (IPoint) Data.Begin.FirstElement : Data.Begin.Point;
 
                         if (eKind.IsNone() || eKind.IsPoint()) // make trait if starting new or connecting to an existing point (maybe not second)
                         {
@@ -139,12 +140,12 @@ namespace Slugs.Agents
                         }
                         else if (eKind == ElementKind.Trait) // make focal if creating something on a trait
                         {
-	                        var trait = (Trait) Data.Begin.Element;
+	                        var trait = (Trait) Data.Begin.FirstElement;
 	                        var startT = trait.TFromPoint(mousePoint).Item1;
                             var focalCmd = new AddFocalCommand(trait, startT, startT);
                             _activeCommand = _editCommands.Do(focalCmd);
                             Data.Selected.Point = focalCmd.AddedFocal.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
-                            Data.Selected.Element = TerminalPoint.Empty;
+                            Data.Selected.ClearElements();
                         }
                         else
                         {
@@ -152,10 +153,18 @@ namespace Slugs.Agents
 					}
 					else if(Data.Begin.HasSelection) // drag existing object
 					{
-						IElement sel = !Data.Begin.Point.IsEmpty ? Data.Begin.Point : Data.Begin.Element;
-                        var cmd = new MoveElementCommand(Data.Begin.Pad, sel.Key);
+						MoveElementCommand cmd;
+						if (Data.Begin.HasPoint)
+						{
+							cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point.Key);
+							Data.Selected.SetElements(Data.Begin.Point);
+                        }
+						else
+						{
+							cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.FirstElement.Key);
+							Data.Selected.SetElements(Data.Begin.FirstElement); // todo: move to keys only, and move sets vs objects
+                        }
                         _activeCommand = _editCommands.Do(cmd);
-                        Data.Selected.Element = sel;
 					}
 					else // rect select
 					{

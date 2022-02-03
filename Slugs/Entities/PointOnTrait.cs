@@ -34,7 +34,7 @@ namespace Slugs.Entities
 	        set
 	        {
 		        var trait = Pad.TraitAt(TraitKey);
-		        T = trait.TFromPoint(value).Item1;
+		        T = trait.TFromPoint(value, false).Item1;
 	        }
         }
 

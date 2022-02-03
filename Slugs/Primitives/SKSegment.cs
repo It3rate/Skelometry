@@ -61,7 +61,7 @@ namespace Slugs.Primitives
             var angle = (EndPoint - StartPoint).Angle();
             return pt.PointAtRadiansAndDistance(angle + (float)Math.PI / 2f, offset);
         }
-        public SKPoint ProjectPointOnto(SKPoint p)
+        public SKPoint ProjectPointOnto(SKPoint p, bool clamp = true)
         {
 
             var e1 = EndPoint - StartPoint;
@@ -71,14 +71,17 @@ namespace Slugs.Primitives
             var len2 = e1.SquaredLength();
             var x = StartPoint.X + (dp * e1.X) / len2;
             var y = StartPoint.Y + (dp * e1.Y) / len2;
-            x = (x < StartPoint.X && x < EndPoint.X) ? (float)Math.Min(StartPoint.X, EndPoint.X) : (x > StartPoint.X && x > EndPoint.X) ? (float)Math.Max(StartPoint.X, EndPoint.X) : x;
-            y = (y < StartPoint.Y && y < EndPoint.Y) ? (float)Math.Min(StartPoint.Y, EndPoint.Y) : (y > StartPoint.Y && y > EndPoint.Y) ? (float)Math.Max(StartPoint.Y, EndPoint.Y) : y;
+            if (clamp)
+            {
+	            x = (x < StartPoint.X && x < EndPoint.X) ? (float) Math.Min(StartPoint.X, EndPoint.X) : (x > StartPoint.X && x > EndPoint.X) ? (float) Math.Max(StartPoint.X, EndPoint.X) : x;
+	            y = (y < StartPoint.Y && y < EndPoint.Y) ? (float) Math.Min(StartPoint.Y, EndPoint.Y) : (y > StartPoint.Y && y > EndPoint.Y) ? (float) Math.Max(StartPoint.Y, EndPoint.Y) : y;
+            }
             return new SKPoint(x, y);
         }
 
-        public (float, SKPoint) TFromPoint(SKPoint point)
+        public (float, SKPoint) TFromPoint(SKPoint point, bool clamp = true)
         {
-	        var pp = ProjectPointOnto(point);
+	        var pp = ProjectPointOnto(point, clamp);
 	        var v0 = EndPoint - StartPoint;
 	        var v1 = pp - StartPoint;
 	        var sign = Math.Sign(v0.X) != Math.Sign(v1.X) || Math.Sign(v0.Y) != Math.Sign(v1.Y) ? -1f : 1f;

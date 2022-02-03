@@ -29,7 +29,7 @@ namespace Slugs.Primitives
 	    public SKPoint SKPointFromEnd(float dist) => Segment.SKPointFromEnd(dist);
 	    public SKPoint OrthogonalPoint(SKPoint pt, float offset) => Segment.OrthogonalPoint(pt, offset);
 	    public SKPoint ProjectPointOnto(SKPoint p) => Segment.ProjectPointOnto(p);
-        public (float, SKPoint) TFromPoint(SKPoint point) => Segment.TFromPoint(point);
+        public (float, SKPoint) TFromPoint(SKPoint point, bool clamp = true) => Segment.TFromPoint(point, clamp);
 	    public SKPoint[] EndArrow(float dist = 8f) => Segment.EndArrow(dist);
 
         //public static SegmentBase operator +(SegmentBase a, float value)

@@ -25,14 +25,14 @@ namespace Slugs.Input
         public SelectionSet Clipboard => SelectionSets[SelectionSetKind.Clipboard];
 
         //private IElement DragElement => Begin.Selected;
-        public bool IsDraggingElement => !Begin.Element.IsEmpty;
-        public bool IsDraggingPoint => !Begin.Point.IsEmpty;
+        public bool IsDraggingElement => Begin.HasElement;
+        public bool IsDraggingPoint => Begin.HasPoint;
 
 
 	    public bool HasHighlightPoint => !Highlight.Point.IsEmpty;
 	    public IPoint HighlightPoint => Highlight.Point;
-	    public bool HasHighlightLine => Highlight.Element.ElementKind == ElementKind.Trait;
-        public Trait HighlightLine => HasHighlightLine ? (Trait)Highlight.Element : Trait.Empty;
+	    public bool HasHighlightLine => Highlight.ElementKind == ElementKind.Trait;
+        public Trait HighlightLine => HasHighlightLine ? (Trait)Highlight.FirstElement : Trait.Empty;
 
 	    //public Position GetHighlightPoint() => Current.SnapPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].Position : Position.Empty;
 	    //public SKSegment GetHighlightLine() => HighlightLine.Trait;
@@ -54,18 +54,19 @@ namespace Slugs.Input
 	        IElement result = targetSet.Pad.GetSnapPoint(p, ignoreKeys);
 	        if (!result.IsEmpty)
 	        {
-		        targetSet.Set(p, (IPoint) result);
+		        targetSet.SetPoint(p, (IPoint) result);
 	        }
 	        else
 	        {
 		        result = targetSet.Pad.GetSnapTrait(p, ignoreKeys);
 		        if (!result.IsEmpty)
 		        {
-			        targetSet.Set(p, null, result);
+			        targetSet.SetElements(result);
 		        }
 		        else
 		        {
-			        targetSet.Set(p, null, null);
+			        //targetSet.SetPoint(p);
+                    targetSet.Clear();
                 }
             }
 	        return result;

@@ -58,31 +58,31 @@ namespace Slugs.Commands.Tasks
 			        result = Begin.Point.Key;
 			        break;
 		        case SelectionKind.BeginElement:
-			        result = Begin.Element.Key;
+			        result = Begin.FirstElement.Key;
 			        break;
 		        case SelectionKind.CurrentPoint:
 			        result = Current.Point.Key;
 			        break;
 		        case SelectionKind.CurrentElement:
-			        result = Current.Element.Key;
+			        result = Current.FirstElement.Key;
 			        break;
 		        case SelectionKind.SelectedPoint:
 			        result = Selected.Point.Key;
 			        break;
 		        case SelectionKind.SelectedElement:
-			        result = Selected.Element.Key;
+			        result = Selected.FirstElement.Key;
 			        break;
 		        case SelectionKind.HighlightPoint:
 			        result = Highlight.Point.Key;
 			        break;
 		        case SelectionKind.HighlightElement:
-			        result = Highlight.Element.Key;
+			        result = Highlight.FirstElement.Key;
 			        break;
 		        case SelectionKind.ClipboardPoint:
 			        result = Clipboard.Point.Key;
 			        break;
 		        case SelectionKind.ClipboardElement:
-			        result = Clipboard.Element.Key;
+			        result = Clipboard.FirstElement.Key;
 			        break;
                 default:
 	                break;
@@ -97,7 +97,7 @@ namespace Slugs.Commands.Tasks
 	        {
 		        result = SelectionKind.BeginPoint;
 	        }
-	        else if (Begin.Element.Key == key)
+	        else if (Begin.FirstElement.Key == key)
 	        {
 		        result = SelectionKind.BeginElement;
 	        }
@@ -105,7 +105,7 @@ namespace Slugs.Commands.Tasks
 	        {
 		        result = SelectionKind.CurrentPoint;
 	        }
-	        else if (Current.Element.Key == key)
+	        else if (Current.FirstElement.Key == key)
 	        {
 		        result = SelectionKind.CurrentElement;
 	        }
@@ -113,7 +113,7 @@ namespace Slugs.Commands.Tasks
 	        {
 		        result = SelectionKind.SelectedPoint;
 	        }
-	        else if (Selected.Element.Key == key)
+	        else if (Selected.FirstElement.Key == key)
 	        {
 		        result = SelectionKind.SelectedElement;
 	        }
@@ -121,7 +121,7 @@ namespace Slugs.Commands.Tasks
 	        {
 		        result = SelectionKind.HighlightPoint;
 	        }
-	        else if (Highlight.Element.Key == key)
+	        else if (Highlight.FirstElement.Key == key)
 	        {
 		        result = SelectionKind.HighlightElement;
 	        }
@@ -129,7 +129,7 @@ namespace Slugs.Commands.Tasks
 	        {
 		        result = SelectionKind.ClipboardPoint;
 	        }
-	        else if (Clipboard.Element.Key == key)
+	        else if (Clipboard.FirstElement.Key == key)
 	        {
 		        result = SelectionKind.ClipboardElement;
 	        }

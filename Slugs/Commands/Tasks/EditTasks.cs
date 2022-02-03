@@ -41,7 +41,7 @@ namespace Slugs.Commands.Tasks
         {
 	        base.Initialize();
             // record previous selection
-            PreviousSelection.Add(Selected.Element.Key);
+            PreviousSelection.AddRange(Selected.ElementKeys);
         }
     }
     public interface IPointTask : ITask

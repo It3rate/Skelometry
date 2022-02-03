@@ -88,6 +88,8 @@ namespace Slugs.Entities
         PadProjection,
         Grid,
 
+        Multiple,
+
         PointKind = RefPoint | Terminal | PointOnTrait,
         SegmentKind = Trait | Focal | Bond,
     }
