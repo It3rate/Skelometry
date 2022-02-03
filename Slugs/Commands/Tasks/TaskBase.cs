@@ -29,8 +29,8 @@ namespace Slugs.Commands.Tasks
 	    private static int TaskCounter = 1;
 
 	    public ICommand Command { get; }
-	    public Pad Pad => Agent.Current.PadAt(PadKind);
-        public PadKind PadKind { get; }
+	    public Pad Pad { get; }
+        public PadKind PadKind => Pad.PadKind;
         public SelectionSet Begin => Agent.Current.Data.Begin;
         public SelectionSet Current => Agent.Current.Data.Current;
         public SelectionSet Highlight => Agent.Current.Data.Highlight;
@@ -43,7 +43,7 @@ namespace Slugs.Commands.Tasks
 
         protected TaskBase(PadKind padKind)
         {
-	        PadKind = padKind;
+	        Pad = Agent.Current.PadFor(padKind);
 	        TaskKey = TaskCounter++;
         }
         public virtual void RunTask() { }

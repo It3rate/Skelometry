@@ -40,12 +40,10 @@ namespace Slugs.Entities
 	    public void AddFocal(Focal focal)
 	    {
 		    _focalKeys.Add(focal.Key);
-		    focal.Trait.AddFocal(focal);
 	    }
 	    public void RemoveFocal(Focal focal)
 	    {
 		    _focalKeys.Remove(focal.Key);
-		    focal.Trait.RemoveFocal(focal);
 	    }
         public void EmbedTrait(Trait trait) => _traitKeys.Add(trait.Key);
 	    public void EmbedTrait(int key) => _traitKeys.Add(key);

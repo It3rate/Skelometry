@@ -25,9 +25,9 @@ namespace Slugs.Agents
 
 	    public readonly Dictionary<PadKind, Pad> Pads = new Dictionary<PadKind, Pad>();
 
-	    public Pad WorkingPad => PadAt(PadKind.Working);
-        public Pad InputPad => PadAt(PadKind.Input);
-        public Pad PadAt(PadKind kind) => Pads[kind];
+	    public Pad WorkingPad => PadFor(PadKind.Working);
+        public Pad InputPad => PadFor(PadKind.Input);
+        public Pad PadFor(PadKind kind) => Pads[kind];
 
         private readonly SlugRenderer _renderer;
         public RenderStatus RenderStatus { get; }
@@ -124,14 +124,13 @@ namespace Slugs.Agents
                         var makeBond =  eKind == ElementKind.Focal;
                         var makeFocal = eKind == ElementKind.Trait;
                         var point = eKind.IsPoint() ? (IPoint) Data.Begin.Element : Data.Begin.Point;
-                        EditCommand cmd;
+
                         if (eKind.IsNone() || eKind.IsPoint()) // make trait if starting new or connecting to an existing point (maybe not second)
                         {
 	                        var traitCmd = Data.Begin.HasPoint ? 
 		                        new AddTraitCommand(-1, Data.Begin.Point) :
 		                        new AddTraitCommand(Data.Begin.Pad, -1, Data.Begin.Position);
-	                        cmd = traitCmd;
-							_activeCommand = _editCommands.Do(cmd);
+							_activeCommand = _editCommands.Do(traitCmd);
 							_ignoreList.Add(traitCmd.AddedTrait.Key);
 							_ignoreList.Add(traitCmd.AddedTrait.EndKey);
 
@@ -140,11 +139,15 @@ namespace Slugs.Agents
                         }
                         else if (eKind == ElementKind.Trait) // make focal if creating something on a trait
                         {
-	                        cmd = null;//new AddFocalCommand();
+	                        var trait = (Trait) Data.Begin.Element;
+	                        var startT = trait.TFromPoint(mousePoint).Item1;
+                            var focalCmd = new AddFocalCommand(trait, startT, startT);
+                            _activeCommand = _editCommands.Do(focalCmd);
+                            Data.Selected.Point = focalCmd.AddedFocal.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
+                            Data.Selected.Element = TerminalPoint.Empty;
                         }
                         else
                         {
-	                        cmd = null;
                         }
 					}
 					else if(Data.Begin.HasSelection) // drag existing object

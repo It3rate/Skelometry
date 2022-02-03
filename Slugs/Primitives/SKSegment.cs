@@ -85,7 +85,7 @@ namespace Slugs.Primitives
 	        var l0 = v0.Length;
 	        var l1 = v1.Length * sign;
 
-            var t = l0 / l1;
+            var t = l1 / l0;
             return (t, pp);
         }
 

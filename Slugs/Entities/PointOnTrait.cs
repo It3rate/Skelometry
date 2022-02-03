@@ -55,10 +55,10 @@ namespace Slugs.Entities
 	        return result;
         }
 
-        public void Update(PadKind padKind, int traitKey)
+        public void Update(int traitKey, float t)
         {
-	        PadKind = padKind;
 	        TraitKey = traitKey;
+	        T = t;
         }
 
         public static bool operator ==(PointOnTrait left, PointOnTrait right) =>

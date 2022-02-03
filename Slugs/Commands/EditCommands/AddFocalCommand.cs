@@ -31,9 +31,9 @@ namespace Slugs.Commands.EditCommands
         {
             TraitKey = traitKey;
 
-	        StartPointTask = startPointTask;// new CreatePointOnTraitTask(Trait, startT);
+	        StartPointTask = startPointTask;
 	        AddTaskAndRun(StartPointTask);
-	        EndPointTask = endPointTask; //new CreatePointOnTraitTask(Trait, endT);
+	        EndPointTask = endPointTask;
 	        AddTaskAndRun(EndPointTask);
         }
 
@@ -45,8 +45,6 @@ namespace Slugs.Commands.EditCommands
             base.Execute();
             FocalTask = new CreateFocalTask(PadKind, TraitKey, StartPointTask.PointOnTrait, EndPointTask.PointOnTrait);
             AddTaskAndRun(FocalTask);
-            //FocalTask = new CreateTraitTask(Pad.PadKind, EntityKey, StartPointTask.PointKey, EndPointTask.PointKey, ElementKind.Trait);
-            //AddTaskAndRun(FocalTask);
         }
 
         public override void Update(SKPoint point)

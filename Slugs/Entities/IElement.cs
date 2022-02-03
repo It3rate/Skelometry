@@ -9,7 +9,7 @@ namespace Slugs.Entities
 {
 	public interface IElement
     {
-	    PadKind PadKind { get; set; }
+	    PadKind PadKind { get; }
 	    Pad Pad { get; }
         ElementKind ElementKind { get; }
         int Key { get; }
@@ -30,8 +30,8 @@ namespace Slugs.Entities
 	    public virtual bool IsEmpty => Key == EmptyKeyValue;
 	    public static bool IsEmptyKey(int key) => key == EmptyKeyValue;
 
-        public PadKind PadKind { get; set; }
-        public Pad Pad => Agent.Current.PadAt(PadKind);
+        public Pad Pad { get; }
+	    public PadKind PadKind => Pad.PadKind;
 		public int Key { get; }
 
 		public abstract IElement EmptyElement { get; }
@@ -53,13 +53,13 @@ namespace Slugs.Entities
 
         protected ElementBase(bool isEmpty) // used to privately create an empty element
         {
-	        PadKind = PadKind.None;
+	        Pad = Agent.Current.PadFor(PadKind.None);
             Key = EmptyKeyValue;
 		}
 		protected ElementBase(PadKind padKind)
 		{
 			Key = KeyCounter++;
-			PadKind = padKind;
+			Pad = Agent.Current.PadFor(padKind);
 			Pad.AddElement(this);
         }
 	    public virtual void MoveTo(SKPoint position)

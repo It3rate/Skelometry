@@ -15,7 +15,7 @@ namespace Slugs.Input
     public class SelectionSet
     {
 	    public PadKind PadKind { get; private set; }
-	    public Pad Pad => Agent.Current.PadAt(PadKind);
+	    public Pad Pad => Agent.Current.PadFor(PadKind);
         public SelectionSetKind SelectionSetKind { get; }
 
 	    public SKPoint Position { get; set; }

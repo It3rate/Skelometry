@@ -10,7 +10,7 @@ namespace Slugs.Agents
         RenderStatus RenderStatus { get; }
         //Position this[IPoint point] { get; set; }
 
-        Pad PadAt(PadKind padKind);
+        Pad PadFor(PadKind padKind);
 
         //void UpdatePointRef(IPoint from, IPoint to);
         void Clear();
