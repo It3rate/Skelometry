@@ -192,9 +192,10 @@ namespace Slugs.Agents
             {
 	            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, cmd.DraggablePoint.Key, Data.Highlight.Point.Key));
             }
-            else if (!IsDragging) // clicked
+            else if (!IsDragging && _activeCommand == null)  // clicked
             {
-                Data.Selected.SetWith(Data.Highlight);
+	            var selCmd = new SetSelectionCommand(Data.Begin.Pad, Data.Highlight.PointKey, Data.Highlight.ElementKeysCopy);
+                selCmd.RunToEnd();
             }
             ClearMouse();
 

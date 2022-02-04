@@ -25,9 +25,12 @@ namespace Slugs.Input
 	        get => _point;
 	        set { _point = value; Position = _point.Position; }
         }
-        private readonly Group _elements;
+        public int PointKey => _point.Key;
+
+        private readonly Group _elements; // maybe just make this public
         public IEnumerable<IElement> Elements => _elements.Elements;
         public IEnumerable<int> ElementKeys => _elements.ElementKeys;
+        public int[] ElementKeysCopy => _elements.ElementKeysCopy;
         public IElement FirstElement => _elements.FirstElement;
         public IElement LastElement => _elements.LastElement;
         public ElementKind ElementKind => _elements.Kind;
@@ -51,10 +54,20 @@ namespace Slugs.Input
 	        SetPoint(selSet.Position, selSet.Point);
             SetElements(selSet.ElementKeys);
         }
-        public void SetPoint(SKPoint position, IPoint snapPoint = null)
+        public void SetPoint(SKPoint position, IPoint point = null)
         {
 	        Position = position;
-	        Point = snapPoint ?? TerminalPoint.Empty;
+	        Point = point ?? TerminalPoint.Empty;
+        }
+        public void SetPoint(IPoint point)
+        {
+	        Point = point;
+	        Position = Point.Position;
+        }
+        public void SetPoint(int pointKey)
+        {
+	        Point = Pad.PointAt(pointKey);
+	        Position = Point.Position;
         }
         public void SetElements(params IElement[] selections)
         {

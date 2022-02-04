@@ -92,7 +92,8 @@ namespace Slugs.Entities
 				    yield return ElementAt(key);
 			    }
 		    }
-	    }
+        }
         public IEnumerable<int> ElementKeys => _elementKeys;
+        public int[] ElementKeysCopy => _elementKeys.ToArray();
     }
 }
