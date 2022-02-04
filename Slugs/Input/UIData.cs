@@ -49,16 +49,16 @@ namespace Slugs.Input
 	        AddSelectionSet(PadKind.Input, SelectionSetKind.Clipboard);
         }
 
-        public IElement GetHighlight(SKPoint p, SelectionSet targetSet, List<int> ignoreKeys)
+        public IElement GetHighlight(SKPoint p, SelectionSet targetSet, List<int> ignoreKeys, ElementKind kind)
         {
-	        IElement result = targetSet.Pad.GetSnapPoint(p, ignoreKeys);
+	        IElement result = targetSet.Pad.GetSnapPoint(p, ignoreKeys, kind);
 	        if (!result.IsEmpty)
 	        {
 		        targetSet.SetPoint(p, (IPoint) result);
 	        }
 	        else
 	        {
-		        result = targetSet.Pad.GetSnapTrait(p, ignoreKeys);
+		        result = targetSet.Pad.GetSnapElement(p, ignoreKeys, kind);
 		        if (!result.IsEmpty)
 		        {
 			        targetSet.SetElements(result);

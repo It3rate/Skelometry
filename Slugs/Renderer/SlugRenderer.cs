@@ -103,6 +103,16 @@ namespace Slugs.Renderer
 
         public void Draw()
         {
+            if (Data.HasHighlightPoint)
+			{
+				DrawRoundBox(Data.HighlightPoint.Position, Pens.HoverPen);
+			}
+
+			if (Data.HasHighlightLine)
+			{
+				DrawDirectedLine(Data.HighlightLine.Segment, Pens.HoverPen);
+			}
+
 	        foreach (var selectedElement in Data.Selected.Elements)
 	        {
 		        DrawElement(selectedElement, Pens.SelectedPen);
@@ -123,21 +133,11 @@ namespace Slugs.Renderer
 		                DrawDirectedLine(trait.Segment, trait.IsLocked ? Pens.LockedPen : Pens.DarkPen);
 		                foreach (var focal in trait.Focals)
 		                {
-			                DrawDirectedLine(focal.Segment, Pens.UnitPen);
+			                DrawDirectedLine(focal.Segment, Pens.FocalPen);
 		                }
 	                }
                 }
             }
-
-            if (Data.HasHighlightPoint)
-			{
-				DrawRoundBox(Data.HighlightPoint.Position, Pens.HoverPen);
-			}
-
-			if (Data.HasHighlightLine)
-			{
-				DrawDirectedLine(Data.HighlightLine.Segment, Pens.HoverPen);
-			}
         }
 
         public void DrawElement(IElement element, SKPaint paint, float radius = 4f)
@@ -168,7 +168,7 @@ namespace Slugs.Renderer
         {
 	            DrawPolyline(seg.Points, paint);
 		        _canvas.DrawCircle(seg.StartPoint, 2, paint);
-	            var triPts = seg.EndArrow(12);
+	            var triPts = seg.EndArrow(8);
 	            _canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
         }
 

@@ -74,8 +74,8 @@ namespace Slugs.Agents
 
 	        var mousePoint = e.Location.ToSKPoint();
 
-            Data.GetHighlight(mousePoint, Data.Begin, _ignoreList);
-            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList);
+            Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, _allowedSelection);
+            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _allowedSelection);
             Data.Selected.SetPoint(mousePoint, Data.Highlight.Point);
             Data.Selected.SetElements(Data.Begin.Elements);
 
@@ -101,7 +101,7 @@ namespace Slugs.Agents
             var result = false;
 		    var mousePoint = e.Location.ToSKPoint();
 		    Data.Current.UpdatePositions(mousePoint);
-            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList);
+            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _allowedSelection);
             if (IsDown)
             {
                 result = MouseDrag(mousePoint);
@@ -188,7 +188,7 @@ namespace Slugs.Agents
             var mousePoint = e.Location.ToSKPoint();
 
 		    Data.Current.UpdatePositions(mousePoint);
-		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList);
+		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _allowedSelection);
 
             // Merge points if needed.
             if (Data.HasHighlightPoint && _activeCommand is IDraggablePointCommand cmd)
@@ -205,6 +205,7 @@ namespace Slugs.Agents
             return true;
 	    }
 
+	    private ElementKind _allowedSelection = ElementKind.Any;
         private Keys CurrentKey;
 	    private bool KeyIsDownControl => (CurrentKey & Keys.ControlKey) != 0;
 	    private bool KeyIsDownAlt => (CurrentKey & Keys.Alt) != 0;
@@ -212,12 +213,25 @@ namespace Slugs.Agents
         public bool KeyDown(KeyEventArgs e)
 	    {
 		    CurrentKey = e.KeyCode;
+		    switch (CurrentKey)
+		    {
+			    case Keys.T:
+				    _allowedSelection = ElementKind.TraitPart;
+				    break;
+			    case Keys.F:
+				    _allowedSelection = ElementKind.FocalPart;
+				    break;
+			    case Keys.B:
+				    _allowedSelection = ElementKind.BondPart;
+				    break;
+            }
 		    return true;
 	    }
 
         public bool KeyUp(KeyEventArgs e)
         {
             CurrentKey = Keys.None;
+            _allowedSelection = ElementKind.Any;
             return true;
         }
 

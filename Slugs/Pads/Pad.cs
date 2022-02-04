@@ -230,12 +230,12 @@ namespace Slugs.Entities
             }
         }
 
-        public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, float maxDist = SnapDistance)
+        public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, ElementKind kind, float maxDist = SnapDistance)
         {
 	        IPoint result = TerminalPoint.Empty;
             foreach (var ptRef in Points)
             {
-	            if (!ignorePoints.Contains(ptRef.Key) && input.SquaredDistanceTo(ptRef.Position) < maxDist)
+	            if (ptRef.ElementKind.IsCompatible(kind) && !ignorePoints.Contains(ptRef.Key) && input.SquaredDistanceTo(ptRef.Position) < maxDist)
 	            {
                     result = ptRef;
                     break;
@@ -244,28 +244,50 @@ namespace Slugs.Entities
             return result;
         }
 
-        public Trait GetSnapTrait(SKPoint point, List<int> ignoreKeys, float maxDist = SnapDistance)
+        public IElement GetSnapElement(SKPoint point, List<int> ignoreKeys, ElementKind kind, float maxDist = SnapDistance)
         {
-            var result = Trait.Empty;
+            IElement result = TerminalPoint.Empty;
             int lineIndex = 0;
             foreach (var entity in Entities)
             {
 	            if (!ignoreKeys.Contains(entity.Key))
 	            {
-		            foreach (var trait in entity.Traits)
+		            if (kind.IsCompatible(ElementKind.Trait)) // todo: need to cycle through all elements to avoid filtering sub elements.
 		            {
-			            if (!ignoreKeys.Contains(trait.Key))
+			            foreach (var trait in entity.Traits)
 			            {
-				            var closest = trait.ProjectPointOnto(point);
-				            var dist = point.SquaredDistanceTo(closest);
-				            if (dist < maxDist)
+				            if (!ignoreKeys.Contains(trait.Key))
 				            {
-					            result = trait;
-					            goto End;
+					            var closest = trait.ProjectPointOnto(point);
+					            var dist = point.SquaredDistanceTo(closest);
+					            if (dist < maxDist)
+					            {
+						            result = trait;
+						            goto End;
+					            }
+
+					            lineIndex++;
 				            }
-				            lineIndex++;
 			            }
 		            }
+		            if (kind.IsCompatible(ElementKind.Focal)) // todo: need to cycle through all elements to avoid filtering sub elements.
+		            {
+			            foreach (var focal in entity.Focals)
+			            {
+				            if (!ignoreKeys.Contains(focal.Key))
+				            {
+					            var closest = focal.ProjectPointOnto(point);
+					            var dist = point.SquaredDistanceTo(closest);
+					            if (dist < maxDist)
+					            {
+						            result = focal;
+						            goto End;
+					            }
+
+					            lineIndex++;
+				            }
+			            }
+                    }
 	            }
             }
 			End:

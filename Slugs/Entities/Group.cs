@@ -24,7 +24,7 @@ namespace Slugs.Entities
 	    {
 	    }
         public int Count => _elementKeys.Count;
-	    public ElementKind Kind => _elementKeys.Count == 0 ? ElementKind.None : _elementKeys.Count > 1 ? ElementKind.Multiple : FirstElement.ElementKind;
+	    public ElementKind Kind => _elementKeys.Count == 0 ? ElementKind.None : _elementKeys.Count > 1 ? ElementKind.Any : FirstElement.ElementKind;
 	    public IElement FirstElement => ElementByIndex(0);
 	    public IElement LastElement => ElementByIndex(_elementKeys.Count - 1);
 	    public IElement ElementByIndex(int index) => index >= 0 && index < _elementKeys.Count ? Pad.ElementAt(_elementKeys[index]) : TerminalPoint.Empty;

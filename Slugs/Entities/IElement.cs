@@ -81,29 +81,37 @@ namespace Slugs.Entities
     [Flags]
 	public enum ElementKind
 	{
-		None,
-		Terminal,
-		RefPoint,
-		PointOnTrait,
-        Trait,
-		Focal,
-		Bond,
-		Entity,
-		Unit,
-		Group,
-		SelectionGroup,
-        PadProjection,
-        Grid,
+		None = 0,
+		Terminal = 0x1,
+		RefPoint = 0x2,
+		PointOnTrait = 0x4,
+		PointOnFocal = 0x8,
+        Trait = 0x10,
+		Focal = 0x20,
+		Bond = 0x40,
+		Entity = 0x80,
+		Unit = 0x100,
+		Group = 0x200,
 
-        Multiple,
+		Grid = 0x400,
+		SelectionRect = 0x800,
+        Ruler = 0x1000,
+        Value = 0x2000,
 
-        PointKind = RefPoint | Terminal | PointOnTrait,
+        Any = 0xFFFF,
+
+        PointKind = RefPoint | Terminal | PointOnTrait | PointOnFocal,
         SegmentKind = Trait | Focal | Bond,
+        TraitPart = Trait | Terminal | RefPoint,
+        FocalPart = Focal | Unit | PointOnTrait,
+        BondPart = Bond | PointOnFocal,
+        UIPart = Grid | SelectionRect | Ruler | Value,
     }
 	public static class SelectionKindExtensions
 	{
 		public static bool IsNone(this ElementKind kind) => kind == ElementKind.None;
-		public static bool IsPoint(this ElementKind kind) => ElementKind.PointKind.HasFlag(kind);
-        public static bool IsTerminal(this ElementKind kind) => kind == ElementKind.Terminal;
+		public static bool IsPoint(this ElementKind kind) => (int) (kind & ElementKind.PointKind) > 0;// ElementKind.PointKind.HasFlag(kind);
+		public static bool IsTerminal(this ElementKind kind) => kind == ElementKind.Terminal;
+		public static bool IsCompatible(this ElementKind self, ElementKind other) => (int)(self & other) != 0;
     }
 }
