@@ -51,8 +51,11 @@ namespace Slugs.Agents
 
             _renderer = renderer;
             _renderer.Data = Data;
-            var (entity, trait) = InputPad.AddEntity(new SKPoint(200, 100), new SKPoint(400, 300), 1);
-            InputPad.AddTrait(entity.Key, new SKPoint(290, 100), new SKPoint( 490, 300), 1);
+            var (entity, trait) = InputPad.AddEntity(new SKPoint(100, 100), new SKPoint(700, 100), 1);
+            trait.SetLock(true);
+            InputPad.AddTrait(entity.Key, new SKPoint(100, 120), new SKPoint(700, 120), 1).SetLock(true);
+            InputPad.AddTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), 1).SetLock(true);
+            InputPad.AddTrait(entity.Key, new SKPoint(100, 160), new SKPoint(700, 160), 1).SetLock(true);
 
             ClearMouse();
             var t = new RefPoint();
@@ -152,18 +155,18 @@ namespace Slugs.Agents
 					}
 					else if(Data.Begin.HasSelection) // drag existing object
 					{
-						MoveElementCommand cmd;
 						if (Data.Begin.HasPoint)
 						{
-							cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point.Key);
+							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point.Key);
 							Data.Selected.SetElements(Data.Begin.Point);
+							_activeCommand = _editCommands.Do(cmd);
                         }
-						else
+						else if(!Data.Begin.FirstElement.IsLocked)
 						{
-							cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.FirstElement.Key);
+							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.FirstElement.Key);
 							Data.Selected.SetElements(Data.Begin.FirstElement); // todo: move to keys only, and move sets vs objects
+							_activeCommand = _editCommands.Do(cmd);
                         }
-                        _activeCommand = _editCommands.Do(cmd);
 					}
 					else // rect select
 					{

@@ -87,13 +87,23 @@ namespace Slugs.Input
         public void UpdatePositions(SKPoint newPosition)
         {
 	        var dif = newPosition - Position;
-	        var points = _elements.Points;
-
-            for (int i = 0; i < points.Count; i++)
+	        if (!Point.IsLocked)
 	        {
-		        points[i].Position = _elements.SetPositions[i] + dif;
+		        Point.Position = Position + dif;
 	        }
-            Point.Position = Position + dif; // this may or may not be in Points - maybe convert to list and always add it if not empty.
+
+	        foreach (var element in Elements)
+	        {
+		        if (!element.IsLocked)
+		        {
+			        var points = element.Points;
+                    var initialPoints = _elements.InitialPositionFor(element.Key);
+                    for (int i = 0; i < points.Count; i++)
+                    {
+	                    points[i].Position = initialPoints[i] + dif;
+                    }
+                }
+	        }
         }
 
 	    public void Clear()

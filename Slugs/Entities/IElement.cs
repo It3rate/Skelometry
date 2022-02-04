@@ -14,6 +14,7 @@ namespace Slugs.Entities
         ElementKind ElementKind { get; }
         int Key { get; }
         IElement EmptyElement { get; }
+        bool IsLocked { get; }
         bool IsEmpty { get; }
 
         //IPoint[] TerminalPoints { get; }
@@ -21,6 +22,7 @@ namespace Slugs.Entities
         List<SKPoint> SKPoints{ get; }
 
         void MoveTo(SKPoint position);
+        void SetLock(bool lockStatus);
     }
 
     public abstract class ElementBase : IElement
@@ -33,7 +35,7 @@ namespace Slugs.Entities
 	    public PadKind PadKind => Pad.PadKind;
 		public int Key { get; }
 
-		public abstract IElement EmptyElement { get; }
+        public abstract IElement EmptyElement { get; }
 		public abstract ElementKind ElementKind { get; }
 		public abstract List<IPoint> Points { get; }
 		public List<SKPoint> SKPoints
@@ -49,6 +51,7 @@ namespace Slugs.Entities
 				return result;
 			}
 		}
+		public bool IsLocked { get; protected set; }
 
         protected ElementBase(bool isEmpty) // used to privately create an empty element
         {
@@ -67,6 +70,11 @@ namespace Slugs.Entities
 		    {
 			    point.Position = position;
 		    }
+	    }
+
+	    public void SetLock(bool lockStatus)
+	    {
+		    IsLocked = lockStatus;
 	    }
     }
 

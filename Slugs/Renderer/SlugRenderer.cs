@@ -120,7 +120,7 @@ namespace Slugs.Renderer
                 {
 	                foreach (var trait in entity.Traits)
 	                {
-		                DrawDirectedLine(trait.Segment, Pens.DarkPen);
+		                DrawDirectedLine(trait.Segment, trait.IsLocked ? Pens.LockedPen : Pens.DarkPen);
 		                foreach (var focal in trait.Focals)
 		                {
 			                DrawDirectedLine(focal.Segment, Pens.UnitPen);

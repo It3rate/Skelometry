@@ -17,32 +17,34 @@ namespace Slugs.Entities
         public Group() : base(true) { }
 
 	    private readonly List<int> _elementKeys = new List<int>();
-	    public readonly List<SKPoint> SetPositions = new List<SKPoint>();
+	    public readonly Dictionary<int, List<SKPoint>> InitialPositions = new Dictionary<int, List<SKPoint>>();
+	    public List<SKPoint> InitialPositionFor(int key) => InitialPositions[key];
 
         public Group(PadKind padKind) : base(padKind)
 	    {
 	    }
-
         public int Count => _elementKeys.Count;
 	    public ElementKind Kind => _elementKeys.Count == 0 ? ElementKind.None : _elementKeys.Count > 1 ? ElementKind.Multiple : FirstElement.ElementKind;
 	    public IElement FirstElement => ElementByIndex(0);
 	    public IElement LastElement => ElementByIndex(_elementKeys.Count - 1);
 	    public IElement ElementByIndex(int index) => index >= 0 && index < _elementKeys.Count ? Pad.ElementAt(_elementKeys[index]) : TerminalPoint.Empty;
 	    public IElement ElementAt(int key) => Pad.ElementAt(key);
-        public void Add(int elementKey)
-        {
-	        Add(Pad.ElementAt(elementKey));
-        }
+
         public void Add(IElement element)
         {
-	        _elementKeys.Add(element.Key);
-	        SetPositions.AddRange(element.SKPoints);
+	        Add(element.Key);
         }
         public void Add(params int[] elementKeys)
         {
 	        foreach (var key in elementKeys)
 	        {
-		        Add(key);
+		        if (!ElementKeys.Contains(key))
+		        {
+			        _elementKeys.Add(key);
+			        var pts = new List<SKPoint>();
+			        pts.AddRange(Pad.ElementAt(key).SKPoints);
+			        InitialPositions[key] = pts;
+		        }
 	        }
         }
         public void Add(IEnumerable<int> elementKeys)
@@ -61,12 +63,12 @@ namespace Slugs.Entities
         }
         public void AddRange(IEnumerable<int> keys)
         {
-	        _elementKeys.AddRange(keys);
+            Add(keys);
         }
         public void Clear()
 	    {
 		    _elementKeys.Clear();
-		    SetPositions.Clear();
+		    InitialPositions.Clear();
 	    }
 	    public bool ContainsElement(IElement element) => _elementKeys.Contains(element.Key);
 
