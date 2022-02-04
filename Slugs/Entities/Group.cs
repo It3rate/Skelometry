@@ -25,9 +25,10 @@ namespace Slugs.Entities
 
         public int Count => _elementKeys.Count;
 	    public ElementKind Kind => _elementKeys.Count == 0 ? ElementKind.None : _elementKeys.Count > 1 ? ElementKind.Multiple : FirstElement.ElementKind;
-	    public IElement FirstElement => ElementAt(0);
-	    public IElement LastElement => ElementAt(_elementKeys.Count - 1);
-        public IElement ElementAt(int index) => index >= 0 && index < _elementKeys.Count ? Pad.ElementAt(_elementKeys[index]) : TerminalPoint.Empty;
+	    public IElement FirstElement => ElementByIndex(0);
+	    public IElement LastElement => ElementByIndex(_elementKeys.Count - 1);
+	    public IElement ElementByIndex(int index) => index >= 0 && index < _elementKeys.Count ? Pad.ElementAt(_elementKeys[index]) : TerminalPoint.Empty;
+	    public IElement ElementAt(int key) => Pad.ElementAt(key);
         public void Add(int elementKey)
         {
 	        Add(Pad.ElementAt(elementKey));
@@ -52,13 +53,17 @@ namespace Slugs.Entities
 	        }
         }
         public void AddRange(IEnumerable<IElement> elements)
-	    {
-		    foreach (var element in elements)
-		    {
-			    Add(element);
-		    }
-	    }
-	    public void Clear()
+        {
+	        foreach (var element in elements)
+	        {
+		        Add(element);
+	        }
+        }
+        public void AddRange(IEnumerable<int> keys)
+        {
+	        _elementKeys.AddRange(keys);
+        }
+        public void Clear()
 	    {
 		    _elementKeys.Clear();
 		    SetPositions.Clear();
@@ -82,21 +87,12 @@ namespace Slugs.Entities
 	    {
 		    get
 		    {
-			    foreach (var element in _elementKeys)
-			    {
-				    yield return ElementAt(Key);
-			    }
-		    }
-	    }
-	    public IEnumerable<int> ElementKeys
-	    {
-		    get
-		    {
 			    foreach (var key in _elementKeys)
 			    {
-				    yield return key;
+				    yield return ElementAt(key);
 			    }
 		    }
 	    }
+        public IEnumerable<int> ElementKeys => _elementKeys;
     }
 }

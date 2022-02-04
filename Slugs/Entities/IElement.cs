@@ -25,7 +25,6 @@ namespace Slugs.Entities
 
     public abstract class ElementBase : IElement
     {
-	    protected static int KeyCounter = 1;
 	    public const int EmptyKeyValue = -99;
 	    public virtual bool IsEmpty => Key == EmptyKeyValue;
 	    public static bool IsEmptyKey(int key) => key == EmptyKeyValue;
@@ -58,8 +57,8 @@ namespace Slugs.Entities
 		}
 		protected ElementBase(PadKind padKind)
 		{
-			Key = KeyCounter++;
 			Pad = Agent.Current.PadFor(padKind);
+			Key = Pad.KeyCounter++;
 			Pad.AddElement(this);
         }
 	    public virtual void MoveTo(SKPoint position)

@@ -46,6 +46,11 @@ namespace Slugs.Input
 	        Clear();
         }
 
+        public void SetWith(SelectionSet selSet)
+        {
+	        SetPoint(selSet.Position, selSet.Point);
+            SetElements(selSet.ElementKeys);
+        }
         public void SetPoint(SKPoint position, IPoint snapPoint = null)
         {
 	        Position = position;
@@ -60,6 +65,11 @@ namespace Slugs.Input
         {
 	        _elements.Clear();
 	        _elements.AddRange(selection);
+        }
+        public void SetElements(IEnumerable<int> selectionKeys)
+        {
+	        _elements.Clear();
+	        _elements.AddRange(selectionKeys);
         }
         public void UpdatePositions(SKPoint newPosition)
         {

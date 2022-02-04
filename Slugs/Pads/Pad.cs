@@ -13,6 +13,7 @@ namespace Slugs.Entities
     public class Pad
     {
         public readonly PadKind PadKind;
+        public static int KeyCounter = 1;
 
         private Agent _agent;
         private readonly Dictionary<int, IElement> _elements = new Dictionary<int, IElement>();

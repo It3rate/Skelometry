@@ -134,8 +134,7 @@ namespace Slugs.Agents
 							_activeCommand = _editCommands.Do(traitCmd);
 							_ignoreList.Add(traitCmd.AddedTrait.Key);
 							_ignoreList.Add(traitCmd.AddedTrait.EndKey);
-
-                            Data.Selected.Point = traitCmd.AddedTrait.EndPoint;
+							Data.Selected.Point = traitCmd.AddedTrait.EndPoint;
 							// need to ignore 
                         }
                         else if (eKind == ElementKind.Trait) // make focal if creating something on a trait
@@ -193,6 +192,10 @@ namespace Slugs.Agents
             {
 	            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, cmd.DraggablePoint.Key, Data.Highlight.Point.Key));
             }
+            else if (!IsDragging) // clicked
+            {
+                Data.Selected.SetWith(Data.Highlight);
+            }
             ClearMouse();
 
             return true;
@@ -224,7 +227,6 @@ namespace Slugs.Agents
             _ignoreList.Clear();
             Data.Current.Clear();
 		    Data.Begin.Clear();
-		    Data.Selected.Clear();
 		    WorkingPad.Clear();
 	    }
 	    public void Clear()

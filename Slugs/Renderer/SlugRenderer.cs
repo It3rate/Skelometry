@@ -103,6 +103,11 @@ namespace Slugs.Renderer
 
         public void Draw()
         {
+	        foreach (var selectedElement in Data.Selected.Elements)
+	        {
+		        DrawElement(selectedElement, Pens.SelectedPen);
+	        }
+
 	        foreach (var pad in Data.Pads)
 	        {
                 pad.Refresh();  
@@ -131,8 +136,20 @@ namespace Slugs.Renderer
 
 			if (Data.HasHighlightLine)
 			{
-				DrawDirectedLine(Data.HighlightLine.Segment, Pens.HighlightPen);
+				DrawDirectedLine(Data.HighlightLine.Segment, Pens.HoverPen);
 			}
+        }
+
+        public void DrawElement(IElement element, SKPaint paint, float radius = 4f)
+        {
+	        if (element is SegmentBase seg)
+	        {
+                _canvas.DrawLine(seg.Segment.StartPoint, seg.Segment.EndPoint, paint);
+	        }
+            else if (element is IPoint point)
+	        {
+                _canvas.DrawCircle(point.Position.X, point.Position.Y, radius, paint);
+	        }
         }
 
         public void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
