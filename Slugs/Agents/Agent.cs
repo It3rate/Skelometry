@@ -12,6 +12,7 @@ using Slugs.Input;
 using Slugs.Pads;
 using Slugs.Primitives;
 using Slugs.Renderer;
+using Slugs.UI;
 
 namespace Slugs.Agents
 {
@@ -21,9 +22,10 @@ namespace Slugs.Agents
 
         public UIData Data;
         private CommandStack<EditCommand> _editCommands;
+        private Entity _activeEntity;
         private EditCommand _activeCommand;
 
-	    public readonly Dictionary<PadKind, Pad> Pads = new Dictionary<PadKind, Pad>();
+        public readonly Dictionary<PadKind, Pad> Pads = new Dictionary<PadKind, Pad>();
 
 	    public Pad WorkingPad => PadFor(PadKind.Working);
         public Pad InputPad => PadFor(PadKind.Input);
@@ -39,6 +41,8 @@ namespace Slugs.Agents
         public bool IsDragging { get; private set; }
 
         private List<int> _ignoreList = new List<int>();
+        private ElementKind _selectableKind = ElementKind.Any;
+        private UIMode _uiMode = UIMode.Any;
 
         public Agent(SlugRenderer renderer)
         {
@@ -52,6 +56,7 @@ namespace Slugs.Agents
             _renderer = renderer;
             _renderer.Data = Data;
             var (entity, trait) = InputPad.AddEntity(new SKPoint(100, 100), new SKPoint(700, 100), 1);
+            _activeEntity = entity;
             trait.SetLock(true);
             InputPad.AddTrait(entity.Key, new SKPoint(100, 120), new SKPoint(700, 120), 1).SetLock(true);
             InputPad.AddTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), 1).SetLock(true);
@@ -74,8 +79,8 @@ namespace Slugs.Agents
 
 	        var mousePoint = e.Location.ToSKPoint();
 
-            Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, _allowedSelection);
-            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _allowedSelection);
+            Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, _selectableKind);
+            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
             Data.Selected.SetPoint(mousePoint, Data.Highlight.Point);
             Data.Selected.SetElements(Data.Begin.Elements);
 
@@ -101,7 +106,7 @@ namespace Slugs.Agents
             var result = false;
 		    var mousePoint = e.Location.ToSKPoint();
 		    Data.Current.UpdatePositions(mousePoint);
-            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _allowedSelection);
+            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
             if (IsDown)
             {
                 result = MouseDrag(mousePoint);
@@ -117,10 +122,11 @@ namespace Slugs.Agents
 				var dist = (mousePoint - Data.Begin.Position).Length;
 				if (dist > _minDragDistance)
 				{
+					bool overrideMove = KeyIsDownControl || _uiMode.IsCreate();
 					var createObject = !Data.Begin.HasSelection || KeyIsDownControl;
 					if (createObject)
 					{
-                        // create Trait if terminal or ref point, create Bond or Focal it PointOnTrait.
+                        // create Trait if terminal or ref point, create AddedBond or AddedFocal it PointOnTrait.
                         // trait to same trait is focal, trait to other trait is bond, all others are new traits.
                         var pKind = Data.Begin.Point.ElementKind;
                         var eKind = Data.Begin.ElementKind;
@@ -138,16 +144,25 @@ namespace Slugs.Agents
 							_ignoreList.Add(traitCmd.AddedTrait.Key);
 							_ignoreList.Add(traitCmd.AddedTrait.EndKey);
 							Data.Selected.Point = traitCmd.AddedTrait.EndPoint;
-							// need to ignore 
+                            // need to ignore 
                         }
                         else if (eKind == ElementKind.Trait) // make focal if creating something on a trait
                         {
-	                        var trait = (Trait) Data.Begin.FirstElement;
+	                        var trait = (Trait)Data.Begin.FirstElement;
 	                        var startT = trait.TFromPoint(mousePoint).Item1;
-                            var focalCmd = new AddFocalCommand(trait, startT, startT);
-                            _activeCommand = _editCommands.Do(focalCmd);
-                            Data.Selected.Point = focalCmd.AddedFocal.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
-                            Data.Selected.ClearElements();
+	                        var focalCmd = new AddFocalCommand(_activeEntity, trait, startT, startT);
+	                        _activeCommand = _editCommands.Do(focalCmd);
+	                        Data.Selected.Point = focalCmd.AddedFocal.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
+	                        Data.Selected.ClearElements();
+                        }
+                        else if (eKind == ElementKind.Focal) // make focal if creating something on a trait
+                        {
+	                        var focal = (Focal)Data.Begin.FirstElement;
+	                        var startT = focal.TFromPoint(mousePoint).Item1;
+	                        //var bondCmd = new AddBondCommand(focal, startT, null, null);
+	                        //_activeCommand = _editCommands.Do(bondCmd);
+	                        //Data.Selected.Point = bondCmd.AddedBond.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
+	                        Data.Selected.ClearElements();
                         }
                         else
                         {
@@ -188,7 +203,7 @@ namespace Slugs.Agents
             var mousePoint = e.Location.ToSKPoint();
 
 		    Data.Current.UpdatePositions(mousePoint);
-		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _allowedSelection);
+		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
 
             // Merge points if needed.
             if (Data.HasHighlightPoint && _activeCommand is IDraggablePointCommand cmd)
@@ -205,7 +220,6 @@ namespace Slugs.Agents
             return true;
 	    }
 
-	    private ElementKind _allowedSelection = ElementKind.Any;
         private Keys CurrentKey;
 	    private bool KeyIsDownControl => (CurrentKey & Keys.ControlKey) != 0;
 	    private bool KeyIsDownAlt => (CurrentKey & Keys.Alt) != 0;
@@ -216,13 +230,13 @@ namespace Slugs.Agents
 		    switch (CurrentKey)
 		    {
 			    case Keys.T:
-				    _allowedSelection = ElementKind.TraitPart;
+				    _selectableKind = ElementKind.TraitPart;
 				    break;
 			    case Keys.F:
-				    _allowedSelection = ElementKind.FocalPart;
+				    _selectableKind = ElementKind.FocalPart;
 				    break;
 			    case Keys.B:
-				    _allowedSelection = ElementKind.BondPart;
+				    _selectableKind = ElementKind.BondPart;
 				    break;
             }
 		    return true;
@@ -231,7 +245,7 @@ namespace Slugs.Agents
         public bool KeyUp(KeyEventArgs e)
         {
             CurrentKey = Keys.None;
-            _allowedSelection = ElementKind.Any;
+            _selectableKind = ElementKind.Any;
             return true;
         }
 

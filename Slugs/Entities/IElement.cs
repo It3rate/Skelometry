@@ -112,6 +112,6 @@ namespace Slugs.Entities
 		public static bool IsNone(this ElementKind kind) => kind == ElementKind.None;
 		public static bool IsPoint(this ElementKind kind) => (int) (kind & ElementKind.PointKind) > 0;// ElementKind.PointKind.HasFlag(kind);
 		public static bool IsTerminal(this ElementKind kind) => kind == ElementKind.Terminal;
-		public static bool IsCompatible(this ElementKind self, ElementKind other) => (int)(self & other) != 0;
+        public static bool IsCompatible(this ElementKind self, ElementKind other) => (int)(self & other) != 0;
     }
 }

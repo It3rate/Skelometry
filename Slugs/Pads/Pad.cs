@@ -46,8 +46,8 @@ namespace Slugs.Entities
         }
         //public Entity EntityAt(int key) => Data.EntityAt(key);
 
-        //public IEnumerable<Focal> Focals => Data.Focals;
-        //public Focal FocalAt(int key) => Data.FocalAt(key);
+        //public IEnumerable<AddedFocal> Focals => Data.Focals;
+        //public AddedFocal FocalAt(int key) => Data.FocalAt(key);
 
         private readonly List<SKSegment> _output = new List<SKSegment>();
         public IEnumerable<SKSegment> Output => _output;
@@ -183,7 +183,7 @@ namespace Slugs.Entities
         public Focal CreateFocal(float focus, Slug slug)
         {
 	        throw new NotImplementedException();
-	        //   var focal = new Focal(PadKind, focus, slug);
+	        //   var focal = new AddedFocal(PadKind, focus, slug);
 	        //return focal;
         }
 

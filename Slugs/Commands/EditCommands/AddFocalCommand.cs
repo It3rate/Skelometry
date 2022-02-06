@@ -13,23 +13,26 @@ namespace Slugs.Commands.EditCommands
 
     public class AddFocalCommand : EditCommand
     {
+        public int EntityKey { get; }
+        public Entity Entity => Pad.EntityAt(EntityKey);
+        public int TraitKey => StartPointTask.TraitKeyStore;
+        public Trait Trait => Pad.TraitAt(TraitKey);
+
         public CreatePointOnTraitTask StartPointTask { get; }
         public CreatePointOnTraitTask EndPointTask { get; }
         public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
         public CreateFocalTask FocalTask { get; set; }
 
-        public Focal AddedFocal => (Focal)FocalTask?.Focal ?? Focal.Empty;
+        public Focal AddedFocal => (Focal)FocalTask?.AddedFocal ?? Focal.Empty;
 
-        public int TraitKey { get; }
-        public Trait Trait => Pad.TraitAt(TraitKey);
 
-        public AddFocalCommand(Trait trait, float startT, float endT) :
-            this(trait.Key, new CreatePointOnTraitTask(trait, startT), new CreatePointOnTraitTask(trait, endT))
+        public AddFocalCommand(Entity entity, Trait trait, float startT, float endT) :
+            this(entity.Key, new CreatePointOnTraitTask(trait, startT), new CreatePointOnTraitTask(trait, endT))
         { }
 
-        public AddFocalCommand(int traitKey, CreatePointOnTraitTask startPointTask, CreatePointOnTraitTask endPointTask) : base(startPointTask.Pad)
+        public AddFocalCommand(int entityKey, CreatePointOnTraitTask startPointTask, CreatePointOnTraitTask endPointTask) : base(startPointTask.Pad)
         {
-            TraitKey = traitKey;
+	        EntityKey = entityKey;
 
 	        StartPointTask = startPointTask;
 	        AddTaskAndRun(StartPointTask);
@@ -43,7 +46,7 @@ namespace Slugs.Commands.EditCommands
         public override void Execute()
         {
             base.Execute();
-            FocalTask = new CreateFocalTask(PadKind, TraitKey, StartPointTask.PointOnTrait, EndPointTask.PointOnTrait);
+            FocalTask = new CreateFocalTask(Entity, StartPointTask.PointOnTrait, EndPointTask.PointOnTrait);
             AddTaskAndRun(FocalTask);
         }
 

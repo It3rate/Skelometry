@@ -44,11 +44,4 @@ namespace Slugs.Input
 	    LastCommand,
 	    ToolKind,
     }
-    public enum UIMode
-    {
-	    Inspect,
-	    Edit,
-	    Interact,
-	    Animate,
-    }
 }

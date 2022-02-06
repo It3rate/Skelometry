@@ -13,9 +13,11 @@ namespace Slugs.Entities
 	    public static readonly Focal Empty = new Focal();
         private Focal() : base(true) {}
 
-        public int TraitKey { get; }
-        public Trait Trait => Pad.TraitAt(TraitKey);
+        public int EntityKey { get; }
 
+        public Entity Entity => Pad.EntityAt(EntityKey);
+        public int TraitKey => StartPoint.TraitKey;
+        public Trait Trait => Pad.TraitAt(TraitKey);
         public PointOnTrait StartPoint => (PointOnTrait)Pad.PointAt(StartKey); // todo: make this base class for segment elements.
         public PointOnTrait EndPoint => (PointOnTrait)Pad.PointAt(EndKey);
         public override SKPoint StartPosition => Trait.PointAlongLine(Slug.Start);
@@ -29,30 +31,35 @@ namespace Slugs.Entities
         // maybe a bond is just two focals connected (on the same or different traits),
         //    with the option of intermediate repetition, scaling and directionality (causation)
 
-        public Focal(Trait trait, float startT, float endT) : base(trait.PadKind)
+        //public Focal(Trait trait, float startT, float endT) : base(trait.PadKind)
+        //{
+        //    var startPoint = new PointOnTrait(PadKind, trait.Key, startT);
+	       // StartKey = startPoint.Key;
+	       // var endPoint = new PointOnTrait(PadKind, trait.Key, endT);
+        //    EndKey = endPoint.Key;
+        //}
+        public Focal(Entity entity, PointOnTrait startPoint, PointOnTrait endPoint) : base(entity.PadKind)
         {
-	        TraitKey = trait.Key;
-            var startPoint = new PointOnTrait(PadKind, TraitKey, startT);
-	        StartKey = startPoint.Key;
-	        var endPoint = new PointOnTrait(PadKind, TraitKey, endT);
-            EndKey = endPoint.Key;
-        }
-        public Focal(Trait trait, PointOnTrait startPoint, PointOnTrait endPoint) : base(trait.PadKind)
-        {
-	        TraitKey = trait.Key;
-	        StartKey = startPoint.Key;
+	        if (startPoint.TraitKey != endPoint.TraitKey)
+	        {
+		        throw new ArgumentException("AddedFocal points must be on the same trait.");
+	        }
+            StartKey = startPoint.Key;
 	        EndKey = endPoint.Key;
         }
-        public Focal(PadKind padKind, int traitKey, int startKey, int endKey) : base(padKind)
-        {
-	        TraitKey = traitKey;
-	        StartKey = startKey;
-	        EndKey = endKey;
-        }
+        //public Focal(PadKind padKind, int startKey, int endKey) : base(padKind)
+        //{
+	       // StartKey = startKey;
+	       // EndKey = endKey;
+	       // if (StartPoint.TraitKey != EndPoint.TraitKey)
+	       // {
+		      //  throw new ArgumentException("AddedFocal points must be on the same trait.");
+	       // }
+        //}
 
-        public static bool operator ==(Focal left, Focal right) => left.Key == right.Key && left.TraitKey == right.TraitKey && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
-        public static bool operator !=(Focal left, Focal right) => left.Key != right.Key || left.TraitKey != right.TraitKey || left.StartKey != right.StartKey || left.EndKey != right.EndKey;
+        public static bool operator ==(Focal left, Focal right) => left.Key == right.Key && left.EntityKey == right.EntityKey && left.TraitKey == right.TraitKey && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
+        public static bool operator !=(Focal left, Focal right) => left.Key != right.Key || left.EntityKey != right.EntityKey || left.TraitKey != right.TraitKey || left.StartKey != right.StartKey || left.EndKey != right.EndKey;
 	    public override bool Equals(object obj) => obj is Focal value && this == value;
-	    public override int GetHashCode() => 13 * Key + 17 * TraitKey + 23 * StartKey + 29 * EndKey;
+	    public override int GetHashCode() => 13 * Key + 17 * EntityKey + 19 * TraitKey + 23 * StartKey + 29 * EndKey;
     }
 }

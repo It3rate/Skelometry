@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="Agents\Agent.cs" />
     <Compile Include="Agents\IAgent.cs" />
+    <Compile Include="Commands\EditCommands\AddBondCommand.cs" />
     <Compile Include="Commands\EditCommands\AddFocalCommand.cs" />
     <Compile Include="Commands\EditCommands\Command.cs" />
     <Compile Include="Commands\CommandStack.cs" />
@@ -100,8 +101,10 @@
     <Compile Include="Commands\EditCommands\SetSelectionCommand.cs" />
     <Compile Include="Commands\Patterns\EditPatterns.cs" />
     <Compile Include="Commands\Patterns\IPattern.cs" />
+    <Compile Include="Commands\Tasks\CreateBondTask.cs" />
     <Compile Include="Commands\Tasks\CreateEntityTask.cs" />
     <Compile Include="Commands\Tasks\CreateFocalTask.cs" />
+    <Compile Include="Commands\Tasks\CreatePointOnFocalTask.cs" />
     <Compile Include="Commands\Tasks\CreateRefPointTask.cs" />
     <Compile Include="Commands\Tasks\CreateTraitTask.cs" />
     <Compile Include="Commands\Tasks\CreateTerminalPointTask.cs" />
@@ -143,6 +146,7 @@
     <Compile Include="Entities\Focal.cs" />
     <Compile Include="Primitives\Slug.cs" />
     <Compile Include="Entities\IElement.cs" />
+    <Compile Include="UI\UIMode.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -9,7 +9,7 @@ namespace Slugs.Entities
 {
 	public class PointOnTrait : PointBase
 	{
-		public override ElementKind ElementKind => ElementKind.RefPoint;
+		public override ElementKind ElementKind => ElementKind.PointOnTrait;
 		public override IElement EmptyElement => Empty;
 	    public static readonly PointOnTrait Empty = new PointOnTrait();
         private PointOnTrait():base(true) { }

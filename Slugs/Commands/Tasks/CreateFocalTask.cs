@@ -13,27 +13,40 @@ namespace Slugs.Commands.Tasks
 
     public class CreateFocalTask : EditTask, ICreateTask
     {
-	    public int TraitKey { get; set; }
-	    public Trait Trait => Pad.TraitAt(TraitKey);
+        public Focal AddedFocal { get; private set; }
+
+        public Entity Entity { get; }
+        public PointOnTrait StartPoint { get; }
+        public PointOnTrait EndPoint { get; }
+
+        public int StartPointKey => StartPoint.Key;
+        public int EndPointKey => EndPoint.Key;
+
+        public int TraitKey => StartPoint.TraitKey;
+        public Trait Trait => Pad.TraitAt(TraitKey);
+
+        public float StartT => AddedFocal.StartPoint.T;
+	    public float EndT => AddedFocal.EndPoint.T;
 
         public ElementKind SegmentKind => ElementKind.Focal;
-	    public int StartPointKey { get; }
-	    public int EndPointKey { get; }
         public SegmentBase Segment;
-        public Focal Focal { get; private set; }
-
-	    public CreateFocalTask(PadKind padKind, int traitKey, PointOnTrait startPoint, PointOnTrait endPoint) : base(padKind)
-	    {
-		    TraitKey = traitKey;
-		    StartPointKey = startPoint.Key;
-		    EndPointKey = endPoint.Key;
+    
+        public CreateFocalTask(Entity entity, PointOnTrait startPoint, PointOnTrait endPoint) : base(entity.PadKind)
+        {
+	        if (startPoint.TraitKey != endPoint.TraitKey)
+	        {
+                throw new ArgumentException("AddedFocal points must be on the same trait.");
+	        }
+	        Entity = entity;
+	        StartPoint = startPoint;
+	        EndPoint = endPoint;
         }
 
-	    public override void RunTask()
+        public override void RunTask()
 	    {
 		    base.RunTask();
-		    Focal = new Focal(PadKind, TraitKey, StartPointKey, EndPointKey);
-			Trait.AddFocal(Focal);
+		    AddedFocal = new Focal(Entity, StartPoint, EndPoint);
+			Trait.AddFocal(AddedFocal);
 	    }
     }
 }

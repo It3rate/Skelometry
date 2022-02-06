@@ -38,11 +38,11 @@
     [Flags]
     public enum ElementStyle
     {
-	    None,
-	    Highlighting,
-	    ShowTicks,
-	    ShowRuler,
-	    ShowHotspots,
+	    None = 0,
+	    Highlighting = 1,
+	    ShowTicks = 2,
+	    ShowRuler = 4,
+	    ShowHotspots = 8,
     }
 
     public enum ElementType

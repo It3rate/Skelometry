@@ -6,23 +6,23 @@ namespace Slugs.Commands.Tasks
 {
 	public class CreatePointOnTraitTask : EditTask, IPointTask, ICreateTask
 	{
-		public int PointKey { get; }
-		public int TraitKey { get; }
-		public float T { get; }
-
         public PointOnTrait PointOnTrait { get; set; }
-		public IPoint IPoint => PointOnTrait;
 
-		public CreatePointOnTraitTask(Trait trait, float t) : base(trait.PadKind)
+		public int TraitKeyStore { get; }
+		public float TStore { get; }
+        public IPoint IPoint => PointOnTrait;
+        public int PointKey => PointOnTrait.Key;
+
+        public CreatePointOnTraitTask(Trait trait, float t) : base(trait.PadKind)
 		{
-			TraitKey = trait.Key;
-			T = t;
+			TraitKeyStore = trait.Key;
+			TStore = t;
 		}
 
 		public override void RunTask()
 		{
 			base.RunTask();
-			PointOnTrait = new PointOnTrait(PadKind, TraitKey, T);
+			PointOnTrait = new PointOnTrait(PadKind, TraitKeyStore, TStore);
 		}
     }
 }
