@@ -40,7 +40,8 @@ namespace Slugs.Commands.Tasks
 	    {
 		    base.RunTask();
 		    AddedBond = new Bond(StartPoint, EndPoint);
-		    //Entity.AddBond(AddedBond);
-	    }
+		    StartPoint.Focal.AddBond(AddedBond);
+		    EndPoint.Focal.AddBond(AddedBond);
+        }
     }
 }

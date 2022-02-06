@@ -134,6 +134,10 @@ namespace Slugs.Renderer
 		                foreach (var focal in trait.Focals)
 		                {
 			                DrawDirectedLine(focal.Segment, Pens.FocalPen);
+			                foreach (var bond in focal.Bonds)
+			                {
+				                DrawDirectedLine(bond.Segment, Pens.BondPen);
+                            }
 		                }
 	                }
                 }

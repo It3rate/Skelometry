@@ -34,7 +34,7 @@ namespace Slugs.Commands.EditCommands
         void AddTasks(params ITask[] tasks);
         void AddTaskAndRun(ITask task);
         void AddTasksAndRun(params ITask[] tasks);
-        void RunToEnd();
+        //void RunToEnd();
 
         // event EventHandler OnExecute;
         // event EventHandler OnUpdate;
@@ -129,7 +129,7 @@ namespace Slugs.Commands.EditCommands
 	        }
 	        RunToEnd();
         }
-        public void RunToEnd()
+        protected void RunToEnd()
         {
 	        while (_taskIndex < Tasks.Count)
 	        {

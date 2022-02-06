@@ -110,12 +110,39 @@ namespace Slugs.Entities
         FocalPart = Focal | Unit | PointOnTrait,
         BondPart = Bond | PointOnFocal,
         UIPart = Grid | SelectionRect | Ruler | Value,
+        TraitPointSource = Terminal | RefPoint | Entity,
+        FocalPointSource = Trait | PointOnTrait,
+        BondPointSource = Focal | Unit | PointOnFocal,
     }
 	public static class SelectionKindExtensions
 	{
 		public static bool IsNone(this ElementKind kind) => kind == ElementKind.None;
 		public static bool IsPoint(this ElementKind kind) => (int) (kind & ElementKind.PointKind) > 0;// ElementKind.PointKind.HasFlag(kind);
 		public static bool IsTerminal(this ElementKind kind) => kind == ElementKind.Terminal;
-        public static bool IsCompatible(this ElementKind self, ElementKind other) => (int)(self & other) != 0;
+		public static bool IsCompatible(this ElementKind self, ElementKind other) => (int)(self & other) != 0;
+
+		public static bool CanCreateWith(this ElementKind self, ElementKind other)
+		{
+			var result = false;
+			switch (self)
+			{
+				case ElementKind.Terminal:
+					result = (other == ElementKind.None);
+					break;
+				case ElementKind.RefPoint:
+					result = other.IsCompatible(ElementKind.PointKind); // maybe only terminal and ref points?
+					break;
+                case ElementKind.Trait:
+					result = other.IsCompatible(ElementKind.TraitPointSource);
+					break;
+				case ElementKind.Focal:
+					result = other.IsCompatible(ElementKind.FocalPointSource);
+					break;
+                case ElementKind.Bond:
+					result = other.IsCompatible(ElementKind.BondPointSource);
+					break;
+            }
+			return result;
+		}
     }
 }

@@ -58,9 +58,16 @@ namespace Slugs.Agents
             var (entity, trait) = InputPad.AddEntity(new SKPoint(100, 100), new SKPoint(700, 100), 1);
             _activeEntity = entity;
             trait.SetLock(true);
-            InputPad.AddTrait(entity.Key, new SKPoint(100, 120), new SKPoint(700, 120), 1).SetLock(true);
-            InputPad.AddTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), 1).SetLock(true);
-            InputPad.AddTrait(entity.Key, new SKPoint(100, 160), new SKPoint(700, 160), 1).SetLock(true);
+            var trait2 = InputPad.AddTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), 1);
+            trait2.SetLock(true);
+            InputPad.AddTrait(entity.Key, new SKPoint(100, 180), new SKPoint(700, 180), 1).SetLock(true);
+            InputPad.AddTrait(entity.Key, new SKPoint(100, 220), new SKPoint(700, 220), 1).SetLock(true);
+            var fc1 = new AddFocalCommand(_activeEntity, trait, 0.3f, 0.8f);
+            fc1.Execute();
+            var fc2 = new AddFocalCommand(_activeEntity, trait2, 0.1f, 0.5f);
+            fc2.Execute();
+            var bc = new AddBondCommand(fc1.AddedFocal, .4f, fc2.AddedFocal, 0.6f);
+            bc.Execute();
 
             ClearMouse();
             var t = new RefPoint();
@@ -122,7 +129,7 @@ namespace Slugs.Agents
 				var dist = (mousePoint - Data.Begin.Position).Length;
 				if (dist > _minDragDistance)
 				{
-					bool overrideMove = KeyIsDownControl || _uiMode.IsCreate();
+					bool overrideMove = KeyIsDownControl || UIMode.IsCreate();
 					var createObject = !Data.Begin.HasSelection || KeyIsDownControl;
 					if (createObject)
 					{
@@ -157,9 +164,11 @@ namespace Slugs.Agents
                         }
                         else if (eKind == ElementKind.Focal) // make focal if creating something on a trait
                         {
-	                        var focal = (Focal)Data.Begin.FirstElement;
-	                        var startT = focal.TFromPoint(mousePoint).Item1;
-	                        var bondCmd = new AddBondCommand(focal, startT, startT);
+	                        var startFocal = (Focal)Data.Begin.FirstElement;
+	                        var startT = startFocal.TFromPoint(Data.Begin.Position).Item1;
+	                        var endFocal = (Focal)Data.Current.FirstElement;
+	                        var endT = endFocal.TFromPoint(mousePoint).Item1;
+                            var bondCmd = new AddBondCommand(startFocal, startT, endFocal, endT);
 	                        _activeCommand = _editCommands.Do(bondCmd);
 	                        Data.Selected.Point = bondCmd.AddedBond.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
 	                        Data.Selected.ClearElements();
@@ -213,7 +222,7 @@ namespace Slugs.Agents
             else if (!IsDragging && _activeCommand == null)  // clicked
             {
 	            var selCmd = new SetSelectionCommand(Data.Begin.Pad, Data.Highlight.PointKey, Data.Highlight.ElementKeysCopy);
-                selCmd.RunToEnd();
+                selCmd.Execute();
             }
             ClearMouse();
 

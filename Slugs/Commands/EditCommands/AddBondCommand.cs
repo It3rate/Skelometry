@@ -22,14 +22,12 @@ namespace Slugs.Commands.EditCommands
 	    public int FocalKey { get; }
 	    public Focal Focal => Pad.FocalAt(FocalKey);
 
-	    public AddBondCommand(Focal focal, float startT, float endT) :
-		    this(focal.Key, new CreatePointOnFocalTask(focal, startT), new CreatePointOnFocalTask(focal, endT))
+	    public AddBondCommand(Focal startFocal, float startT, Focal endFocal, float endT) :
+		    this(new CreatePointOnFocalTask(startFocal, startT), new CreatePointOnFocalTask(endFocal, endT))
 	    { }
 
-	    public AddBondCommand(int focalKey, CreatePointOnFocalTask startPointTask, CreatePointOnFocalTask endPointTask) : base(startPointTask.Pad)
+	    public AddBondCommand(CreatePointOnFocalTask startPointTask, CreatePointOnFocalTask endPointTask) : base(startPointTask.Pad)
 	    {
-		    FocalKey = focalKey;
-
 		    StartPointTask = startPointTask;
 		    AddTaskAndRun(StartPointTask);
 		    EndPointTask = endPointTask;

@@ -28,6 +28,7 @@ namespace Slugs.Renderer
         public SKPaint HighlightPen { get; private set; }
         public SKPaint LockedPen { get; private set; }
         public SKPaint FocalPen { get; private set; }
+        public SKPaint BondPen { get; private set; }
 
         public SlugPens(float defaultWidth = 1f)
 	    {
@@ -109,6 +110,7 @@ namespace Slugs.Renderer
 		    HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 5f);
 		    LockedPen = GetPen(new SKColor(180, 180, 190), DefaultWidth * 2);
 		    FocalPen = GetPen(new SKColor(100, 120, 210), DefaultWidth * 3);
+		    BondPen = GetPen(new SKColor(100, 20, 240), DefaultWidth * 1);
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));

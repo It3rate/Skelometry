@@ -47,15 +47,49 @@ namespace Slugs.Entities
             StartKey = startPoint.Key;
 	        EndKey = endPoint.Key;
         }
-        //public Focal(PadKind padKind, int startKey, int endKey) : base(padKind)
-        //{
-	       // StartKey = startKey;
-	       // EndKey = endKey;
-	       // if (StartPoint.TraitKey != EndPoint.TraitKey)
-	       // {
-		      //  throw new ArgumentException("AddedFocal points must be on the same trait.");
-	       // }
-        //}
+        private readonly HashSet<int> _bondStartKeys = new HashSet<int>();
+        private readonly HashSet<int> _bondEndKeys = new HashSet<int>();
+        public IEnumerable<Bond> Bonds
+        {
+	        get
+	        {
+		        foreach (var key in _bondStartKeys)
+		        {
+			        yield return Pad.BondAt(key);
+		        }
+	        }
+        }
+
+        public void AddBond(Bond bond) // todo: Add bonds from entity so able to verify focals belong to same entity.
+        {
+	        if (bond.StartPoint.FocalKey == Key)
+	        {
+		        _bondStartKeys.Add(bond.Key);
+	        }
+	        else if (bond.EndPoint.FocalKey == Key)
+	        {
+		        _bondEndKeys.Add(bond.Key);
+	        }
+	        else
+	        {
+		        throw new ArgumentException("Bond added to focal that doesn't belong to focal.");
+	        }
+        }
+        public void RemoveBond(Bond bond)
+        {
+	        if (bond.StartPoint.FocalKey == Key)
+	        {
+		        _bondStartKeys.Remove(bond.Key);
+	        }
+	        else if (bond.EndPoint.FocalKey == Key)
+	        {
+		        _bondEndKeys.Remove(bond.Key);
+	        }
+	        else
+	        {
+		        throw new ArgumentException("Bond added to focal that doesn't belong to focal.");
+	        }
+        }
 
         public static bool operator ==(Focal left, Focal right) => left.Key == right.Key && left.EntityKey == right.EntityKey && left.TraitKey == right.TraitKey && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
         public static bool operator !=(Focal left, Focal right) => left.Key != right.Key || left.EntityKey != right.EntityKey || left.TraitKey != right.TraitKey || left.StartKey != right.StartKey || left.EndKey != right.EndKey;
