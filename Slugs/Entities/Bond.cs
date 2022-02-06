@@ -1,11 +1,12 @@
 ﻿
 using System.Collections.Generic;
+using SkiaSharp;
 using Slugs.Pads;
 using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
-	public class Bond : ElementBase
+	public class Bond : SegmentBase
     {
 	    public override ElementKind ElementKind => ElementKind.Bond;
         public override IElement EmptyElement => Empty;
@@ -17,6 +18,8 @@ namespace Slugs.Entities
 
         public PointOnFocal StartPoint => (PointOnFocal)Pad.PointAt(StartPointKey);
         public PointOnFocal EndPoint => (PointOnFocal)Pad.PointAt(EndPointKey);
+        public override SKPoint StartPosition => StartPoint.Position;
+        public override SKPoint EndPosition => EndPoint.Position;
 
         public override List<IPoint> Points => new List<IPoint>() {StartPoint, EndPoint};
 

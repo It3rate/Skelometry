@@ -32,6 +32,12 @@ namespace Slugs.Primitives
         public (float, SKPoint) TFromPoint(SKPoint point, bool clamp = true) => Segment.TFromPoint(point, clamp);
 	    public SKPoint[] EndArrow(float dist = 8f) => Segment.EndArrow(dist);
 
+	    public override float DistanceToPoint(SKPoint point)
+	    {
+		    var closest = ProjectPointOnto(point);
+		    return point.DistanceTo(closest);
+	    }
+
         //public static SegmentBase operator +(SegmentBase a, float value)
         //{
         // a.StartPosition = a.StartPosition.Add(value);

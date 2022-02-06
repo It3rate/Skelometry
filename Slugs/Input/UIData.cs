@@ -31,8 +31,8 @@ namespace Slugs.Input
 
 	    public bool HasHighlightPoint => !Highlight.Point.IsEmpty;
 	    public IPoint HighlightPoint => Highlight.Point;
-	    public bool HasHighlightLine => Highlight.ElementKind == ElementKind.Trait;
-        public Trait HighlightLine => HasHighlightLine ? (Trait)Highlight.FirstElement : Trait.Empty;
+	    public bool HasHighlightLine => Highlight.ElementKind.IsCompatible(ElementKind.SegmentKind);
+        public SegmentBase HighlightLine => HasHighlightLine ? (SegmentBase)Highlight.FirstElement : Trait.Empty;
 
 	    //public Position GetHighlightPoint() => Current.SnapPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].Position : Position.Empty;
 	    //public SKSegment GetHighlightLine() => HighlightLine.Trait;

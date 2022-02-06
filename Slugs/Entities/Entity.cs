@@ -62,12 +62,16 @@ namespace Slugs.Entities
 
         #endregion
 
-        public Entity(PadKind padKind, params Trait[] traits) : base(padKind)
-        {
+	    public Entity(PadKind padKind, params Trait[] traits) : base(padKind)
+	    {
 		    foreach (var trait in traits)
 		    {
 			    EmbedTrait(trait);
 		    }
 	    }
+        public override float DistanceToPoint(SKPoint point)
+        {
+	        return float.MaxValue; // todo: Calculate distance to closest entity element.
+        }
     }
 }

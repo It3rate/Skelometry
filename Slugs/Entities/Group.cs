@@ -72,7 +72,11 @@ namespace Slugs.Entities
 	    }
 	    public bool ContainsElement(IElement element) => _elementKeys.Contains(element.Key);
 
-	    public override List<IPoint> Points
+	    public override float DistanceToPoint(SKPoint point)
+	    {
+		    return float.MaxValue; // todo: Calculate distance to closest group element.
+	    }
+        public override List<IPoint> Points
 	    {
 		    get
 		    {

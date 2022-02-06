@@ -37,11 +37,38 @@ namespace Slugs.Entities
         {
 	        get
 	        {
-		        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint() );
-                foreach (var kvp in values)
+		        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint());
+		        foreach (var kvp in values)
 		        {
 			        yield return (IPoint)kvp.Value;
 		        }
+	        }
+        }
+        public IEnumerable<IPoint> PointsReversed
+        {
+	        get
+	        {
+		        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint()).Reverse();
+		        foreach (var kvp in values)
+		        {
+			        yield return (IPoint)kvp.Value;
+		        }
+	        }
+        }
+        public IEnumerable<IElement> ElementsOfKind(ElementKind kind)
+        {
+	        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsCompatible(kind));
+	        foreach (var kvp in values)
+	        {
+		        yield return kvp.Value;
+	        }
+        }
+        public IEnumerable<IElement> ElementsOfKindReversed(ElementKind kind)
+        {
+	        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsCompatible(kind)).Reverse();
+	        foreach (var kvp in values)
+	        {
+		        yield return kvp.Value;
 	        }
         }
         //public Entity EntityAt(int key) => Data.EntityAt(key);
@@ -216,25 +243,13 @@ namespace Slugs.Entities
         public void Refresh()
         {
             _output.Clear();
-            foreach (var entity in Entities)
-            {
-	            foreach (var bond in entity.Traits)
-	            {
-                    //var unit = SlugFromIndex(entity.SlugIndex);
-                    //var line = InputFromIndex(entity.DataMapIndex);
-                    //var norm = unit / 10.0;
-                    //var multStart = line.PointAlongLine(0, 1, norm.IsForward ? -(float)norm.Aft : (float)norm.Fore);
-                    //var multEnd = line.PointAlongLine(0, 1, norm.IsForward ? (float)norm.Fore : -(float)norm.Aft);
-                    //_output.AddEntity(new SKSegment(multStart, multEnd));
-                }
-            }
         }
 
         public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, ElementKind kind, float maxDist = SnapDistance)
         {
 	        IPoint result = TerminalPoint.Empty;
-            foreach (var ptRef in Points)
-            {
+	        foreach (var ptRef in PointsReversed)
+	        {
 	            if (ptRef.ElementKind.IsCompatible(kind) && !ignorePoints.Contains(ptRef.Key) && input.SquaredDistanceTo(ptRef.Position) < maxDist)
 	            {
                     result = ptRef;
@@ -247,66 +262,17 @@ namespace Slugs.Entities
         public IElement GetSnapElement(SKPoint point, List<int> ignoreKeys, ElementKind kind, float maxDist = SnapDistance)
         {
             IElement result = TerminalPoint.Empty;
-            int lineIndex = 0;
-            foreach (var entity in Entities)
+
+            foreach (var element in ElementsOfKindReversed(kind))
             {
-	            if (!ignoreKeys.Contains(entity.Key))
+	            if (!ignoreKeys.Contains(element.Key) && element.DistanceToPoint(point) < maxDist)
 	            {
-		            if (kind.IsCompatible(ElementKind.Trait)) // todo: need to cycle through all elements to avoid filtering sub elements.
-		            {
-			            foreach (var trait in entity.Traits)
-			            {
-				            if (!ignoreKeys.Contains(trait.Key))
-				            {
-					            var closest = trait.ProjectPointOnto(point);
-					            var dist = point.SquaredDistanceTo(closest);
-					            if (dist < maxDist)
-					            {
-						            result = trait;
-						            goto End;
-					            }
-
-					            lineIndex++;
-				            }
-			            }
-		            }
-		            if (kind.IsCompatible(ElementKind.Focal)) // todo: need to cycle through all elements to avoid filtering sub elements.
-		            {
-			            foreach (var focal in entity.Focals)
-			            {
-				            if (!ignoreKeys.Contains(focal.Key))
-				            {
-					            var closest = focal.ProjectPointOnto(point);
-					            var dist = point.SquaredDistanceTo(closest);
-					            if (dist < maxDist)
-					            {
-						            result = focal;
-						            goto End;
-					            }
-
-					            lineIndex++;
-				            }
-			            }
-                    }
+		            result = element;
+		            break;
 	            }
             }
-			End:
             return result;
         }
-
-        //public DataMap InputFromIndex(int index)
-        //{
-        //    DataMap result;
-        //    if (index >= 0 && index < _dataMaps.Count)
-        //    {
-        //        result = _dataMaps[index];
-        //    }
-        //    else
-        //    {
-        //        result = DataMap.Empty;
-        //    }
-        //    return result;
-        //}
 
         public Slug SlugFromIndex(int index)
         {
@@ -325,20 +291,5 @@ namespace Slugs.Entities
             }
             return result;
         }
-
-        //public IEnumerator<(DataMap, Range)> GetEnumerator()
-        //{
-        //    foreach (var map in _slugMaps)
-        //    {
-        //        yield return (InputFromIndex(map.DataMapIndex), SlugFromIndex(map.SlugIndex));
-        //    }
-        //}
-        //IEnumerator IEnumerable.GetEnumerator()
-        //{
-        //    foreach (var map in _slugMaps)
-        //    {
-        //        yield return (InputFromIndex(map.DataMapIndex), SlugFromIndex(map.SlugIndex));
-        //    }
-        //}
     }
 }

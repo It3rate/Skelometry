@@ -252,18 +252,18 @@ namespace Slugs.Agents
 				    break;
                 case Keys.E:
 				    _selectableKind = ElementKind.Any;
-				    UIMode = UIMode.Any;
+				    UIMode = UIMode.CreateEntity;
 				    break;
 			    case Keys.T:
 				    _selectableKind = ElementKind.TraitPart;
 				    UIMode = UIMode.CreateTrait;
 				    break;
 			    case Keys.F:
-				    _selectableKind = ElementKind.FocalPart;
+				    _selectableKind = e.Control ? ElementKind.TraitPart : ElementKind.FocalPart;
 				    UIMode = UIMode.CreateFocal;
                     break;
 			    case Keys.B:
-				    _selectableKind = ElementKind.BondPart;
+				    _selectableKind = e.Control ? ElementKind.FocalPart : ElementKind.BondPart;
 				    UIMode = UIMode.CreateBond;
                     break;
             }

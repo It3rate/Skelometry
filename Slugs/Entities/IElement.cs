@@ -19,7 +19,8 @@ namespace Slugs.Entities
 
         //IPoint[] TerminalPoints { get; }
         List<IPoint> Points { get; }
-        List<SKPoint> SKPoints{ get; }
+        List<SKPoint> SKPoints { get; }
+        float DistanceToPoint(SKPoint point);
 
         void MoveTo(SKPoint position);
         void SetLock(bool lockStatus);
@@ -64,7 +65,10 @@ namespace Slugs.Entities
 			Key = Pad.KeyCounter++;
 			Pad.AddElement(this);
         }
-	    public virtual void MoveTo(SKPoint position)
+
+		public abstract float DistanceToPoint(SKPoint point);
+
+		public virtual void MoveTo(SKPoint position)
 	    {
 		    foreach (var point in Points)
 		    {
@@ -101,7 +105,7 @@ namespace Slugs.Entities
         Any = 0xFFFF,
 
         PointKind = RefPoint | Terminal | PointOnTrait | PointOnFocal,
-        SegmentKind = Trait | Focal | Bond,
+        SegmentKind = Trait | Focal | Bond | Unit,
         TraitPart = Trait | Terminal | RefPoint,
         FocalPart = Focal | Unit | PointOnTrait,
         BondPart = Bond | PointOnFocal,

@@ -2,6 +2,7 @@
 using SkiaSharp;
 using Slugs.Agents;
 using Slugs.Pads;
+using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
@@ -19,6 +20,11 @@ namespace Slugs.Entities
 
 		protected PointBase(bool isEmpty) : base(isEmpty) { }
 		protected PointBase(PadKind padKind) : base(padKind) { }
+
+		public override float DistanceToPoint(SKPoint point)
+		{
+			return point.DistanceTo(Position);
+		}
 
         //public static bool operator ==(PointBase left, IPoint right) => left.Key == right.Key;
         //public static bool operator !=(PointBase left, IPoint right) => left.Key != right.Key;
