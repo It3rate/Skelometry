@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Slugs.Renderer;
+using Slugs.UI;
 
 namespace Slugs
 {
@@ -28,8 +29,10 @@ namespace Slugs
             _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;
             _control.MouseUp += OnMouseUp;
-            _control.KeyDown += OnKeyDown;
-            _control.KeyUp += OnKeyUp;
+            KeyDown += OnKeyDown;
+            //KeyPress += OnKeyPress;
+            KeyUp += OnKeyUp;
+            KeyPreview = true;
 
             _agent = new Agents.Agent(_renderer);
             scTop.Value = (int)_agent.ScrollLeft;
@@ -38,8 +41,9 @@ namespace Slugs
             lbBottom.Text = (scBottom.Value).ToString();
             scTop.Scroll += ScTop_Scroll;
             scBottom.Scroll += ScBottom_Scroll;
-        }
 
+            _agent.OnModeChange += _agent_OnModeChange;
+        }
 
         private void ScTop_Scroll(object sender, ScrollEventArgs e)
         {
@@ -80,18 +84,31 @@ namespace Slugs
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-	        if (_agent.KeyDown(e))
-	        {
-		        Redraw();
-	        }
+            if (_agent.KeyDown(e))
+            {
+                Redraw();
+            }
         }
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
-	        if (_agent.KeyUp(e))
+            if (_agent.KeyUp(e))
 	        {
 		        Redraw();
 	        }
         }
+        //private void OnKeyPress(object sender, KeyPressEventArgs e)
+        //{
+	       // Console.WriteLine("press " + e.KeyChar);
+        //}
+        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        //{
+	       // if (_agent.KeyDown(keyData))
+	       // {
+		      //  Redraw();
+	       // }
+        //    return base.ProcessCmdKey(ref msg, keyData);
+        //}
+
 
         private void Redraw()
         {
@@ -108,5 +125,47 @@ namespace Slugs
 	        Application.Exit();
         }
 
+        private void btEntity_Click(object sender, EventArgs e)
+        {
+	        _agent.UIMode = UIMode.CreateEntity;
+        }
+
+        private void btTrait_Click(object sender, EventArgs e)
+        {
+	        _agent.UIMode = UIMode.CreateTrait;
+        }
+
+        private void btFocal_Click(object sender, EventArgs e)
+        {
+	        _agent.UIMode = UIMode.CreateFocal;
+        }
+
+        private void btBond_Click(object sender, EventArgs e)
+        {
+	        _agent.UIMode = UIMode.CreateBond;
+        }
+        private void _agent_OnModeChange(object sender, EventArgs e)
+        {
+	        btTrait.Enabled = true;
+	        btFocal.Enabled = true;
+	        btBond.Enabled = true;
+	        btEntity.Enabled = true;
+            switch (_agent.UIMode)
+            {
+	            case UIMode.CreateTrait:
+		            btTrait.Enabled = false;
+		            break;
+	            case UIMode.CreateFocal:
+                    btFocal.Enabled = false;
+                    break;
+	            case UIMode.CreateBond:
+                    btBond.Enabled = false;
+                    break;
+                default:
+                    btEntity.Enabled = false;
+                    break;
+            }
+	        _control.Select();
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace Slugs.Agents
 
         private List<int> _ignoreList = new List<int>();
         private ElementKind _selectableKind = ElementKind.Any;
-        private UIMode _uiMode = UIMode.Any;
+        public event EventHandler OnModeChange;
 
         public Agent(SlugRenderer renderer)
         {
@@ -159,9 +159,9 @@ namespace Slugs.Agents
                         {
 	                        var focal = (Focal)Data.Begin.FirstElement;
 	                        var startT = focal.TFromPoint(mousePoint).Item1;
-	                        //var bondCmd = new AddBondCommand(focal, startT, null, null);
-	                        //_activeCommand = _editCommands.Do(bondCmd);
-	                        //Data.Selected.Point = bondCmd.AddedBond.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
+	                        var bondCmd = new AddBondCommand(focal, startT, startT);
+	                        _activeCommand = _editCommands.Do(bondCmd);
+	                        Data.Selected.Point = bondCmd.AddedBond.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
 	                        Data.Selected.ClearElements();
                         }
                         else
@@ -224,30 +224,60 @@ namespace Slugs.Agents
 	    private bool KeyIsDownControl => (CurrentKey & Keys.ControlKey) != 0;
 	    private bool KeyIsDownAlt => (CurrentKey & Keys.Alt) != 0;
 	    private bool KeyIsDownShift => (CurrentKey & Keys.ShiftKey) != 0;
-        public bool KeyDown(KeyEventArgs e)
+	    private UIMode _uiMode;
+	    public UIMode UIMode
+	    {
+		    get => _uiMode;
+		    set
+		    {
+			    if (value != _uiMode)
+			    {
+				    _uiMode = value;
+					OnModeChange?.Invoke(this, new EventArgs());
+			    }
+		    }
+        }
+
+        // When Bond is selected, focals can be highlighted (but not moved), bonds can be created or edited and have precedence in conflict.
+        // ctrl defaults to 'create' causing select to be exclusive to focals or bond points.
+	    public bool KeyDown(KeyEventArgs e)
 	    {
 		    CurrentKey = e.KeyCode;
+		    var curMode = UIMode;
 		    switch (CurrentKey)
 		    {
+			    case Keys.Escape:
+				    _selectableKind = ElementKind.Any;
+				    UIMode = UIMode.Any;
+				    break;
+                case Keys.E:
+				    _selectableKind = ElementKind.Any;
+				    UIMode = UIMode.Any;
+				    break;
 			    case Keys.T:
 				    _selectableKind = ElementKind.TraitPart;
+				    UIMode = UIMode.CreateTrait;
 				    break;
 			    case Keys.F:
 				    _selectableKind = ElementKind.FocalPart;
-				    break;
+				    UIMode = UIMode.CreateFocal;
+                    break;
 			    case Keys.B:
 				    _selectableKind = ElementKind.BondPart;
-				    break;
+				    UIMode = UIMode.CreateBond;
+                    break;
             }
-		    return true;
+		    
+            return true;
 	    }
 
         public bool KeyUp(KeyEventArgs e)
         {
             CurrentKey = Keys.None;
-            _selectableKind = ElementKind.Any;
+            //_selectableKind = ElementKind.Any;
             return true;
         }
+
 
 #endregion
 
