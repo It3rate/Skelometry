@@ -164,6 +164,7 @@ namespace Slugs.Agents
 	                        _activeCommand = _editCommands.Do(focalCmd);
 	                        Data.Selected.Point = focalCmd.AddedFocal.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
 	                        Data.Selected.ClearElements();
+	                        _selectableKind = ElementKind.TraitPart;
                         }
                         else if (eKind == ElementKind.Focal) // make focal if creating something on a trait
                         {
@@ -177,7 +178,8 @@ namespace Slugs.Agents
 		                        _activeCommand = _editCommands.Do(bondCmd);
 		                        Data.Selected.Point = bondCmd.AddedBond.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
 		                        Data.Selected.ClearElements();
-	                        }
+		                        _selectableKind = ElementKind.FocalPart;
+                            }
                         }
                         else
                         {
@@ -205,11 +207,11 @@ namespace Slugs.Agents
 					IsDragging = true;
 				}
 		    }
+
 		    Data.Selected.UpdatePositions(mousePoint);
 		    if (_activeCommand is AddBondCommand abc)
 		    {
 			    var focal = _activeEntity.NearestFocal(mousePoint, abc.StartPointTask.FocalKey);
-			    Console.WriteLine(focal.Key);
 			    if (!focal.IsEmpty && focal.Key != abc.EndPointTask.FocalKey)
 			    {
 					abc.UpdateEndPointFocal(focal);
@@ -267,43 +269,70 @@ namespace Slugs.Agents
 		    }
         }
 
+	    private void SetSelectable(UIMode uiMode)
+	    {
+		    switch (uiMode)
+		    {
+			    case UIMode.Any:
+				    _selectableKind = ElementKind.Any;
+				    break;
+			    case UIMode.CreateEntity:
+				    _selectableKind = ElementKind.Any;
+				    break;
+			    case UIMode.CreateTrait:
+				    _selectableKind = ElementKind.TraitPart;
+				    break;
+			    case UIMode.CreateFocal:
+				    _selectableKind = _isControlDown ? ElementKind.TraitPart : ElementKind.FocalPart;
+				    break;
+			    case UIMode.CreateBond:
+				    _selectableKind = _isControlDown ? ElementKind.FocalPart : ElementKind.BondPart;
+				    break;
+		    }
+	    }
+
+	    private bool _isControlDown;
+	    private bool _isShiftDown;
+	    private bool _isAltDown;
         // When Bond is selected, focals can be highlighted (but not moved), bonds can be created or edited and have precedence in conflict.
         // ctrl defaults to 'create' causing select to be exclusive to focals or bond points.
-	    public bool KeyDown(KeyEventArgs e)
+        public bool KeyDown(KeyEventArgs e)
 	    {
 		    CurrentKey = e.KeyCode;
-		    var curMode = UIMode;
+		    _isControlDown = e.Control;
+		    _isShiftDown = e.Shift;
+		    _isAltDown = e.Alt;
+            var curMode = UIMode;
 		    switch (CurrentKey)
 		    {
 			    case Keys.Escape:
-				    _selectableKind = ElementKind.Any;
 				    UIMode = UIMode.Any;
 				    break;
                 case Keys.E:
-				    _selectableKind = ElementKind.Any;
 				    UIMode = UIMode.CreateEntity;
 				    break;
 			    case Keys.T:
-				    _selectableKind = ElementKind.TraitPart;
 				    UIMode = UIMode.CreateTrait;
 				    break;
 			    case Keys.F:
-				    _selectableKind = e.Control ? ElementKind.TraitPart : ElementKind.FocalPart;
 				    UIMode = UIMode.CreateFocal;
                     break;
 			    case Keys.B:
-				    _selectableKind = e.Control ? ElementKind.FocalPart : ElementKind.BondPart;
 				    UIMode = UIMode.CreateBond;
                     break;
             }
-		    
+		    SetSelectable(UIMode);
             return true;
 	    }
 
         public bool KeyUp(KeyEventArgs e)
         {
             CurrentKey = Keys.None;
+            _isControlDown = e.Control;
+            _isShiftDown = e.Shift;
+            _isAltDown = e.Alt;
             //_selectableKind = ElementKind.Any;
+            SetSelectable(UIMode);
             return true;
         }
 
@@ -319,7 +348,8 @@ namespace Slugs.Agents
             Data.Current.Clear();
 		    Data.Begin.Clear();
 		    WorkingPad.Clear();
-	    }
+		    SetSelectable(UIMode);
+        }
 	    public void Clear()
         {
         }

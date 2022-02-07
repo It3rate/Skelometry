@@ -89,9 +89,9 @@ namespace Slugs.Entities
 
         public void AddElement(IElement element)
         {
-	        if (element.Key == -99)
+	        if (element.Key == ElementBase.EmptyKeyValue)
 	        {
-		        int x = 5;
+		        throw new ArgumentException("Can not add empty key to Pad");
 	        }
 	        if (_elements.ContainsKey(element.Key))
 	        {

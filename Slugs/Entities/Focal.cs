@@ -18,7 +18,7 @@ namespace Slugs.Entities
         public Entity Entity => Pad.EntityAt(EntityKey);
         public int TraitKey => StartPoint.TraitKey;
         public Trait Trait => Pad.TraitAt(TraitKey);
-        public PointOnTrait StartPoint => (PointOnTrait)Pad.PointAt(StartKey); // todo: make this base class for segment elements.
+        public PointOnTrait StartPoint => (PointOnTrait)Pad.PointAt(StartKey);
         public PointOnTrait EndPoint => (PointOnTrait)Pad.PointAt(EndKey);
         public override SKPoint StartPosition => Trait.PointAlongLine(Slug.Start);
         public override SKPoint EndPosition => Trait.PointAlongLine(Slug.End);
@@ -44,9 +44,33 @@ namespace Slugs.Entities
 	        {
 		        throw new ArgumentException("AddedFocal points must be on the same trait.");
 	        }
-            StartKey = startPoint.Key;
-	        EndKey = endPoint.Key;
+	        SetStartKey(startPoint.Key);
+	        SetEndKey(endPoint.Key);
         }
+
+        protected override void SetStartKey(int key)
+        {
+	        if (Pad.ElementAt(key) is PointOnTrait)
+	        {
+		        base.SetStartKey(key);
+	        }
+	        else
+	        {
+		        throw new ArgumentException("Focal points must be PointOnTrait.");
+	        }
+        }
+        protected override void SetEndKey(int key)
+        {
+	        if (Pad.ElementAt(key) is PointOnTrait)
+	        {
+		        base.SetEndKey(key);
+	        }
+	        else
+	        {
+		        throw new ArgumentException("Focal points must be PointOnTrait.");
+	        }
+        }
+
         private readonly HashSet<int> _bondStartKeys = new HashSet<int>();
         private readonly HashSet<int> _bondEndKeys = new HashSet<int>();
         public IEnumerable<Bond> Bonds

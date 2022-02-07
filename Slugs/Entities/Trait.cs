@@ -35,9 +35,32 @@ namespace Slugs.Entities
         public Trait(Entity entity, int startKey, int endKey, int traitKindIndex) : base(entity.PadKind)
         {
             EntityKey = entity.Key;
-            StartKey = startKey;
-            EndKey = endKey;
 		    KindIndex = traitKindIndex;
+		    SetStartKey(startKey);
+		    SetEndKey(endKey);
+        }
+
+        protected override void SetStartKey(int key)
+        {
+	        if (Pad.ElementAt(key) is IPoint)
+	        {
+		        base.SetStartKey(key);
+	        }
+	        else
+	        {
+		        throw new ArgumentException("Trait points must be IPoint.");
+	        }
+        }
+        protected override void SetEndKey(int key)
+        {
+	        if (Pad.ElementAt(key) is IPoint)
+	        {
+		        base.SetEndKey(key);
+	        }
+	        else
+	        {
+		        throw new ArgumentException("Trait points must be IPoint.");
+	        }
         }
 
         private readonly HashSet<int> _focalKeys = new HashSet<int>();

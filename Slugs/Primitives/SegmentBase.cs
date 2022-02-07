@@ -9,8 +9,11 @@ namespace Slugs.Primitives
 {
 	public abstract class SegmentBase : ElementBase
     {
-	    public int StartKey { get; protected set; }
-	    public int EndKey { get; protected set; }
+	    public int StartKey { get; private set; }
+	    public int EndKey { get; private set; }
+	    protected virtual void SetStartKey(int key) => StartKey = key;
+	    protected virtual void SetEndKey(int key) => EndKey = key;
+
         public abstract SKPoint StartPosition { get; }//protected set; }
 	    public abstract SKPoint EndPosition { get; } //protected set; }
 

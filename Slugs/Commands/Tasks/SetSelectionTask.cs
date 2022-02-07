@@ -1,4 +1,6 @@
 ﻿using Slugs.Agents;
+using Slugs.Entities;
+using Slugs.Input;
 using Slugs.Pads;
 
 namespace Slugs.Commands.Tasks
@@ -29,10 +31,17 @@ namespace Slugs.Commands.Tasks
         {
 	        base.RunTask();
 	        var selectSet = Agent.Current.Data.Selected;
-	        PreviousPointKey = selectSet.PointKey;
-	        PreviousElementKeys = selectSet.ElementKeysCopy;
-            selectSet.SetElements(ElementKeys);
-            selectSet.SetPoint(PointKey);
+	        if (PointKey == ElementBase.EmptyKeyValue)
+	        {
+                selectSet.Clear();
+	        }
+	        else
+	        {
+		        PreviousPointKey = selectSet.PointKey;
+		        PreviousElementKeys = selectSet.ElementKeysCopy;
+	            selectSet.SetElements(ElementKeys);
+	            selectSet.SetPoint(PointKey);
+	        }
         }
     }
 }
