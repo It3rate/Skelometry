@@ -25,6 +25,10 @@ namespace Slugs.Entities
             Position = point;
         }
 
+        public override bool CanMergeWith(IPoint point)
+        {
+	        return point.TargetPoint.ElementKind == ElementKind.Terminal;
+        }
         public bool ReplaceWith(IPoint pt)
         {
             Pad.SetPointAt(Key, pt);

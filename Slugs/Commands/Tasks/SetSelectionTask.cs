@@ -30,17 +30,20 @@ namespace Slugs.Commands.Tasks
         public override void RunTask()
         {
 	        base.RunTask();
+
 	        var selectSet = Agent.Current.Data.Selected;
-	        if (PointKey == ElementBase.EmptyKeyValue)
+	        PreviousPointKey = selectSet.PointKey;
+	        PreviousElementKeys = selectSet.ElementKeysCopy;
+
+            selectSet.Clear();
+            if (PointKey != ElementBase.EmptyKeyValue)// && ElementKeys.Length == 0)
 	        {
-                selectSet.Clear();
+                selectSet.SetPoint(PointKey);
 	        }
-	        else
+
+	        if(ElementKeys.Length > 0)
 	        {
-		        PreviousPointKey = selectSet.PointKey;
-		        PreviousElementKeys = selectSet.ElementKeysCopy;
 	            selectSet.SetElements(ElementKeys);
-	            selectSet.SetPoint(PointKey);
 	        }
         }
     }

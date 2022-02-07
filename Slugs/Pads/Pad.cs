@@ -249,7 +249,7 @@ namespace Slugs.Entities
             _output.Clear();
         }
 
-        public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, ElementKind kind, float maxDist = SnapDistance)
+        public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, ElementKind kind, float maxDist = SnapDistance * 2f)
         {
 	        IPoint result = TerminalPoint.Empty;
 	        foreach (var ptRef in PointsReversed)

@@ -29,6 +29,11 @@ namespace Slugs.Entities
             T = t;
         }
 
+        public override bool CanMergeWith(IPoint point)
+        {
+	        return point.TargetPoint.ElementKind == ElementKind.PointOnFocal;
+        }
+
         public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { this };
         public override SKPoint Position
         {

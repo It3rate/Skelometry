@@ -108,9 +108,9 @@ namespace Slugs.Renderer
 		    WorkingPen = GetPen(SKColors.DarkGray, DefaultWidth);
 		    DrawPen = GetPen(SKColors.Blue, DefaultWidth * 4);
 		    HighlightPen = GetPen(SKColors.DarkRed, DefaultWidth * 5f);
-		    LockedPen = GetPen(new SKColor(180, 180, 190), DefaultWidth * 2);
+		    LockedPen = GetPen(new SKColor(180, 180, 190), DefaultWidth * 1);
 		    FocalPen = GetPen(new SKColor(100, 120, 210), DefaultWidth * 3);
-		    BondPen = GetPen(new SKColor(100, 20, 240), DefaultWidth * 1);
+		    BondPen = GetPen(new SKColor(100, 20, 240), DefaultWidth * 2);
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));

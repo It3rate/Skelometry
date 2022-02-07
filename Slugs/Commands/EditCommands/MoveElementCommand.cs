@@ -11,12 +11,13 @@ namespace Slugs.Commands.EditCommands
     using System.Text;
     using System.Threading.Tasks;
 
-    public class MoveElementCommand : EditCommand, IDraggablePointCommand
+    public class MoveElementCommand : EditCommand, IDraggableCommand
     {
 	    public MoveElementTask MoveTask { get; }
 	    public int ElementKey => MoveTask?.ElementKey ?? ElementBase.EmptyKeyValue;
 
 	    public IPoint DraggablePoint => ElementKey >= 0 ? Pad.PointAt(ElementKey) : TerminalPoint.Empty;
+	    public bool HasDraggablePoint => !DraggablePoint.IsEmpty;
 
 	    public MoveElementCommand(Pad pad, int elementKey) : base(pad)
 	    {

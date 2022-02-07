@@ -11,7 +11,9 @@ namespace Slugs.Entities
         //PointKind SelectionKind { get; }
         SKPoint Position { get; set; }
         //bool ReplaceWith(IPoint pt);
-	    //void CopyValuesFrom(IPoint from);
+        //void CopyValuesFrom(IPoint from);
+        bool CanMergeWith(IPoint point);
+        IPoint TargetPoint { get; }
     }
 
 	public abstract class PointBase : ElementBase, IPoint
@@ -26,11 +28,14 @@ namespace Slugs.Entities
 			return point.DistanceTo(Position);
 		}
 
-        //public static bool operator ==(PointBase left, IPoint right) => left.Key == right.Key;
-        //public static bool operator !=(PointBase left, IPoint right) => left.Key != right.Key;
-        //public override bool Equals(object obj) => obj is PointBase value && this == value;
-        //public override int GetHashCode() => Key.GetHashCode();
-    }
+		public abstract bool CanMergeWith(IPoint point);
+		public virtual IPoint TargetPoint => this;
+
+		//public static bool operator ==(PointBase left, IPoint right) => left.Key == right.Key;
+		//public static bool operator !=(PointBase left, IPoint right) => left.Key != right.Key;
+		//public override bool Equals(object obj) => obj is PointBase value && this == value;
+		//public override int GetHashCode() => Key.GetHashCode();
+	}
 
     //[Flags]
     //public enum PointKind

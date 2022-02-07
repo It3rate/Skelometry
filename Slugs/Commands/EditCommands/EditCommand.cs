@@ -9,9 +9,10 @@ namespace Slugs.Commands.EditCommands
     using System.Text;
     using System.Threading.Tasks;
 
-    public interface IDraggablePointCommand : ICommand
+    public interface IDraggableCommand : ICommand
     {
 	    IPoint DraggablePoint { get; }
+	    bool HasDraggablePoint { get; }
     }
     public class EditCommand : CommandBase
     {

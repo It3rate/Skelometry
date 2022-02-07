@@ -13,11 +13,12 @@ namespace Slugs.Commands.EditCommands
     // MoveElementTask
     // MoveVPointTask
     // StretchSegmentTask
-    public class AddTraitCommand : EditCommand, IDraggablePointCommand
+    public class AddTraitCommand : EditCommand, IDraggableCommand
     {
 	    public IPointTask StartPointTask { get; }
 	    public IPointTask EndPointTask { get; }
 	    public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
+	    public bool HasDraggablePoint => !DraggablePoint.IsEmpty;
 
         public CreateTraitTask TraitTask { get; set; }
 

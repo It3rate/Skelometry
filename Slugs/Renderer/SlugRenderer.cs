@@ -122,16 +122,13 @@ namespace Slugs.Renderer
 	        {
                 pad.Refresh();  
 				var slug = Pad.ActiveSlug;
-		        foreach (var output in pad.Output)
-		        {
-			        DrawDirectedLine(output, Pens.DrawPen);
-		        }
                 foreach (var entity in pad.Entities)
                 {
 	                foreach (var trait in entity.Traits)
 	                {
 		                DrawDirectedLine(trait.Segment, trait.IsLocked ? Pens.LockedPen : Pens.DarkPen);
-		                foreach (var focal in trait.Focals)
+                        _canvas.Flush();
+                        foreach (var focal in trait.Focals)
 		                {
 			                DrawDirectedLine(focal.Segment, Pens.FocalPen);
 			                foreach (var bond in focal.Bonds)

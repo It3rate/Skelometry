@@ -71,6 +71,7 @@ namespace Slugs.Agents
             var bc2 = new AddBondCommand(fc1.AddedFocal, .4f, fc2.AddedFocal, 0.8f);
             bc2.Execute();
 
+            UIMode = UIMode.Any;
             ClearMouse();
             var t = new RefPoint();
         }
@@ -192,13 +193,17 @@ namespace Slugs.Agents
 							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point.Key);
 							Data.Selected.SetElements(Data.Begin.Point);
 							_activeCommand = _editCommands.Do(cmd);
-                        }
+							_ignoreList.Add(Data.Begin.Point.Key);
+							_selectableKind = Data.Begin.Point.ElementKind.AttachableElements();
+						}
 						else if(!Data.Begin.FirstElement.IsLocked)
 						{
 							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.FirstElement.Key);
 							Data.Selected.SetElements(Data.Begin.FirstElement); // todo: move to keys only, and move sets vs objects
 							_activeCommand = _editCommands.Do(cmd);
-                        }
+							_ignoreList.Add(Data.Begin.FirstElement.Key);
+							_selectableKind = ElementKind.Any;
+						}
 					}
 					else // rect select
 					{
@@ -225,27 +230,31 @@ namespace Slugs.Agents
             // If dragging or creating, check for last point merge
             // If rect select, add contents to selection (also done in move).
             // If not dragging or creating and dist < selMax, click select
-
             var mousePoint = e.Location.ToSKPoint();
 
 		    Data.Current.UpdatePositions(mousePoint);
 		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
 
             // Merge points if needed.
-            if (Data.HasHighlightPoint && _activeCommand is IDraggablePointCommand cmd)
+            if (Data.HasHighlightPoint && _activeCommand is IDraggableCommand cmd && cmd.HasDraggablePoint)
             {
-	            var fromKey = cmd.DraggablePoint.Key;
-	            var toKey = Data.Highlight.Point.Key;
-	            if (fromKey != ElementBase.EmptyKeyValue && toKey != ElementBase.EmptyKeyValue && fromKey != toKey)
+	            if (cmd.DraggablePoint.CanMergeWith(Data.HighlightPoint))
 	            {
-		            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, fromKey, toKey));
+		            var fromKey = cmd.DraggablePoint.Key;
+		            var toKey = Data.Highlight.Point.Key;
+		            if (fromKey != ElementBase.EmptyKeyValue && toKey != ElementBase.EmptyKeyValue && fromKey != toKey)
+		            {
+			            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, fromKey, toKey)); 
+                    }
                 }
+	            cmd.AddTaskAndRun(new SetSelectionTask(cmd.Pad.PadKind, ElementBase.EmptyKeyValue));
             }
             else if (!IsDragging && _activeCommand == null)  // clicked
             {
 	            var selCmd = new SetSelectionCommand(Data.Begin.Pad, Data.Highlight.PointKey, Data.Highlight.ElementKeysCopy);
                 selCmd.Execute();
             }
+
             ClearMouse();
 
             return true;
@@ -255,7 +264,7 @@ namespace Slugs.Agents
 	    private bool KeyIsDownControl => (CurrentKey & Keys.ControlKey) != 0;
 	    private bool KeyIsDownAlt => (CurrentKey & Keys.Alt) != 0;
 	    private bool KeyIsDownShift => (CurrentKey & Keys.ShiftKey) != 0;
-	    private UIMode _uiMode;
+	    private UIMode _uiMode = UIMode.Any;
 	    public UIMode UIMode
 	    {
 		    get => _uiMode;
@@ -265,6 +274,7 @@ namespace Slugs.Agents
 			    {
 				    _uiMode = value;
 					OnModeChange?.Invoke(this, new EventArgs());
+                    SetSelectable(UIMode);
 			    }
 		    }
         }
@@ -273,8 +283,9 @@ namespace Slugs.Agents
 	    {
 		    switch (uiMode)
 		    {
+			    case UIMode.None:
 			    case UIMode.Any:
-				    _selectableKind = ElementKind.Any;
+                    _selectableKind = ElementKind.Any;
 				    break;
 			    case UIMode.CreateEntity:
 				    _selectableKind = ElementKind.Any;

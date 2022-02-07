@@ -22,6 +22,8 @@ namespace Slugs.Entities
 		}
 
 		public int TargetKey { get; private set; }
+		public override IPoint TargetPoint => Pad.ResolvedPointFor(this);
+		public ElementKind TargetKind => TargetPoint.ElementKind;
 
         public override List<IPoint> Points => IsEmpty ? new List<IPoint>() : new List<IPoint> { Pad.ResolvedPointFor(this)};
 		public override SKPoint Position
@@ -40,6 +42,10 @@ namespace Slugs.Entities
 		public RefPoint(PadKind padKind, int targetKey) : base(padKind)
 		{
 			TargetKey = targetKey;
+		}
+		public override bool CanMergeWith(IPoint point)
+		{
+			return TargetPoint.CanMergeWith(point.TargetPoint);
 		}
 
         //   public bool ReplaceWith(IPoint pt)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms.VisualStyles;
 using SkiaSharp;
 using Slugs.Agents;
@@ -14,7 +15,7 @@ namespace Slugs.Entities
         ElementKind ElementKind { get; }
         int Key { get; }
         IElement EmptyElement { get; }
-        bool IsLocked { get; }
+        bool IsLocked { get; set; }
         bool IsEmpty { get; }
 
         //IPoint[] TerminalPoints { get; }
@@ -52,9 +53,26 @@ namespace Slugs.Entities
 				return result;
 			}
 		}
-		public bool IsLocked { get; protected set; }
 
-        protected ElementBase(bool isEmpty) // used to privately create an empty element
+		private bool _isLocked;
+        public bool IsLocked
+		{
+			get => _isLocked;
+			set
+			{
+				_isLocked = value;
+				if (!ElementKind.IsPoint())
+				{
+					foreach (var point in Points)
+					{
+						point.IsLocked = value;
+					}
+				}
+
+			} 
+		}
+
+		protected ElementBase(bool isEmpty) // used to privately create an empty element
         {
 	        Pad = Agent.Current.PadFor(PadKind.None);
             Key = EmptyKeyValue;
@@ -120,6 +138,27 @@ namespace Slugs.Entities
 		public static bool IsPoint(this ElementKind kind) => (int) (kind & ElementKind.PointKind) > 0;// ElementKind.PointKind.HasFlag(kind);
 		public static bool IsTerminal(this ElementKind kind) => kind == ElementKind.Terminal;
 		public static bool IsCompatible(this ElementKind self, ElementKind other) => (int)(self & other) != 0;
+
+		public static ElementKind AttachableElements(this ElementKind self)
+		{
+			var result = ElementKind.None;
+			switch (self)
+			{
+				case ElementKind.Terminal:
+					result = ElementKind.Any; // or any?
+					break;
+				case ElementKind.RefPoint:
+					result = ElementKind.PointKind;
+					break;
+				case ElementKind.PointOnTrait:
+					result = ElementKind.TraitPointSource;
+					break;
+				case ElementKind.PointOnFocal:
+					result = ElementKind.FocalPointSource;
+					break;
+			}
+			return result;
+        }
 
 		public static bool CanCreateWith(this ElementKind self, ElementKind other)
 		{
