@@ -23,13 +23,13 @@ namespace Slugs.Entities
 
 		public int TargetKey { get; private set; }
 
-        public override List<IPoint> Points => IsEmpty ? new List<IPoint>() : new List<IPoint> { Pad.TerminalPointFor(this)};
+        public override List<IPoint> Points => IsEmpty ? new List<IPoint>() : new List<IPoint> { Pad.ResolvedPointFor(this)};
 		public override SKPoint Position
 		{
-			get => Pad.TerminalPointFor(this).Position;
+			get => Pad.ResolvedPointFor(this).Position;
 			set
 			{
-                var tp = Pad.TerminalPointFor(this);
+                var tp = Pad.ResolvedPointFor(this);
                 if (!tp.IsEmpty)
                 {
 	                tp.Position = value;

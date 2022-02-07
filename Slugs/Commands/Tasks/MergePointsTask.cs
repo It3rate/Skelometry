@@ -13,16 +13,10 @@ namespace Slugs.Commands.Tasks
 		private PointOnTrait Point { get; set; }
 		public IPoint IPoint => Point;
 
-		//   public MergePointsTask(PadKind padKind, int fromKey) : base(padKind, SelectionKind.HighlightPoint)
-		//{
-		// FromKey = fromKey;
-		// //merge points
-		//}
 		public MergePointsTask(PadKind padKind, int fromKey, int toKey) : base(padKind)
 		{
 			FromKey = fromKey;
 			ToKey = toKey;
-			//merge points
 		}
 
 		public override void RunTask()

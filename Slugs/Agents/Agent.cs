@@ -58,16 +58,18 @@ namespace Slugs.Agents
             var (entity, trait) = InputPad.AddEntity(new SKPoint(100, 100), new SKPoint(700, 100), 1);
             _activeEntity = entity;
             trait.SetLock(true);
-            var trait2 = InputPad.AddTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), 1);
+            InputPad.AddTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), 1).SetLock(true);
+            var trait2 = InputPad.AddTrait(entity.Key, new SKPoint(100, 180), new SKPoint(700, 180), 1);
             trait2.SetLock(true);
-            InputPad.AddTrait(entity.Key, new SKPoint(100, 180), new SKPoint(700, 180), 1).SetLock(true);
             InputPad.AddTrait(entity.Key, new SKPoint(100, 220), new SKPoint(700, 220), 1).SetLock(true);
             var fc1 = new AddFocalCommand(_activeEntity, trait, 0.3f, 0.8f);
             fc1.Execute();
             var fc2 = new AddFocalCommand(_activeEntity, trait2, 0.1f, 0.5f);
             fc2.Execute();
-            var bc = new AddBondCommand(fc1.AddedFocal, .4f, fc2.AddedFocal, 0.6f);
+            var bc = new AddBondCommand(fc1.AddedFocal, .2f, fc2.AddedFocal, 0.3f);
             bc.Execute();
+            var bc2 = new AddBondCommand(fc1.AddedFocal, .4f, fc2.AddedFocal, 0.8f);
+            bc2.Execute();
 
             ClearMouse();
             var t = new RefPoint();
@@ -217,7 +219,12 @@ namespace Slugs.Agents
             // Merge points if needed.
             if (Data.HasHighlightPoint && _activeCommand is IDraggablePointCommand cmd)
             {
-	            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, cmd.DraggablePoint.Key, Data.Highlight.Point.Key));
+	            var fromKey = cmd.DraggablePoint.Key;
+	            var toKey = Data.Highlight.Point.Key;
+	            if (fromKey != ElementBase.EmptyKeyValue && toKey != ElementBase.EmptyKeyValue && fromKey != toKey)
+	            {
+		            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, fromKey, toKey));
+                }
             }
             else if (!IsDragging && _activeCommand == null)  // clicked
             {

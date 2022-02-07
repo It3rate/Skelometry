@@ -89,6 +89,10 @@ namespace Slugs.Entities
 
         public void AddElement(IElement element)
         {
+	        if (element.Key == -99)
+	        {
+		        int x = 5;
+	        }
 	        if (_elements.ContainsKey(element.Key))
 	        {
 		        _elements.Remove(element.Key);
@@ -156,7 +160,7 @@ namespace Slugs.Entities
 	        _elements[key] = point;
         }
 
-        public TerminalPoint TerminalPointFor(IPoint point)
+        public IPoint ResolvedPointFor(IPoint point)
         {
 	        IElement result = point;
 	        var success = true;
@@ -164,13 +168,13 @@ namespace Slugs.Entities
 	        {
 		        success = _elements.TryGetValue(refPoint.TargetKey, out result);
 	        }
-	        return result.ElementKind.IsTerminal() ? (TerminalPoint)result : TerminalPoint.Empty;
+	        return (IPoint)result;// result.ElementKind.IsPoint() ? (TerminalPoint)result : TerminalPoint.Empty;
         }
 
         public void MergePoints(IPoint from, IPoint to) => MergePoints(from, to, SKPoint.Empty);
         public void MergePoints(IPoint from, IPoint to, SKPoint position)
         {
-	        var terminal = TerminalPointFor(to);
+	        var terminal = ResolvedPointFor(to);
 	        if (!terminal.IsEmpty)
 	        {
 		        if (!position.IsEmpty)
@@ -183,7 +187,7 @@ namespace Slugs.Entities
         }
         public void MergePoints(int fromKey, int toKey)
         {
-	        var terminal = TerminalPointFor(PointAt(toKey));
+	        var terminal = ResolvedPointFor(PointAt(toKey));
 	        SetPointAt(fromKey, terminal);
         }
 
