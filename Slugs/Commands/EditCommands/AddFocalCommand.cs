@@ -15,7 +15,7 @@ namespace Slugs.Commands.EditCommands
     {
         public int EntityKey { get; }
         public Entity Entity => Pad.EntityAt(EntityKey);
-        public int TraitKey => StartPointTask.TraitKeyStore;
+        public int TraitKey => StartPointTask.TraitKey;
         public Trait Trait => Pad.TraitAt(TraitKey);
 
         public CreatePointOnTraitTask StartPointTask { get; }

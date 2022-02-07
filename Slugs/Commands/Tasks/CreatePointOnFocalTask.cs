@@ -12,7 +12,7 @@ namespace Slugs.Commands.Tasks
     {
         public PointOnFocal PointOnFocal { get; set; }
 
-	    public int FocalKeyStore { get; }
+	    public int FocalKey { get; private set; }
 	    public float TStore { get; }
 	    public IPoint IPoint => PointOnFocal;
 	    public int PointKey => PointOnFocal.Key;
@@ -20,14 +20,23 @@ namespace Slugs.Commands.Tasks
 
 	    public CreatePointOnFocalTask(Focal focal, float t) : base(focal.PadKind)
 	    {
-		    FocalKeyStore = focal.Key;
+		    FocalKey = focal.Key;
 		    TStore = t;
 	    }
 
 	    public override void RunTask()
 	    {
 		    base.RunTask();
-		    PointOnFocal = new PointOnFocal(PadKind, FocalKeyStore, TStore);
+		    PointOnFocal = new PointOnFocal(PadKind, FocalKey, TStore);
+	    }
+
+	    public void UpdateFocal(Focal focal)
+	    {
+		    FocalKey = focal.Key;
+		    if (!(PointOnFocal is null))
+		    {
+			    PointOnFocal.FocalKey = focal.Key;
+		    }
 	    }
     }
 }

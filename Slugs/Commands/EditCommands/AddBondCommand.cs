@@ -19,9 +19,6 @@ namespace Slugs.Commands.EditCommands
 
 	    public Bond AddedBond => (Bond)BondTask?.AddedBond ?? Bond.Empty;
 
-	    public int FocalKey { get; }
-	    public Focal Focal => Pad.FocalAt(FocalKey);
-
 	    public AddBondCommand(Focal startFocal, float startT, Focal endFocal, float endT) :
 		    this(new CreatePointOnFocalTask(startFocal, startT), new CreatePointOnFocalTask(endFocal, endT))
 	    { }
@@ -34,10 +31,14 @@ namespace Slugs.Commands.EditCommands
 		    AddTaskAndRun(EndPointTask);
 	    }
 
-	    // maybe tasks need to be start/update/complete, where eg merge endpoints is on complete, and MoveElementTask is available for updates.
-	    // this makes tasks continuous like animation or transform commands.
+	    public void UpdateEndPointFocal(Focal focal)
+	    {
+		    EndPointTask.UpdateFocal(focal);
+	    }
+        // maybe tasks need to be start/update/complete, where eg merge endpoints is on complete, and MoveElementTask is available for updates.
+        // this makes tasks continuous like animation or transform commands.
 
-	    public override void Execute()
+        public override void Execute()
 	    {
 		    base.Execute();
 		    BondTask = new CreateBondTask(StartPointTask.PointOnFocal, EndPointTask.PointOnFocal);

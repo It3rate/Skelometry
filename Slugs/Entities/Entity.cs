@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SkiaSharp;
 using Slugs.Pads;
 
@@ -52,15 +53,26 @@ namespace Slugs.Entities
 	    public bool ContainsTrait(Trait trait) => _traitKeys.Contains(trait.Key);
 	    public bool ContainsTrait(int traitKey) => _traitKeys.Contains(traitKey);
 
+	    public Focal NearestFocal(SKPoint point, params int[] excludeKeys)
+	    {
+            var result = Focal.Empty;
+            var dist = float.MaxValue;
+            foreach (var focal in Focals)
+            {
+	            if (!(excludeKeys.Contains(focal.Key) || excludeKeys.Contains(focal.TraitKey)))
+	            {
+		            var fDist = focal.DistanceToPoint(point);
+		            if (fDist < dist)
+		            {
+			            result = focal;
+			            dist = fDist;
+		            }
+	            }
+            }
+            return result;
+	    }
         #endregion
 
-        #region Bonds
-
-        private List<Bond> _bonds { get; } = new List<Bond>(); // Interactions
-	    public IEnumerable<Bond> Bonds => _bonds;
-	    public Bond BondAt(int key) => _bonds[key];
-
-        #endregion
 
 	    public Entity(PadKind padKind, params Trait[] traits) : base(padKind)
 	    {

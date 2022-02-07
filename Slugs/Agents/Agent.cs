@@ -88,6 +88,7 @@ namespace Slugs.Agents
 
 	        var mousePoint = e.Location.ToSKPoint();
 
+	        Data.Begin.Position = mousePoint;
             Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, _selectableKind);
             Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
             Data.Selected.SetPoint(mousePoint, Data.Highlight.Point);
@@ -167,13 +168,16 @@ namespace Slugs.Agents
                         else if (eKind == ElementKind.Focal) // make focal if creating something on a trait
                         {
 	                        var startFocal = (Focal)Data.Begin.FirstElement;
-	                        var startT = startFocal.TFromPoint(Data.Begin.Position).Item1;
-	                        var endFocal = (Focal)Data.Current.FirstElement;
-	                        var endT = endFocal.TFromPoint(mousePoint).Item1;
-                            var bondCmd = new AddBondCommand(startFocal, startT, endFocal, endT);
-	                        _activeCommand = _editCommands.Do(bondCmd);
-	                        Data.Selected.Point = bondCmd.AddedBond.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
-	                        Data.Selected.ClearElements();
+	                        var nearest = _activeEntity.NearestFocal(mousePoint, startFocal.Key);
+	                        if (!nearest.IsEmpty)
+	                        {
+		                        var startT = startFocal.TFromPoint(Data.Begin.Position).Item1;
+		                        var endT = nearest.TFromPoint(mousePoint).Item1;
+	                            var bondCmd = new AddBondCommand(startFocal, startT, nearest, endT);
+		                        _activeCommand = _editCommands.Do(bondCmd);
+		                        Data.Selected.Point = bondCmd.AddedBond.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
+		                        Data.Selected.ClearElements();
+	                        }
                         }
                         else
                         {
@@ -202,6 +206,15 @@ namespace Slugs.Agents
 				}
 		    }
 		    Data.Selected.UpdatePositions(mousePoint);
+		    if (_activeCommand is AddBondCommand abc)
+		    {
+			    var focal = _activeEntity.NearestFocal(mousePoint, abc.StartPointTask.FocalKey);
+			    Console.WriteLine(focal.Key);
+			    if (!focal.IsEmpty && focal.Key != abc.EndPointTask.FocalKey)
+			    {
+					abc.UpdateEndPointFocal(focal);
+			    }
+		    }
             return true;
 	    }
 

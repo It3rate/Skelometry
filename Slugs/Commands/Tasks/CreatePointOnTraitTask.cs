@@ -8,21 +8,21 @@ namespace Slugs.Commands.Tasks
 	{
         public PointOnTrait PointOnTrait { get; set; }
 
-		public int TraitKeyStore { get; }
+		public int TraitKey { get; }
 		public float TStore { get; }
         public IPoint IPoint => PointOnTrait;
         public int PointKey => PointOnTrait.Key;
 
         public CreatePointOnTraitTask(Trait trait, float t) : base(trait.PadKind)
 		{
-			TraitKeyStore = trait.Key;
+			TraitKey = trait.Key;
 			TStore = t;
 		}
 
 		public override void RunTask()
 		{
 			base.RunTask();
-			PointOnTrait = new PointOnTrait(PadKind, TraitKeyStore, TStore);
+			PointOnTrait = new PointOnTrait(PadKind, TraitKey, TStore);
 		}
     }
 }
