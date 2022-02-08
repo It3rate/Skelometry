@@ -188,7 +188,10 @@ namespace Slugs.Entities
         public void MergePoints(int fromKey, int toKey)
         {
 	        var terminal = ResolvedPointFor(PointAt(toKey));
-	        SetPointAt(fromKey, terminal);
+	        //SetPointAt(fromKey, terminal);
+            // need to let the point merge, as some points are virtual (eg a bond that maps to a focal endpoint).
+	        var from = PointAt(fromKey);
+            from.MergeInto(terminal);
         }
 
         public Entity CreateEntity(params Trait[] traits)
@@ -254,7 +257,7 @@ namespace Slugs.Entities
 	        IPoint result = TerminalPoint.Empty;
 	        foreach (var ptRef in PointsReversed)
 	        {
-	            if (ptRef.ElementKind.IsCompatible(kind) && !ignorePoints.Contains(ptRef.Key) && input.SquaredDistanceTo(ptRef.Position) < maxDist)
+	            if (ptRef.ElementKind.IsCompatible(kind) && !ignorePoints.Contains(ptRef.Key) && input.DistanceTo(ptRef.Position) < maxDist)
 	            {
                     result = ptRef;
                     break;

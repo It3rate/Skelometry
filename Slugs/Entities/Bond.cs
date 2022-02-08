@@ -14,14 +14,14 @@ namespace Slugs.Entities
         public static readonly Bond Empty = new Bond();
 	    private Bond() : base(true) {}// Empty ctor
 
-        public PointOnFocal StartPoint => (PointOnFocal)Pad.PointAt(StartKey);
-        public PointOnFocal EndPoint => (PointOnFocal)Pad.PointAt(EndKey);
+        public BondPoint StartPoint => (BondPoint)Pad.PointAt(StartKey);
+        public BondPoint EndPoint => (BondPoint)Pad.PointAt(EndKey);
         public override SKPoint StartPosition => StartPoint.Position;
         public override SKPoint EndPosition => EndPoint.Position;
 
         public override List<IPoint> Points => new List<IPoint>() {StartPoint, EndPoint};
 
-	    public Bond(PointOnFocal startPoint, PointOnFocal endPoint) : base(startPoint.PadKind)
+	    public Bond(BondPoint startPoint, BondPoint endPoint) : base(startPoint.PadKind)
 	    {
 		    SetStartKey(startPoint.Key);
 		    SetEndKey(endPoint.Key);
@@ -29,24 +29,24 @@ namespace Slugs.Entities
 
 	    protected override void SetStartKey(int key)
 	    {
-		    if (Pad.ElementAt(key) is PointOnFocal)
+		    if (Pad.ElementAt(key) is BondPoint)
 		    {
 			    base.SetStartKey(key);
 		    }
 		    else
 		    {
-			    throw new ArgumentException("Focal points must be PointOnTrait.");
+			    throw new ArgumentException("Focal points must be FocalPoint.");
 		    }
 	    }
 	    protected override void SetEndKey(int key)
 	    {
-		    if (Pad.ElementAt(key) is PointOnFocal)
+		    if (Pad.ElementAt(key) is BondPoint)
 		    {
 			    base.SetEndKey(key);
 		    }
 		    else
 		    {
-			    throw new ArgumentException("Focal points must be PointOnTrait.");
+			    throw new ArgumentException("Focal points must be FocalPoint.");
 		    }
 	    }
 

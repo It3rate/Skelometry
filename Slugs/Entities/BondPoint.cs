@@ -9,12 +9,12 @@ namespace Slugs.Entities
     using System.Text;
     using System.Threading.Tasks;
 
-    public class PointOnFocal : PointBase
+    public class BondPoint : PointBase
     {
-        public override ElementKind ElementKind => ElementKind.PointOnFocal;
+        public override ElementKind ElementKind => ElementKind.BondPoint;
         public override IElement EmptyElement => Empty;
-        public static readonly PointOnFocal Empty = new PointOnFocal();
-        private PointOnFocal() : base(true) { }
+        public static readonly BondPoint Empty = new BondPoint();
+        private BondPoint() : base(true) { }
 
         public int FocalKey { get; set; }
         public float T { get; set; }
@@ -23,7 +23,7 @@ namespace Slugs.Entities
         public Trait Trait => Focal.Trait;
         public int TraitKey => Focal.TraitKey;
 
-        public PointOnFocal(PadKind padKind, int focalKey, float t) : base(padKind)
+        public BondPoint(PadKind padKind, int focalKey, float t) : base(padKind)
         {
             FocalKey = focalKey;
             T = t;
@@ -31,7 +31,22 @@ namespace Slugs.Entities
 
         public override bool CanMergeWith(IPoint point)
         {
-	        return point.TargetPoint.ElementKind == ElementKind.PointOnFocal;
+	        var targetKind = point.TargetPoint.ElementKind;
+	        return targetKind == ElementKind.BondPoint || targetKind == ElementKind.FocalPoint;
+        }
+        public override int MergeInto(IPoint point)
+        {
+	        var result = Key;
+	        if (point.ElementKind == ElementKind.BondPoint)
+	        {
+		        Pad.SetPointAt(Key, point);
+		        result = point.Key;
+            }
+            else if (point is FocalPoint pt)
+	        {
+		        T = Focal.TFromPoint(pt.Position).Item1;
+	        }
+	        return result;
         }
 
         public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { this };
@@ -72,12 +87,12 @@ namespace Slugs.Entities
             T = t;
         }
 
-        public static bool operator ==(PointOnFocal left, PointOnFocal right) =>
+        public static bool operator ==(BondPoint left, BondPoint right) =>
             left.Key == right.Key && left.FocalKey == right.FocalKey;
-        public static bool operator !=(PointOnFocal left, PointOnFocal right) =>
+        public static bool operator !=(BondPoint left, BondPoint right) =>
             left.Key != right.Key || left.FocalKey != right.FocalKey;
 
-        public override bool Equals(object obj) => obj is PointOnFocal value && this == value;
+        public override bool Equals(object obj) => obj is BondPoint value && this == value;
         public override int GetHashCode() => Key * 23 + FocalKey * 31;
     }
 }

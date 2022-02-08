@@ -103,17 +103,17 @@ namespace Slugs.Commands.Tasks
 		    // ungroup, map new keys, assign key
         }
     }
-    public class MovePointOnTraitTask : EditTask, IChangeTask // add to start or end (not stretch)
+    public class MoveFocalPointTask : EditTask, IChangeTask // add to start or end (not stretch)
     {
 	    public int PointKey { get; set; }
 	    public float T { get; } // always absolute
 	    public float OriginalT { get; }
 
-	    public MovePointOnTraitTask(PadKind padKind, int pointKey, float t) : base(padKind)
+	    public MoveFocalPointTask(PadKind padKind, int pointKey, float t) : base(padKind)
 	    {
 		    PointKey = pointKey;
 		    T = t;
-		    OriginalT = ((PointOnTrait)Pad.PointAt(PointKey)).GetT();
+		    OriginalT = ((FocalPoint)Pad.PointAt(PointKey)).GetT();
 	    }
     }
     public class StretchSegmentTask : EditTask, IChangeTask

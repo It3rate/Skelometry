@@ -8,17 +8,17 @@ namespace Slugs.Commands.Tasks
     using System.Text;
     using System.Threading.Tasks;
 
-    public class CreatePointOnFocalTask : EditTask, IPointTask, ICreateTask
+    public class CreateBondPointTask : EditTask, IPointTask, ICreateTask
     {
-        public PointOnFocal PointOnFocal { get; set; }
+        public BondPoint BondPoint { get; set; }
 
 	    public int FocalKey { get; private set; }
 	    public float TStore { get; }
-	    public IPoint IPoint => PointOnFocal;
-	    public int PointKey => PointOnFocal.Key;
+	    public IPoint IPoint => BondPoint;
+	    public int PointKey => BondPoint.Key;
 
 
-	    public CreatePointOnFocalTask(Focal focal, float t) : base(focal.PadKind)
+	    public CreateBondPointTask(Focal focal, float t) : base(focal.PadKind)
 	    {
 		    FocalKey = focal.Key;
 		    TStore = t;
@@ -27,15 +27,15 @@ namespace Slugs.Commands.Tasks
 	    public override void RunTask()
 	    {
 		    base.RunTask();
-		    PointOnFocal = new PointOnFocal(PadKind, FocalKey, TStore);
+		    BondPoint = new BondPoint(PadKind, FocalKey, TStore);
 	    }
 
 	    public void UpdateFocal(Focal focal)
 	    {
 		    FocalKey = focal.Key;
-		    if (!(PointOnFocal is null))
+		    if (!(BondPoint is null))
 		    {
-			    PointOnFocal.FocalKey = focal.Key;
+			    BondPoint.FocalKey = focal.Key;
 		    }
 	    }
     }

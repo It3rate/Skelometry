@@ -13,7 +13,8 @@ namespace Slugs.Entities
         //bool ReplaceWith(IPoint pt);
         //void CopyValuesFrom(IPoint from);
         bool CanMergeWith(IPoint point);
-        IPoint TargetPoint { get; }
+         IPoint TargetPoint { get; }
+        int MergeInto(IPoint point);
     }
 
 	public abstract class PointBase : ElementBase, IPoint
@@ -31,11 +32,17 @@ namespace Slugs.Entities
 		public abstract bool CanMergeWith(IPoint point);
 		public virtual IPoint TargetPoint => this;
 
-		//public static bool operator ==(PointBase left, IPoint right) => left.Key == right.Key;
-		//public static bool operator !=(PointBase left, IPoint right) => left.Key != right.Key;
-		//public override bool Equals(object obj) => obj is PointBase value && this == value;
-		//public override int GetHashCode() => Key.GetHashCode();
-	}
+		public virtual int MergeInto(IPoint point)
+		{
+            Pad.SetPointAt(Key, point);
+            return point.Key;
+		}
+
+        //public static bool operator ==(PointBase left, IPoint right) => left.Key == right.Key;
+        //public static bool operator !=(PointBase left, IPoint right) => left.Key != right.Key;
+        //public override bool Equals(object obj) => obj is PointBase value && this == value;
+        //public override int GetHashCode() => Key.GetHashCode();
+    }
 
     //[Flags]
     //public enum PointKind

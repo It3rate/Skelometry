@@ -85,10 +85,10 @@ namespace Slugs.Entities
 	        _entity.RemoveFocal(focal);
         }
 
-        public PointOnTrait PointOnTraitFrom(SKPoint point)
+        public FocalPoint FocalPointFrom(SKPoint point)
         {
 	        var (t, projected) = TFromPoint(point);
-            return new PointOnTrait(_entity.PadKind, Key, -1);
+            return new FocalPoint(_entity.PadKind, Key, -1);
         }
         public static bool operator ==(Trait left, Trait right) => 
 	        left.Key == right.Key && left.EntityKey == right.EntityKey && left.StartKey == right.StartKey && left.EndKey == right.EndKey;

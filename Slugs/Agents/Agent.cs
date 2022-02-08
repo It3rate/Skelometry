@@ -137,7 +137,7 @@ namespace Slugs.Agents
 					var createObject = !Data.Begin.HasSelection || KeyIsDownControl;
 					if (createObject)
 					{
-                        // create Trait if terminal or ref point, create AddedBond or AddedFocal it PointOnTrait.
+                        // create Trait if terminal or ref point, create AddedBond or AddedFocal it FocalPoint.
                         // trait to same trait is focal, trait to other trait is bond, all others are new traits.
                         var pKind = Data.Begin.Point.ElementKind;
                         var eKind = Data.Begin.ElementKind;
@@ -190,8 +190,9 @@ namespace Slugs.Agents
 					{
 						if (Data.Begin.HasPoint)
 						{
-							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point.Key);
-							Data.Selected.SetElements(Data.Begin.Point);
+							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point.Key); 
+							//Data.Selected.SetElements(Data.Begin.Point);
+                            Data.Selected.SetPoint(Data.Begin.Position, Data.Begin.Point);
 							_activeCommand = _editCommands.Do(cmd);
 							_ignoreList.Add(Data.Begin.Point.Key);
 							_selectableKind = Data.Begin.Point.ElementKind.AttachableElements();
@@ -202,7 +203,7 @@ namespace Slugs.Agents
 							Data.Selected.SetElements(Data.Begin.FirstElement); // todo: move to keys only, and move sets vs objects
 							_activeCommand = _editCommands.Do(cmd);
 							_ignoreList.Add(Data.Begin.FirstElement.Key);
-							_selectableKind = ElementKind.Any;
+							_selectableKind = ElementKind.None;
 						}
 					}
 					else // rect select

@@ -18,8 +18,8 @@ namespace Slugs.Entities
         public Entity Entity => Pad.EntityAt(EntityKey);
         public int TraitKey => StartPoint.TraitKey;
         public Trait Trait => Pad.TraitAt(TraitKey);
-        public PointOnTrait StartPoint => (PointOnTrait)Pad.PointAt(StartKey);
-        public PointOnTrait EndPoint => (PointOnTrait)Pad.PointAt(EndKey);
+        public FocalPoint StartPoint => (FocalPoint)Pad.PointAt(StartKey);
+        public FocalPoint EndPoint => (FocalPoint)Pad.PointAt(EndKey);
         public override SKPoint StartPosition => Trait.PointAlongLine(Slug.Start);
         public override SKPoint EndPosition => Trait.PointAlongLine(Slug.End);
 
@@ -33,12 +33,12 @@ namespace Slugs.Entities
 
         //public Focal(Trait trait, float startT, float endT) : base(trait.PadKind)
         //{
-        //    var startPoint = new PointOnTrait(PadKind, trait.Key, startT);
+        //    var startPoint = new FocalPoint(PadKind, trait.Key, startT);
 	       // StartKey = startPoint.Key;
-	       // var endPoint = new PointOnTrait(PadKind, trait.Key, endT);
+	       // var endPoint = new FocalPoint(PadKind, trait.Key, endT);
         //    EndKey = endPoint.Key;
         //}
-        public Focal(Entity entity, PointOnTrait startPoint, PointOnTrait endPoint) : base(entity.PadKind)
+        public Focal(Entity entity, FocalPoint startPoint, FocalPoint endPoint) : base(entity.PadKind)
         {
 	        if (startPoint.TraitKey != endPoint.TraitKey)
 	        {
@@ -50,24 +50,24 @@ namespace Slugs.Entities
 
         protected override void SetStartKey(int key)
         {
-	        if (Pad.ElementAt(key) is PointOnTrait)
+	        if (Pad.ElementAt(key) is FocalPoint)
 	        {
 		        base.SetStartKey(key);
 	        }
 	        else
 	        {
-		        throw new ArgumentException("Focal points must be PointOnTrait.");
+		        throw new ArgumentException("Focal points must be FocalPoint.");
 	        }
         }
         protected override void SetEndKey(int key)
         {
-	        if (Pad.ElementAt(key) is PointOnTrait)
+	        if (Pad.ElementAt(key) is FocalPoint)
 	        {
 		        base.SetEndKey(key);
 	        }
 	        else
 	        {
-		        throw new ArgumentException("Focal points must be PointOnTrait.");
+		        throw new ArgumentException("Focal points must be FocalPoint.");
 	        }
         }
 

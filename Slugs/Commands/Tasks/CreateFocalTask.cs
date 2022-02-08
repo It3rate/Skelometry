@@ -16,8 +16,8 @@ namespace Slugs.Commands.Tasks
         public Focal AddedFocal { get; private set; }
 
         public Entity Entity { get; }
-        public PointOnTrait StartPoint { get; }
-        public PointOnTrait EndPoint { get; }
+        public FocalPoint StartPoint { get; }
+        public FocalPoint EndPoint { get; }
 
         public int StartPointKey => StartPoint.Key;
         public int EndPointKey => EndPoint.Key;
@@ -31,7 +31,7 @@ namespace Slugs.Commands.Tasks
         public ElementKind SegmentKind => ElementKind.Focal;
         public SegmentBase Segment;
     
-        public CreateFocalTask(Entity entity, PointOnTrait startPoint, PointOnTrait endPoint) : base(entity.PadKind)
+        public CreateFocalTask(Entity entity, FocalPoint startPoint, FocalPoint endPoint) : base(entity.PadKind)
         {
 	        if (startPoint.TraitKey != endPoint.TraitKey)
 	        {

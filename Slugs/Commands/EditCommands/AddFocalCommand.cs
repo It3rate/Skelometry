@@ -18,8 +18,8 @@ namespace Slugs.Commands.EditCommands
         public int TraitKey => StartPointTask.TraitKey;
         public Trait Trait => Pad.TraitAt(TraitKey);
 
-        public CreatePointOnTraitTask StartPointTask { get; }
-        public CreatePointOnTraitTask EndPointTask { get; }
+        public CreateFocalPointTask StartPointTask { get; }
+        public CreateFocalPointTask EndPointTask { get; }
         public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
         public CreateFocalTask FocalTask { get; set; }
 
@@ -27,10 +27,10 @@ namespace Slugs.Commands.EditCommands
 
 
         public AddFocalCommand(Entity entity, Trait trait, float startT, float endT) :
-            this(entity.Key, new CreatePointOnTraitTask(trait, startT), new CreatePointOnTraitTask(trait, endT))
+            this(entity.Key, new CreateFocalPointTask(trait, startT), new CreateFocalPointTask(trait, endT))
         { }
 
-        public AddFocalCommand(int entityKey, CreatePointOnTraitTask startPointTask, CreatePointOnTraitTask endPointTask) : base(startPointTask.Pad)
+        public AddFocalCommand(int entityKey, CreateFocalPointTask startPointTask, CreateFocalPointTask endPointTask) : base(startPointTask.Pad)
         {
 	        EntityKey = entityKey;
 
@@ -46,7 +46,7 @@ namespace Slugs.Commands.EditCommands
         public override void Execute()
         {
             base.Execute();
-            FocalTask = new CreateFocalTask(Entity, StartPointTask.PointOnTrait, EndPointTask.PointOnTrait);
+            FocalTask = new CreateFocalTask(Entity, StartPointTask.FocalPoint, EndPointTask.FocalPoint);
             AddTaskAndRun(FocalTask);
         }
 

@@ -51,7 +51,8 @@ namespace Slugs.Input
 
         public IElement GetHighlight(SKPoint p, SelectionSet targetSet, List<int> ignoreKeys, ElementKind kind)
         {
-	        IElement result = targetSet.Pad.GetSnapPoint(p, ignoreKeys, kind);
+	        targetSet.Clear();
+            IElement result = targetSet.Pad.GetSnapPoint(p, ignoreKeys, kind);
 	        if (!result.IsEmpty)
 	        {
 		        targetSet.SetPoint(p, (IPoint) result);
@@ -63,11 +64,6 @@ namespace Slugs.Input
 		        {
 			        targetSet.SetElements(result);
 		        }
-		        else
-		        {
-			        //targetSet.SetPoint(p);
-                    targetSet.Clear();
-                }
             }
 	        return result;
         }

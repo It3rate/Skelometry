@@ -68,7 +68,6 @@ namespace Slugs.Entities
 						point.IsLocked = value;
 					}
 				}
-
 			} 
 		}
 
@@ -106,8 +105,8 @@ namespace Slugs.Entities
 		None = 0,
 		Terminal = 0x1,
 		RefPoint = 0x2,
-		PointOnTrait = 0x4,
-		PointOnFocal = 0x8,
+		FocalPoint = 0x4,
+		BondPoint = 0x8,
         Trait = 0x10,
 		Focal = 0x20,
 		Bond = 0x40,
@@ -122,15 +121,15 @@ namespace Slugs.Entities
 
         Any = 0xFFFF,
 
-        PointKind = RefPoint | Terminal | PointOnTrait | PointOnFocal,
+        PointKind = RefPoint | Terminal | FocalPoint | BondPoint,
         SegmentKind = Trait | Focal | Bond | Unit,
         TraitPart = Trait | Terminal | RefPoint,
-        FocalPart = Focal | Unit | PointOnTrait,
-        BondPart = Bond | PointOnFocal,
+        FocalPart = Focal | Unit | FocalPoint,
+        BondPart = Bond | BondPoint,
         UIPart = Grid | SelectionRect | Ruler | Value,
         TraitPointSource = Terminal | RefPoint | Entity,
-        FocalPointSource = Trait | PointOnTrait,
-        BondPointSource = Focal | Unit | PointOnFocal,
+        FocalPointSource = FocalPoint | Terminal | RefPoint,
+        BondPointSource = Focal | BondPoint | FocalPoint,
     }
 	public static class SelectionKindExtensions
 	{
@@ -150,11 +149,11 @@ namespace Slugs.Entities
 				case ElementKind.RefPoint:
 					result = ElementKind.PointKind;
 					break;
-				case ElementKind.PointOnTrait:
-					result = ElementKind.TraitPointSource;
-					break;
-				case ElementKind.PointOnFocal:
+				case ElementKind.FocalPoint:
 					result = ElementKind.FocalPointSource;
+					break;
+				case ElementKind.BondPoint:
+					result = ElementKind.BondPointSource;
 					break;
 			}
 			return result;

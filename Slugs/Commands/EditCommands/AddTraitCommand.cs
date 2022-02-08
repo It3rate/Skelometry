@@ -7,7 +7,7 @@ namespace Slugs.Commands.EditCommands
 {
     // CreateTerminalPointTask
     // CreateRefPointTask
-    // CreatePointOnTraitTask
+    // CreateFocalPointTask
     // CreateTraitTask
     // CreateEntityTask
     // MoveElementTask

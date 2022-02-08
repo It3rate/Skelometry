@@ -7,17 +7,18 @@ using Slugs.Pads;
 
 namespace Slugs.Entities
 {
-	public class PointOnTrait : PointBase
+	public class FocalPoint : PointBase
 	{
-		public override ElementKind ElementKind => ElementKind.PointOnTrait;
+		public override ElementKind ElementKind => ElementKind.FocalPoint;
 		public override IElement EmptyElement => Empty;
-	    public static readonly PointOnTrait Empty = new PointOnTrait();
-        private PointOnTrait():base(true) { }
+	    public static readonly FocalPoint Empty = new FocalPoint();
+        private FocalPoint():base(true) { }
 
         public int TraitKey { get; set; }
+        public Trait Trait => Pad.TraitAt(TraitKey);
         public float T { get; set; }
 
-        public PointOnTrait(PadKind padKind, int traitKey, float t) : base(padKind)
+        public FocalPoint(PadKind padKind, int traitKey, float t) : base(padKind)
         {
 		    TraitKey = traitKey;
 		    T = t;
@@ -25,7 +26,23 @@ namespace Slugs.Entities
 
         public override bool CanMergeWith(IPoint point)
         {
-	        return point.TargetPoint.ElementKind == ElementKind.PointOnTrait;
+	        var kind = point.TargetPoint.ElementKind;
+
+            return kind == ElementKind.FocalPoint || kind == ElementKind.RefPoint || kind == ElementKind.Terminal;
+        }
+        public override int MergeInto(IPoint point)
+        {
+	        var result = Key;
+	        if (point.ElementKind == ElementKind.FocalPoint)
+	        {
+		        Pad.SetPointAt(Key, point);
+		        result = point.Key;
+	        }
+	        else
+	        {
+		        T = Trait.TFromPoint(point.Position).Item1;
+	        }
+	        return result;
         }
 
         public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { this };
@@ -66,12 +83,12 @@ namespace Slugs.Entities
 	        T = t;
         }
 
-        public static bool operator ==(PointOnTrait left, PointOnTrait right) =>
+        public static bool operator ==(FocalPoint left, FocalPoint right) =>
 	        left.Key == right.Key && left.TraitKey == right.TraitKey;
-        public static bool operator !=(PointOnTrait left, PointOnTrait right) =>
+        public static bool operator !=(FocalPoint left, FocalPoint right) =>
 	        left.Key != right.Key || left.TraitKey != right.TraitKey;
 
-        public override bool Equals(object obj) => obj is PointOnTrait value && this == value;
+        public override bool Equals(object obj) => obj is FocalPoint value && this == value;
         public override int GetHashCode() => Key * 23 + TraitKey * 31;
     }
 }

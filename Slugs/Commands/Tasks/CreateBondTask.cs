@@ -12,8 +12,8 @@ namespace Slugs.Commands.Tasks
 
     public class CreateBondTask : EditTask, ICreateTask
     {
-	    public PointOnFocal StartPoint { get; }
-        public PointOnFocal EndPoint { get; }
+	    public BondPoint StartPoint { get; }
+        public BondPoint EndPoint { get; }
 
 	    public int StartPointKey => StartPoint.Key;
 	    public int StartTraitKey => StartPoint.TraitKey;
@@ -30,7 +30,7 @@ namespace Slugs.Commands.Tasks
 	    public Bond AddedBond { get; private set; }
 
         // bonds need an entity to be stored in?
-	    public CreateBondTask(PointOnFocal startPoint, PointOnFocal endPoint) : base(startPoint.PadKind)
+	    public CreateBondTask(BondPoint startPoint, BondPoint endPoint) : base(startPoint.PadKind)
 	    {
 		    StartPoint = startPoint;
             EndPoint = endPoint;

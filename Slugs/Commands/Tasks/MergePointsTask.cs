@@ -10,7 +10,7 @@ namespace Slugs.Commands.Tasks
     
 		public int PointKey { get; }
 
-		private PointOnTrait Point { get; set; }
+		private FocalPoint Point { get; set; }
 		public IPoint IPoint => Point;
 
 		public MergePointsTask(PadKind padKind, int fromKey, int toKey) : base(padKind)

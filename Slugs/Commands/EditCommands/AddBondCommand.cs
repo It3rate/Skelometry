@@ -12,18 +12,18 @@ namespace Slugs.Commands.EditCommands
 
     public class AddBondCommand : EditCommand
     {
-	    public CreatePointOnFocalTask StartPointTask { get; }
-	    public CreatePointOnFocalTask EndPointTask { get; }
+	    public CreateBondPointTask StartPointTask { get; }
+	    public CreateBondPointTask EndPointTask { get; }
 	    public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
 	    public CreateBondTask BondTask { get; set; }
 
 	    public Bond AddedBond => (Bond)BondTask?.AddedBond ?? Bond.Empty;
 
 	    public AddBondCommand(Focal startFocal, float startT, Focal endFocal, float endT) :
-		    this(new CreatePointOnFocalTask(startFocal, startT), new CreatePointOnFocalTask(endFocal, endT))
+		    this(new CreateBondPointTask(startFocal, startT), new CreateBondPointTask(endFocal, endT))
 	    { }
 
-	    public AddBondCommand(CreatePointOnFocalTask startPointTask, CreatePointOnFocalTask endPointTask) : base(startPointTask.Pad)
+	    public AddBondCommand(CreateBondPointTask startPointTask, CreateBondPointTask endPointTask) : base(startPointTask.Pad)
 	    {
 		    StartPointTask = startPointTask;
 		    AddTaskAndRun(StartPointTask);
@@ -41,7 +41,7 @@ namespace Slugs.Commands.EditCommands
         public override void Execute()
 	    {
 		    base.Execute();
-		    BondTask = new CreateBondTask(StartPointTask.PointOnFocal, EndPointTask.PointOnFocal);
+		    BondTask = new CreateBondTask(StartPointTask.BondPoint, EndPointTask.BondPoint);
 		    AddTaskAndRun(BondTask);
 	    }
 
