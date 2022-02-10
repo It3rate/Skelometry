@@ -145,10 +145,15 @@ namespace Slugs.Entities
 	        var success = _elements.TryGetValue(key, out var result);
 	        return success && (result.ElementKind == ElementKind.Focal) ? (Focal)result : Focal.Empty;
         }
-        public Bond BondAt(int key)
+        public SingleBond BondAt(int key)
         {
 	        var success = _elements.TryGetValue(key, out var result);
-	        return success && (result.ElementKind == ElementKind.Bond) ? (Bond)result : Bond.Empty;
+	        return success && (result.ElementKind == ElementKind.SingleBond) ? (SingleBond)result : SingleBond.Empty;
+        }
+        public DoubleBond DoubleBondAt(int key)
+        {
+	        var success = _elements.TryGetValue(key, out var result);
+	        return success && (result.ElementKind == ElementKind.DoubleBond) ? (DoubleBond)result : DoubleBond.Empty;
         }
         public IPoint PointAt(int key)
         {
@@ -189,7 +194,7 @@ namespace Slugs.Entities
         {
 	        var terminal = ResolvedPointFor(PointAt(toKey));
 	        //SetPointAt(fromKey, terminal);
-            // need to let the point merge, as some points are virtual (eg a bond that maps to a focal endpoint).
+            // need to let the point merge, as some points are virtual (eg a singleBond that maps to a focal endpoint).
 	        var from = PointAt(fromKey);
             from.MergeInto(terminal);
         }

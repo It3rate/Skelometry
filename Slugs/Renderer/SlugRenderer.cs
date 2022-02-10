@@ -120,25 +120,32 @@ namespace Slugs.Renderer
 
 	        foreach (var pad in Data.Pads)
 	        {
-                pad.Refresh();  
-				var slug = Pad.ActiveSlug;
-                foreach (var entity in pad.Entities)
-                {
-	                foreach (var trait in entity.Traits)
-	                {
-		                DrawDirectedLine(trait.Segment, trait.IsLocked ? Pens.LockedPen : Pens.DarkPen);
-                        _canvas.Flush();
-                        foreach (var focal in trait.Focals)
-		                {
-			                DrawDirectedLine(focal.Segment, Pens.FocalPen);
-			                foreach (var bond in focal.Bonds)
-			                {
-				                DrawDirectedLine(bond.Segment, Pens.BondPen);
-                            }
-		                }
-	                }
-                }
-            }
+		        pad.Refresh();
+		        var slug = Pad.ActiveSlug;
+		        foreach (var entity in pad.Entities)
+		        {
+			        foreach (var trait in entity.Traits)
+			        {
+				        DrawDirectedLine(trait.Segment, trait.IsLocked ? Pens.LockedPen : Pens.DarkPen);
+				        _canvas.Flush();
+				        foreach (var focal in trait.Focals)
+				        {
+					        DrawDirectedLine(focal.Segment, Pens.FocalPen);
+					        foreach (var bond in focal.Bonds)
+					        {
+						        DrawDirectedLine(bond.Segment, Pens.BondPen);
+					        }
+				        }
+			        }
+		        }
+
+		        foreach (var doubleBond in pad.ElementsOfKind(ElementKind.DoubleBond))
+		        {
+			        var db = (DoubleBond) doubleBond;
+			        SKPoint[] pts = new SKPoint[] { db.StartFocal.StartPosition, db.StartFocal.EndPosition, db.EndFocal.EndPosition, db.EndFocal.StartPosition };
+			        DrawPath(pts, Pens.BondFillPen);
+		        }
+	        }
         }
 
         public void DrawElement(IElement element, SKPaint paint, float radius = 4f)
@@ -162,7 +169,17 @@ namespace Slugs.Renderer
 
         public void DrawPolyline(SKPoint[] polyline, SKPaint paint)
         {
-	        _canvas.DrawPoints(SKPointMode.Polygon, polyline.ToArray(), paint);
+	        _canvas.DrawPoints(SKPointMode.Polygon, polyline, paint);
+        }
+        public void DrawPath(SKPoint[] polyline, SKPaint paint)
+        {
+	        var path = new SKPath
+	        {
+		        FillType = SKPathFillType.EvenOdd
+	        };
+            path.MoveTo(polyline[0]);
+            path.AddPoly(polyline, true);
+	        _canvas.DrawPath(path, paint);
         }
 
         public void DrawDirectedLine(SKSegment seg, SKPaint paint)

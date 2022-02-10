@@ -28,7 +28,7 @@ namespace Slugs.Entities
         public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
 
         // trait instances in an entity are traits with a unit, that are contained in one or more entities.
-        // maybe a bond is just two focals connected (on the same or different traits),
+        // maybe a singleBond is just two focals connected (on the same or different traits),
         //    with the option of intermediate repetition, scaling and directionality (causation)
 
         //public Focal(Trait trait, float startT, float endT) : base(trait.PadKind)
@@ -73,7 +73,7 @@ namespace Slugs.Entities
 
         private readonly HashSet<int> _bondStartKeys = new HashSet<int>();
         private readonly HashSet<int> _bondEndKeys = new HashSet<int>();
-        public IEnumerable<Bond> Bonds
+        public IEnumerable<SingleBond> Bonds
         {
 	        get
 	        {
@@ -84,34 +84,34 @@ namespace Slugs.Entities
 	        }
         }
 
-        public void AddBond(Bond bond) // todo: Add bonds from entity so able to verify focals belong to same entity.
+        public void AddBond(SingleBond singleBond) // todo: Add bonds from entity so able to verify focals belong to same entity.
         {
-	        if (bond.StartPoint.FocalKey == Key)
+	        if (singleBond.StartPoint.FocalKey == Key)
 	        {
-		        _bondStartKeys.Add(bond.Key);
+		        _bondStartKeys.Add(singleBond.Key);
 	        }
-	        else if (bond.EndPoint.FocalKey == Key)
+	        else if (singleBond.EndPoint.FocalKey == Key)
 	        {
-		        _bondEndKeys.Add(bond.Key);
+		        _bondEndKeys.Add(singleBond.Key);
 	        }
 	        else
 	        {
-		        throw new ArgumentException("Bond added to focal that doesn't belong to focal.");
+		        throw new ArgumentException("SingleBond added to focal that doesn't belong to focal.");
 	        }
         }
-        public void RemoveBond(Bond bond)
+        public void RemoveBond(SingleBond singleBond)
         {
-	        if (bond.StartPoint.FocalKey == Key)
+	        if (singleBond.StartPoint.FocalKey == Key)
 	        {
-		        _bondStartKeys.Remove(bond.Key);
+		        _bondStartKeys.Remove(singleBond.Key);
 	        }
-	        else if (bond.EndPoint.FocalKey == Key)
+	        else if (singleBond.EndPoint.FocalKey == Key)
 	        {
-		        _bondEndKeys.Remove(bond.Key);
+		        _bondEndKeys.Remove(singleBond.Key);
 	        }
 	        else
 	        {
-		        throw new ArgumentException("Bond added to focal that doesn't belong to focal.");
+		        throw new ArgumentException("SingleBond added to focal that doesn't belong to focal.");
 	        }
         }
 

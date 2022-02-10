@@ -66,10 +66,13 @@ namespace Slugs.Agents
             fc1.Execute();
             var fc2 = new AddFocalCommand(_activeEntity, trait2, 0.1f, 0.5f);
             fc2.Execute();
-            var bc = new AddBondCommand(fc1.AddedFocal, .2f, fc2.AddedFocal, 0.3f);
+            var bc = new AddSingleBondCommand(fc1.AddedFocal, .2f, fc2.AddedFocal, 0.3f);
             bc.Execute();
-            var bc2 = new AddBondCommand(fc1.AddedFocal, .4f, fc2.AddedFocal, 0.8f);
-            bc2.Execute();
+            //var bc2 = new AddSingleBondCommand(fc1.AddedFocal, .4f, fc2.AddedFocal, 0.8f);
+            //bc2.Execute();
+            var db = new AddDoubleBondCommand(fc1.AddedFocal, fc2.AddedFocal);
+            db.Execute();
+            //_activeEntity.a
 
             UIMode = UIMode.Any;
             ClearMouse();
@@ -137,8 +140,8 @@ namespace Slugs.Agents
 					var createObject = !Data.Begin.HasSelection || KeyIsDownControl;
 					if (createObject)
 					{
-                        // create Trait if terminal or ref point, create AddedBond or AddedFocal it FocalPoint.
-                        // trait to same trait is focal, trait to other trait is bond, all others are new traits.
+                        // create Trait if terminal or ref point, create AddedSingleBond or AddedFocal it FocalPoint.
+                        // trait to same trait is focal, trait to other trait is singleBond, all others are new traits.
                         var pKind = Data.Begin.Point.ElementKind;
                         var eKind = Data.Begin.ElementKind;
                         var makeTrait = eKind.IsNone() || eKind.IsPoint();
@@ -175,9 +178,9 @@ namespace Slugs.Agents
 	                        {
 		                        var startT = startFocal.TFromPoint(Data.Begin.Position).Item1;
 		                        var endT = nearest.TFromPoint(mousePoint).Item1;
-	                            var bondCmd = new AddBondCommand(startFocal, startT, nearest, endT);
+	                            var bondCmd = new AddSingleBondCommand(startFocal, startT, nearest, endT);
 		                        _activeCommand = _editCommands.Do(bondCmd);
-		                        Data.Selected.Point = bondCmd.AddedBond.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
+		                        Data.Selected.Point = bondCmd.AddedSingleBond.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
 		                        Data.Selected.ClearElements();
 		                        _selectableKind = ElementKind.FocalPart;
                             }
@@ -215,7 +218,7 @@ namespace Slugs.Agents
 		    }
 
 		    Data.Selected.UpdatePositions(mousePoint);
-		    if (_activeCommand is AddBondCommand abc)
+		    if (_activeCommand is AddSingleBondCommand abc)
 		    {
 			    var focal = _activeEntity.NearestFocal(mousePoint, abc.StartPointTask.FocalKey);
 			    if (!focal.IsEmpty && focal.Key != abc.EndPointTask.FocalKey)
@@ -306,8 +309,8 @@ namespace Slugs.Agents
 	    private bool _isControlDown;
 	    private bool _isShiftDown;
 	    private bool _isAltDown;
-        // When Bond is selected, focals can be highlighted (but not moved), bonds can be created or edited and have precedence in conflict.
-        // ctrl defaults to 'create' causing select to be exclusive to focals or bond points.
+        // When SingleBond is selected, focals can be highlighted (but not moved), bonds can be created or edited and have precedence in conflict.
+        // ctrl defaults to 'create' causing select to be exclusive to focals or singleBond points.
         public bool KeyDown(KeyEventArgs e)
 	    {
 		    CurrentKey = e.KeyCode;

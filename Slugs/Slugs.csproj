@@ -91,7 +91,8 @@
   <ItemGroup>
     <Compile Include="Agents\Agent.cs" />
     <Compile Include="Agents\IAgent.cs" />
-    <Compile Include="Commands\EditCommands\AddBondCommand.cs" />
+    <Compile Include="Commands\EditCommands\AddDoubleBondCommand.cs" />
+    <Compile Include="Commands\EditCommands\AddSingleBondCommand.cs" />
     <Compile Include="Commands\EditCommands\AddFocalCommand.cs" />
     <Compile Include="Commands\EditCommands\Command.cs" />
     <Compile Include="Commands\CommandStack.cs" />
@@ -101,7 +102,8 @@
     <Compile Include="Commands\EditCommands\SetSelectionCommand.cs" />
     <Compile Include="Commands\Patterns\EditPatterns.cs" />
     <Compile Include="Commands\Patterns\IPattern.cs" />
-    <Compile Include="Commands\Tasks\CreateBondTask.cs" />
+    <Compile Include="Commands\Tasks\CreateDoubleBondTask.cs" />
+    <Compile Include="Commands\Tasks\CreateSingleBondTask.cs" />
     <Compile Include="Commands\Tasks\CreateEntityTask.cs" />
     <Compile Include="Commands\Tasks\CreateFocalTask.cs" />
     <Compile Include="Commands\Tasks\CreateBondPointTask.cs" />
@@ -114,6 +116,7 @@
     <Compile Include="Commands\Tasks\MoveElementTask.cs" />
     <Compile Include="Commands\Tasks\SetSelectionTask.cs" />
     <Compile Include="Commands\Tasks\TaskBase.cs" />
+    <Compile Include="Entities\DoubleBond.cs" />
     <Compile Include="Entities\Group.cs" />
     <Compile Include="Entities\BondPoint.cs" />
     <Compile Include="Entities\RefPoint.cs" />
@@ -125,7 +128,7 @@
     <Compile Include="Input\UIData.cs" />
     <Compile Include="Primitives\SkPointExtension.cs" />
     <Compile Include="Primitives\SKSegment.cs" />
-    <Compile Include="Entities\Bond.cs" />
+    <Compile Include="Entities\SingleBond.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\FocalPoint.cs" />
     <Compile Include="Primitives\SegmentBase.cs" />

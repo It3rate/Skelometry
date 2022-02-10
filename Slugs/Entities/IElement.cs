@@ -109,23 +109,24 @@ namespace Slugs.Entities
 		BondPoint = 0x8,
         Trait = 0x10,
 		Focal = 0x20,
-		Bond = 0x40,
-		Entity = 0x80,
-		Unit = 0x100,
-		Group = 0x200,
+		SingleBond = 0x40,
+		DoubleBond = 0x80,
+        Entity = 0x100,
+		Unit = 0x200,
+		Group = 0x400,
 
-		Grid = 0x400,
-		SelectionRect = 0x800,
-        Ruler = 0x1000,
-        Value = 0x2000,
+		Grid = 0x800,
+		SelectionRect = 0x1000,
+        Ruler = 0x2000,
+        Value = 0x4000,
 
         Any = 0xFFFF,
 
         PointKind = RefPoint | Terminal | FocalPoint | BondPoint,
-        SegmentKind = Trait | Focal | Bond | Unit,
+        SegmentKind = Trait | Focal | SingleBond | Unit,
         TraitPart = Trait | Terminal | RefPoint,
         FocalPart = Focal | Unit | FocalPoint,
-        BondPart = Bond | BondPoint,
+        BondPart = SingleBond | BondPoint,
         UIPart = Grid | SelectionRect | Ruler | Value,
         TraitPointSource = Terminal | RefPoint | Entity,
         FocalPointSource = FocalPoint | Terminal | RefPoint,
@@ -176,7 +177,7 @@ namespace Slugs.Entities
 				case ElementKind.Focal:
 					result = other.IsCompatible(ElementKind.FocalPointSource);
 					break;
-                case ElementKind.Bond:
+                case ElementKind.SingleBond:
 					result = other.IsCompatible(ElementKind.BondPointSource);
 					break;
             }

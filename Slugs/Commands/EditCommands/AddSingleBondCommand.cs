@@ -10,20 +10,20 @@ namespace Slugs.Commands.EditCommands
     using System.Text;
     using System.Threading.Tasks;
 
-    public class AddBondCommand : EditCommand
+    public class AddSingleBondCommand : EditCommand
     {
 	    public CreateBondPointTask StartPointTask { get; }
 	    public CreateBondPointTask EndPointTask { get; }
 	    public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
-	    public CreateBondTask BondTask { get; set; }
+	    public CreateSingleBondTask SingleBondTask { get; set; }
 
-	    public Bond AddedBond => (Bond)BondTask?.AddedBond ?? Bond.Empty;
+	    public SingleBond AddedSingleBond => (SingleBond)SingleBondTask?.AddedSingleBond ?? SingleBond.Empty;
 
-	    public AddBondCommand(Focal startFocal, float startT, Focal endFocal, float endT) :
+	    public AddSingleBondCommand(Focal startFocal, float startT, Focal endFocal, float endT) :
 		    this(new CreateBondPointTask(startFocal, startT), new CreateBondPointTask(endFocal, endT))
 	    { }
 
-	    public AddBondCommand(CreateBondPointTask startPointTask, CreateBondPointTask endPointTask) : base(startPointTask.Pad)
+	    public AddSingleBondCommand(CreateBondPointTask startPointTask, CreateBondPointTask endPointTask) : base(startPointTask.Pad)
 	    {
 		    StartPointTask = startPointTask;
 		    AddTaskAndRun(StartPointTask);
@@ -41,8 +41,8 @@ namespace Slugs.Commands.EditCommands
         public override void Execute()
 	    {
 		    base.Execute();
-		    BondTask = new CreateBondTask(StartPointTask.BondPoint, EndPointTask.BondPoint);
-		    AddTaskAndRun(BondTask);
+		    SingleBondTask = new CreateSingleBondTask(StartPointTask.BondPoint, EndPointTask.BondPoint);
+		    AddTaskAndRun(SingleBondTask);
 	    }
 
 	    public override void Update(SKPoint point)
