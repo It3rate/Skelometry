@@ -22,7 +22,10 @@ namespace Slugs.Entities
 
         public Group(PadKind padKind) : base(padKind)
 	    {
-	    }
+        }
+
+        public override SKPath Path => new SKPath();
+
         public int Count => _elementKeys.Count;
 	    public ElementKind Kind => _elementKeys.Count == 0 ? ElementKind.None : _elementKeys.Count > 1 ? ElementKind.Any : FirstElement.ElementKind;
 	    public IElement FirstElement => ElementByIndex(0);

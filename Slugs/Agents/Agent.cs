@@ -147,7 +147,6 @@ namespace Slugs.Agents
                     if (createDoubleBond)
 					{
                         // create doubleBond object
-						Console.WriteLine("db");
 						var startFocal = (Focal)Data.Begin.FirstElement;
 						var dbc = new AddDoubleBondCommand(startFocal, startFocal);
 						_activeCommand = _editCommands.Do(dbc);
@@ -168,8 +167,8 @@ namespace Slugs.Agents
                         if (eKind.IsNone() || eKind.IsPoint()) // make trait if starting new or connecting to an existing point (maybe not second)
                         {
 	                        var traitCmd = Data.Begin.HasPoint ? 
-		                        new AddTraitCommand(-1, Data.Begin.Point) :
-		                        new AddTraitCommand(Data.Begin.Pad, -1, Data.Begin.Position);
+		                        new AddTraitCommand(_activeEntity.Key, Data.Begin.Point) :
+		                        new AddTraitCommand(Data.Begin.Pad, _activeEntity.Key, Data.Begin.Position);
 							_activeCommand = _editCommands.Do(traitCmd);
 							_ignoreList.Add(traitCmd.AddedTrait.Key);
 							_ignoreList.Add(traitCmd.AddedTrait.EndKey);

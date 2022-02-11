@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using SkiaSharp;
-using Slugs.Agents;
-using Slugs.Entities;
+﻿using SkiaSharp;
 using Slugs.Pads;
+using Slugs.Primitives;
 
-namespace Slugs.Primitives
+namespace Slugs.Entities
 {
 	public abstract class SegmentBase : ElementBase
     {
@@ -24,7 +21,16 @@ namespace Slugs.Primitives
         protected SegmentBase(PadKind padKind) : base(padKind)
         {
         }
-
+        public override SKPath Path
+        {
+	        get
+	        {
+		        var path = new SKPath();
+		        path.MoveTo(StartPosition);
+			    path.LineTo(EndPosition);
+		        return path;
+	        }
+        }
         public float Length() => Segment.Length;
 	    public float SquaredLength() => Segment.LengthSquared;
 	    public SKPoint PointAlongLine(float t) => Segment.PointAlongLine(t);

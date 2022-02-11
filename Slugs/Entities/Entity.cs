@@ -14,6 +14,8 @@ namespace Slugs.Entities
 
         public override List<IPoint> Points => new List<IPoint> { };
 
+        public override SKPath Path => new SKPath();
+
         // todo: also store focal and singleBond lists in entities and traits (globally stored in Pads). Need to sync add and remove as needed when traits are adjusted.
         #region Traits
         private readonly HashSet<int> _traitKeys = new HashSet<int>();
@@ -59,7 +61,7 @@ namespace Slugs.Entities
 	    }
         public void AddDoubleBond(DoubleBond bond)
 	    {
-		    _focalKeys.Add(bond.Key);
+		    _doubleBondKeys.Add(bond.Key);
 	    }
 	    public void RemoveDoubleBond(DoubleBond bond)
 	    {

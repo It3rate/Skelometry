@@ -131,7 +131,7 @@
     <Compile Include="Entities\SingleBond.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\FocalPoint.cs" />
-    <Compile Include="Primitives\SegmentBase.cs" />
+    <Compile Include="Entities\SegmentBase.cs" />
     <Compile Include="Pads\PadKind.cs" />
     <Compile Include="Renderer\RenderFlags.cs" />
     <Compile Include="Renderer\RenderStatus.cs" />

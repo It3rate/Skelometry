@@ -277,12 +277,28 @@ namespace Slugs.Entities
 
             foreach (var element in ElementsOfKindReversed(kind))
             {
-	            if (!ignoreKeys.Contains(element.Key) && element.DistanceToPoint(point) < maxDist)
+	            if (!element.HasArea && !ignoreKeys.Contains(element.Key) && element.DistanceToPoint(point) < maxDist)
 	            {
 		            result = element;
 		            break;
 	            }
             }
+            // todo: check for area hits with double bonds if line/points not found.
+            if (result.IsEmpty)
+            {
+	            foreach (var entity in Entities)
+	            {
+		            foreach (var db in entity.DoubleBonds)
+		            {
+			            if (db.Path.Contains(point.X, point.Y))
+			            {
+				            result = db;
+				            goto End;
+			            }
+		            }
+	            }
+            }
+            End:
             return result;
         }
 

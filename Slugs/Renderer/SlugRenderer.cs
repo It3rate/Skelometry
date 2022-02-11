@@ -142,8 +142,10 @@ namespace Slugs.Renderer
 		        foreach (var doubleBond in pad.ElementsOfKind(ElementKind.DoubleBond))
 		        {
 			        var db = (DoubleBond) doubleBond;
-			        SKPoint[] pts = new SKPoint[] { db.StartFocal.StartPosition, db.StartFocal.EndPosition, db.EndFocal.EndPosition, db.EndFocal.StartPosition };
-			        DrawPath(pts, Pens.BondFillPen);
+			        var pen = Data.Highlight.FirstElement.Key == db.Key ? Pens.BondSelectPen : Pens.BondFillPen;
+
+                    SKPoint[] pts = new SKPoint[] { db.StartFocal.StartPosition, db.StartFocal.EndPosition, db.EndFocal.EndPosition, db.EndFocal.StartPosition };
+			        DrawPath(pts, pen);
 		        }
 
 		        if (Data.WorkingPoints.Count > 0)

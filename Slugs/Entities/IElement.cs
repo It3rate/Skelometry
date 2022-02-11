@@ -17,6 +17,8 @@ namespace Slugs.Entities
         IElement EmptyElement { get; }
         bool IsLocked { get; set; }
         bool IsEmpty { get; }
+        bool HasArea { get; }
+        SKPath Path { get; }
 
         //IPoint[] TerminalPoints { get; }
         List<IPoint> Points { get; }
@@ -26,6 +28,11 @@ namespace Slugs.Entities
         void MoveTo(SKPoint position);
         void SetLock(bool lockStatus);
     }
+
+	public interface IAreaElement
+	{
+		bool ContainsPoint(SKPoint point);
+	}
 
     public abstract class ElementBase : IElement
     {
@@ -39,6 +46,7 @@ namespace Slugs.Entities
 
         public abstract IElement EmptyElement { get; }
 		public abstract ElementKind ElementKind { get; }
+		public abstract SKPath Path { get; }
 		public abstract List<IPoint> Points { get; }
 		public List<SKPoint> SKPoints
 		{
@@ -54,7 +62,9 @@ namespace Slugs.Entities
 			}
 		}
 
-		private bool _isLocked;
+		public virtual bool HasArea => false;
+
+        private bool _isLocked;
         public bool IsLocked
 		{
 			get => _isLocked;

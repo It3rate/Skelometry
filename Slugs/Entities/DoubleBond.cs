@@ -11,18 +11,19 @@ namespace Slugs.Entities
     using System.Text;
     using System.Threading.Tasks;
 
-    public class DoubleBond : ElementBase
+    public class DoubleBond : ElementBase, IAreaElement
     {
 	    public int StartKey { get; private set; }
 	    public int EndKey { get; private set; }
-
 
         public override ElementKind ElementKind => ElementKind.DoubleBond;
 	    public override IElement EmptyElement => Empty;
 	    public static readonly DoubleBond Empty = new DoubleBond();
 	    private DoubleBond() : base(true) { }// Empty ctor
 
-	    public Focal StartFocal
+	    public override bool HasArea => true;
+
+        public Focal StartFocal
 	    {
 		    get => Pad.FocalAt(StartKey);
 		    set => StartKey = value.Key;
@@ -48,8 +49,17 @@ namespace Slugs.Entities
 		    SetStartKey(startFocal.Key);
 		    SetEndKey(endFocal.Key);
 	    }
+	    public override SKPath Path
+	    {
+		    get
+		    {
+			    var path = new SKPath();
+                path.AddPoly(new SKPoint[]{StartFocal.StartPosition, StartFocal.EndPosition, EndFocal.EndPosition, EndFocal.StartPosition }, true);
+			    return path;
+		    }
+	    }
 
-	    protected void SetStartKey(int key)
+        protected void SetStartKey(int key)
 	    {
 		    if (!Pad.FocalAt(key).IsEmpty)
 		    {
@@ -71,8 +81,12 @@ namespace Slugs.Entities
 			    throw new ArgumentException("DoubleBond focals must be type Focal.");
 		    }
 	    }
+	    public bool ContainsPoint(SKPoint point)
+	    {
+		    throw new NotImplementedException();
+	    }
 
-	    public static bool operator ==(DoubleBond left, DoubleBond right) =>
+        public static bool operator ==(DoubleBond left, DoubleBond right) =>
 		    left.Key == right.Key && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
 	    public static bool operator !=(DoubleBond left, DoubleBond right) =>
 		    left.Key != right.Key || left.StartKey != right.StartKey || left.EndKey != right.EndKey;

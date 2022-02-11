@@ -24,7 +24,15 @@ namespace Slugs.Entities
 		protected PointBase(bool isEmpty) : base(isEmpty) { }
 		protected PointBase(PadKind padKind) : base(padKind) { }
 
-		public override float DistanceToPoint(SKPoint point)
+		public override SKPath Path {
+			get
+			{
+                var path = new SKPath();
+                path.AddCircle(Position.X, Position.Y, 1);
+                return path;
+			}
+		}
+        public override float DistanceToPoint(SKPoint point)
 		{
 			return point.DistanceTo(Position);
 		}
