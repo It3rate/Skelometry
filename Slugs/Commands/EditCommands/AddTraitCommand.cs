@@ -15,15 +15,15 @@ namespace Slugs.Commands.EditCommands
     // StretchSegmentTask
     public class AddTraitCommand : EditCommand, IDraggableCommand
     {
-	    public IPointTask StartPointTask { get; }
-	    public IPointTask EndPointTask { get; }
+	    public IPointTask StartPointTask { get; private set; }
+	    public IPointTask EndPointTask { get; private set; }
 	    public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
 	    public bool HasDraggablePoint => !DraggablePoint.IsEmpty;
 
         public CreateTraitTask TraitTask { get; set; }
 
         public Trait AddedTrait => TraitTask?.Trait ?? Trait.Empty;
-        public int EntityKey { get; }
+        public int EntityKey { get; private set; }
 
         public AddTraitCommand(Pad pad, int entityKey, SKPoint start) :
 	        this(entityKey, new CreateTerminalPointTask(pad.PadKind, start), new CreateTerminalPointTask(pad.PadKind, start)) { }
@@ -34,16 +34,8 @@ namespace Slugs.Commands.EditCommands
         public AddTraitCommand(int entityKey, IPointTask startPointTask, IPointTask endPointTask = null) : base(startPointTask.Pad)
         {
             StartPointTask = startPointTask;
-            AddTaskAndRun(StartPointTask);
             EndPointTask = endPointTask ?? new CreateTerminalPointTask(Pad.PadKind, Pad.PointAt(startPointTask.PointKey).Position);
-	        AddTaskAndRun(EndPointTask);
 	        EntityKey = entityKey;
-	        if (Pad.EntityAt(EntityKey).IsEmpty)
-	        {
-                var entityTask = new CreateEntityTask(Pad.PadKind);
-                AddTaskAndRun(entityTask);
-                EntityKey = entityTask.EntityKey;
-	        }
         }
 
         // maybe tasks need to be start/update/complete, where eg merge endpoints is on complete, and MoveElementTask is available for updates.
@@ -52,8 +44,25 @@ namespace Slugs.Commands.EditCommands
         public override void Execute()
         {
 	        base.Execute();
+            AddTaskAndRun(StartPointTask);
+	        AddTaskAndRun(EndPointTask);
+	        if (Pad.EntityAt(EntityKey).IsEmpty)
+	        {
+                var entityTask = new CreateEntityTask(Pad.PadKind);
+                AddTaskAndRun(entityTask);
+                EntityKey = entityTask.EntityKey;
+	        }
 	        TraitTask = new CreateTraitTask(Pad.PadKind, EntityKey, StartPointTask.PointKey, EndPointTask.PointKey);
 	        AddTaskAndRun(TraitTask);
+        }
+
+        public override void Unexecute()
+        {
+	        base.Unexecute();
+	        StartPointTask = null;
+	        EndPointTask = null;
+	        TraitTask = null;
+	        EntityKey = ElementBase.EmptyKeyValue;
         }
 
         public override void Update(SKPoint point)

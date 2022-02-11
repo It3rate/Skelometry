@@ -39,7 +39,7 @@ namespace Slugs.Commands
 
 	    public bool CanUndo => _stackIndex > -0;
 	    public bool CanRedo => RedoSize > 0;
-	    public int RedoSize => _stack.Count - (_stackIndex + 1);
+	    public int RedoSize => _stack.Count - _stackIndex;
 
 	    public CommandStack(Agent agent)
 	    {
@@ -124,6 +124,11 @@ namespace Slugs.Commands
 		    }
 	    }
 
+	    public bool Repeat()
+	    {
+		    return false;
+	    }
+
 	    public void Clear()
 	    {
 		    _stack.Clear();
@@ -141,8 +146,9 @@ namespace Slugs.Commands
 
 	    private void AddAndExecuteCommand(TCommand command)
 	    {
-		    _stack.Add(command);
+            RemoveRedoCommands();
 		    _stackIndex++;
+		    _stack.Add(command);
 		    command.Execute();
 	    }
 
@@ -150,7 +156,7 @@ namespace Slugs.Commands
 	    {
 		    if (CanRedo)
 		    {
-			    _stack.RemoveRange(_stackIndex + 1, RedoSize);
+			    _stack.RemoveRange(_stackIndex, RedoSize);
 		    }
 	    }
 

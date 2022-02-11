@@ -27,5 +27,15 @@ namespace Slugs.Commands.Tasks
 			base.RunTask();
 			Trait = Pad.AddTrait(EntityKey, StartPointKey, EndPointKey, 66);
 		}
+
+		public override void UnRunTask()
+		{
+			base.UnRunTask();
+            Pad.RemoveElement(Trait.Key);
+            foreach (var entity in Pad.Entities)
+            {
+	            entity.RemoveTrait(Trait.Key);
+            }
+		}
 	}
 }

@@ -12,8 +12,8 @@ namespace Slugs.Commands.EditCommands
 
     public class AddSingleBondCommand : EditCommand
     {
-	    public CreateBondPointTask StartPointTask { get; }
-	    public CreateBondPointTask EndPointTask { get; }
+	    public CreateBondPointTask StartPointTask { get; private set; }
+	    public CreateBondPointTask EndPointTask { get; private set; }
 	    public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
 	    public CreateSingleBondTask SingleBondTask { get; set; }
 
@@ -26,9 +26,7 @@ namespace Slugs.Commands.EditCommands
 	    public AddSingleBondCommand(CreateBondPointTask startPointTask, CreateBondPointTask endPointTask) : base(startPointTask.Pad)
 	    {
 		    StartPointTask = startPointTask;
-		    AddTaskAndRun(StartPointTask);
 		    EndPointTask = endPointTask;
-		    AddTaskAndRun(EndPointTask);
 	    }
 
 	    public void UpdateEndPointFocal(Focal focal)
@@ -41,11 +39,21 @@ namespace Slugs.Commands.EditCommands
         public override void Execute()
 	    {
 		    base.Execute();
+		    AddTaskAndRun(StartPointTask);
+		    AddTaskAndRun(EndPointTask);
 		    SingleBondTask = new CreateSingleBondTask(StartPointTask.BondPoint, EndPointTask.BondPoint);
 		    AddTaskAndRun(SingleBondTask);
 	    }
 
-	    public override void Update(SKPoint point)
+        public override void Unexecute()
+        {
+	        base.Unexecute();
+	        StartPointTask = null;
+	        EndPointTask = null;
+            SingleBondTask = null;
+        }
+
+        public override void Update(SKPoint point)
 	    {
 	    }
 

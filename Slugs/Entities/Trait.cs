@@ -27,7 +27,7 @@ namespace Slugs.Entities
 
 	    public int KindIndex { get; }
 	    private Entity _entity => Pad.EntityAt(EntityKey); // trait doesn't have entity as multiple entities can hold the same trait
-        public int EntityKey { get; set; }
+	    public int EntityKey { get; set; }
 
 
 

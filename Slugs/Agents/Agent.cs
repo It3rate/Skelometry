@@ -368,6 +368,24 @@ namespace Slugs.Agents
 			    case Keys.B:
 				    UIMode = UIMode.CreateBond;
 				    break;
+			    case Keys.Z:
+				    if (KeyIsDownControl)
+				    {
+					    // undo
+					    _editCommands.Undo();
+				    }
+				    break;
+			    case Keys.R:
+				    if (KeyIsDownControl)
+				    {
+					    // redo
+					    _editCommands.Redo();
+                    }
+				    else
+				    {
+					    _editCommands.Repeat();
+				    }
+				    break;
             }
 		    SetSelectable(UIMode);
             return true;
