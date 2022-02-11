@@ -49,6 +49,13 @@ namespace Slugs.Input
 	        AddSelectionSet(PadKind.Input, SelectionSetKind.Clipboard);
         }
 
+        public List<SKPoint> WorkingPoints = new List<SKPoint>();
+        public void SetWorkingPoints(params SKPoint[] points)
+        {
+            WorkingPoints.Clear();
+            WorkingPoints.AddRange(points);
+        }
+
         public IElement GetHighlight(SKPoint p, SelectionSet targetSet, List<int> ignoreKeys, ElementKind kind)
         {
 	        targetSet.Clear();

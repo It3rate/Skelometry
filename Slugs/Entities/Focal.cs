@@ -6,6 +6,8 @@ using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
+    // Eventually Focals will allow multiple segments to multiply/square/cube etc, as well as have probability and fuzzy endpoints.
+    // These are slug collections with bonds between them and causation direction.
 	public class Focal : SegmentBase
     {
 	    public override ElementKind ElementKind => ElementKind.Focal;
@@ -31,13 +33,6 @@ namespace Slugs.Entities
         // maybe a singleBond is just two focals connected (on the same or different traits),
         //    with the option of intermediate repetition, scaling and directionality (causation)
 
-        //public Focal(Trait trait, float startT, float endT) : base(trait.PadKind)
-        //{
-        //    var startPoint = new FocalPoint(PadKind, trait.Key, startT);
-	       // StartKey = startPoint.Key;
-	       // var endPoint = new FocalPoint(PadKind, trait.Key, endT);
-        //    EndKey = endPoint.Key;
-        //}
         public Focal(Entity entity, FocalPoint startPoint, FocalPoint endPoint) : base(entity.PadKind)
         {
 	        if (startPoint.TraitKey != endPoint.TraitKey)

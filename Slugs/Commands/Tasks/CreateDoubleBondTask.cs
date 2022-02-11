@@ -11,8 +11,8 @@ namespace Slugs.Commands.Tasks
 
 	public class CreateDoubleBondTask : EditTask, ICreateTask
 	{
-		public Focal StartFocal { get; }
-		public Focal EndFocal { get; }
+		private Focal StartFocal { get; }
+		private Focal EndFocal { get; set; }
 
 		public int StartFocalKey => StartFocal.Key;
 		public int StartTraitKey => StartFocal.TraitKey;
@@ -37,6 +37,12 @@ namespace Slugs.Commands.Tasks
 			base.RunTask();
 			AddedDoubleBond = new DoubleBond(StartFocal, EndFocal);
 			StartFocal.Entity.AddDoubleBond(AddedDoubleBond);
+		}
+
+		public void SetEndFocal(Focal endFocal)
+		{
+			EndFocal = endFocal;
+			AddedDoubleBond.EndFocal = endFocal;
 		}
 	}
 }

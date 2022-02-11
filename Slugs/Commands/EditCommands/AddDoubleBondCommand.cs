@@ -34,5 +34,10 @@ namespace Slugs.Commands.EditCommands
 	    public override void Completed()
 	    {
 	    }
+
+	    public void UpdateEndFocal(Focal focal)
+	    {
+		    DoubleBondTask.SetEndFocal(focal);
+	    }
     }
 }

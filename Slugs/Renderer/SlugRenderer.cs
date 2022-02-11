@@ -145,6 +145,11 @@ namespace Slugs.Renderer
 			        SKPoint[] pts = new SKPoint[] { db.StartFocal.StartPosition, db.StartFocal.EndPosition, db.EndFocal.EndPosition, db.EndFocal.StartPosition };
 			        DrawPath(pts, Pens.BondFillPen);
 		        }
+
+		        if (Data.WorkingPoints.Count > 0)
+		        {
+			        DrawPath(Data.WorkingPoints.ToArray(), Pens.BondFillPen);
+		        }
 	        }
         }
 

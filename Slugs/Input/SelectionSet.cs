@@ -129,7 +129,8 @@ namespace Slugs.Input
 	    Begin,
 	    Current,
 	    Highlight,
-	    Selection, 
+	    Selection,
+	    Working,
 	    Clipboard,
     }
 }

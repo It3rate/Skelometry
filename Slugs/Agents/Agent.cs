@@ -86,6 +86,7 @@ namespace Slugs.Agents
 
 #region Position and Keyboard
 
+	    private bool _creatingOnDown = false;
         public bool MouseDown(MouseEventArgs e)
         {
             // Add to selection if ctrl down etc.
@@ -99,6 +100,7 @@ namespace Slugs.Agents
             Data.Selected.SetElements(Data.Begin.Elements);
 
             IsDown = true;
+            _creatingOnDown = KeyIsDownControl;
             return true;
 	    }
 
@@ -137,8 +139,22 @@ namespace Slugs.Agents
 				if (dist > _minDragDistance)
 				{
 					bool overrideMove = KeyIsDownControl || UIMode.IsCreate();
-					var createObject = !Data.Begin.HasSelection || KeyIsDownControl;
-					if (createObject)
+
+					bool createPointObject = !Data.Begin.HasSelection || KeyIsDownControl;
+					bool createDoubleBond = (UIMode == UIMode.CreateDoubleBond || KeyIsDownControl) && 
+					                        Data.Begin.FirstElement.ElementKind == ElementKind.Focal;
+
+                    if (createDoubleBond)
+					{
+                        // create doubleBond object
+						Console.WriteLine("db");
+						var startFocal = (Focal)Data.Begin.FirstElement;
+						var dbc = new AddDoubleBondCommand(startFocal, startFocal);
+						_activeCommand = _editCommands.Do(dbc);
+						Data.Selected.Clear();
+						Data.Selected.SetElements();
+                    }
+                    else if (createPointObject) // create point to point object
 					{
                         // create Trait if terminal or ref point, create AddedSingleBond or AddedFocal it FocalPoint.
                         // trait to same trait is focal, trait to other trait is singleBond, all others are new traits.
@@ -217,14 +233,29 @@ namespace Slugs.Agents
 				}
 		    }
 
-		    Data.Selected.UpdatePositions(mousePoint);
+		    var dontDragAtStart = !IsDragging && _creatingOnDown;
+		    if (!dontDragAtStart)
+		    {
+			    Data.Selected.UpdatePositions(mousePoint);
+		    }
+		    
+
 		    if (_activeCommand is AddSingleBondCommand abc)
 		    {
 			    var focal = _activeEntity.NearestFocal(mousePoint, abc.StartPointTask.FocalKey);
 			    if (!focal.IsEmpty && focal.Key != abc.EndPointTask.FocalKey)
 			    {
-					abc.UpdateEndPointFocal(focal);
+				    abc.UpdateEndPointFocal(focal);
 			    }
+		    }
+		    else if (_activeCommand is AddDoubleBondCommand adb)
+		    {
+			    var focal = _activeEntity.NearestFocal(mousePoint, adb.StartFocal.Key);
+			    if (!focal.IsEmpty && focal.Key != adb.EndFocal.Key)
+			    {
+				    adb.UpdateEndFocal(focal);
+			    }
+                Data.SetWorkingPoints(adb.StartFocal.StartPosition, adb.StartFocal.EndPosition, adb.EndFocal.EndPosition, adb.EndFocal.StartPosition);
 		    }
             return true;
 	    }
@@ -332,9 +363,12 @@ namespace Slugs.Agents
 			    case Keys.F:
 				    UIMode = UIMode.CreateFocal;
                     break;
+			    case Keys.D:
+				    UIMode = UIMode.CreateDoubleBond;
+				    break;
 			    case Keys.B:
 				    UIMode = UIMode.CreateBond;
-                    break;
+				    break;
             }
 		    SetSelectable(UIMode);
             return true;
@@ -364,6 +398,7 @@ namespace Slugs.Agents
 		    Data.Begin.Clear();
 		    WorkingPad.Clear();
 		    SetSelectable(UIMode);
+            Data.SetWorkingPoints();
         }
 	    public void Clear()
         {

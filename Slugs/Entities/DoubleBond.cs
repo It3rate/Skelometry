@@ -22,8 +22,16 @@ namespace Slugs.Entities
 	    public static readonly DoubleBond Empty = new DoubleBond();
 	    private DoubleBond() : base(true) { }// Empty ctor
 
-	    public Focal StartFocal => Pad.FocalAt(StartKey);
-	    public Focal EndFocal => Pad.FocalAt(EndKey);
+	    public Focal StartFocal
+	    {
+		    get => Pad.FocalAt(StartKey);
+		    set => StartKey = value.Key;
+	    }
+	    public Focal EndFocal
+	    {
+		    get => Pad.FocalAt(EndKey);
+		    set => EndKey = value.Key;
+	    }
 	    public SKSegment StartSegment => StartFocal.Segment;
 	    public SKSegment EndPosition => EndFocal.Segment;
 

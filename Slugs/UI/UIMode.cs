@@ -13,7 +13,8 @@
 	    CreateEntity = 0x1,
 	    CreateTrait = 0x2,
 	    CreateFocal = 0x4,
-	    CreateBond = 0x8,
+	    CreateDoubleBond = 0x8,
+	    CreateBond = 0x10,
 
         //Inspect = 0x10,
         //Edit = 0x20,

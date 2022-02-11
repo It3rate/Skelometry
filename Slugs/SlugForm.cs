@@ -57,15 +57,13 @@ namespace Slugs
 	        lbBottom.Text = (scBottom.Value).ToString();
             Redraw();
         }
-
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
 	        if (_agent.MouseDown(e))
 	        {
 		        Redraw();
 	        }
-        } 
-
+        }
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
 	        if (_agent.MouseMove(e))
@@ -73,7 +71,6 @@ namespace Slugs
 		        Redraw();
 	        }
         }
-
         private void OnMouseUp(object sender, MouseEventArgs e)
         {
 	        if (_agent.MouseUp(e))
@@ -81,7 +78,6 @@ namespace Slugs
 		        Redraw();
 	        }
         }
-
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (_agent.KeyDown(e))
@@ -96,20 +92,6 @@ namespace Slugs
 		        Redraw();
 	        }
         }
-        //private void OnKeyPress(object sender, KeyPressEventArgs e)
-        //{
-	       // Console.WriteLine("press " + e.KeyChar);
-        //}
-        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        //{
-	       // if (_agent.KeyDown(keyData))
-	       // {
-		      //  Redraw();
-	       // }
-        //    return base.ProcessCmdKey(ref msg, keyData);
-        //}
-
-
         private void Redraw()
         {
 	        //_renderer.Agent = Agent;
@@ -124,32 +106,33 @@ namespace Slugs
         {
 	        Application.Exit();
         }
-
         private void btEntity_Click(object sender, EventArgs e)
         {
 	        _agent.UIMode = UIMode.CreateEntity;
         }
-
         private void btTrait_Click(object sender, EventArgs e)
         {
 	        _agent.UIMode = UIMode.CreateTrait;
         }
-
         private void btFocal_Click(object sender, EventArgs e)
         {
 	        _agent.UIMode = UIMode.CreateFocal;
         }
-
+        private void btDoubleBond_Click(object sender, EventArgs e)
+        {
+	        _agent.UIMode = UIMode.CreateDoubleBond;
+        }
         private void btBond_Click(object sender, EventArgs e)
         {
 	        _agent.UIMode = UIMode.CreateBond;
         }
         private void _agent_OnModeChange(object sender, EventArgs e)
         {
+            btEntity.Enabled = true;
 	        btTrait.Enabled = true;
 	        btFocal.Enabled = true;
+	        btDoubleBond.Enabled = true;
 	        btBond.Enabled = true;
-	        btEntity.Enabled = true;
             switch (_agent.UIMode)
             {
 	            case UIMode.CreateTrait:
@@ -158,14 +141,18 @@ namespace Slugs
 	            case UIMode.CreateFocal:
                     btFocal.Enabled = false;
                     break;
+	            case UIMode.CreateDoubleBond:
+		            btDoubleBond.Enabled = false;
+		            break;
 	            case UIMode.CreateBond:
-                    btBond.Enabled = false;
-                    break;
+		            btBond.Enabled = false;
+		            break;
                 default:
                     btEntity.Enabled = false;
                     break;
             }
 	        _control.Select();
         }
+
     }
 }
