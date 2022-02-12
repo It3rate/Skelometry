@@ -23,7 +23,7 @@ namespace Slugs.Commands.Tasks
 		public Trait EndTrait => EndFocal.Trait;
 
 		public ElementKind SegmentKind => ElementKind.DoubleBond;
-		public DoubleBond AddedDoubleBond { get; private set; }
+		public DoubleBond AddedDoubleBond { get; private set; } = DoubleBond.Empty;
 
 		// bonds need an entity to be stored in?
 		public CreateDoubleBondTask(Focal startFocal, Focal endFocal) : base(startFocal.PadKind)
@@ -35,11 +35,25 @@ namespace Slugs.Commands.Tasks
 		public override void RunTask()
 		{
 			base.RunTask();
-			AddedDoubleBond = new DoubleBond(StartFocal, EndFocal);
+			if (AddedDoubleBond.IsEmpty)
+			{
+				AddedDoubleBond = new DoubleBond(StartFocal, EndFocal);
+            }
+			else
+			{
+				Pad.AddElement(AddedDoubleBond);
+			}
 			StartFocal.Entity.AddDoubleBond(AddedDoubleBond);
 		}
 
-		public void SetEndFocal(Focal endFocal)
+		public override void UnRunTask()
+		{
+			base.UnRunTask();
+			StartFocal.Entity.RemoveDoubleBond(AddedDoubleBond);
+            Pad.RemoveElement(AddedDoubleBond.Key);
+		}
+
+        public void SetEndFocal(Focal endFocal)
 		{
 			EndFocal = endFocal;
 			AddedDoubleBond.EndFocal = endFocal;

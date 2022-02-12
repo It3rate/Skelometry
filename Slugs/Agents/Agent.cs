@@ -55,13 +55,13 @@ namespace Slugs.Agents
 
             _renderer = renderer;
             _renderer.Data = Data;
-            var (entity, trait) = InputPad.AddEntity(new SKPoint(100, 100), new SKPoint(700, 100), 1);
+            var (entity, trait) = InputPad.AddEntity(new SKPoint(100, 100), new SKPoint(700, 100), TraitKind.Default);
             _activeEntity = entity;
             trait.SetLock(true);
-            InputPad.AddTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), 1).SetLock(true);
-            var trait2 = InputPad.AddTrait(entity.Key, new SKPoint(100, 180), new SKPoint(700, 180), 1);
+            InputPad.AddTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), TraitKind.Default).SetLock(true);
+            var trait2 = InputPad.AddTrait(entity.Key, new SKPoint(100, 180), new SKPoint(700, 180), TraitKind.Default);
             trait2.SetLock(true);
-            InputPad.AddTrait(entity.Key, new SKPoint(100, 220), new SKPoint(700, 220), 1).SetLock(true);
+            InputPad.AddTrait(entity.Key, new SKPoint(100, 220), new SKPoint(700, 220), TraitKind.Default).SetLock(true);
             var fc1 = new AddFocalCommand(_activeEntity, trait, 0.3f, 0.8f);
             fc1.Execute();
             var fc2 = new AddFocalCommand(_activeEntity, trait2, 0.1f, 0.5f);
@@ -93,14 +93,15 @@ namespace Slugs.Agents
 
 	        var mousePoint = e.Location.ToSKPoint();
 
-	        Data.Begin.Position = mousePoint;
             Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, _selectableKind);
+	        Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
+
             Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
             Data.Selected.SetPoint(mousePoint, Data.Highlight.Point);
             Data.Selected.SetElements(Data.Begin.Elements);
 
             IsDown = true;
-            _creatingOnDown = KeyIsDownControl;
+            _creatingOnDown = _isControlDown;
             return true;
 	    }
 
@@ -138,10 +139,10 @@ namespace Slugs.Agents
 				var dist = (mousePoint - Data.Begin.Position).Length;
 				if (dist > _minDragDistance)
 				{
-					bool overrideMove = KeyIsDownControl || UIMode.IsCreate();
+					bool overrideMove = _isControlDown || UIMode.IsCreate();
 
-					bool createPointObject = !Data.Begin.HasSelection || KeyIsDownControl;
-					bool createDoubleBond = (UIMode == UIMode.CreateDoubleBond || KeyIsDownControl) && 
+					bool createPointObject = !Data.Begin.HasSelection || _isControlDown;
+					bool createDoubleBond = (UIMode == UIMode.CreateDoubleBond || _isControlDown) && 
 					                        Data.Begin.FirstElement.ElementKind == ElementKind.Focal;
 
                     if (createDoubleBond)
@@ -208,7 +209,7 @@ namespace Slugs.Agents
 					{
 						if (Data.Begin.HasPoint)
 						{
-							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point.Key); 
+							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point); 
 							//Data.Selected.SetElements(Data.Begin.Point);
                             Data.Selected.SetPoint(Data.Begin.Position, Data.Begin.Point);
 							_activeCommand = _editCommands.Do(cmd);
@@ -217,7 +218,7 @@ namespace Slugs.Agents
 						}
 						else if(!Data.Begin.FirstElement.IsLocked)
 						{
-							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.FirstElement.Key);
+							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.FirstElement);
 							Data.Selected.SetElements(Data.Begin.FirstElement); // todo: move to keys only, and move sets vs objects
 							_activeCommand = _editCommands.Do(cmd);
 							_ignoreList.Add(Data.Begin.FirstElement.Key);
@@ -281,11 +282,11 @@ namespace Slugs.Agents
 			            cmd.AddTaskAndRun(new MergePointsTask(cmd.Pad.PadKind, fromKey, toKey)); 
                     }
                 }
-	            cmd.AddTaskAndRun(new SetSelectionTask(cmd.Pad.PadKind, ElementBase.EmptyKeyValue));
+	            cmd.AddTaskAndRun(new SetSelectionTask(Data.Selected, ElementBase.EmptyKeyValue));
             }
             else if (!IsDragging && _activeCommand == null)  // clicked
             {
-	            var selCmd = new SetSelectionCommand(Data.Begin.Pad, Data.Highlight.PointKey, Data.Highlight.ElementKeysCopy);
+	            var selCmd = new SetSelectionCommand(Data.Selected, Data.Highlight.PointKey, Data.Highlight.ElementKeysCopy);
                 selCmd.Execute();
             }
 
@@ -295,9 +296,6 @@ namespace Slugs.Agents
 	    }
 
         private Keys CurrentKey;
-	    private bool KeyIsDownControl => (CurrentKey & Keys.ControlKey) != 0;
-	    private bool KeyIsDownAlt => (CurrentKey & Keys.Alt) != 0;
-	    private bool KeyIsDownShift => (CurrentKey & Keys.ShiftKey) != 0;
 	    private UIMode _uiMode = UIMode.Any;
 	    public UIMode UIMode
 	    {
@@ -369,14 +367,17 @@ namespace Slugs.Agents
 				    UIMode = UIMode.CreateBond;
 				    break;
 			    case Keys.Z:
-				    if (KeyIsDownControl)
+				    if (_isShiftDown && _isControlDown)
 				    {
-					    // undo
+					    _editCommands.Redo();
+				    }
+				    else if (_isControlDown)
+				    {
 					    _editCommands.Undo();
 				    }
-				    break;
+                    break;
 			    case Keys.R:
-				    if (KeyIsDownControl)
+				    if (_isControlDown)
 				    {
 					    // redo
 					    _editCommands.Redo();

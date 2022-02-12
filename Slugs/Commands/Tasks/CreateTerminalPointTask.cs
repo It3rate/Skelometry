@@ -7,9 +7,9 @@ namespace Slugs.Commands.Tasks
 	public class CreateTerminalPointTask : EditTask, IPointTask, ICreateTask
 	{
 		public SKPoint Location { get; private set; }
-		public int PointKey => Point?.Key ?? TerminalPoint.EmptyKeyValue;
-		public TerminalPoint Point { get; set; }
+		public TerminalPoint Point { get; set; } = TerminalPoint.Empty;
 		public IPoint IPoint => Point;
+		public int PointKey => Point?.Key ?? TerminalPoint.EmptyKeyValue;
 
 		public CreateTerminalPointTask(PadKind padKind, SKPoint point) : base(padKind)
 		{
@@ -19,14 +19,19 @@ namespace Slugs.Commands.Tasks
 
 		public override void RunTask()
 		{
-			Point = Pad.CreateTerminalPoint(Location);
+			if (Point.IsEmpty)
+			{
+				Point = Pad.CreateTerminalPoint(Location);
+            }
+			else
+			{
+				Pad.AddElement(Point);
+			}
 		}
 
 		public override void UnRunTask()
 		{
-			//Location = Point.Position; // get location in case it has been updated
-			Pad.RemoveElement(Point.Key);
-			// todo: decrement key counter on undo
+			Pad.RemoveElement(PointKey);
 		}
 	}
 }

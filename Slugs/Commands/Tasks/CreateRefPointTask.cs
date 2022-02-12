@@ -6,24 +6,32 @@ namespace Slugs.Commands.Tasks
 	public class CreateRefPointTask : EditTask, IPointTask, ICreateTask
 	{
 		public int TargetKey { get; }
+		private RefPoint Point { get; set; } = RefPoint.Empty;
 		public int PointKey => Point.Key;
-		private RefPoint Point { get; set; }
 		public IPoint IPoint => Point;
 		public CreateRefPointTask(PadKind padKind, int targetKey) : base(padKind)
 		{
 			TargetKey = targetKey;
 			// create ref, assign key
 		}
+
 		public override void RunTask()
 		{
-			Point = Pad.CreateRefPoint(TargetKey);
-		}
+			base.RunTask();
+			if (Point.IsEmpty)
+			{
+				Point = Pad.CreateRefPoint(TargetKey);
+            }
+			else
+			{
+				Pad.AddElement(Point);
+			}
 
+		}
 		public override void UnRunTask()
 		{
-			//Location = Point.Position; // get location in case it has been updated
+			base.UnRunTask();
 			Pad.RemoveElement(PointKey);
-			// todo: decrement key counter on undo
 		}
-	}
+    }
 }

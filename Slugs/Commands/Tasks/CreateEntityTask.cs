@@ -5,7 +5,8 @@ namespace Slugs.Commands.Tasks
 {
 	public class CreateEntityTask : EditTask, ICreateTask
 	{
-		public int EntityKey { get; set; }
+        public Entity Entity { get; private set; } = Entity.Empty;
+		public int EntityKey => Entity.Key;
 		public CreateEntityTask(PadKind padKind) : base(padKind)
 		{
 			// create entity, assign key
@@ -14,8 +15,19 @@ namespace Slugs.Commands.Tasks
 		public override void RunTask()
 		{
 			base.RunTask();
-			var entity = new Entity(PadKind);
-			EntityKey = entity.Key;
+			if (Entity.IsEmpty)
+			{
+                Entity = new Entity(PadKind);
+            }
+			else
+			{
+				Pad.AddElement(Entity);
+			}
 		}
-	}
+		public override void UnRunTask()
+		{
+			base.UnRunTask();
+			Pad.RemoveElement(EntityKey);
+		}
+    }
 }

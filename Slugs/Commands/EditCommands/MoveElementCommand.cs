@@ -19,9 +19,9 @@ namespace Slugs.Commands.EditCommands
 	    public IPoint DraggablePoint => ElementKey >= 0 ? Pad.PointAt(ElementKey) : TerminalPoint.Empty;
 	    public bool HasDraggablePoint => !DraggablePoint.IsEmpty;
 
-	    public MoveElementCommand(Pad pad, int elementKey) : base(pad)
+	    public MoveElementCommand(Pad pad, IElement element) : base(pad)
 	    {
-            MoveTask = new MoveElementTask(Pad.PadKind, elementKey, SKPoint.Empty);
+            MoveTask = new MoveElementTask(Pad.PadKind, element, SKPoint.Empty);
             AddTaskAndRun(MoveTask);
         }
 	    public override void Execute()

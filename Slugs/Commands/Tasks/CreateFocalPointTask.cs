@@ -6,7 +6,7 @@ namespace Slugs.Commands.Tasks
 {
 	public class CreateFocalPointTask : EditTask, IPointTask, ICreateTask
 	{
-        public FocalPoint FocalPoint { get; set; }
+        public FocalPoint FocalPoint { get; set; } = FocalPoint.Empty;
 
 		public int TraitKey { get; }
 		public float TStore { get; }
@@ -22,7 +22,19 @@ namespace Slugs.Commands.Tasks
 		public override void RunTask()
 		{
 			base.RunTask();
-			FocalPoint = new FocalPoint(PadKind, TraitKey, TStore);
+			if (FocalPoint.IsEmpty)
+			{
+				FocalPoint = new FocalPoint(PadKind, TraitKey, TStore);
+            }
+			else
+			{
+				Pad.AddElement(FocalPoint);
+			}
+        }
+		public override void UnRunTask()
+		{
+			base.UnRunTask();
+			Pad.RemoveElement(PointKey);
 		}
     }
 }

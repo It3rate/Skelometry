@@ -65,7 +65,7 @@ namespace Slugs.Entities
 	    }
 	    public void RemoveDoubleBond(DoubleBond bond)
 	    {
-		    _focalKeys.Remove(bond.Key);
+		    _doubleBondKeys.Remove(bond.Key);
 	    }
         public void EmbedTrait(Trait trait) => _traitKeys.Add(trait.Key);
 	    public void EmbedTrait(int key) => _traitKeys.Add(key);

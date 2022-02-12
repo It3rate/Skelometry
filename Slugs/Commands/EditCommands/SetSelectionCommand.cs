@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
 using Slugs.Commands.Tasks;
 using Slugs.Entities;
+using Slugs.Input;
 
 namespace Slugs.Commands.EditCommands
 {
@@ -14,9 +15,9 @@ namespace Slugs.Commands.EditCommands
     {
 	    public SetSelectionTask SetSelectionTask { get; }
 
-	    public SetSelectionCommand(Pad pad, int pointKey, params int[] elementKeys) : base(pad)
+	    public SetSelectionCommand(SelectionSet selSet, int pointKey, params int[] elementKeys) : base(selSet.Pad)
 	    {
-		    SetSelectionTask = new SetSelectionTask(Pad.PadKind, pointKey, elementKeys);
+		    SetSelectionTask = new SetSelectionTask(selSet, pointKey, elementKeys);
 	    }
 	    public override void Execute()
 	    {

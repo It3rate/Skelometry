@@ -158,7 +158,7 @@ namespace Slugs.Entities
         public IPoint PointAt(int key)
         {
 	        var success = _elements.TryGetValue(key, out var result);
-	        return success && result.ElementKind.IsPoint() ? (IPoint)result : RefPoint.Empty;
+	        return success && result.ElementKind.IsPoint() ? (IPoint)result : TerminalPoint.Empty;
         }
         public void SetPointAt(int key, IPoint point)
         {
@@ -226,25 +226,26 @@ namespace Slugs.Entities
 	        //return focal;
         }
 
-        public (Entity, Trait) AddEntity(SKPoint startPoint, SKPoint endPoint, int traitKindIndex)
+        public (Entity, Trait) AddEntity(SKPoint startPoint, SKPoint endPoint, TraitKind traitKind)
         {
 	        var entity = CreateEntity();
-	        var trait = AddTrait(entity.Key, startPoint, endPoint, traitKindIndex);
+	        var trait = AddTrait(entity.Key, startPoint, endPoint, traitKind);
 	        return (entity, trait);
         }
-        public Trait AddTrait(int entityKey, SKPoint startPoint, SKPoint endPoint, int traitKindIndex)
+        // todo: entities should automatically have access to all traits in their pad. Focals tie together traits and entities.
+        public Trait AddTrait(int entityKey, SKPoint startPoint, SKPoint endPoint, TraitKind traitKind)
         {
 	        var entity = GetOrCreateEntity(entityKey);
 	        var start = CreateTerminalPoint(startPoint);
 	        var end = CreateTerminalPoint(endPoint);
-	        var trait = new Trait(entity, start, end, traitKindIndex);
+	        var trait = new Trait(entity, start, end, traitKind);
 	        entity.EmbedTrait(trait);
 	        return trait;
         }
-        public Trait AddTrait(int entityKey, int startPointKey, int endPointKey, int traitKindIndex)
+        public Trait AddTrait(int entityKey, int startPointKey, int endPointKey, TraitKind traitKind)
         {
 	        var entity = GetOrCreateEntity(entityKey);
-	        var trait = new Trait(entity, startPointKey, endPointKey, traitKindIndex);
+	        var trait = new Trait(entity, startPointKey, endPointKey, traitKind);
 	        entity.EmbedTrait(trait);
 	        return trait;
         }

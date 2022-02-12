@@ -10,12 +10,12 @@ namespace Slugs.Commands.Tasks
 
     public class CreateBondPointTask : EditTask, IPointTask, ICreateTask
     {
-        public BondPoint BondPoint { get; set; }
+	    public BondPoint BondPoint { get; set; } = BondPoint.Empty;
 
 	    public int FocalKey { get; private set; }
 	    public float TStore { get; }
 	    public IPoint IPoint => BondPoint;
-	    public int PointKey => BondPoint.Key;
+	    public int PointKey => IPoint.Key;
 
 
 	    public CreateBondPointTask(Focal focal, float t) : base(focal.PadKind)
@@ -27,7 +27,21 @@ namespace Slugs.Commands.Tasks
 	    public override void RunTask()
 	    {
 		    base.RunTask();
-		    BondPoint = new BondPoint(PadKind, FocalKey, TStore);
+		    if (BondPoint.IsEmpty)
+		    {
+			    BondPoint = new BondPoint(PadKind, FocalKey, TStore);
+            }
+		    else
+		    {
+			    Pad.AddElement(BondPoint);
+		    }
+
+	    }
+
+	    public override void UnRunTask()
+	    {
+		    base.UnRunTask();
+		    Pad.RemoveElement(PointKey);
 	    }
 
 	    public void UpdateFocal(Focal focal)

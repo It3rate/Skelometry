@@ -23,7 +23,7 @@ namespace Slugs.Input
         public IPoint Point
         {
 	        get => _point;
-	        set { _point = value; Position = _point.Position; }
+	        set { _point = value; Position = !_point.IsEmpty ? _point.Position : SKPoint.Empty; }
         }
         public int PointKey => _point.Key;
 
@@ -108,7 +108,6 @@ namespace Slugs.Input
 
 	    public void Clear()
 	    {
-			Position = SKPoint.Empty;
             Point = TerminalPoint.Empty;
             _elements.Clear();
         }

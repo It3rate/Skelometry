@@ -13,7 +13,7 @@ namespace Slugs.Commands.Tasks
 
     public class CreateFocalTask : EditTask, ICreateTask
     {
-        public Focal AddedFocal { get; private set; }
+        public Focal AddedFocal { get; private set; } = Focal.Empty;
 
         public Entity Entity { get; }
         public FocalPoint StartPoint { get; }
@@ -45,8 +45,21 @@ namespace Slugs.Commands.Tasks
         public override void RunTask()
 	    {
 		    base.RunTask();
-		    AddedFocal = new Focal(Entity, StartPoint, EndPoint);
-			Trait.AddFocal(AddedFocal);
-	    }
+		    if (AddedFocal.IsEmpty)
+		    {
+			    AddedFocal = new Focal(Entity, StartPoint, EndPoint);
+		    }
+		    else
+		    {
+                Pad.AddElement(AddedFocal);
+		    }
+		    Trait.AddFocal(AddedFocal);
+        }
+        public override void UnRunTask()
+        {
+	        base.UnRunTask();
+            Trait.RemoveFocal(AddedFocal);
+	        Pad.RemoveElement(AddedFocal.Key);
+        }
     }
 }

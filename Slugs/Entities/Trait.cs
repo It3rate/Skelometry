@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.ComponentModel;
+using SkiaSharp;
 using Slugs.Primitives;
 
 namespace Slugs.Entities
@@ -9,14 +10,18 @@ namespace Slugs.Entities
     using System.Text;
     using System.Threading.Tasks;
 
-    public struct TraitKind{}
+    public enum TraitKind
+    {
+        None,
+        Default,
+    }
 
     public class Trait : SegmentBase
     {
 	    public override ElementKind ElementKind => ElementKind.Trait;
 	    public override IElement EmptyElement => Empty;
 	    public static readonly Trait Empty = new Trait();
-        private Trait() : base(true) { EntityKey = Entity.Empty.Key; KindIndex = -1;}
+        private Trait() : base(true) { EntityKey = Entity.Empty.Key; KindIndex = TraitKind.None;}
 
         public IPoint StartPoint => Pad.PointAt(StartKey); // todo: make this base class for segment elements.
         public IPoint EndPoint => Pad.PointAt(EndKey);
@@ -25,17 +30,17 @@ namespace Slugs.Entities
 
         public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
 
-	    public int KindIndex { get; }
+	    public TraitKind KindIndex { get; }
 	    private Entity _entity => Pad.EntityAt(EntityKey); // trait doesn't have entity as multiple entities can hold the same trait
 	    public int EntityKey { get; set; }
 
 
 
-        public Trait(Entity entity, IPoint start, IPoint end, int traitKindIndex) : this(entity, start.Key, end.Key, traitKindIndex) {}
-        public Trait(Entity entity, int startKey, int endKey, int traitKindIndex) : base(entity.PadKind)
+        public Trait(Entity entity, IPoint start, IPoint end, TraitKind traitKind) : this(entity, start.Key, end.Key, traitKind) {}
+        public Trait(Entity entity, int startKey, int endKey, TraitKind traitKind) : base(entity.PadKind)
         {
             EntityKey = entity.Key;
-		    KindIndex = traitKindIndex;
+		    KindIndex = traitKind;
 		    SetStartKey(startKey);
 		    SetEndKey(endKey);
         }

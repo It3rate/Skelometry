@@ -39,8 +39,7 @@ namespace Slugs.Entities
 	        {
 		        throw new ArgumentException("AddedFocal points must be on the same trait.");
 	        }
-
-	        EntityKey = entity.Key;
+            EntityKey = entity.Key;
 	        SetStartKey(startPoint.Key);
 	        SetEndKey(endPoint.Key);
         }

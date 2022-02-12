@@ -27,6 +27,8 @@ namespace Slugs.Commands.EditCommands
 
         public AddTraitCommand(Pad pad, int entityKey, SKPoint start) :
 	        this(entityKey, new CreateTerminalPointTask(pad.PadKind, start), new CreateTerminalPointTask(pad.PadKind, start)) { }
+        public AddTraitCommand(Pad pad, int entityKey, SKPoint start, SKPoint end) :
+	        this(entityKey, new CreateTerminalPointTask(pad.PadKind, start), new CreateTerminalPointTask(pad.PadKind, end)) { }
 
         public AddTraitCommand(int entityKey, IPoint startPoint) : 
 	        this(entityKey, new CreateRefPointTask(startPoint.PadKind, startPoint.Key)) { }
@@ -52,17 +54,17 @@ namespace Slugs.Commands.EditCommands
                 AddTaskAndRun(entityTask);
                 EntityKey = entityTask.EntityKey;
 	        }
-	        TraitTask = new CreateTraitTask(Pad.PadKind, EntityKey, StartPointTask.PointKey, EndPointTask.PointKey);
+	        TraitTask = new CreateTraitTask(Pad.PadKind, EntityKey, StartPointTask.PointKey, EndPointTask.PointKey, TraitKind.Default);
 	        AddTaskAndRun(TraitTask);
         }
 
         public override void Unexecute()
         {
 	        base.Unexecute();
-	        StartPointTask = null;
-	        EndPointTask = null;
+	        //StartPointTask = null;
+	        //EndPointTask = null;
 	        TraitTask = null;
-	        EntityKey = ElementBase.EmptyKeyValue;
+	        //EntityKey = ElementBase.EmptyKeyValue;
         }
 
         public override void Update(SKPoint point)

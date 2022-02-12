@@ -25,12 +25,14 @@ namespace Slugs.Commands.Tasks
 	    public Trait EndTrait => EndPoint.Trait;
 	    public float EndT => EndPoint.T;
 
+	    public SingleBond AddedSingleBond { get; private set; } = SingleBond.Empty;
+	    public int AddedSingleBondKey => AddedSingleBond.Key;
+
         public ElementKind SegmentKind => ElementKind.SingleBond;
 	    public SegmentBase Segment;
-	    public SingleBond AddedSingleBond { get; private set; }
 
         // bonds need an entity to be stored in?
-	    public CreateSingleBondTask(BondPoint startPoint, BondPoint endPoint) : base(startPoint.PadKind)
+        public CreateSingleBondTask(BondPoint startPoint, BondPoint endPoint) : base(startPoint.PadKind)
 	    {
 		    StartPoint = startPoint;
             EndPoint = endPoint;
@@ -39,9 +41,23 @@ namespace Slugs.Commands.Tasks
 	    public override void RunTask()
 	    {
 		    base.RunTask();
-		    AddedSingleBond = new SingleBond(StartPoint, EndPoint);
+		    if (AddedSingleBond.IsEmpty)
+		    {
+			    AddedSingleBond = new SingleBond(StartPoint, EndPoint);
+            }
+		    else
+		    {
+			    Pad.AddElement(AddedSingleBond);
+		    }
 		    StartPoint.Focal.AddBond(AddedSingleBond);
 		    EndPoint.Focal.AddBond(AddedSingleBond);
-        }
+	    }
+	    public override void UnRunTask()
+	    {
+		    base.UnRunTask();
+		    EndPoint.Focal.RemoveBond(AddedSingleBond);
+		    StartPoint.Focal.RemoveBond(AddedSingleBond);
+            Pad.RemoveElement(AddedSingleBondKey);
+	    }
     }
 }

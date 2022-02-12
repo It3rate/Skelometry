@@ -15,36 +15,44 @@ namespace Slugs.Commands.Tasks
 
     public class SetSelectionTask : EditTask, ISelectionTask
     {
-	    public int PointKey { get; private set; }
+        public SelectionSet SelectionSet { get; }
+
+        public int PointKey { get; private set; }
 	    public int[] ElementKeys { get; private set; }
 
 	    public int PreviousPointKey { get; private set; }
 	    public int[] PreviousElementKeys { get; private set; }
 
-        public SetSelectionTask(PadKind padKind, int pointKey, params int[] elementKeys) : base(padKind)
+        public SetSelectionTask(SelectionSet selSet, int pointKey, params int[] elementKeys) : base(selSet.PadKind)
         {
+	        SelectionSet = selSet;
 	        PointKey = pointKey;
 	        ElementKeys = elementKeys;
         }
+
+        private bool _hasRun = false;
 
         public override void RunTask()
         {
 	        base.RunTask();
 
-	        var selectSet = Agent.Current.Data.Selected;
-	        PreviousPointKey = selectSet.PointKey;
-	        PreviousElementKeys = selectSet.ElementKeysCopy;
-
-            selectSet.Clear();
-            if (PointKey != ElementBase.EmptyKeyValue)// && ElementKeys.Length == 0)
+	        if (!_hasRun)
 	        {
-                selectSet.SetPoint(PointKey);
+		        PreviousPointKey = SelectionSet.PointKey;
+		        PreviousElementKeys = SelectionSet.ElementKeysCopy;
+		        _hasRun = true;
 	        }
 
-	        if(ElementKeys.Length > 0)
-	        {
-	            selectSet.SetElements(ElementKeys);
-	        }
+	        SelectionSet.Clear();
+            SelectionSet.SetPoint(PointKey);
+			SelectionSet.SetElements(ElementKeys);
+        }
+
+        public override void UnRunTask()
+        {
+	        SelectionSet.Clear();
+	        SelectionSet.SetPoint(PreviousPointKey);
+	        SelectionSet.SetElements(PreviousElementKeys);
         }
     }
 }
