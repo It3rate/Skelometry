@@ -55,28 +55,26 @@ namespace Slugs.Agents
 
             _renderer = renderer;
             _renderer.Data = Data;
-            var (entity, trait) = InputPad.CreateEntity(new SKPoint(100, 100), new SKPoint(700, 100), TraitKind.Default);
-            _activeEntity = entity;
-            trait.SetLock(true);
-            InputPad.CreateTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), TraitKind.Default).SetLock(true);
-            var trait2 = InputPad.CreateTrait(entity.Key, new SKPoint(100, 180), new SKPoint(700, 180), TraitKind.Default);
-            trait2.SetLock(true);
-            InputPad.CreateTrait(entity.Key, new SKPoint(100, 220), new SKPoint(700, 220), TraitKind.Default).SetLock(true);
-            var fc1 = new AddFocalCommand(_activeEntity, trait, 0.3f, 0.8f);
-            fc1.Execute();
-            var fc2 = new AddFocalCommand(_activeEntity, trait2, 0.1f, 0.5f);
-            fc2.Execute();
+
+            var entityCmd = new CreateEntityCommand(InputPad);
+            _editCommands.Do(entityCmd);
+            _activeEntity = entityCmd.Entity;
+            var traitCmd1 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 100), new SKPoint(700, 100), true);
+            var traitCmd2 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 140), new SKPoint(700, 140), true);
+            var traitCmd3 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 180), new SKPoint(700, 180), true);
+            var traitCmd4 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 220), new SKPoint(700, 220), true);
+            _editCommands.Do(traitCmd1, traitCmd2, traitCmd3, traitCmd4);
+            var trait1 = traitCmd1.AddedTrait;
+            var trait3 = traitCmd3.AddedTrait;
+            var fc1 = new AddFocalCommand(_activeEntity, trait1, 0.3f, 0.8f);
+            var fc2 = new AddFocalCommand(_activeEntity, trait3, 0.1f, 0.5f);
+            _editCommands.Do(fc1, fc2);
             var bc = new AddSingleBondCommand(fc1.AddedFocal, .2f, fc2.AddedFocal, 0.3f);
-            bc.Execute();
-            //var bc2 = new AddSingleBondCommand(fc1.AddedFocal, .4f, fc2.AddedFocal, 0.8f);
-            //bc2.Execute();
             var db = new AddDoubleBondCommand(fc1.AddedFocal, fc2.AddedFocal);
-            db.Execute();
-            //_activeEntity.a
+            _editCommands.Do(bc, db);
 
             UIMode = UIMode.Any;
             ClearMouse();
-            var t = new RefPoint();
         }
         public Pad AddPad(PadKind padKind)
         {
@@ -170,8 +168,8 @@ namespace Slugs.Agents
                         if (eKind.IsNone() || eKind.IsPoint()) // make trait if starting new or connecting to an existing point (maybe not second)
                         {
 	                        var traitCmd = Data.Begin.HasPoint ? 
-		                        new AddTraitCommand(_activeEntity.Key, Data.Begin.Point) :
-		                        new AddTraitCommand(Data.Begin.Pad, _activeEntity.Key, Data.Begin.Position);
+		                        new AddTraitCommand(TraitKind.Default, Data.Begin.Point) :
+		                        new AddTraitCommand(Data.Begin.Pad, TraitKind.Default, Data.Begin.Position, Data.Current.Position);
 							_activeCommand = _editCommands.Do(traitCmd);
 							_ignoreList.Add(traitCmd.AddedTrait.Key);
 							_ignoreList.Add(traitCmd.AddedTrait.EndKey);
@@ -211,7 +209,7 @@ namespace Slugs.Agents
 					{
 						if (Data.Begin.HasPoint)
 						{
-							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point); 
+							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.Point, new SKPoint(0, 0)); 
 							//Data.Selected.SetElements(Data.Begin.Point);
                             Data.Selected.SetPoint(Data.Begin.Position, Data.Begin.Point);
 							_activeCommand = _editCommands.Do(cmd);
@@ -220,7 +218,7 @@ namespace Slugs.Agents
 						}
 						else if(!Data.Begin.FirstElement.IsLocked)
 						{
-							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.FirstElement);
+							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.FirstElement, new SKPoint(0, 0));
 							Data.Selected.SetElements(Data.Begin.FirstElement);
 							_activeCommand = _editCommands.Do(cmd);
 							_ignoreList.Add(Data.Begin.FirstElement.Key);

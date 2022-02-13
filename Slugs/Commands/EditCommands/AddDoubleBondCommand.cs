@@ -12,19 +12,24 @@ namespace Slugs.Commands.EditCommands
 
     public class AddDoubleBondCommand : EditCommand
     {
-	    public CreateDoubleBondTask DoubleBondTask { get; }
+	    public CreateDoubleBondTask DoubleBondTask { get; private set; }
 
-	    public Focal StartFocal => DoubleBondTask.AddedDoubleBond.StartFocal;
-	    public Focal EndFocal => DoubleBondTask.AddedDoubleBond.StartFocal;
+	    public Focal StartFocal { get; }
+	    public Focal EndFocal { get; }
 
-	    public AddDoubleBondCommand(Focal startFocal, Focal endFocal) : base(startFocal.Pad)
-	    {
-            DoubleBondTask = new CreateDoubleBondTask(startFocal, endFocal);
-	    }
+        public AddDoubleBondCommand(Focal startFocal, Focal endFocal) : base(startFocal.Pad)
+        {
+	        StartFocal = startFocal;
+	        EndFocal = endFocal;
+        }
 	    public override void Execute()
 	    {
 		    base.Execute();
-		    AddTaskAndRun(DoubleBondTask);
+		    if (DoubleBondTask == null)
+		    {
+			    DoubleBondTask = new CreateDoubleBondTask(StartFocal, EndFocal);
+            }
+            AddTaskAndRun(DoubleBondTask);
 	    }
 
 	    public override void Update(SKPoint point)

@@ -60,7 +60,6 @@ namespace Slugs.Entities
 	        }
         }
 
-        public Entity GetEntity() => Pad.EntityAt(GetTrait().EntityKey);
         public Trait GetTrait() => Pad.TraitAt(TraitKey);
         public float GetT() => T;
         public IPoint GetStartPoint() => Pad.TraitAt(TraitKey).StartPoint;

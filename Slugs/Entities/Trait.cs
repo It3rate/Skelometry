@@ -21,28 +21,22 @@ namespace Slugs.Entities
 	    public override ElementKind ElementKind => ElementKind.Trait;
 	    public override IElement EmptyElement => Empty;
 	    public static readonly Trait Empty = new Trait();
-        private Trait() : base(true) { EntityKey = Entity.Empty.Key; KindIndex = TraitKind.None;}
+        private Trait() : base(true) { TraitKind = TraitKind.None;}
 
         public IPoint StartPoint => Pad.PointAt(StartKey);
         public IPoint EndPoint => Pad.PointAt(EndKey);
+	    public TraitKind TraitKind { get; }
+
         public override SKPoint StartPosition => StartPoint.Position;
 	    public override SKPoint EndPosition => EndPoint.Position;
-
-        public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
-
-	    public TraitKind KindIndex { get; }
-	    private Entity _entity => Pad.EntityAt(EntityKey); // trait doesn't have entity as multiple entities can hold the same trait
-	    public int EntityKey { get; set; }
+	    public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
 
 
-
-        public Trait(Entity entity, IPoint start, IPoint end, TraitKind traitKind) : this(entity, start.Key, end.Key, traitKind) {}
-        public Trait(Entity entity, int startKey, int endKey, TraitKind traitKind) : base(entity.PadKind)
+        public Trait(TraitKind traitKind, IPoint start, IPoint end) : base(start.PadKind)
         {
-            EntityKey = entity.Key;
-		    KindIndex = traitKind;
-		    SetStartKey(startKey);
-		    SetEndKey(endKey);
+		    TraitKind = traitKind;
+		    StartKey = start.Key;
+		    EndKey = end.Key;
         }
 
         protected override void SetStartKey(int key)
@@ -82,24 +76,17 @@ namespace Slugs.Entities
         public void AddFocal(Focal focal)
         {
 	        _focalKeys.Add(focal.Key);
-	        _entity.AddFocal(focal);
         }
         public void RemoveFocal(Focal focal)
         {
 	        _focalKeys.Remove(focal.Key);
-	        _entity.RemoveFocal(focal);
         }
 
-        public FocalPoint FocalPointFrom(SKPoint point)
-        {
-	        var (t, projected) = TFromPoint(point);
-            return new FocalPoint(_entity.PadKind, Key, -1);
-        }
         public static bool operator ==(Trait left, Trait right) => 
-	        left.Key == right.Key && left.EntityKey == right.EntityKey && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
+	        left.Key == right.Key && left.TraitKind == right.TraitKind && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
         public static bool operator !=(Trait left, Trait right) => 
-	        left.Key != right.Key || left.EntityKey != right.EntityKey || left.StartKey != right.StartKey || left.EndKey != right.EndKey;
+	        left.Key != right.Key || left.TraitKind != right.TraitKind || left.StartKey != right.StartKey || left.EndKey != right.EndKey;
         public override bool Equals(object obj) => obj is Trait value && this == value;
-        public override int GetHashCode() => Key * 17 + EntityKey * 23 + StartKey * 29 + EndKey * 31;
+        public override int GetHashCode() => Key * 17 + (int)TraitKind * 23 + StartKey * 29 + EndKey * 31;
     }
 }

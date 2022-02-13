@@ -13,22 +13,34 @@ namespace Slugs.Commands.EditCommands
 
     public class MoveElementCommand : EditCommand, IDraggableCommand
     {
-	    public MoveElementTask MoveTask { get; }
-	    public int ElementKey => MoveTask?.ElementKey ?? ElementBase.EmptyKeyValue;
+	    public MoveElementTask MoveTask { get; private set; }
+        public IElement Element { get; }
+        public int ElementKey => Element.Key;
 
-	    public IPoint DraggablePoint => ElementKey >= 0 ? Pad.PointAt(ElementKey) : TerminalPoint.Empty;
+        public SKPoint Diff { get; }
+
+        public IPoint DraggablePoint => ElementKey >= 0 ? Pad.PointAt(ElementKey) : TerminalPoint.Empty;
 	    public bool HasDraggablePoint => !DraggablePoint.IsEmpty;
 
-	    public MoveElementCommand(Pad pad, IElement element) : base(pad)
+	    public MoveElementCommand(Pad pad, IElement element, SKPoint diff) : base(pad)
 	    {
-            MoveTask = new MoveElementTask(Pad.PadKind, element, SKPoint.Empty);
-            AddTaskAndRun(MoveTask);
-        }
+		    Element = element;
+		    Diff = diff;
+	    }
 	    public override void Execute()
 	    {
-            // Add move task
+            base.Execute();
+            if (MoveTask == null)
+            {
+				MoveTask = new MoveElementTask(Pad.PadKind, Element, Diff);
+            }
+            AddTaskAndRun(MoveTask);
 	    }
-	    public override void Update(SKPoint point)
+	    public override void Unexecute()
+	    {
+		    base.Unexecute();
+	    }
+        public override void Update(SKPoint point)
 	    {
 	    }
 	    public override void Completed()

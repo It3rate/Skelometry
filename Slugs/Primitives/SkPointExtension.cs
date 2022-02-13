@@ -16,7 +16,7 @@ namespace Slugs.Primitives
 	    public static SKPoint PointAtDegreesAndDistance(this SKPoint a, float angle, float distance) =>
 		    PointAtRadiansAndDistance(a, angle / 180f * 2f, distance);
 
-	    public static SKPoint Add(this SKPoint a, float value) => new SKPoint(a.X + value, a.Y + value);
+        public static SKPoint Add(this SKPoint a, float value) => new SKPoint(a.X + value, a.Y + value);
 	    public static SKPoint Subtract(this SKPoint a, float value) => new SKPoint(a.X - value, a.Y - value);
 	    public static SKPoint Multiply(this SKPoint a, float value) => new SKPoint(a.X * value, a.Y * value);
 	    public static SKPoint Divide(this SKPoint a, float value) => new SKPoint(value == 0 ? float.MaxValue : a.X / value, value == 0 ? float.MaxValue : a.Y / value);

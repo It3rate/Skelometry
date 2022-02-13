@@ -6,8 +6,8 @@ namespace Slugs.Entities
 {
 	public abstract class SegmentBase : ElementBase
     {
-	    public int StartKey { get; private set; }
-	    public int EndKey { get; private set; }
+	    public int StartKey { get; protected set; }
+	    public int EndKey { get; protected set; }
 	    protected virtual void SetStartKey(int key) => StartKey = key;
 	    protected virtual void SetEndKey(int key) => EndKey = key;
 

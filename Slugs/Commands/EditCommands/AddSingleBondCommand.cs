@@ -41,16 +41,16 @@ namespace Slugs.Commands.EditCommands
 		    base.Execute();
 		    AddTaskAndRun(StartPointTask);
 		    AddTaskAndRun(EndPointTask);
-		    SingleBondTask = new CreateSingleBondTask(StartPointTask.BondPoint, EndPointTask.BondPoint);
+		    if (SingleBondTask == null)
+		    {
+				SingleBondTask = new CreateSingleBondTask(StartPointTask.BondPoint, EndPointTask.BondPoint);
+		    }
 		    AddTaskAndRun(SingleBondTask);
 	    }
 
         public override void Unexecute()
         {
 	        base.Unexecute();
-	        StartPointTask = null;
-	        EndPointTask = null;
-            SingleBondTask = null;
         }
 
         public override void Update(SKPoint point)

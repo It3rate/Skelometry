@@ -17,27 +17,28 @@ namespace Slugs.Commands.EditCommands
     {
 	    public IPointTask StartPointTask { get; private set; }
 	    public IPointTask EndPointTask { get; private set; }
+	    public bool Locked { get; }
+
+	    public CreateTraitTask TraitTask { get; set; }
+        public TraitKind TraitKind { get; private set; }
+
+        public Trait AddedTrait => TraitTask?.Trait ?? Trait.Empty;
 	    public IPoint DraggablePoint => EndPointTask?.IPoint ?? TerminalPoint.Empty;
 	    public bool HasDraggablePoint => !DraggablePoint.IsEmpty;
 
-        public CreateTraitTask TraitTask { get; set; }
+        public AddTraitCommand(TraitKind traitKind, IPoint startPoint) :
+		    this(traitKind, new CreateRefPointTask(startPoint.PadKind, startPoint.Key), 
+			    new CreateTerminalPointTask(startPoint.PadKind, startPoint.Position)) { }
 
-        public Trait AddedTrait => TraitTask?.Trait ?? Trait.Empty;
-        public int EntityKey { get; private set; }
+        public AddTraitCommand(Pad pad, TraitKind traitKind, SKPoint start, SKPoint end, bool locked = false) :
+	        this(traitKind, new CreateTerminalPointTask(pad.PadKind, start), new CreateTerminalPointTask(pad.PadKind, end), locked) { }
 
-        public AddTraitCommand(Pad pad, int entityKey, SKPoint start) :
-	        this(entityKey, new CreateTerminalPointTask(pad.PadKind, start), new CreateTerminalPointTask(pad.PadKind, start)) { }
-        public AddTraitCommand(Pad pad, int entityKey, SKPoint start, SKPoint end) :
-	        this(entityKey, new CreateTerminalPointTask(pad.PadKind, start), new CreateTerminalPointTask(pad.PadKind, end)) { }
-
-        public AddTraitCommand(int entityKey, IPoint startPoint) : 
-	        this(entityKey, new CreateRefPointTask(startPoint.PadKind, startPoint.Key)) { }
-
-        public AddTraitCommand(int entityKey, IPointTask startPointTask, IPointTask endPointTask = null) : base(startPointTask.Pad)
+        public AddTraitCommand(TraitKind traitKind, IPointTask startPointTask, IPointTask endPointTask, bool locked = false) : base(startPointTask.Pad)
         {
             StartPointTask = startPointTask;
             EndPointTask = endPointTask ?? new CreateTerminalPointTask(Pad.PadKind, Pad.PointAt(startPointTask.PointKey).Position);
-	        EntityKey = entityKey;
+            TraitKind = traitKind;
+            Locked = locked;
         }
 
         // maybe tasks need to be start/update/complete, where eg merge endpoints is on complete, and MoveElementTask is available for updates.
@@ -48,23 +49,17 @@ namespace Slugs.Commands.EditCommands
 	        base.Execute();
             AddTaskAndRun(StartPointTask);
 	        AddTaskAndRun(EndPointTask);
-	        if (Pad.EntityAt(EntityKey).IsEmpty)
+	        if (TraitTask == null)
 	        {
-                var entityTask = new CreateEntityTask(Pad.PadKind);
-                AddTaskAndRun(entityTask);
-                EntityKey = entityTask.EntityKey;
+				TraitTask = new CreateTraitTask(Pad.PadKind, TraitKind, StartPointTask.IPoint, EndPointTask.IPoint);
 	        }
-	        TraitTask = new CreateTraitTask(Pad.PadKind, EntityKey, StartPointTask.PointKey, EndPointTask.PointKey, TraitKind.Default);
 	        AddTaskAndRun(TraitTask);
+	        AddedTrait.IsLocked = Locked;
         }
 
         public override void Unexecute()
         {
 	        base.Unexecute();
-	        //StartPointTask = null;
-	        //EndPointTask = null;
-	        TraitTask = null;
-	        //EntityKey = ElementBase.EmptyKeyValue;
         }
 
         public override void Update(SKPoint point)

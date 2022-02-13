@@ -97,6 +97,7 @@
     <Compile Include="Commands\EditCommands\Command.cs" />
     <Compile Include="Commands\CommandStack.cs" />
     <Compile Include="Commands\EditCommands\AddTraitCommand.cs" />
+    <Compile Include="Commands\EditCommands\CreateEntityCommand.cs" />
     <Compile Include="Commands\EditCommands\EditCommand.cs" />
     <Compile Include="Commands\EditCommands\MoveElementCommand.cs" />
     <Compile Include="Commands\EditCommands\SetSelectionCommand.cs" />

@@ -107,9 +107,7 @@ namespace Slugs.Entities
             _traitKeys.Clear();
         }
 #endregion
-
         #region Entities
-
 	    private readonly HashSet<int> _entityKeys = new HashSet<int>();
         public IEnumerable<Entity> Entities
         {
@@ -126,26 +124,24 @@ namespace Slugs.Entities
 	        var element = ElementAt(key);
 	        return element is Entity entity ? entity : Entity.Empty;
         }
-        public (Entity, Trait) CreateEntity(SKPoint startPoint, SKPoint endPoint, TraitKind traitKind)
-        {
-	        var entity = CreateEntity();
-	        var trait = CreateTrait(entity.Key, startPoint, endPoint, traitKind);
-	        return (entity, trait);
-        }
-        public Entity CreateEntity(params Trait[] traits)
-        {
-	        var entity = new Entity(PadKind, traits);
-	        return entity;
-        }
+        //public (Entity, Trait) CreateEntity(SKPoint startPoint, SKPoint endPoint, TraitKind traitKind)
+        //{
+        // var entity = CreateEntity();
+        // var trait = CreateTrait(entity.Key, startPoint, endPoint, traitKind);
+        // return (entity, trait);
+        //}
+        //public Entity CreateEntity()
+        //{
+        // return new Entity(PadKind);
+        //}
         public Entity GetOrCreateEntity(int entityKey)
         {
-	        var entity = EntityAt(entityKey);
-	        return entity.IsEmpty ? CreateEntity() : entity;
+            var entity = EntityAt(entityKey);
+            return entity.IsEmpty ? new Entity(PadKind) : entity;
         }
         #endregion
-
-#region Traits
-	    private readonly HashSet<int> _traitKeys = new HashSet<int>();
+        #region Traits
+        private readonly HashSet<int> _traitKeys = new HashSet<int>();
 	    public IEnumerable<Trait> Traits
 	    {
 		    get
@@ -162,25 +158,8 @@ namespace Slugs.Entities
 	        return element is Trait trait ? trait : Trait.Empty;
         }
 
-	    public Trait CreateTrait(int entityKey, SKPoint startPoint, SKPoint endPoint, TraitKind traitKind)
-	    {
-		    var entity = GetOrCreateEntity(entityKey);
-		    var start = CreateTerminalPoint(startPoint);
-		    var end = CreateTerminalPoint(endPoint);
-		    var trait = new Trait(entity, start, end, traitKind);
-		    AddElement(trait);
-		    return trait;
-	    }
-	    public Trait CreateTrait(int entityKey, int startPointKey, int endPointKey, TraitKind traitKind)
-	    {
-		    var entity = GetOrCreateEntity(entityKey);
-		    var trait = new Trait(entity, startPointKey, endPointKey, traitKind);
-		    AddElement(trait);
-		    return trait;
-	    }
         #endregion
-
-#region Points
+		#region Points
 
 	    public IEnumerable<IPoint> Points
 	    {
@@ -260,18 +239,11 @@ namespace Slugs.Entities
 
         #endregion
 
-        public Focal CreateFocal(float focus, Slug slug)
-        {
-	        throw new NotImplementedException();
-	        //   var focal = new AddedFocal(PadKind, focus, slug);
-	        //return focal;
-        }
 	    public Focal FocalAt(int key)
 	    {
 		    var success = _elements.TryGetValue(key, out var result);
 		    return success && (result.ElementKind == ElementKind.Focal) ? (Focal)result : Focal.Empty;
 	    }
-
 	    public SingleBond BondAt(int key)
 	    {
 		    var success = _elements.TryGetValue(key, out var result);
@@ -282,6 +254,7 @@ namespace Slugs.Entities
 		    var success = _elements.TryGetValue(key, out var result);
 		    return success && (result.ElementKind == ElementKind.DoubleBond) ? (DoubleBond)result : DoubleBond.Empty;
 	    }
+
         public void Clear()
         {
             ClearElements();
@@ -289,7 +262,6 @@ namespace Slugs.Entities
         public void Refresh()
         {
         }
-
 
         public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, ElementKind kind, float maxDist = SnapDistance * 2f)
         {
@@ -332,24 +304,6 @@ namespace Slugs.Entities
 	            }
             }
             End:
-            return result;
-        }
-
-        public Slug SlugFromIndex(int index)
-        {
-            Slug result;
-            if (index == 0)
-            {
-                result = ActiveSlug;
-            }
-            else if (index >= 0 && index < Slugs.Count)
-            {
-                result = Slugs[index];
-            }
-            else
-            {
-                result = Slug.Zero;
-            }
             return result;
         }
     }

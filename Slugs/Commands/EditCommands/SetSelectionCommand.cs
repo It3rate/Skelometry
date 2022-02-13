@@ -13,17 +13,32 @@ namespace Slugs.Commands.EditCommands
 
     public class SetSelectionCommand : EditCommand
     {
-	    public SetSelectionTask SetSelectionTask { get; }
+	    public SetSelectionTask SetSelectionTask { get; private set; }
+
+        public SelectionSet SelectionSet { get; }
+        public int PointKey { get; }
+        public int[] ElementKeys { get; }
 
 	    public SetSelectionCommand(SelectionSet selSet, int pointKey, params int[] elementKeys) : base(selSet.Pad)
 	    {
-		    SetSelectionTask = new SetSelectionTask(selSet, pointKey, elementKeys);
+		    SelectionSet = selSet;
+		    PointKey = pointKey;
+		    ElementKeys = elementKeys;
 	    }
 	    public override void Execute()
 	    {
-		    AddTaskAndRun(SetSelectionTask);
+		    base.Execute();
+		    if (SetSelectionTask == null)
+		    {
+			    SetSelectionTask = new SetSelectionTask(SelectionSet, PointKey, ElementKeys);
+            }
+            AddTaskAndRun(SetSelectionTask);
 	    }
-	    public override void Update(SKPoint point)
+	    public override void Unexecute()
+	    {
+		    base.Unexecute();
+	    }
+        public override void Update(SKPoint point)
 	    {
 	    }
 	    public override void Completed()

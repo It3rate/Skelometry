@@ -52,16 +52,21 @@ namespace Slugs.Commands
 		    throw new ArgumentException("command must match generic type of command stack");
 	    }
 
-        public TCommand Do(TCommand command)
+        public TCommand Do(params TCommand[] commands)
 	    {
-		    command.Stack = (ICommandStack)this;
-		    if (command.IsRetainedCommand)
+		    RemoveRedoCommands();
+		    TCommand result = default(TCommand);
+		    foreach (var command in commands)
 		    {
-			    RemoveRedoCommands();
-			    // try merging with previous command
-			    AddAndExecuteCommand(command);
+			    command.Stack = (ICommandStack)this;
+			    if (command.IsRetainedCommand)
+			    {
+				    // try merging with previous command
+				    AddAndExecuteCommand(command);
+				    result = command;
+			    }
 		    }
-		    return command;
+		    return result;
 	    }
 
 	    public ICommand PreviousCommand() => CanUndo ? (ICommand)_stack[_stackIndex - 1] : null;

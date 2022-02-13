@@ -33,11 +33,8 @@ namespace Slugs.Commands.EditCommands
         public AddFocalCommand(int entityKey, CreateFocalPointTask startPointTask, CreateFocalPointTask endPointTask) : base(startPointTask.Pad)
         {
 	        EntityKey = entityKey;
-
 	        StartPointTask = startPointTask;
-	        AddTaskAndRun(StartPointTask);
 	        EndPointTask = endPointTask;
-	        AddTaskAndRun(EndPointTask);
         }
 
         // maybe tasks need to be start/update/complete, where eg merge endpoints is on complete, and MoveElementTask is available for updates.
@@ -46,8 +43,17 @@ namespace Slugs.Commands.EditCommands
         public override void Execute()
         {
             base.Execute();
-            FocalTask = new CreateFocalTask(Entity, StartPointTask.FocalPoint, EndPointTask.FocalPoint);
+            AddTaskAndRun(StartPointTask);
+            AddTaskAndRun(EndPointTask);
+            if (FocalTask == null)
+            {
+	            FocalTask = new CreateFocalTask(Entity, StartPointTask.FocalPoint, EndPointTask.FocalPoint);
+            }
             AddTaskAndRun(FocalTask);
+        }
+        public override void Unexecute()
+        {
+	        base.Unexecute();
         }
 
         public override void Update(SKPoint point)
