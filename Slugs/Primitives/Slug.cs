@@ -69,7 +69,7 @@ namespace Slugs.Primitives
 	    public double Direction => Fore >= Aft ? 1.0 : -1.0;
 
         // because everything is segments, can add 'prepositions' (before, after, between, entering, leaving, near etc)
-        public bool IsWithin(Slug value) => Aft >= value.Aft && Fore <= value.Fore; // todo: account for line direction
+        public bool IsWithin(Slug value) => Aft >= value.Aft && Fore <= value.Fore; 
         public bool IsBetween(Slug value) => Aft > value.Aft && Fore < value.Fore;
         public bool IsBefore(Slug value) => Aft < value.Aft && Fore < value.Aft;
         public bool IsAfter(Slug value) => Aft > value.Fore && Fore > value.Fore;

@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using SkiaSharp;
-using Slugs.Agents;
 using Slugs.Pads;
 using Slugs.Primitives;
 
@@ -15,46 +14,12 @@ namespace Slugs.Entities
         public readonly PadKind PadKind;
         public static int KeyCounter = 1;
 
-        private Agent _agent;
         private readonly Dictionary<int, IElement> _elements = new Dictionary<int, IElement>();
 
         public static Slug ActiveSlug = Slug.Unit;
         private static readonly List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
         public const float SnapDistance = 10.0f;
 
-        public IEnumerable<Entity> Entities
-        {
-	        get
-	        {
-		        var values = _elements.Where(kvp => kvp.Value.ElementKind == ElementKind.Entity);
-		        foreach (var kvp in values)
-		        {
-			        yield return (Entity)kvp.Value;
-		        }
-	        }
-        }
-        public IEnumerable<IPoint> Points
-        {
-	        get
-	        {
-		        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint());
-		        foreach (var kvp in values)
-		        {
-			        yield return (IPoint)kvp.Value;
-		        }
-	        }
-        }
-        public IEnumerable<IPoint> PointsReversed
-        {
-	        get
-	        {
-		        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint()).Reverse();
-		        foreach (var kvp in values)
-		        {
-			        yield return (IPoint)kvp.Value;
-		        }
-	        }
-        }
         public IEnumerable<IElement> ElementsOfKind(ElementKind kind)
         {
 	        var values = _elements.Where(kvp => kvp.Value.ElementKind.IsCompatible(kind));
@@ -71,22 +36,34 @@ namespace Slugs.Entities
 		        yield return kvp.Value;
 	        }
         }
-        //public Entity EntityAt(int key) => Data.EntityAt(key);
 
-        //public IEnumerable<AddedFocal> Focals => Data.Focals;
-        //public AddedFocal FocalAt(int key) => Data.FocalAt(key);
-
-        private readonly List<SKSegment> _output = new List<SKSegment>();
-        public IEnumerable<SKSegment> Output => _output;
-
-        public Pad(PadKind padKind, Agent agent)
+        public Pad(PadKind padKind)
         {
             PadKind = padKind;
-            _agent = agent;
             //Data = new PadData(PadKind, this);
             Clear();
         }
 
+        #region Elements
+	    public IElement ElementAt(int key)
+	    {
+		    IElement result;
+		    if (key == ElementBase.EmptyKeyValue)
+		    {
+			    result = TerminalPoint.Empty;
+		    }
+		    else
+		    {
+			    var success = _elements.TryGetValue(key, out IElement element);
+			    result = success ? element : TerminalPoint.Empty;
+		    }
+		    return result;
+	    }
+	    public bool HasElementAt(int key, out IElement element)
+	    {
+		    _elements.TryGetValue(key, out element);
+		    return element.IsEmpty;
+	    }
         public void AddElement(IElement element)
         {
 	        if (element.Key == ElementBase.EmptyKeyValue)
@@ -98,62 +75,145 @@ namespace Slugs.Entities
 		        _elements.Remove(element.Key);
 	        }
 	        _elements.Add(element.Key, element);
-        }
 
+	        if (element is Trait)
+	        {
+		        _traitKeys.Add(element.Key);
+	        }
+            else if (element is Entity)
+	        {
+		        _entityKeys.Add(element.Key);
+	        }
+        }
         public void RemoveElement(int key)
         {
+	        var element = ElementAt(key);
 	        _elements.Remove(key);
+
+	        if (element is Trait)
+	        {
+		        _traitKeys.Remove(element.Key);
+	        }
+	        else if (element is Entity)
+	        {
+		        _entityKeys.Remove(element.Key);
+	        }
         }
 
         public void ClearElements()
         {
 	        _elements.Clear();
+            _entityKeys.Clear();
+            _traitKeys.Clear();
         }
+#endregion
 
-        public IElement ElementAt(int key)
+        #region Entities
+
+	    private readonly HashSet<int> _entityKeys = new HashSet<int>();
+        public IEnumerable<Entity> Entities
         {
-	        IElement result;
-	        if (key == ElementBase.EmptyKeyValue)
+	        get
 	        {
-		        result = TerminalPoint.Empty;
-		        //throw new ArgumentOutOfRangeException("Empty key lookup.");
+		        foreach (var key in _entityKeys)
+		        {
+			        yield return EntityAt(key);
+		        }
 	        }
-	        else
-	        {
-		        var success = _elements.TryGetValue(key, out IElement element);
-		        result = success ? element : TerminalPoint.Empty;
-	        }
-	        return result;
-        }
-        public bool HasElementAt(int key, out IElement element)
-        {
-	        _elements.TryGetValue(key, out element);
-	        return element.IsEmpty;
         }
         public Entity EntityAt(int key)
         {
-	        var success = _elements.TryGetValue(key, out var result);
-	        return success && (result.ElementKind == ElementKind.Entity) ? (Entity)result : Entity.Empty;
+	        var element = ElementAt(key);
+	        return element is Entity entity ? entity : Entity.Empty;
         }
+        public (Entity, Trait) CreateEntity(SKPoint startPoint, SKPoint endPoint, TraitKind traitKind)
+        {
+	        var entity = CreateEntity();
+	        var trait = CreateTrait(entity.Key, startPoint, endPoint, traitKind);
+	        return (entity, trait);
+        }
+        public Entity CreateEntity(params Trait[] traits)
+        {
+	        var entity = new Entity(PadKind, traits);
+	        return entity;
+        }
+        public Entity GetOrCreateEntity(int entityKey)
+        {
+	        var entity = EntityAt(entityKey);
+	        return entity.IsEmpty ? CreateEntity() : entity;
+        }
+        #endregion
+
+#region Traits
+	    private readonly HashSet<int> _traitKeys = new HashSet<int>();
+	    public IEnumerable<Trait> Traits
+	    {
+		    get
+		    {
+			    foreach (var key in _traitKeys)
+			    {
+				    yield return TraitAt(key);
+			    }
+		    }
+	    }
         public Trait TraitAt(int key)
         {
-	        var success = _elements.TryGetValue(key, out var result);
-	        return success && (result.ElementKind == ElementKind.Trait) ? (Trait)result : Trait.Empty;
+	        var element = ElementAt(key);
+	        return element is Trait trait ? trait : Trait.Empty;
         }
-        public Focal FocalAt(int key)
+
+	    public Trait CreateTrait(int entityKey, SKPoint startPoint, SKPoint endPoint, TraitKind traitKind)
+	    {
+		    var entity = GetOrCreateEntity(entityKey);
+		    var start = CreateTerminalPoint(startPoint);
+		    var end = CreateTerminalPoint(endPoint);
+		    var trait = new Trait(entity, start, end, traitKind);
+		    AddElement(trait);
+		    return trait;
+	    }
+	    public Trait CreateTrait(int entityKey, int startPointKey, int endPointKey, TraitKind traitKind)
+	    {
+		    var entity = GetOrCreateEntity(entityKey);
+		    var trait = new Trait(entity, startPointKey, endPointKey, traitKind);
+		    AddElement(trait);
+		    return trait;
+	    }
+        #endregion
+
+#region Points
+
+	    public IEnumerable<IPoint> Points
+	    {
+		    get
+		    {
+			    var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint());
+			    foreach (var kvp in values)
+			    {
+				    yield return (IPoint)kvp.Value;
+			    }
+		    }
+	    }
+	    public IEnumerable<IPoint> PointsReversed
+	    {
+		    get
+		    {
+			    var values = _elements.Where(kvp => kvp.Value.ElementKind.IsPoint()).Reverse();
+			    foreach (var kvp in values)
+			    {
+				    yield return (IPoint)kvp.Value;
+			    }
+		    }
+	    }
+
+        public TerminalPoint CreateTerminalPoint(SKPoint pt)
         {
-	        var success = _elements.TryGetValue(key, out var result);
-	        return success && (result.ElementKind == ElementKind.Focal) ? (Focal)result : Focal.Empty;
+	        var point = new TerminalPoint(PadKind, pt);
+	        return point;
         }
-        public SingleBond BondAt(int key)
+        public RefPoint CreateRefPoint(int targetKey)
         {
-	        var success = _elements.TryGetValue(key, out var result);
-	        return success && (result.ElementKind == ElementKind.SingleBond) ? (SingleBond)result : SingleBond.Empty;
-        }
-        public DoubleBond DoubleBondAt(int key)
-        {
-	        var success = _elements.TryGetValue(key, out var result);
-	        return success && (result.ElementKind == ElementKind.DoubleBond) ? (DoubleBond)result : DoubleBond.Empty;
+	        var point = new RefPoint(PadKind, targetKey);
+	        return point;
         }
         public IPoint PointAt(int key)
         {
@@ -164,7 +224,6 @@ namespace Slugs.Entities
         {
 	        _elements[key] = point;
         }
-
         public IPoint ResolvedPointFor(IPoint point)
         {
 	        IElement result = point;
@@ -199,64 +258,38 @@ namespace Slugs.Entities
             from.MergeInto(terminal);
         }
 
-        public Entity CreateEntity(params Trait[] traits)
-        {
-	        var entity = new Entity(PadKind, traits);
-	        return entity;
-        }
-        public Entity GetOrCreateEntity(int entityKey)
-        {
-	        var entity = EntityAt(entityKey);
-	        return entity.IsEmpty ? CreateEntity() : entity;
-        }
-        public TerminalPoint CreateTerminalPoint(SKPoint pt)
-        {
-	        var point = new TerminalPoint(PadKind, pt);
-	        return point;
-        }
-        public RefPoint CreateRefPoint(int targetKey)
-        {
-	        var point = new RefPoint(PadKind, targetKey);
-	        return point;
-        }
+        #endregion
+
         public Focal CreateFocal(float focus, Slug slug)
         {
 	        throw new NotImplementedException();
 	        //   var focal = new AddedFocal(PadKind, focus, slug);
 	        //return focal;
         }
+	    public Focal FocalAt(int key)
+	    {
+		    var success = _elements.TryGetValue(key, out var result);
+		    return success && (result.ElementKind == ElementKind.Focal) ? (Focal)result : Focal.Empty;
+	    }
 
-        public (Entity, Trait) AddEntity(SKPoint startPoint, SKPoint endPoint, TraitKind traitKind)
-        {
-	        var entity = CreateEntity();
-	        var trait = AddTrait(entity.Key, startPoint, endPoint, traitKind);
-	        return (entity, trait);
-        }
-        // todo: entities should automatically have access to all traits in their pad. Focals tie together traits and entities.
-        public Trait AddTrait(int entityKey, SKPoint startPoint, SKPoint endPoint, TraitKind traitKind)
-        {
-	        var entity = GetOrCreateEntity(entityKey);
-	        var start = CreateTerminalPoint(startPoint);
-	        var end = CreateTerminalPoint(endPoint);
-	        var trait = new Trait(entity, start, end, traitKind);
-	        entity.EmbedTrait(trait);
-	        return trait;
-        }
-        public Trait AddTrait(int entityKey, int startPointKey, int endPointKey, TraitKind traitKind)
-        {
-	        var entity = GetOrCreateEntity(entityKey);
-	        var trait = new Trait(entity, startPointKey, endPointKey, traitKind);
-	        entity.EmbedTrait(trait);
-	        return trait;
-        }
+	    public SingleBond BondAt(int key)
+	    {
+		    var success = _elements.TryGetValue(key, out var result);
+		    return success && (result.ElementKind == ElementKind.SingleBond) ? (SingleBond)result : SingleBond.Empty;
+	    }
+	    public DoubleBond DoubleBondAt(int key)
+	    {
+		    var success = _elements.TryGetValue(key, out var result);
+		    return success && (result.ElementKind == ElementKind.DoubleBond) ? (DoubleBond)result : DoubleBond.Empty;
+	    }
         public void Clear()
         {
             ClearElements();
         }
         public void Refresh()
         {
-            _output.Clear();
         }
+
 
         public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, ElementKind kind, float maxDist = SnapDistance * 2f)
         {
@@ -271,7 +304,6 @@ namespace Slugs.Entities
             }
             return result;
         }
-
         public IElement GetSnapElement(SKPoint point, List<int> ignoreKeys, ElementKind kind, float maxDist = SnapDistance)
         {
             IElement result = TerminalPoint.Empty;
@@ -284,7 +316,7 @@ namespace Slugs.Entities
 		            break;
 	            }
             }
-            // todo: check for area hits with double bonds if line/points not found.
+
             if (result.IsEmpty)
             {
 	            foreach (var entity in Entities)

@@ -18,7 +18,7 @@ namespace Vis.Model.Primitives
 
         public VisPoint Anchor => StartNode.Location;
         private float _length;
-        public float Length => _length;
+        public float Length() => _length;
         public VisPoint StartPoint => StartNode.Location;
         public VisPoint MidPoint => GetPoint(0.5f, 0);
         public VisPoint EndPoint => EndNode.Location;
@@ -186,18 +186,18 @@ namespace Vis.Model.Primitives
             _length = 0;
             foreach (var segment in Segments)
             {
-                _length += segment.Length;
+                _length += segment.Length();
             }
         }
 
         public VisPoint GetPoint(float shift, float offset = 0)
         {
-            var pos = Length * shift;
+            var pos = Length() * shift;
             var len = 0f;
             var targetSegment = Segments[0];
             foreach (var segment in Segments)
             {
-                var segLen = segment.Length;
+                var segLen = segment.Length();
                 if (len + segLen > pos)
                 {
                     targetSegment = segment;
@@ -205,10 +205,10 @@ namespace Vis.Model.Primitives
                 }
                 else
                 {
-                    len += segment.Length;
+                    len += segment.Length();
                 }
             }
-            var targetPosition = (pos - len) / targetSegment.Length;
+            var targetPosition = (pos - len) / targetSegment.Length();
             return targetSegment.GetPoint(targetPosition, offset);
         }
 
@@ -247,13 +247,13 @@ namespace Vis.Model.Primitives
 
         public VisNode SubNodeAt(float shift)
         {
-	        float targLen = Length * shift;
+	        float targLen = Length() * shift;
 	        float len = 0;
 	        int index = 0;
 	        float subShift = 0;
             foreach (var segment in Segments)
 	        {
-		        float refLen = segment.Length;
+		        float refLen = segment.Length();
 		        if (len + refLen >= targLen)
 		        {
 			        subShift = (targLen - len) / refLen;

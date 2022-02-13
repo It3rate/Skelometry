@@ -16,20 +16,25 @@ namespace Slugs.Entities
 
         public override SKPath Path => new SKPath();
 
-        // todo: also store focal and singleBond lists in entities and traits (globally stored in Pads). Need to sync add and remove as needed when traits are adjusted.
-        #region Traits
-        private readonly HashSet<int> _traitKeys = new HashSet<int>();
-	    public IEnumerable<Trait> Traits
-        {
-		    get
-		    {
-			    foreach (var key in _traitKeys)
-			    {
-				    yield return Pad.TraitAt(key);
-			    }
-		    }
-	    }
-	    private readonly HashSet<int> _focalKeys = new HashSet<int>();
+        //   private readonly HashSet<int> _traitKeys = new HashSet<int>();
+        //public IEnumerable<Trait> Traits
+        //   {
+        // get
+        // {
+        //  foreach (var key in _traitKeys)
+        //  {
+        //   yield return Pad.TraitAt(key);
+        //  }
+        // }
+        //}
+        //public void EmbedTrait(Trait trait) => _traitKeys.Add(trait.Key);
+        //public void EmbedTrait(int key) => _traitKeys.Add(key);
+        //public void RemoveTrait(Trait trait) => _traitKeys.Remove(trait.Key);
+        //public void RemoveTrait(int key) => _traitKeys.Remove(key);
+        //public bool ContainsTrait(Trait trait) => _traitKeys.Contains(trait.Key);
+        //public bool ContainsTrait(int traitKey) => _traitKeys.Contains(traitKey);
+
+        private readonly HashSet<int> _focalKeys = new HashSet<int>();
 	    public IEnumerable<Focal> Focals
 	    {
 		    get
@@ -67,13 +72,6 @@ namespace Slugs.Entities
 	    {
 		    _doubleBondKeys.Remove(bond.Key);
 	    }
-        public void EmbedTrait(Trait trait) => _traitKeys.Add(trait.Key);
-	    public void EmbedTrait(int key) => _traitKeys.Add(key);
-	    public void RemoveTrait(Trait trait) => _traitKeys.Remove(trait.Key);
-	    public void RemoveTrait(int key) => _traitKeys.Remove(key);
-	    public bool ContainsTrait(Trait trait) => _traitKeys.Contains(trait.Key);
-	    public bool ContainsTrait(int traitKey) => _traitKeys.Contains(traitKey);
-
 	    public Focal NearestFocal(SKPoint point, params int[] excludeKeys)
 	    {
             var result = Focal.Empty;
@@ -91,20 +89,19 @@ namespace Slugs.Entities
 	            }
             }
             return result;
-	    }
-        #endregion
+	    }                                                                                
 
 
 	    public Entity(PadKind padKind, params Trait[] traits) : base(padKind)
 	    {
 		    foreach (var trait in traits)
 		    {
-			    EmbedTrait(trait);
+			    Pad.AddElement(trait);
 		    }
 	    }
         public override float DistanceToPoint(SKPoint point)
         {
-	        return float.MaxValue; // todo: Calculate distance to closest entity element.
+	        return float.MaxValue; 
         }
     }
 }

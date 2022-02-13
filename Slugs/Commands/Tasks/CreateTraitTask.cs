@@ -28,7 +28,7 @@ namespace Slugs.Commands.Tasks
 		{
 			if (Trait.IsEmpty)
 			{
-				Trait = Pad.AddTrait(EntityKey, StartPointKey, EndPointKey, TraitKind);
+				Trait = Pad.CreateTrait(EntityKey, StartPointKey, EndPointKey, TraitKind);
             }
 			else
 			{
@@ -41,7 +41,7 @@ namespace Slugs.Commands.Tasks
 			Pad.RemoveElement(TraitKey);
 			foreach (var entity in Pad.Entities) // todo: Don't add traits to entities
 			{
-				entity.RemoveTrait(Trait.Key);
+				Pad.RemoveElement(Trait.Key);
 			}
         }
     }

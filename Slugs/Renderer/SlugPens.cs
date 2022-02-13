@@ -103,7 +103,7 @@ namespace Slugs.Renderer
 	    private void GenPens()
 	    {
 		    HoverPen = GetPen(new SKColor(240, 190, 190), DefaultWidth * 5); 
-		    SelectedPen = GetPen(SKColors.LightGreen, DefaultWidth * 5f);
+		    SelectedPen = GetPen(SKColors.Red, DefaultWidth * 1f);
 		    UnitPen = GetPen(SKColors.SteelBlue, DefaultWidth * 1.5f);
 		    GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
 		    DarkPen = GetPen(SKColors.Black, DefaultWidth);

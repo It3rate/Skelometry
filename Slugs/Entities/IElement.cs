@@ -29,7 +29,7 @@ namespace Slugs.Entities
         void SetLock(bool lockStatus);
     }
 
-	public interface IAreaElement
+	public interface IAreaElement : IElement
 	{
 		bool ContainsPoint(SKPoint point);
 	}

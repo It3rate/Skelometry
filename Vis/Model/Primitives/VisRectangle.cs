@@ -41,7 +41,6 @@ namespace Vis.Model.Primitives
 
         private void Initialize(float cornerX, float cornerY)
         {
-            // todo: this orients rect by throwing away information, adjust to universal math. Saving _corner for now.
             TopLeft = new VisPoint(X - Math.Abs(X - cornerX), Y - Math.Abs(Y - cornerY));
             HalfSize = this.Subtract(TopLeft).Abs();
         }

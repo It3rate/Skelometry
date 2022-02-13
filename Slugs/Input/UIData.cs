@@ -74,7 +74,6 @@ namespace Slugs.Input
             }
 	        return result;
         }
-        // todo: Creating traits will depend on selected entity etc.
 
 	    public void Reset()
 	    {

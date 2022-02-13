@@ -23,7 +23,7 @@ namespace Vis.Model.Primitives
 
         public float Radius => Reference.Radius;
         public VisPoint Center => Reference.Center;
-        public float Length => _arcLength * Radius;
+        public override float Length() => _arcLength * Radius;
 
         public VisPoint StartPoint => this;
         public VisPoint MidPoint => Reference.GetPoint(0.5f, 0);
@@ -117,7 +117,6 @@ namespace Vis.Model.Primitives
             return result.ToArray();
         }
 
-        // todo: Arc bounds needs to account for segment having a smaller bounds than a circle.
         public virtual VisRectangle BoundingBox() => new VisRectangle(Center, new VisPoint(Center.X - Radius, Center.Y - Radius));
 
         public VisNode NodeNear(VisPoint point)

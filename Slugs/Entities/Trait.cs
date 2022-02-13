@@ -23,7 +23,7 @@ namespace Slugs.Entities
 	    public static readonly Trait Empty = new Trait();
         private Trait() : base(true) { EntityKey = Entity.Empty.Key; KindIndex = TraitKind.None;}
 
-        public IPoint StartPoint => Pad.PointAt(StartKey); // todo: make this base class for segment elements.
+        public IPoint StartPoint => Pad.PointAt(StartKey);
         public IPoint EndPoint => Pad.PointAt(EndKey);
         public override SKPoint StartPosition => StartPoint.Position;
 	    public override SKPoint EndPosition => EndPoint.Position;

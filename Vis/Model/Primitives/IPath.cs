@@ -7,7 +7,7 @@ namespace Vis.Model.Primitives
 
     public interface IPath : IElement, IEnumerable<VisPoint>
     {
-	    float Length { get; }
+	    float Length();
 	    bool IsFixed { get; set; }
         VisPoint StartPoint { get; }
 	    VisPoint MidPoint { get; }

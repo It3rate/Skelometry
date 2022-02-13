@@ -112,29 +112,19 @@ namespace Slugs.Renderer
 			{
 				DrawDirectedLine(Data.HighlightLine.Segment, Pens.HoverPen);
 			}
-
-	        foreach (var selectedElement in Data.Selected.Elements)
-	        {
-		        DrawElement(selectedElement, Pens.SelectedPen);
-	        }
-
 	        foreach (var pad in Data.Pads)
 	        {
 		        pad.Refresh();
-		        var slug = Pad.ActiveSlug;
-		        foreach (var entity in pad.Entities)
+		        foreach (var trait in pad.Traits)
 		        {
-			        foreach (var trait in entity.Traits)
+			        DrawDirectedLine(trait.Segment, trait.IsLocked ? Pens.LockedPen : Pens.DarkPen);
+			        _canvas.Flush();
+			        foreach (var focal in trait.Focals)
 			        {
-				        DrawDirectedLine(trait.Segment, trait.IsLocked ? Pens.LockedPen : Pens.DarkPen);
-				        _canvas.Flush();
-				        foreach (var focal in trait.Focals)
+				        DrawDirectedLine(focal.Segment, Pens.FocalPen);
+				        foreach (var bond in focal.Bonds)
 				        {
-					        DrawDirectedLine(focal.Segment, Pens.FocalPen);
-					        foreach (var bond in focal.Bonds)
-					        {
-						        DrawDirectedLine(bond.Segment, Pens.BondPen);
-					        }
+					        DrawDirectedLine(bond.Segment, Pens.BondPen);
 				        }
 			        }
 		        }
@@ -152,7 +142,13 @@ namespace Slugs.Renderer
 		        {
 			        DrawPath(Data.WorkingPoints.ToArray(), Pens.BondFillPen);
 		        }
-	        }
+
+		        foreach (var selectedElement in Data.Selected.Elements)
+		        {
+			        DrawElement(selectedElement, Pens.SelectedPen);
+		        }
+
+            }
         }
 
         public void DrawElement(IElement element, SKPaint paint, float radius = 4f)
@@ -161,9 +157,13 @@ namespace Slugs.Renderer
 	        {
                 _canvas.DrawLine(seg.Segment.StartPoint, seg.Segment.EndPoint, paint);
 	        }
-            else if (element is IPoint point)
+	        else if (element is IPoint point)
 	        {
-                _canvas.DrawCircle(point.Position.X, point.Position.Y, radius, paint);
+		        _canvas.DrawCircle(point.Position.X, point.Position.Y, radius, paint);
+	        }
+	        else if (element is IAreaElement area)
+	        {
+		        _canvas.DrawPath(area.Path, paint);
 	        }
         }
 

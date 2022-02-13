@@ -55,13 +55,13 @@ namespace Slugs.Agents
 
             _renderer = renderer;
             _renderer.Data = Data;
-            var (entity, trait) = InputPad.AddEntity(new SKPoint(100, 100), new SKPoint(700, 100), TraitKind.Default);
+            var (entity, trait) = InputPad.CreateEntity(new SKPoint(100, 100), new SKPoint(700, 100), TraitKind.Default);
             _activeEntity = entity;
             trait.SetLock(true);
-            InputPad.AddTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), TraitKind.Default).SetLock(true);
-            var trait2 = InputPad.AddTrait(entity.Key, new SKPoint(100, 180), new SKPoint(700, 180), TraitKind.Default);
+            InputPad.CreateTrait(entity.Key, new SKPoint(100, 140), new SKPoint(700, 140), TraitKind.Default).SetLock(true);
+            var trait2 = InputPad.CreateTrait(entity.Key, new SKPoint(100, 180), new SKPoint(700, 180), TraitKind.Default);
             trait2.SetLock(true);
-            InputPad.AddTrait(entity.Key, new SKPoint(100, 220), new SKPoint(700, 220), TraitKind.Default).SetLock(true);
+            InputPad.CreateTrait(entity.Key, new SKPoint(100, 220), new SKPoint(700, 220), TraitKind.Default).SetLock(true);
             var fc1 = new AddFocalCommand(_activeEntity, trait, 0.3f, 0.8f);
             fc1.Execute();
             var fc2 = new AddFocalCommand(_activeEntity, trait2, 0.1f, 0.5f);
@@ -80,7 +80,7 @@ namespace Slugs.Agents
         }
         public Pad AddPad(PadKind padKind)
         {
-	        Pads[padKind] = new Pad(padKind, this);
+	        Pads[padKind] = new Pad(padKind);
 	        return Pads[padKind];
         }
 
@@ -97,8 +97,10 @@ namespace Slugs.Agents
 	        Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
 
             Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
-            Data.Selected.SetPoint(mousePoint, Data.Highlight.Point);
-            Data.Selected.SetElements(Data.Begin.Elements);
+            //Data.Selected.SetPoint(mousePoint, Data.Highlight.Point);
+            //Data.Selected.SetElements(Data.Begin.Elements);
+            Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, _selectableKind);
+            Data.Selected.Position = mousePoint;
 
             IsDown = true;
             _creatingOnDown = _isControlDown;
@@ -119,7 +121,7 @@ namespace Slugs.Agents
             // Suppress Select Element:
             //      - cancels click select if length > select max
 
-            // AddTrait, AddBond, AddFocal, MoveElement, SelectRect 
+            // CreateTrait, AddBond, AddFocal, MoveElement, SelectRect 
             var result = false;
 		    var mousePoint = e.Location.ToSKPoint();
 		    Data.Current.UpdatePositions(mousePoint);
@@ -219,7 +221,7 @@ namespace Slugs.Agents
 						else if(!Data.Begin.FirstElement.IsLocked)
 						{
 							MoveElementCommand cmd = new MoveElementCommand(Data.Begin.Pad, Data.Begin.FirstElement);
-							Data.Selected.SetElements(Data.Begin.FirstElement); // todo: move to keys only, and move sets vs objects
+							Data.Selected.SetElements(Data.Begin.FirstElement);
 							_activeCommand = _editCommands.Do(cmd);
 							_ignoreList.Add(Data.Begin.FirstElement.Key);
 							_selectableKind = ElementKind.None;
