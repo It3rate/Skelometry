@@ -20,12 +20,15 @@ namespace Slugs.Entities
         public Entity Entity => Pad.EntityAt(EntityKey);
         public int TraitKey => StartPoint.TraitKey;
         public Trait Trait => Pad.TraitAt(TraitKey);
+        public TraitKind TraitKind => Pad.TraitAt(TraitKey).TraitKind;
+
         public FocalPoint StartPoint => (FocalPoint)Pad.PointAt(StartKey);
         public FocalPoint EndPoint => (FocalPoint)Pad.PointAt(EndKey);
-        public override SKPoint StartPosition => Trait.PointAlongLine(Slug.Start);
-        public override SKPoint EndPosition => Trait.PointAlongLine(Slug.End);
-
+        public override SKPoint StartPosition => Trait.PointAlongLine(StartPoint.T);
+        public override SKPoint EndPosition => Trait.PointAlongLine(EndPoint.T);
         public Slug Slug => new Slug(StartPoint.T, EndPoint.T);
+
+        public bool IsUnit => Pad.UnitKeyFor(TraitKind) == Key;
 
         public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
 

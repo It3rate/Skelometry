@@ -126,6 +126,10 @@ namespace Slugs
         {
 	        _agent.UIMode = UIMode.CreateBond;
         }
+        private void btUnit_Click(object sender, EventArgs e)
+        {
+	        _agent.UIMode = UIMode.SetUnit;
+        }
         private void _agent_OnModeChange(object sender, EventArgs e)
         {
             btEntity.Enabled = true;
@@ -133,6 +137,7 @@ namespace Slugs
 	        btFocal.Enabled = true;
 	        btDoubleBond.Enabled = true;
 	        btBond.Enabled = true;
+	        btUnit.Enabled = true;
             switch (_agent.UIMode)
             {
 	            case UIMode.CreateTrait:
@@ -146,6 +151,9 @@ namespace Slugs
 		            break;
 	            case UIMode.CreateBond:
 		            btBond.Enabled = false;
+		            break;
+	            case UIMode.SetUnit:
+		            btUnit.Enabled = false;
 		            break;
                 default:
                     btEntity.Enabled = false;

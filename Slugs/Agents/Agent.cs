@@ -69,6 +69,8 @@ namespace Slugs.Agents
             var fc1 = new AddFocalCommand(_activeEntity, trait1, 0.3f, 0.8f);
             var fc2 = new AddFocalCommand(_activeEntity, trait3, 0.1f, 0.5f);
             _editCommands.Do(fc1, fc2);
+            InputPad.SetUnit(fc2.AddedFocal);
+
             var bc = new AddSingleBondCommand(fc1.AddedFocal, .2f, fc2.AddedFocal, 0.3f);
             var db = new AddDoubleBondCommand(fc1.AddedFocal, fc2.AddedFocal);
             _editCommands.Do(bc, db);
@@ -99,6 +101,10 @@ namespace Slugs.Agents
             //Data.Selected.SetElements(Data.Begin.Elements);
             Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, _selectableKind);
             Data.Selected.Position = mousePoint;
+            if (UIMode == UIMode.SetUnit && Data.Selected.FirstElement is Focal focal)
+            {
+                InputPad.SetUnit(focal);
+            }
 
             IsDown = true;
             _creatingOnDown = _isControlDown;
@@ -331,12 +337,16 @@ namespace Slugs.Agents
 			    case UIMode.CreateBond:
 				    _selectableKind = _isControlDown ? ElementKind.FocalPart : ElementKind.BondPart;
 				    break;
-		    }
+			    case UIMode.SetUnit:
+				    _selectableKind = ElementKind.Focal;
+				    break;
+            }
 	    }
 
 	    private bool _isControlDown;
 	    private bool _isShiftDown;
 	    private bool _isAltDown;
+	    private UIMode PreviousMode = UIMode.Any;
         // When SingleBond is selected, focals can be highlighted (but not moved), bonds can be created or edited and have precedence in conflict.
         // ctrl defaults to 'create' causing select to be exclusive to focals or singleBond points.
         public bool KeyDown(KeyEventArgs e)
@@ -366,7 +376,10 @@ namespace Slugs.Agents
 			    case Keys.B:
 				    UIMode = UIMode.CreateBond;
 				    break;
-			    case Keys.Z:
+			    case Keys.U:
+				    UIMode = UIMode.SetUnit;
+				    break;
+                case Keys.Z:
 				    if (_isShiftDown && _isControlDown)
 				    {
 					    _editCommands.Redo();
@@ -389,6 +402,10 @@ namespace Slugs.Agents
 				    break;
             }
 		    SetSelectable(UIMode);
+		    if (curMode != UIMode)
+		    {
+			    PreviousMode = curMode;
+		    }
             return true;
 	    }
 
@@ -399,6 +416,10 @@ namespace Slugs.Agents
             _isShiftDown = e.Shift;
             _isAltDown = e.Alt;
             //_selectableKind = ElementKind.Any;
+            if (UIMode == UIMode.SetUnit)
+            {
+	            UIMode = PreviousMode;
+            }
             SetSelectable(UIMode);
             return true;
         }

@@ -15,6 +15,7 @@
 	    CreateFocal = 0x4,
 	    CreateDoubleBond = 0x8,
 	    CreateBond = 0x10,
+        SetUnit = 0x20,
 
         //Inspect = 0x10,
         //Edit = 0x20,

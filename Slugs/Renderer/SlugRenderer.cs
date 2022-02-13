@@ -23,8 +23,6 @@ namespace Slugs.Renderer
 
 	    public UIData Data { get; set; }
 
-        public int PenIndex { get; set; }
-
         public SlugPens Pens { get; set; }
 	    public SKBitmap Bitmap { get; set; }
 	    public bool ShowBitmap { get; set; }
@@ -121,7 +119,8 @@ namespace Slugs.Renderer
 			        _canvas.Flush();
 			        foreach (var focal in trait.Focals)
 			        {
-				        DrawDirectedLine(focal.Segment, Pens.FocalPen);
+				        var focalPen = focal.IsUnit ? Pens.UnitPen : Pens.FocalPen;
+				        DrawDirectedLine(focal.Segment, focalPen);
 				        foreach (var bond in focal.Bonds)
 				        {
 					        DrawDirectedLine(bond.Segment, Pens.BondPen);

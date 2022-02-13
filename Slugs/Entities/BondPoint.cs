@@ -21,7 +21,9 @@ namespace Slugs.Entities
 
         public Focal Focal => Pad.FocalAt(FocalKey);
         public Trait Trait => Focal.Trait;
-        public int TraitKey => Focal.TraitKey;
+        public int TraitKey => Focal.TraitKey; 
+        public Entity Entity => Focal.Entity;
+        public int EntityKey => Focal.EntityKey;
 
         public BondPoint(PadKind padKind, int focalKey, float t) : base(padKind)
         {

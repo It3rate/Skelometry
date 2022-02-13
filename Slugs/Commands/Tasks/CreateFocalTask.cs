@@ -54,12 +54,14 @@ namespace Slugs.Commands.Tasks
                 Pad.AddElement(AddedFocal);
 		    }
 		    Trait.AddFocal(AddedFocal);
+		    Entity.AddFocal(AddedFocal);
         }
         public override void UnRunTask()
         {
 	        base.UnRunTask();
+            Entity.RemoveFocal(AddedFocal);
             Trait.RemoveFocal(AddedFocal);
-	        Pad.RemoveElement(AddedFocal.Key);
+            Pad.RemoveElement(AddedFocal.Key);
         }
     }
 }

@@ -13,12 +13,14 @@ namespace Slugs.Entities
     {
         public readonly PadKind PadKind;
         public static int KeyCounter = 1;
+        public const float SnapDistance = 10.0f;
 
         private readonly Dictionary<int, IElement> _elements = new Dictionary<int, IElement>();
 
-        public static Slug ActiveSlug = Slug.Unit;
-        private static readonly List<Slug> Slugs = new List<Slug>(); // -1 is 'none' position, 0 is activeSlug.
-        public const float SnapDistance = 10.0f;
+        public Dictionary<TraitKind, int> UnitMap = new Dictionary<TraitKind, int>();
+        public void SetUnit(Focal focal) => UnitMap[focal.TraitKind] = focal.Key;
+        public int UnitKeyFor(TraitKind traitKind) => UnitMap.ContainsKey(traitKind) ? UnitMap[traitKind] : ElementBase.EmptyKeyValue;
+        public Slug UnitFor(TraitKind traitKind) => UnitMap.ContainsKey(traitKind) ? FocalAt(UnitMap[traitKind]).Slug : Slug.Unit;
 
         public IEnumerable<IElement> ElementsOfKind(ElementKind kind)
         {
