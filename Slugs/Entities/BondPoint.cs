@@ -17,7 +17,12 @@ namespace Slugs.Entities
         private BondPoint() : base(true) { }
 
         public int FocalKey { get; set; }
-        public float T { get; set; }
+        private float _t;
+        public float T
+        {
+	        get => _t;
+	        set { if (!IsEmpty) _t = value; }
+        }
 
         public Focal Focal => Pad.FocalAt(FocalKey);
         public Trait Trait => Focal.Trait;
@@ -29,6 +34,7 @@ namespace Slugs.Entities
         {
             FocalKey = focalKey;
             T = t;
+            SetOtherT(T);
         }
 
         public override bool CanMergeWith(IPoint point)
@@ -56,13 +62,14 @@ namespace Slugs.Entities
         {
             get
             {
-                var focal = Pad.FocalAt(FocalKey);
+                var focal = Focal;
                 return focal.IsEmpty ? SKPoint.Empty : focal.PointAlongLine(T);
             }
             set
             {
-                var focal = Pad.FocalAt(FocalKey);
+	            var focal = Focal;
                 T = focal.TFromPoint(value, false).Item1;
+                SetOtherT(T); // this locks the t ratio
             }
         }
 
@@ -87,6 +94,37 @@ namespace Slugs.Entities
         {
             FocalKey = focalKey;
             T = t;
+        }
+
+        //public BondPoint OtherPoint { get; set; } // could just store other point...
+        private BondPoint OtherPoint
+        {
+            get
+            {
+                var result = BondPoint.Empty;
+                foreach (var singleBond in Focal.AllBonds)
+                {
+                    var other = singleBond.OtherPoint(Key);
+                    if (!other.IsEmpty)
+                    {
+                        result = other;
+                        break;
+                    }
+                }
+                return result;
+            }
+        }
+
+        private bool SetOtherT(float val)
+        {
+	        var result = false;
+	        var other = OtherPoint;
+	        if (!other.IsEmpty)
+	        {
+		        other.T = val;
+		        result = true;
+	        }
+	        return result;
         }
 
         public static bool operator ==(BondPoint left, BondPoint right) =>

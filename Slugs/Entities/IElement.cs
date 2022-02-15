@@ -4,7 +4,9 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms.VisualStyles;
 using SkiaSharp;
 using Slugs.Agents;
+using Slugs.Constraints;
 using Slugs.Pads;
+using Slugs.Primitives;
 
 namespace Slugs.Entities
 {
@@ -19,6 +21,7 @@ namespace Slugs.Entities
         bool IsEmpty { get; }
         bool HasArea { get; }
         SKPath Path { get; }
+        List<IConstraint> Constraints { get; }
 
         //IPoint[] TerminalPoints { get; }
         List<IPoint> Points { get; }
@@ -32,6 +35,12 @@ namespace Slugs.Entities
 	public interface IAreaElement : IElement
 	{
 		bool ContainsPoint(SKPoint point);
+	}
+	public interface ISlugElement : IElement
+	{
+        Slug Ratio { get; set; }
+		//SKSegment Segment { get; }
+		//float Length { get; }
 	}
 
     public abstract class ElementBase : IElement
@@ -64,6 +73,7 @@ namespace Slugs.Entities
 
 		public virtual bool HasArea => false;
 
+		public List<IConstraint> Constraints { get; } = new List<IConstraint>();
         private bool _isLocked;
         public bool IsLocked
 		{

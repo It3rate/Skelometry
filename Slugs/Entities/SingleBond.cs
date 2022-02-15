@@ -18,7 +18,8 @@ namespace Slugs.Entities
     // Single line bonds only map the zero points for things that can add or compare? eg X and Y axis meeting at zero (or is this defined by the unit focals?)
     // or are they intrinsic to the trait, like min/max and reasons for limits (complexity, measurable, changed, terminated, likelihood)
     // Actually X and Y are focal segments where the two zeros share a point. They can not be connected on the other points (independent), or as a triangle (area).
-	public class SingleBond : SegmentBase
+
+	public class SingleBond : SegmentBase //, ISlugElement // will be T:T or 0:0 on each line, but maybe that ratio is set already by the double bond?
     {
 	    public override ElementKind ElementKind => ElementKind.SingleBond;
         public override IElement EmptyElement => Empty;
@@ -27,6 +28,7 @@ namespace Slugs.Entities
 
         public BondPoint StartPoint => (BondPoint)Pad.PointAt(StartKey);
         public BondPoint EndPoint => (BondPoint)Pad.PointAt(EndKey);
+        public BondPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndPoint : (notKey == EndKey) ? StartPoint : BondPoint.Empty;
         public override SKPoint StartPosition => StartPoint.Position;
         public override SKPoint EndPosition => EndPoint.Position;
 

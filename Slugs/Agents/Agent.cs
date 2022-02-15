@@ -97,8 +97,6 @@ namespace Slugs.Agents
 	        Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
 
             Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
-            //Data.Selected.SetPoint(mousePoint, Data.Highlight.Point);
-            //Data.Selected.SetElements(Data.Begin.Elements);
             Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, _selectableKind);
             Data.Selected.Position = mousePoint;
             if (UIMode == UIMode.SetUnit && Data.Selected.FirstElement is Focal focal)
@@ -340,6 +338,10 @@ namespace Slugs.Agents
 			    case UIMode.SetUnit:
 				    _selectableKind = ElementKind.Focal;
 				    break;
+			    case UIMode.Equal:
+				    _selectableKind = ElementKind.Focal;
+                    Data.Selected.Clear();
+				    break;
             }
 	    }
 
@@ -379,6 +381,9 @@ namespace Slugs.Agents
 			    case Keys.U:
 				    UIMode = UIMode.SetUnit;
 				    break;
+			    case Keys.Oemplus:
+				    UIMode = UIMode.Equal;
+				    break;
                 case Keys.Z:
 				    if (_isShiftDown && _isControlDown)
 				    {
@@ -416,7 +421,7 @@ namespace Slugs.Agents
             _isShiftDown = e.Shift;
             _isAltDown = e.Alt;
             //_selectableKind = ElementKind.Any;
-            if (UIMode == UIMode.SetUnit)
+            if (UIMode.IsMomentary())
             {
 	            UIMode = PreviousMode;
             }

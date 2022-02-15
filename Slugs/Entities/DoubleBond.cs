@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using OpenTK.Input;
 using SkiaSharp;
+using Slugs.Constraints;
 using Slugs.Primitives;
 
 namespace Slugs.Entities
@@ -11,18 +12,15 @@ namespace Slugs.Entities
     using System.Text;
     using System.Threading.Tasks;
 
-    public class DoubleBond : ElementBase, IAreaElement
+    public class DoubleBond : ElementBase, IAreaElement //, ISlugElement // the double bond is a fixed ratio between two focals already.
     {
-	    public int StartKey { get; private set; }
-	    public int EndKey { get; private set; }
-
-        public override ElementKind ElementKind => ElementKind.DoubleBond;
+	    public override ElementKind ElementKind => ElementKind.DoubleBond;
 	    public override IElement EmptyElement => Empty;
 	    public static readonly DoubleBond Empty = new DoubleBond();
 	    private DoubleBond() : base(true) { }// Empty ctor
 
-	    public override bool HasArea => true;
-
+	    public int StartKey { get; private set; }
+	    public int EndKey { get; private set; }
         public Focal StartFocal
 	    {
 		    get => Pad.FocalAt(StartKey);
@@ -35,6 +33,8 @@ namespace Slugs.Entities
 	    }
 	    public SKSegment StartSegment => StartFocal.Segment;
 	    public SKSegment EndPosition => EndFocal.Segment;
+
+	    public override bool HasArea => true;
 
 	    public override List<IPoint> Points => new List<IPoint>() { StartFocal.StartPoint, StartFocal.EndPoint, EndFocal.StartPoint, EndFocal.EndPoint };
 	    public override float DistanceToPoint(SKPoint point)

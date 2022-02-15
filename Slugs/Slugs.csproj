@@ -117,6 +117,8 @@
     <Compile Include="Commands\Tasks\MoveElementTask.cs" />
     <Compile Include="Commands\Tasks\SetSelectionTask.cs" />
     <Compile Include="Commands\Tasks\TaskBase.cs" />
+    <Compile Include="Constraints\RatioConstraint.cs" />
+    <Compile Include="Constraints\IConstraint.cs" />
     <Compile Include="Entities\DoubleBond.cs" />
     <Compile Include="Entities\Group.cs" />
     <Compile Include="Entities\BondPoint.cs" />

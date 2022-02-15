@@ -31,8 +31,8 @@ namespace Slugs.Entities
 		        return path;
 	        }
         }
-        public float Length() => Segment.Length;
-	    public float SquaredLength() => Segment.LengthSquared;
+        public float Length => Segment.Length;
+	    public float SquaredLength => Segment.LengthSquared;
 	    public SKPoint PointAlongLine(float t) => Segment.PointAlongLine(t);
 	    public SKPoint SKPointFromStart(float dist) => Segment.PointAlongLine(dist);
 	    public SKPoint SKPointFromEnd(float dist) => Segment.SKPointFromEnd(dist);

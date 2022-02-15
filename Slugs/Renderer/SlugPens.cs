@@ -21,6 +21,7 @@ namespace Slugs.Renderer
         public SKPaint HoverPen { get; private set; }
         public SKPaint SelectedPen { get; private set; }
         public SKPaint UnitPen { get; private set; }
+        public SKPaint UnitGhostPen { get; private set; }
         public SKPaint DarkPen { get; private set; }
         public SKPaint GrayPen { get; private set; }
         public SKPaint WorkingPen { get; private set; }
@@ -104,8 +105,9 @@ namespace Slugs.Renderer
 	    {
 		    HoverPen = GetPen(new SKColor(240, 190, 190), DefaultWidth * 5); 
 		    SelectedPen = GetPen(SKColors.Red, DefaultWidth * 1f);
-		    UnitPen = GetPen(SKColors.DarkCyan, DefaultWidth * 6f);
-		    GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
+		    UnitPen = GetPen(new SKColor(10, 200, 100, 150), DefaultWidth * 5f);
+		    UnitGhostPen = GetPen(new SKColor(10, 200, 100, 50), DefaultWidth * 5f);
+            GrayPen = GetPen(SKColors.LightGray, DefaultWidth * .75f);
 		    DarkPen = GetPen(SKColors.Black, DefaultWidth);
 		    WorkingPen = GetPen(SKColors.DarkGray, DefaultWidth);
 		    DrawPen = GetPen(SKColors.Blue, DefaultWidth * 4);

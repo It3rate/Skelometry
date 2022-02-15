@@ -24,9 +24,15 @@ namespace Slugs.Entities
 
         public FocalPoint StartPoint => (FocalPoint)Pad.PointAt(StartKey);
         public FocalPoint EndPoint => (FocalPoint)Pad.PointAt(EndKey);
+        public FocalPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndPoint : (notKey == EndKey) ? StartPoint : FocalPoint.Empty;
         public override SKPoint StartPosition => Trait.PointAlongLine(StartPoint.T);
         public override SKPoint EndPosition => Trait.PointAlongLine(EndPoint.T);
-        public Slug Slug => new Slug(StartPoint.T, EndPoint.T);
+
+        public Slug Ratio
+        {
+	        get => new Slug(EndPoint.T, StartPoint.T);
+	        set => throw new NotImplementedException();
+        }
 
         public bool IsUnit => Pad.UnitKeyFor(TraitKind) == Key;
 
@@ -72,11 +78,35 @@ namespace Slugs.Entities
 
         private readonly HashSet<int> _bondStartKeys = new HashSet<int>();
         private readonly HashSet<int> _bondEndKeys = new HashSet<int>();
-        public IEnumerable<SingleBond> Bonds
+        public IEnumerable<SingleBond> StartBonds
         {
 	        get
 	        {
 		        foreach (var key in _bondStartKeys)
+		        {
+			        yield return Pad.BondAt(key);
+		        }
+	        }
+        }
+        public IEnumerable<SingleBond> EndBonds
+        {
+	        get
+	        {
+		        foreach (var key in _bondEndKeys)
+		        {
+			        yield return Pad.BondAt(key);
+		        }
+	        }
+        }
+        public IEnumerable<SingleBond> AllBonds
+        {
+	        get
+	        {
+		        foreach (var key in _bondStartKeys)
+		        {
+			        yield return Pad.BondAt(key);
+		        }
+                foreach (var key in _bondEndKeys)
 		        {
 			        yield return Pad.BondAt(key);
 		        }

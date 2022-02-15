@@ -116,12 +116,11 @@ namespace Slugs.Renderer
 		        foreach (var trait in pad.Traits)
 		        {
 			        DrawDirectedLine(trait.Segment, trait.IsLocked ? Pens.LockedPen : Pens.DarkPen);
-			        _canvas.Flush();
 			        foreach (var focal in trait.Focals)
 			        {
 				        var focalPen = focal.IsUnit ? Pens.UnitPen : Pens.FocalPen;
 				        DrawDirectedLine(focal.Segment, focalPen);
-				        foreach (var bond in focal.Bonds)
+				        foreach (var bond in focal.StartBonds)
 				        {
 					        DrawDirectedLine(bond.Segment, Pens.BondPen);
 				        }

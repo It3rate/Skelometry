@@ -55,7 +55,7 @@ namespace Slugs.Primitives
 
 	    public Slug Clone() => new Slug(Aft, Fore);
 
-	    public double Length() => Slug.Length(this);
+	    public double Length => Slug.DirectedLength(this);
         public double AbsLength() => Slug.AbsLength(this);
         public Slug Conjugate() => Slug.Conjugate(this);
         public Slug Reciprocal() => Slug.Reciprocal(this);
@@ -99,7 +99,7 @@ namespace Slugs.Primitives
         }
 
         // Need to decide if aft's positive points left or not. Probably does, but this will affect other calculations.
-        public static double Length(Slug value) => value.Fore - -value.Aft;
+        public static double DirectedLength(Slug value) => value.Fore - -value.Aft;
         public static double AbsLength(Slug value) => Math.Abs(value.Fore - -value.Aft);
         public static Slug Conjugate(Slug a) => new Slug(a.Fore, -a.Aft);
         public static Slug Reciprocal(Slug value) => value.Fore == 0.0 && value.Aft == 0.0 ? Slug.Zero : Slug.Unit / value;
