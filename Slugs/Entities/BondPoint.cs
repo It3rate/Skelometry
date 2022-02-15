@@ -21,7 +21,14 @@ namespace Slugs.Entities
         public float T
         {
 	        get => _t;
-	        set { if (!IsEmpty) _t = value; }
+	        private set
+	        {
+		        if (!IsEmpty)
+		        {
+			        _t = value;
+                } 
+
+	        }
         }
 
         public Focal Focal => Pad.FocalAt(FocalKey);
@@ -34,7 +41,7 @@ namespace Slugs.Entities
         {
             FocalKey = focalKey;
             T = t;
-            SetOtherT(T);
+            SetOtherT(t); // this locks the t ratio
         }
 
         public override bool CanMergeWith(IPoint point)
@@ -49,11 +56,13 @@ namespace Slugs.Entities
 	        {
 		        Pad.SetPointAt(Key, point);
 		        result = point.Key;
-            }
-            else if (point is FocalPoint pt)
-	        {
-		        T = Focal.TFromPoint(pt.Position).Item1;
+		        T = Focal.TFromPoint(point.Position).Item1;
 	        }
+            else if (point is FocalPoint fp)
+	        {
+		        T = Focal.TFromPoint(fp.Position).Item1;
+            }
+	        SetOtherT(T); // this locks the t ratio
 	        return result;
         }
 
