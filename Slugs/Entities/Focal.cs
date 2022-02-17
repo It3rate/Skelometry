@@ -28,8 +28,6 @@ namespace Slugs.Entities
         public FocalPoint EndPoint => (FocalPoint)Pad.PointAt(EndKey);
         public FocalPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndPoint : (notKey == EndKey) ? StartPoint : FocalPoint.Empty;
 
-        // todo: Move all to slug math
-        public Slug LocalSlug => new Slug(StartPoint.T, EndPoint.T);
         public Slug UnitSlug => Pad.UnitFor(TraitKind);
         public Slug AsUnitSlug => (Direction >= 0 ? Slug.Unit : Slug.Unot);
 
@@ -43,12 +41,9 @@ namespace Slugs.Entities
         public float UnitLength => (float)Pad.UnitFor(TraitKind).DirectedLength();
         public Focal FocalUnit => Pad.FocalUnitFor(this);
 
-        // todo: account for negative units in slug.
-        // Slug is the line start and end t's accounting for the unit.
-        // the zero for the line is the units start point.
         public Slug Slug
         {
-	        get => IsUnit ? AsUnitSlug : LocalSlug - UnitSlug.Aft;//new Slug(StartT, EndT);// Ratio / UnitSlug;
+	        get => IsUnit ? AsUnitSlug : LocalSlug - UnitSlug.Aft;
 	        set
 	        {
 		        var focalUnit = FocalUnit;
@@ -57,16 +52,11 @@ namespace Slugs.Entities
 			        var zeroT = ZeroT;
 			        StartPoint.T = (float)(ZeroT - value.Aft);
 			        EndPoint.T = (float)(value.Fore - zeroT);
-           //         var fRatio = focalUnit.Ratio;
-			        //var len = focalUnit.Length;
-			        //var aft = len * value.Aft;
-			        //var fore = len * value.Fore;
-           //         Ratio = new Slug(aft, fore);
 		        }
 	        }
         }
         // Ratio is the line start and end t's without regard to the unit.
-        public Slug Ratio
+        public Slug LocalSlug
         {
 	        get => new Slug(StartPoint.T, EndPoint.T);
 	        set

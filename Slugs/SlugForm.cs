@@ -44,6 +44,7 @@ namespace Slugs
             scBottom.Scroll += ScBottom_Scroll;
 
             _agent.OnModeChange += _agent_OnModeChange;
+            _agent.OnDisplayModeChange += _agent_OnDisplayModeChange;
             _agent.OnSelectionChange += _agent_OnSelectionChange;
         }
 
@@ -169,7 +170,21 @@ namespace Slugs
                     btEntity.Enabled = false;
                     break;
             }
-	        _control.Select();
+
+
+            _control.Select();
+        }
+        private void _agent_OnDisplayModeChange(object sender, EventArgs e)
+        {
+            // todo: Use icons for toggle button visual states.
+            //var dm = _agent.DisplayMode;
+            //btInformation.BackgroundImage = dm.HasFlag(DisplayMode.ShowLengths);
+        }
+
+        private void btInformation_Click(object sender, EventArgs e)
+        {
+	        _agent.ToggleShowNumbers();
+	        Redraw();
         }
 
         private void _agent_OnSelectionChange(object sender, EventArgs e)

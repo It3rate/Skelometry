@@ -6,6 +6,7 @@ using Slugs.Agents;
 using Slugs.Entities;
 using Slugs.Pads;
 using Slugs.Primitives;
+using Slugs.UI;
 using IPoint = Slugs.Entities.IPoint;
 
 namespace Slugs.Input
@@ -24,20 +25,14 @@ namespace Slugs.Input
         public SelectionSet Selected => SelectionSets[SelectionSetKind.Selection];
         public SelectionSet Clipboard => SelectionSets[SelectionSetKind.Clipboard];
 
-        //private IElement DragElement => Begin.Selected;
-        public bool IsDraggingElement => Begin.HasElement;
-        public bool IsDraggingPoint => Begin.HasPoint;
-
-
 	    public bool HasHighlightPoint => !Highlight.Point.IsEmpty;
 	    public IPoint HighlightPoint => Highlight.Point;
 	    public bool HasHighlightLine => Highlight.ElementKind.IsCompatible(ElementKind.SegmentKind);
         public SegmentBase HighlightLine => HasHighlightLine ? (SegmentBase)Highlight.FirstElement : Trait.Empty;
 
-	    //public Position GetHighlightPoint() => Current.SnapPosition; //HighlightPoints.Count > 0 ? HighlightPoints[0].Position : Position.Empty;
-	    //public SKSegment GetHighlightLine() => HighlightLine.Trait;
+        public DisplayMode DisplayMode { get; set; }
 
-	    private readonly Agent _agent;
+        private readonly Agent _agent;
 
         public UIData(Agent agent)
         {
@@ -47,6 +42,8 @@ namespace Slugs.Input
 	        AddSelectionSet(PadKind.Input, SelectionSetKind.Selection);
 	        AddSelectionSet(PadKind.Input, SelectionSetKind.Highlight);
 	        AddSelectionSet(PadKind.Input, SelectionSetKind.Clipboard);
+
+	        DisplayMode |= DisplayMode.ShowAllValues;
         }
 
         public List<SKPoint> WorkingPoints = new List<SKPoint>();

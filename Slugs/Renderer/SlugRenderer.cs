@@ -11,6 +11,7 @@ using Slugs.Entities;
 using Slugs.Input;
 using Slugs.Pads;
 using Slugs.Primitives;
+using Slugs.UI;
 
 namespace Slugs.Renderer
 {
@@ -121,7 +122,15 @@ namespace Slugs.Renderer
 				        var focalPen = focal.IsUnit ? Pens.UnitPen : Pens.FocalPen;
 				        DrawDirectedLine(focal.Segment, focalPen);
 				        var offset = focal.Direction > 0 ? -5f : 5f;
-				        DrawText(focal.Segment.OffsetAlongLine(0.5f, offset), focal.LengthT.ToString("0.###"), Pens.LineTextPen);
+				        if (Data.DisplayMode.HasFlag(DisplayMode.ShowLengths))
+				        {
+					        DrawText(focal.Segment.OffsetAlongLine(0.5f, offset), focal.LengthT.ToString("0.###"), Pens.LineTextPen);
+				        }
+				        if (Data.DisplayMode.HasFlag(DisplayMode.ShowSlugValues))
+				        {
+					        DrawText(focal.Segment.OffsetAlongLine(0f, offset), focal.StartT.ToString("0.###"), Pens.SlugTextPen);
+					        DrawText(focal.Segment.OffsetAlongLine(1f, offset), focal.EndT.ToString("0.###"), Pens.SlugTextPen);
+                        }
                         foreach (var bond in focal.StartBonds)
 				        {
 					        DrawDirectedLine(bond.Segment, Pens.BondPen);

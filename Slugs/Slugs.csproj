@@ -152,6 +152,7 @@
     <Compile Include="Entities\Focal.cs" />
     <Compile Include="Primitives\Slug.cs" />
     <Compile Include="Entities\IElement.cs" />
+    <Compile Include="UI\DisplayMode.cs" />
     <Compile Include="UI\UIMode.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -35,6 +35,7 @@ namespace Slugs.Renderer
 
         public SKPaint LineTextPen { get; private set; }
         public SKPaint TextBackgroundPen { get; private set; }
+        public SKPaint SlugTextPen { get; private set; }
 
         public SlugPens(float defaultWidth = 1f)
 	    {
@@ -133,6 +134,11 @@ namespace Slugs.Renderer
             LineTextPen.TextAlign = SKTextAlign.Center;
             TextBackgroundPen = GetPen(new SKColor(244, 244, 244, 220), 0);
             TextBackgroundPen.Style = SKPaintStyle.Fill;
+
+            SlugTextPen = new SKPaint(new SKFont(SKTypeface.Default, 8f));
+            SlugTextPen.IsAntialias = true;
+            SlugTextPen.Color = new SKColor(0x80, 0x40, 0x40);
+            SlugTextPen.TextAlign = SKTextAlign.Center;
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));

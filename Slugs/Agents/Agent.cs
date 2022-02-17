@@ -43,6 +43,7 @@ namespace Slugs.Agents
         private List<int> _ignoreList = new List<int>();
         private ElementKind _selectableKind = ElementKind.Any;
         public event EventHandler OnModeChange;
+        public event EventHandler OnDisplayModeChange;
         public event EventHandler OnSelectionChange;
 
         public Agent(SlugRenderer renderer)
@@ -386,6 +387,9 @@ namespace Slugs.Agents
 			    case Keys.Oemplus:
 				    UIMode = UIMode.Equal;
 				    break;
+			    case Keys.I:
+				    ToggleShowNumbers();
+				    break;
                 case Keys.Z:
 				    if (_isShiftDown && _isControlDown)
 				    {
@@ -432,9 +436,30 @@ namespace Slugs.Agents
         }
 
 
-#endregion
+        #endregion
 
-	    public void ClearMouse()
+	    public DisplayMode DisplayMode
+        {
+		    get => Data.DisplayMode;
+		    set
+		    {
+			    Data.DisplayMode = value;
+			    OnDisplayModeChange?.Invoke(this, new EventArgs());
+		    }
+	    }
+
+	    public void ToggleShowNumbers()
+	    {
+	        if (DisplayMode.HasFlag(DisplayMode.ShowLengths))
+	        {
+		        DisplayMode &= ~(DisplayMode.ShowAllValues);
+	        }
+	        else
+	        {
+		        DisplayMode |= DisplayMode.ShowAllValues;
+	        }
+	    }
+public void ClearMouse()
 	    {
 		    IsDown = false;
 		    IsDragging = false;
