@@ -33,6 +33,9 @@ namespace Slugs.Renderer
         public SKPaint BondFillPen { get; private set; }
         public SKPaint BondSelectPen { get; private set; }
 
+        public SKPaint LineTextPen { get; private set; }
+        public SKPaint TextBackgroundPen { get; private set; }
+
         public SlugPens(float defaultWidth = 1f)
 	    {
 		    DefaultWidth = defaultWidth;
@@ -123,6 +126,13 @@ namespace Slugs.Renderer
             BondSelectPen = new SKPaint();
             BondSelectPen.Color = new SKColor(50, 10, 200, 50);
             BondSelectPen.Style = SKPaintStyle.Fill;
+
+            LineTextPen = new SKPaint(new SKFont(SKTypeface.Default, 12f));
+            LineTextPen.IsAntialias = true;
+            LineTextPen.Color = new SKColor(0x40, 0x40, 0x60);
+            LineTextPen.TextAlign = SKTextAlign.Center;
+            TextBackgroundPen = GetPen(new SKColor(244, 244, 244, 220), 0);
+            TextBackgroundPen.Style = SKPaintStyle.Fill;
 
             Pens.Clear();
 		    Pens.Add(GetPen(SKColors.Black, DefaultWidth));

@@ -38,8 +38,6 @@ namespace Slugs.Entities
         public float LengthT => (float)(LocalSlug.DirectedLength() / FocalUnit.LocalSlug.DirectedLength());// (EndT - StartT) * FocalUnit.Direction;
         public override SKPoint StartPosition => Trait.PointAlongLine(StartPoint.T);
         public override SKPoint EndPosition => Trait.PointAlongLine(EndPoint.T);
-        public float AftLength => 3;
-        public float ForeLength => 3;
 
         public bool IsUnit => Pad.UnitKeyFor(TraitKind) == Key;
         public float UnitLength => (float)Pad.UnitFor(TraitKind).DirectedLength();

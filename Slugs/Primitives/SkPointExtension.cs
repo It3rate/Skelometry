@@ -21,7 +21,7 @@ namespace Slugs.Primitives
 	    public static SKPoint Multiply(this SKPoint a, float value) => new SKPoint(a.X * value, a.Y * value);
 	    public static SKPoint Divide(this SKPoint a, float value) => new SKPoint(value == 0 ? float.MaxValue : a.X / value, value == 0 ? float.MaxValue : a.Y / value);
 
-	    public static float Length(this SKPoint self) => (float)Math.Sqrt(self.X * self.X + self.Y * self.Y);
+        public static float Length(this SKPoint self) => (float)Math.Sqrt(self.X * self.X + self.Y * self.Y);
 	    public static float SquaredLength(this SKPoint self) => self.X * self.X + self.Y * self.Y;
         public static float DistanceTo(this SKPoint self, SKPoint b) => (self - b).Length;
 	    public static float SquaredDistanceTo(this SKPoint self, SKPoint b) => (self - b).LengthSquared;

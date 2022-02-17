@@ -120,7 +120,9 @@ namespace Slugs.Renderer
 			        {
 				        var focalPen = focal.IsUnit ? Pens.UnitPen : Pens.FocalPen;
 				        DrawDirectedLine(focal.Segment, focalPen);
-				        foreach (var bond in focal.StartBonds)
+				        var offset = focal.Direction > 0 ? -5f : 5f;
+				        DrawText(focal.Segment.OffsetAlongLine(0.5f, offset), focal.LengthT.ToString("0.###"), Pens.LineTextPen);
+                        foreach (var bond in focal.StartBonds)
 				        {
 					        DrawDirectedLine(bond.Segment, Pens.BondPen);
 				        }
@@ -189,10 +191,23 @@ namespace Slugs.Renderer
 
         public void DrawDirectedLine(SKSegment seg, SKPaint paint)
         {
-	            DrawPolyline(seg.Points, paint);
-		        _canvas.DrawCircle(seg.StartPoint, 2, paint);
-	            var triPts = seg.EndArrow(8);
-	            _canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
+            DrawPolyline(seg.Points, paint);
+	        _canvas.DrawCircle(seg.StartPoint, 2, paint);
+            var triPts = seg.EndArrow(8);
+            _canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
+        }
+
+        public void DrawText(SKPoint center, string text, SKPaint paint)
+        {
+	        var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
+            _canvas.DrawRoundRect(rect, 5,5, Pens.TextBackgroundPen);
+            _canvas.DrawText(text, center.X, center.Y, paint);
+        }
+        private SKRect GetTextBackgroundSize(float x, float y, String text, SKPaint paint)
+        {
+	        var fm = paint.FontMetrics;
+	        float halfTextLength = paint.MeasureText(text) / 2 + 4;
+	        return new SKRect((int)(x - halfTextLength), (int)(y + fm.Top + 3), (int)(x + halfTextLength), (int)(y + fm.Bottom - 1));
         }
 
         private SKCanvas _canvas;

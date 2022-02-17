@@ -7,6 +7,8 @@ namespace Slugs.Primitives
     {
         public SKPoint StartPoint { get; private set; }
         public SKPoint EndPoint { get; private set; }
+        public SKPoint Midpoint => (EndPoint - StartPoint).Divide(2f) + StartPoint;
+
         public static readonly SKSegment Empty = new SKSegment(SKPoint.Empty, SKPoint.Empty);
 
         //public SKSegment(Position start)
@@ -53,6 +55,7 @@ namespace Slugs.Primitives
         public float Length => (float)Math.Sqrt((EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y));
         public float LengthSquared => (EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y);
         public SKPoint PointAlongLine(float t) => new SKPoint((EndPoint.X - StartPoint.X) * t + StartPoint.X, (EndPoint.Y - StartPoint.Y) * t + StartPoint.Y);
+        public SKPoint OffsetAlongLine(float t, float offset) => OrthogonalPoint(PointAlongLine(t), offset);
         public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Length);
         public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Length);
 
