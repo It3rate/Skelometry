@@ -31,7 +31,6 @@ namespace Slugs.Entities
 	    public override SKPoint EndPosition => EndPoint.Position;
 	    public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
 
-
         public Trait(TraitKind traitKind, IPoint start, IPoint end) : base(start.PadKind)
         {
 		    TraitKind = traitKind;

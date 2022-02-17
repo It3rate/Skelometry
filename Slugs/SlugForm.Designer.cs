@@ -42,6 +42,7 @@ namespace Slugs
             this.btBond = new System.Windows.Forms.Button();
             this.btUnit = new System.Windows.Forms.Button();
             this.btEqual = new System.Windows.Forms.Button();
+            this.lbValue = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // slugPanel
@@ -177,11 +178,21 @@ namespace Slugs
             this.btEqual.UseVisualStyleBackColor = true;
             this.btEqual.Click += new System.EventHandler(this.btEqual_Click);
             // 
+            // lbValue
+            // 
+            this.lbValue.AutoSize = true;
+            this.lbValue.Location = new System.Drawing.Point(756, 38);
+            this.lbValue.Name = "lbValue";
+            this.lbValue.Size = new System.Drawing.Size(18, 20);
+            this.lbValue.TabIndex = 11;
+            this.lbValue.Text = "0";
+            // 
             // SlugForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1167, 797);
+            this.Controls.Add(this.lbValue);
             this.Controls.Add(this.btEqual);
             this.Controls.Add(this.btUnit);
             this.Controls.Add(this.btBond);
@@ -217,6 +228,7 @@ namespace Slugs
         private System.Windows.Forms.Button btBond;
         private System.Windows.Forms.Button btUnit;
         private System.Windows.Forms.Button btEqual;
+        private System.Windows.Forms.Label lbValue;
     }
 }
 

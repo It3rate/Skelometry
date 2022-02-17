@@ -22,19 +22,61 @@ namespace Slugs.Entities
         public Trait Trait => Pad.TraitAt(TraitKey);
         public TraitKind TraitKind => Pad.TraitAt(TraitKey).TraitKind;
 
+        public float Direction => StartPoint.T <= EndPoint.T ? 1f : -1f;
+        public float ZeroT => FocalUnit.StartPoint.T;
         public FocalPoint StartPoint => (FocalPoint)Pad.PointAt(StartKey);
         public FocalPoint EndPoint => (FocalPoint)Pad.PointAt(EndKey);
         public FocalPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndPoint : (notKey == EndKey) ? StartPoint : FocalPoint.Empty;
+
+        // todo: Move all to slug math
+        public Slug LocalSlug => new Slug(StartPoint.T, EndPoint.T);
+        public Slug UnitSlug => Pad.UnitFor(TraitKind);
+        public Slug AsUnitSlug => (Direction >= 0 ? Slug.Unit : Slug.Unot);
+
+        public float StartT => (StartPoint.T - ZeroT);
+        public float EndT => (Length / FocalUnit.Length) + (StartPoint.T - ZeroT); // EndPoint.T - ZeroT;
+        public float LengthT => (float)(LocalSlug.DirectedLength() / FocalUnit.LocalSlug.DirectedLength());// (EndT - StartT) * FocalUnit.Direction;
         public override SKPoint StartPosition => Trait.PointAlongLine(StartPoint.T);
         public override SKPoint EndPosition => Trait.PointAlongLine(EndPoint.T);
-
-        public Slug Ratio
-        {
-	        get => new Slug(EndPoint.T, StartPoint.T);
-	        set => throw new NotImplementedException();
-        }
+        public float AftLength => 3;
+        public float ForeLength => 3;
 
         public bool IsUnit => Pad.UnitKeyFor(TraitKind) == Key;
+        public float UnitLength => (float)Pad.UnitFor(TraitKind).DirectedLength();
+        public Focal FocalUnit => Pad.FocalUnitFor(this);
+
+        // todo: account for negative units in slug.
+        // Slug is the line start and end t's accounting for the unit.
+        // the zero for the line is the units start point.
+        public Slug Slug
+        {
+	        get => IsUnit ? AsUnitSlug : LocalSlug - UnitSlug.Aft;//new Slug(StartT, EndT);// Ratio / UnitSlug;
+	        set
+	        {
+		        var focalUnit = FocalUnit;
+		        if (!focalUnit.IsEmpty && focalUnit.Key != Key)
+		        {
+			        var zeroT = ZeroT;
+			        StartPoint.T = (float)(ZeroT - value.Aft);
+			        EndPoint.T = (float)(value.Fore - zeroT);
+           //         var fRatio = focalUnit.Ratio;
+			        //var len = focalUnit.Length;
+			        //var aft = len * value.Aft;
+			        //var fore = len * value.Fore;
+           //         Ratio = new Slug(aft, fore);
+		        }
+	        }
+        }
+        // Ratio is the line start and end t's without regard to the unit.
+        public Slug Ratio
+        {
+	        get => new Slug(StartPoint.T, EndPoint.T);
+	        set
+	        {
+		        StartPoint.T = (float) Slug.Aft;
+		        EndPoint.T = (float) Slug.Fore;
+	        }
+        }
 
         public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
 

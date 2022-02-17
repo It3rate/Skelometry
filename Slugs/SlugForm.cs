@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Slugs.Entities;
 using Slugs.Renderer;
 using Slugs.UI;
 
@@ -43,6 +44,7 @@ namespace Slugs
             scBottom.Scroll += ScBottom_Scroll;
 
             _agent.OnModeChange += _agent_OnModeChange;
+            _agent.OnSelectionChange += _agent_OnSelectionChange;
         }
 
         private void ScTop_Scroll(object sender, ScrollEventArgs e)
@@ -168,6 +170,15 @@ namespace Slugs
                     break;
             }
 	        _control.Select();
+        }
+
+        private void _agent_OnSelectionChange(object sender, EventArgs e)
+        {
+	        if (_agent.Data.Selected.FirstElement is Focal focal)
+	        {
+		        var slug = focal.Slug;
+                lbValue.Text = slug.Aft.ToString("0.###") + " : " + slug.Fore.ToString("0.###") + " len: " + (focal.LengthT).ToString("0.###");
+	        }
         }
 
     }

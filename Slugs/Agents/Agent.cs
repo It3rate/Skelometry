@@ -43,6 +43,7 @@ namespace Slugs.Agents
         private List<int> _ignoreList = new List<int>();
         private ElementKind _selectableKind = ElementKind.Any;
         public event EventHandler OnModeChange;
+        public event EventHandler OnSelectionChange;
 
         public Agent(SlugRenderer renderer)
         {
@@ -294,6 +295,7 @@ namespace Slugs.Agents
                 selCmd.Execute();
             }
 
+		    OnSelectionChange?.Invoke(this, new EventArgs());
             ClearMouse();
 
             return true;

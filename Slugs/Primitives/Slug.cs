@@ -7,7 +7,7 @@ namespace Slugs.Primitives
     {
         // This should all be done with ints, setting a unit size abs(fore-aft), and a max value. I think.
 
-        public static readonly Slug Empty = new Slug(0.0, 1.0, true); // instead of empty, perhaps the fall back slug is always Unit?
+        public static readonly Slug Empty = new Slug(0.0, 1.0, true); // instead of empty, perhaps the fall back slug is always UnitSlug?
 
         public static readonly Slug Zero = new Slug(0.0, 0.0);
 	    public static readonly Slug Unit = new Slug(0.0, 1.0);
@@ -55,7 +55,8 @@ namespace Slugs.Primitives
 
 	    public Slug Clone() => new Slug(Aft, Fore);
 
-	    public double Length => Slug.DirectedLength(this);
+	    public double Length => Slug.AbsLength(this);
+	    public double DirectedLength() => Slug.DirectedLength(this);
         public double AbsLength() => Slug.AbsLength(this);
         public Slug Conjugate() => Slug.Conjugate(this);
         public Slug Reciprocal() => Slug.Reciprocal(this);
@@ -99,8 +100,8 @@ namespace Slugs.Primitives
         }
 
         // Need to decide if aft's positive points left or not. Probably does, but this will affect other calculations.
-        public static double DirectedLength(Slug value) => value.Fore - -value.Aft;
-        public static double AbsLength(Slug value) => Math.Abs(value.Fore - -value.Aft);
+        public static double DirectedLength(Slug value) => value.Fore - value.Aft;
+        public static double AbsLength(Slug value) => Math.Abs(value.Fore - value.Aft);
         public static Slug Conjugate(Slug a) => new Slug(a.Fore, -a.Aft);
         public static Slug Reciprocal(Slug value) => value.Fore == 0.0 && value.Aft == 0.0 ? Slug.Zero : Slug.Unit / value;
         public static Slug Square(Slug a) => new Slug(a.Aft * a.Aft + (a.Fore * a.Fore) * -1, 0); // value * value;

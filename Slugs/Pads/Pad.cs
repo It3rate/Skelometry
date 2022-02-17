@@ -20,7 +20,12 @@ namespace Slugs.Entities
         public Dictionary<TraitKind, int> UnitMap = new Dictionary<TraitKind, int>();
         public void SetUnit(Focal focal) => UnitMap[focal.TraitKind] = focal.Key;
         public int UnitKeyFor(TraitKind traitKind) => UnitMap.ContainsKey(traitKind) ? UnitMap[traitKind] : ElementBase.EmptyKeyValue;
-        public Slug UnitFor(TraitKind traitKind) => UnitMap.ContainsKey(traitKind) ? FocalAt(UnitMap[traitKind]).Ratio : Slug.Unit;
+        public Slug UnitFor(TraitKind traitKind) => UnitMap.ContainsKey(traitKind) ? FocalAt(UnitMap[traitKind]).AsUnitSlug : Slug.Unit;
+        public Focal FocalUnitFor(Focal focal)
+        {
+	        var traitKind = focal.TraitKind;
+	        return UnitMap.ContainsKey(traitKind) ? FocalAt(UnitMap[traitKind]) : focal;
+        }
 
         public IEnumerable<IElement> ElementsOfKind(ElementKind kind)
         {
