@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using SkiaSharp;
+using Slugs.Constraints;
 using Slugs.Pads;
 using Slugs.Primitives;
 
@@ -28,11 +30,20 @@ namespace Slugs.Entities
         public FocalPoint EndPoint => (FocalPoint)Pad.PointAt(EndKey);
         public FocalPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndPoint : (notKey == EndKey) ? StartPoint : FocalPoint.Empty;
 
+        public Complex Complex
+        {
+	        get => new Complex(EndT, StartT);
+	        set
+	        {
+		        EndPoint.T = (float)value.Real;
+		        StartPoint.T = (float)value.Imaginary;
+	        }
+        }
         public Slug UnitSlug => Pad.UnitFor(TraitKind);
         public Slug AsUnitSlug => (Direction >= 0 ? Slug.Unit : Slug.Unot);
 
-        public float StartT => (StartPoint.T - ZeroT);
-        public float EndT => (Length / FocalUnit.Length) + (StartPoint.T - ZeroT); // EndPoint.T - ZeroT;
+        public float StartT => StartPoint.T;//(StartPoint.T - ZeroT);
+        public float EndT => EndPoint.T;// (Length / FocalUnit.Length) + (StartPoint.T - ZeroT); // EndPoint.T - ZeroT;
         public float LengthT => (float)(LocalSlug.DirectedLength() / FocalUnit.LocalSlug.DirectedLength());// (EndT - StartT) * FocalUnit.Direction;
         public override SKPoint StartPosition => Trait.PointAlongLine(StartPoint.T);
         public override SKPoint EndPosition => Trait.PointAlongLine(EndPoint.T);
@@ -43,15 +54,16 @@ namespace Slugs.Entities
 
         public Slug Slug
         {
-	        get => IsUnit ? AsUnitSlug : LocalSlug - UnitSlug.Aft;
+	        get => IsUnit ? AsUnitSlug : LocalSlug - UnitSlug.Img;
 	        set
 	        {
 		        var focalUnit = FocalUnit;
 		        if (!focalUnit.IsEmpty && focalUnit.Key != Key)
 		        {
-			        var zeroT = ZeroT;
-			        StartPoint.T = (float)(ZeroT - value.Aft);
-			        EndPoint.T = (float)(value.Fore - zeroT);
+			        LocalSlug = focalUnit.Slug * value;
+			        //var zeroT = ZeroT;
+			        //StartPoint.T = (float)value.Img;// (float)(ZeroT - value.Img);
+			        //EndPoint.T = -(float)value.Real;//(float)(value.Real - zeroT);
 		        }
 	        }
         }
@@ -61,8 +73,8 @@ namespace Slugs.Entities
 	        get => new Slug(StartPoint.T, EndPoint.T);
 	        set
 	        {
-		        StartPoint.T = (float) Slug.Aft;
-		        EndPoint.T = (float) Slug.Fore;
+		        StartPoint.T = (float) value.Img;
+		        EndPoint.T = (float)value.Real;
 	        }
         }
 

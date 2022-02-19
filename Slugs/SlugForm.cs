@@ -170,15 +170,13 @@ namespace Slugs
                     btEntity.Enabled = false;
                     break;
             }
-
-
             _control.Select();
         }
         private void _agent_OnDisplayModeChange(object sender, EventArgs e)
         {
             // todo: Use icons for toggle button visual states.
             //var dm = _agent.DisplayMode;
-            //btInformation.BackgroundImage = dm.HasFlag(DisplayMode.ShowLengths);
+            //btInformation.BackgroundImage = ...;
         }
 
         private void btInformation_Click(object sender, EventArgs e)
@@ -192,7 +190,7 @@ namespace Slugs
 	        if (_agent.Data.Selected.FirstElement is Focal focal)
 	        {
 		        var slug = focal.Slug;
-                lbValue.Text = slug.Aft.ToString("0.###") + " : " + slug.Fore.ToString("0.###") + " len: " + (focal.LengthT).ToString("0.###");
+                lbValue.Text = slug.Img.ToString("0.###") + " : " + slug.Real.ToString("0.###") + " len:" + (focal.LengthT).ToString("0.###");
 	        }
         }
 

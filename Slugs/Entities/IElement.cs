@@ -34,7 +34,7 @@ namespace Slugs.Entities
 
 	public interface IAreaElement : IElement
 	{
-		bool ContainsPoint(SKPoint point);
+		bool ContainsPosition(SKPoint point);
 	}
 	public interface ISlugElement : IElement
 	{

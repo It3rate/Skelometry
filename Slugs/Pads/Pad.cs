@@ -106,7 +106,6 @@ namespace Slugs.Entities
 		        _entityKeys.Remove(element.Key);
 	        }
         }
-
         public void ClearElements()
         {
 	        _elements.Clear();
@@ -167,7 +166,6 @@ namespace Slugs.Entities
 
         #endregion
 		#region Points
-
 	    public IEnumerable<IPoint> Points
 	    {
 		    get
@@ -262,6 +260,27 @@ namespace Slugs.Entities
 		    return success && (result.ElementKind == ElementKind.DoubleBond) ? (DoubleBond)result : DoubleBond.Empty;
 	    }
 
+	    public IEnumerable<DoubleBond> DoubleBonds()
+	    {
+		    var values = _elements.Where(kvp => kvp.Value.ElementKind.IsCompatible(ElementKind.DoubleBond));
+		    foreach (var kvp in values)
+		    {
+			    yield return (DoubleBond)kvp.Value;
+		    }
+	    }
+        public List<(DoubleBond, Focal)> DoubleBondsWithPoint(FocalPoint point)
+        {
+	        var result = new List<(DoubleBond, Focal)>();
+            foreach (var db in DoubleBonds())
+            {
+	            var focal = db.ContainsFocalPoint(point);
+	            if (!focal.IsEmpty)
+			    {
+                    result.Add((db, focal)); // should save focals as well.
+			    }
+		    }
+            return result;
+        }
         public void Clear()
         {
             ClearElements();

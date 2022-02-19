@@ -67,11 +67,13 @@ namespace Slugs.Agents
             var traitCmd4 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 220), new SKPoint(700, 220), true);
             _editCommands.Do(traitCmd1, traitCmd2, traitCmd3, traitCmd4);
             var trait1 = traitCmd1.AddedTrait;
+            var trait2 = traitCmd2.AddedTrait;
             var trait3 = traitCmd3.AddedTrait;
-            var fc1 = new AddFocalCommand(_activeEntity, trait1, 0.3f, 0.8f);
-            var fc2 = new AddFocalCommand(_activeEntity, trait3, 0.1f, 0.5f);
-            _editCommands.Do(fc1, fc2);
-            InputPad.SetUnit(fc2.AddedFocal);
+            var fc1 = new AddFocalCommand(_activeEntity, trait1, 0.1f, 0.9f);
+            var fc2 = new AddFocalCommand(_activeEntity, trait2, 0.0f, 0.4f);
+            var fc3 = new AddFocalCommand(_activeEntity, trait3, 0.0f, 0.2f);
+            _editCommands.Do(fc1, fc2, fc3);
+            InputPad.SetUnit(fc3.AddedFocal);
 
             var bc = new AddSingleBondCommand(fc1.AddedFocal, .2f, fc2.AddedFocal, 0.3f);
             var db = new AddDoubleBondCommand(fc1.AddedFocal, fc2.AddedFocal);
@@ -261,7 +263,25 @@ namespace Slugs.Agents
 			    {
 				    adb.UpdateEndFocal(focal);
 			    }
-                Data.SetWorkingPoints(adb.StartFocal.StartPosition, adb.StartFocal.EndPosition, adb.EndFocal.EndPosition, adb.EndFocal.StartPosition);
+			    Data.SetWorkingPoints(adb.StartFocal.StartPosition, adb.StartFocal.EndPosition, adb.EndFocal.EndPosition, adb.EndFocal.StartPosition);
+		    }
+		    else if (_activeCommand is MoveElementCommand mec)
+		    {
+			    if (mec.Element is FocalPoint focalPoint)
+			    {
+				    var changed = InputPad.DoubleBondsWithPoint(focalPoint);
+				    foreach (var (db, focal) in changed)
+				    {
+					    if (focal.Key == db.StartKey)
+					    {
+						    db.ApplyRatioToEnd();
+                        }
+					    else if (focal.Key == db.EndKey)
+					    {
+						    db.ApplyRatioToStart();
+                        }
+				    }
+			    }
 		    }
             return true;
 	    }
