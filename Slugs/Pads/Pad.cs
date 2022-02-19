@@ -163,10 +163,26 @@ namespace Slugs.Entities
 	        var element = ElementAt(key);
 	        return element is Trait trait ? trait : Trait.Empty;
         }
+        public Trait TraitWithPoint(IPoint point)
+        {
+	        var result = Trait.Empty;
+	        if (!point.IsEmpty && point is TerminalPoint tp) // terminal points (original trait) only for now
+	        {
+		        foreach (var trait in Traits)
+		        {
+			        if (trait.StartKey == tp.Key || trait.EndKey == tp.Key)
+			        {
+				        result = trait;
+				        break;
+			        }
+		        }
+	        }
+	        return result;
+        }
 
         #endregion
-		#region Points
-	    public IEnumerable<IPoint> Points
+        #region Points
+        public IEnumerable<IPoint> Points
 	    {
 		    get
 		    {

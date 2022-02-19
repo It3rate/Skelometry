@@ -175,8 +175,19 @@ namespace Slugs.Agents
                         var makeBond =  eKind == ElementKind.Focal;
                         var makeFocal = eKind == ElementKind.Trait;
                         var point = eKind.IsPoint() ? (IPoint) Data.Begin.FirstElement : Data.Begin.Point;
+                        var pointTrait = InputPad.TraitWithPoint(point);
 
-                        if (eKind.IsNone() || eKind.IsPoint()) // make trait if starting new or connecting to an existing point (maybe not second)
+                        if (eKind == ElementKind.Trait || !pointTrait.IsEmpty) // make focal if creating something on a trait
+                        {
+	                        var trait = (eKind == ElementKind.Trait) ? (Trait)Data.Begin.FirstElement : pointTrait;
+	                        var startT = trait.TFromPoint(Data.Begin.Position).Item1;
+	                        var focalCmd = new AddFocalCommand(_activeEntity, trait, startT, startT);
+	                        _activeCommand = _editCommands.Do(focalCmd);
+	                        Data.Selected.Point = focalCmd.AddedFocal.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
+	                        Data.Selected.ClearElements();
+	                        _selectableKind = ElementKind.TraitPart;
+                        }
+                        else if (eKind.IsNone() || eKind.IsPoint()) // make trait if starting new or connecting to an existing point (maybe not second)
                         {
 	                        var traitCmd = Data.Begin.HasPoint ? 
 		                        new AddTraitCommand(TraitKind.Default, Data.Begin.Point) :
@@ -186,16 +197,6 @@ namespace Slugs.Agents
 							_ignoreList.Add(traitCmd.AddedTrait.EndKey);
 							Data.Selected.Point = traitCmd.AddedTrait.EndPoint;
                             // need to ignore 
-                        }
-                        else if (eKind == ElementKind.Trait) // make focal if creating something on a trait
-                        {
-	                        var trait = (Trait)Data.Begin.FirstElement;
-	                        var startT = trait.TFromPoint(mousePoint).Item1;
-	                        var focalCmd = new AddFocalCommand(_activeEntity, trait, startT, startT);
-	                        _activeCommand = _editCommands.Do(focalCmd);
-	                        Data.Selected.Point = focalCmd.AddedFocal.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
-	                        Data.Selected.ClearElements();
-	                        _selectableKind = ElementKind.TraitPart;
                         }
                         else if (eKind == ElementKind.Focal) // make focal if creating something on a trait
                         {
