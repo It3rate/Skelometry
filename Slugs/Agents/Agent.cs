@@ -65,7 +65,10 @@ namespace Slugs.Agents
             var traitCmd2 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 140), new SKPoint(700, 140), true);
             var traitCmd3 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 180), new SKPoint(700, 180), true);
             var traitCmd4 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 220), new SKPoint(700, 220), true);
-            _editCommands.Do(traitCmd1, traitCmd2, traitCmd3, traitCmd4);
+            var traitCmd5 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 260), new SKPoint(700, 260), true);
+            var traitCmd6 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 300), new SKPoint(700, 300), true);
+            var traitCmd7 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 340), new SKPoint(700, 340), true);
+            _editCommands.Do(traitCmd1, traitCmd2, traitCmd3, traitCmd4, traitCmd5, traitCmd6, traitCmd7);
             var trait1 = traitCmd1.AddedTrait;
             var trait2 = traitCmd2.AddedTrait;
             var trait3 = traitCmd3.AddedTrait;
@@ -270,16 +273,10 @@ namespace Slugs.Agents
 			    if (mec.Element is FocalPoint focalPoint)
 			    {
 				    var changed = InputPad.DoubleBondsWithPoint(focalPoint);
+                    var appliedBondKeys = new HashSet<int>();
 				    foreach (var (db, focal) in changed)
 				    {
-					    if (focal.Key == db.StartKey)
-					    {
-						    db.ApplyRatioToEnd();
-                        }
-					    else if (focal.Key == db.EndKey)
-					    {
-						    db.ApplyRatioToStart();
-                        }
+					    db.ApplyRatioRecursively(focal.Key, appliedBondKeys);
 				    }
 			    }
 		    }

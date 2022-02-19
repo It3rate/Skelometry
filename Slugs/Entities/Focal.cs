@@ -30,21 +30,21 @@ namespace Slugs.Entities
         public FocalPoint EndPoint => (FocalPoint)Pad.PointAt(EndKey);
         public FocalPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndPoint : (notKey == EndKey) ? StartPoint : FocalPoint.Empty;
 
-        public Complex Complex
+        public Slug LocalRatio
         {
-	        get => new Complex(EndT, StartT);
+	        get => new Slug(StartT, EndT);
 	        set
 	        {
-		        EndPoint.T = (float)value.Real;
 		        StartPoint.T = (float)value.Imaginary;
+		        EndPoint.T = (float)value.Real;
 	        }
         }
         public Slug UnitSlug => Pad.UnitFor(TraitKind);
         public Slug AsUnitSlug => (Direction >= 0 ? Slug.Unit : Slug.Unot);
 
-        public float StartT => StartPoint.T;//(StartPoint.T - ZeroT);
-        public float EndT => EndPoint.T;// (Length / FocalUnit.Length) + (StartPoint.T - ZeroT); // EndPoint.T - ZeroT;
-        public float LengthT => (float)(LocalSlug.DirectedLength() / FocalUnit.LocalSlug.DirectedLength());// (EndT - StartT) * FocalUnit.Direction;
+        public float StartT => StartPoint.T;
+        public float EndT => EndPoint.T;
+        public float LengthT => (float)(LocalSlug.DirectedLength() / FocalUnit.LocalSlug.DirectedLength());
         public override SKPoint StartPosition => Trait.PointAlongLine(StartPoint.T);
         public override SKPoint EndPosition => Trait.PointAlongLine(EndPoint.T);
 
@@ -54,35 +54,28 @@ namespace Slugs.Entities
 
         public Slug Slug
         {
-	        get => IsUnit ? AsUnitSlug : LocalSlug - UnitSlug.Img;
+	        get => IsUnit ? AsUnitSlug : LocalSlug - UnitSlug.Imaginary;
 	        set
 	        {
 		        var focalUnit = FocalUnit;
 		        if (!focalUnit.IsEmpty && focalUnit.Key != Key)
 		        {
 			        LocalSlug = focalUnit.Slug * value;
-			        //var zeroT = ZeroT;
-			        //StartPoint.T = (float)value.Img;// (float)(ZeroT - value.Img);
-			        //EndPoint.T = -(float)value.Real;//(float)(value.Real - zeroT);
 		        }
 	        }
         }
-        // Ratio is the line start and end t's without regard to the unit.
+
         public Slug LocalSlug
         {
 	        get => new Slug(StartPoint.T, EndPoint.T);
 	        set
 	        {
-		        StartPoint.T = (float) value.Img;
+		        StartPoint.T = (float) value.Imaginary;
 		        EndPoint.T = (float)value.Real;
 	        }
         }
 
         public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
-
-        // trait instances in an entity are traits with a unit, that are contained in one or more entities.
-        // maybe a singleBond is just two focals connected (on the same or different traits),
-        //    with the option of intermediate repetition, scaling and directionality (causation)
 
         public Focal(Entity entity, FocalPoint startPoint, FocalPoint endPoint) : base(entity.PadKind)
         {

@@ -268,19 +268,31 @@ namespace Slugs.Entities
 			    yield return (DoubleBond)kvp.Value;
 		    }
 	    }
-        public List<(DoubleBond, Focal)> DoubleBondsWithPoint(FocalPoint point)
-        {
-	        var result = new List<(DoubleBond, Focal)>();
-            foreach (var db in DoubleBonds())
-            {
-	            var focal = db.ContainsFocalPoint(point);
-	            if (!focal.IsEmpty)
-			    {
-                    result.Add((db, focal)); // should save focals as well.
+	    public List<DoubleBond> ConnectedDoubleBonds(DoubleBond sourceBond, HashSet<int> ignoreKeys)
+	    {
+		    var result = new List<DoubleBond>();
+		    foreach (var db in DoubleBonds())
+		    {
+			    if (!ignoreKeys.Contains(db.Key) && (db.HasFocal(sourceBond.StartKey) || db.HasFocal(sourceBond.EndKey)))
+                {
+                    result.Add(db);
 			    }
 		    }
-            return result;
-        }
+		    return result;
+	    }
+	    public List<(DoubleBond, Focal)> DoubleBondsWithPoint(FocalPoint point)
+	    {
+		    var result = new List<(DoubleBond, Focal)>();
+		    foreach (var db in DoubleBonds())
+		    {
+			    var focal = db.ContainsFocalPoint(point);
+			    if (!focal.IsEmpty)
+			    {
+				    result.Add((db, focal)); // should save focals as well.
+			    }
+		    }
+		    return result;
+	    }
         public void Clear()
         {
             ClearElements();
