@@ -190,7 +190,7 @@ namespace Slugs
 	        if (_agent.Data.Selected.FirstElement is Focal focal)
 	        {
 		        var slug = focal.Slug;
-                lbValue.Text = slug.Imaginary.ToString("0.###") + " : " + slug.Real.ToString("0.###") + " len:" + (focal.LengthT).ToString("0.###");
+                lbValue.Text = slug.Imaginary.ToString("0.###") + " : " + slug.Real.ToString("0.###") + " len:" + (focal.TRatio).ToString("0.###");
 	        }
         }
 

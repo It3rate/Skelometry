@@ -322,7 +322,7 @@ namespace Slugs.Entities
 	        IPoint result = TerminalPoint.Empty;
 	        foreach (var ptRef in PointsReversed)
 	        {
-		        var ignore = !ignoreLocked && ptRef.IsLocked;
+		        var ignore = ignoreLocked && ptRef.IsLocked;
                 if (ptRef.ElementKind.IsCompatible(kind) && !ignorePoints.Contains(ptRef.Key) && !ignore && input.DistanceTo(ptRef.Position) < maxDist)
 	            {
                     result = ptRef;
@@ -337,7 +337,7 @@ namespace Slugs.Entities
 
             foreach (var element in ElementsOfKindReversed(kind))
             {
-	            var ignore = !ignoreLocked && element.IsLocked;
+	            var ignore = ignoreLocked && element.IsLocked;
 	            if (!element.HasArea && !ignoreKeys.Contains(element.Key) && !ignore && element.DistanceToPoint(point) < maxDist)
 	            {
 		            result = element;

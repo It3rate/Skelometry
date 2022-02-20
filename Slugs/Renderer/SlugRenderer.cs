@@ -124,7 +124,7 @@ namespace Slugs.Renderer
 				        var offset = focal.Direction > 0 ? -5f : 5f;
 				        if (Data.DisplayMode.HasFlag(DisplayMode.ShowLengths))
 				        {
-					        DrawText(focal.Segment.OffsetAlongLine(0.5f, offset), focal.LengthT.ToString("0.###"), Pens.LineTextPen);
+					        DrawText(focal.Segment.OffsetAlongLine(0.5f, offset), focal.TRatio.ToString("0.###"), Pens.LineTextPen);
 				        }
 				        if (Data.DisplayMode.HasFlag(DisplayMode.ShowSlugValues))
 				        {
@@ -136,9 +136,9 @@ namespace Slugs.Renderer
 					        DrawDirectedLine(bond.Segment, Pens.BondPen);
 					        if (Data.DisplayMode.HasFlag(DisplayMode.ShowSlugValues))
 					        {
-						        var val = bond.Ratio;
-						        var disp = val == float.MaxValue ? "max" : val.ToString("0.###");
-						        DrawText(bond.Segment.OffsetAlongLine(0.5f, offset), disp, Pens.LineTextPen);
+						        var val = bond.TRatio;
+						        var displayVal = val == float.MaxValue ? "max" : val.ToString("0.###");
+						        DrawText(bond.Segment.OffsetAlongLine(0.5f, offset), displayVal, Pens.LineTextPen);
 					        }
                         }
 			        }

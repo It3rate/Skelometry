@@ -19,7 +19,7 @@ namespace Slugs.Entities
     // or are they intrinsic to the trait, like min/max and reasons for limits (complexity, measurable, changed, terminated, likelihood)
     // Actually X and Y are focal segments where the two zeros share a point. They can not be connected on the other points (independent), or as a triangle (area).
 
-	public class SingleBond : SegmentBase //, ISlugElement // will be T:T or 0:0 on each line, but maybe that ratio is set already by the double bond?
+	public class SingleBond : SegmentBase, ISlugElement // will be T:T or 0:0 on each line, but maybe that ratio is set already by the double bond?
     {
 	    public override ElementKind ElementKind => ElementKind.SingleBond;
         public override IElement EmptyElement => Empty;
@@ -28,7 +28,26 @@ namespace Slugs.Entities
 
         public BondPoint StartPoint => (BondPoint)Pad.PointAt(StartKey);
         public BondPoint EndPoint => (BondPoint)Pad.PointAt(EndKey);
-        public float Ratio
+        public float StartT
+        {
+	        get => StartPoint.T;
+	        set => StartPoint.T = value;
+        }
+        public float EndT
+        {
+	        get => EndPoint.T;
+	        set => EndPoint.T = value;
+        }
+        public Slug LocalRatio
+        {
+	        get => new Slug(StartT, EndT);
+	        set
+	        {
+		        StartT = (float)value.Imaginary;
+		        EndT = (float)value.Real;
+            }
+        }
+        public float TRatio
         {
 	        get
 	        {

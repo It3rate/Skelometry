@@ -37,11 +37,12 @@ namespace Slugs.Entities
 		bool ContainsPosition(SKPoint point);
 	}
 	public interface ISlugElement : IElement
-	{
-        Slug Ratio { get; set; }
-		//SKSegment Segment { get; }
-		//float Length { get; }
-	}
+    {
+	    float StartT { get; set; }
+	    float EndT { get; set; }
+        Slug LocalRatio { get; set; }
+        float TRatio { get; }
+    }
 
     public abstract class ElementBase : IElement
     {

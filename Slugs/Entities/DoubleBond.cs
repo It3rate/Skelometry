@@ -7,7 +7,7 @@ namespace Slugs.Entities
     using System;
     using System.Collections.Generic;
 
-    public class DoubleBond : ElementBase, IAreaElement //, ISlugElement // the double bond is a fixed ratio between two focals already.
+    public class DoubleBond : ElementBase, IAreaElement, ISlugElement // the double bond is a fixed ratio between two focals already.
     {
 	    public override ElementKind ElementKind => ElementKind.DoubleBond;
 	    public override IElement EmptyElement => Empty;
@@ -17,6 +17,18 @@ namespace Slugs.Entities
 	    public int StartKey { get; private set; }
 	    public int EndKey { get; private set; }
 	    public Slug LocalRatio { get; set; }
+	    public float StartT
+	    {
+		    get => (float)LocalRatio.Imaginary;
+		    set => LocalRatio = new Slug(value, LocalRatio.Real);
+	    }
+	    public float EndT
+	    {
+		    get => (float)LocalRatio.Real;
+		    set => LocalRatio = new Slug(LocalRatio.Imaginary, value);
+	    }
+	    public float TRatio => (float)(EndFocal.LocalSlug.DirectedLength() / StartFocal.LocalSlug.DirectedLength());
+        //public float TRatio => (float)LocalRatio.DirectedLength();
 
         public Focal StartFocal
 	    {
@@ -36,12 +48,6 @@ namespace Slugs.Entities
 	    public override bool HasArea => true;
 
 	    public override List<IPoint> Points => new List<IPoint>() { StartFocal.StartPoint, StartFocal.EndPoint, EndFocal.StartPoint, EndFocal.EndPoint };
-	    public override float DistanceToPoint(SKPoint point)
-	    {
-		    var startDist = StartFocal.DistanceToPoint(point);
-		    var endDist = EndFocal.DistanceToPoint(point);
-		    return startDist < endDist ? startDist : endDist;
-	    }
 
 	    public DoubleBond(Focal startFocal, Focal endFocal) : base(startFocal.PadKind)
 	    {
@@ -73,6 +79,12 @@ namespace Slugs.Entities
 		    {
 			    throw new ArgumentException("DoubleBond focals must be type Focal.");
 		    }
+	    }
+	    public override float DistanceToPoint(SKPoint point)
+	    {
+		    var startDist = StartFocal.DistanceToPoint(point);
+		    var endDist = EndFocal.DistanceToPoint(point);
+		    return startDist < endDist ? startDist : endDist;
 	    }
 	    public Focal ContainsFocalPoint(FocalPoint point)
 	    {

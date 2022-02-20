@@ -10,7 +10,7 @@ namespace Slugs.Entities
 {
     // Eventually Focals will allow multiple segments to multiply/square/cube etc, as well as have probability and fuzzy endpoints.
     // These are slug collections with bonds between them and causation direction.
-	public class Focal : SegmentBase
+	public class Focal : SegmentBase, ISlugElement
     {
 	    public override ElementKind ElementKind => ElementKind.Focal;
 	    public override IElement EmptyElement => Empty;
@@ -39,12 +39,21 @@ namespace Slugs.Entities
 		        EndPoint.T = (float)value.Real;
 	        }
         }
+
         public Slug UnitSlug => Pad.UnitFor(TraitKind);
         public Slug AsUnitSlug => (Direction >= 0 ? Slug.Unit : Slug.Unot);
 
-        public float StartT => StartPoint.T;
-        public float EndT => EndPoint.T;
-        public float LengthT => (float)(LocalSlug.DirectedLength() / FocalUnit.LocalSlug.DirectedLength());
+        public float StartT
+        {
+	        get => StartPoint.T;
+	        set => StartPoint.T = value;
+        }
+        public float EndT
+        {
+	        get => EndPoint.T;
+	        set => EndPoint.T = value;
+        }
+        public float TRatio => (float)(LocalSlug.DirectedLength() / FocalUnit.LocalSlug.DirectedLength());
         public override SKPoint StartPosition => Trait.PointAlongLine(StartPoint.T);
         public override SKPoint EndPosition => Trait.PointAlongLine(EndPoint.T);
 

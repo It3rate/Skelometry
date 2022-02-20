@@ -21,7 +21,7 @@ namespace Slugs.Entities
         public float T
         {
 	        get => _t;
-	        private set
+	        set
 	        {
 		        if (!IsEmpty)
 		        {
