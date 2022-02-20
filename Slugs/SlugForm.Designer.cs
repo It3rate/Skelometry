@@ -50,7 +50,7 @@ namespace Slugs
             // 
             this.slugPanel.Location = new System.Drawing.Point(26, 82);
             this.slugPanel.Name = "slugPanel";
-            this.slugPanel.Size = new System.Drawing.Size(1114, 628);
+            this.slugPanel.Size = new System.Drawing.Size(1482, 892);
             this.slugPanel.TabIndex = 0;
             // 
             // btNext
@@ -65,7 +65,7 @@ namespace Slugs
             // scBottom
             // 
             this.scBottom.LargeChange = 1;
-            this.scBottom.Location = new System.Drawing.Point(105, 755);
+            this.scBottom.Location = new System.Drawing.Point(230, 1033);
             this.scBottom.Maximum = 21;
             this.scBottom.Minimum = -21;
             this.scBottom.Name = "scBottom";
@@ -76,7 +76,7 @@ namespace Slugs
             // scTop
             // 
             this.scTop.LargeChange = 1;
-            this.scTop.Location = new System.Drawing.Point(105, 722);
+            this.scTop.Location = new System.Drawing.Point(230, 1000);
             this.scTop.Maximum = 21;
             this.scTop.Minimum = -21;
             this.scTop.Name = "scTop";
@@ -87,7 +87,7 @@ namespace Slugs
             // lbTop
             // 
             this.lbTop.AutoSize = true;
-            this.lbTop.Location = new System.Drawing.Point(1076, 728);
+            this.lbTop.Location = new System.Drawing.Point(1201, 1006);
             this.lbTop.Name = "lbTop";
             this.lbTop.Size = new System.Drawing.Size(51, 20);
             this.lbTop.TabIndex = 2;
@@ -96,7 +96,7 @@ namespace Slugs
             // lbBottom
             // 
             this.lbBottom.AutoSize = true;
-            this.lbBottom.Location = new System.Drawing.Point(1076, 762);
+            this.lbBottom.Location = new System.Drawing.Point(1201, 1040);
             this.lbBottom.Name = "lbBottom";
             this.lbBottom.Size = new System.Drawing.Size(51, 20);
             this.lbBottom.TabIndex = 3;
@@ -203,7 +203,7 @@ namespace Slugs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1167, 797);
+            this.ClientSize = new System.Drawing.Size(1538, 1071);
             this.Controls.Add(this.lbValue);
             this.Controls.Add(this.btEqual);
             this.Controls.Add(this.btInformation);

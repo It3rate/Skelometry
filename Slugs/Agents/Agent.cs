@@ -61,30 +61,66 @@ namespace Slugs.Agents
             var entityCmd = new CreateEntityCommand(InputPad);
             _editCommands.Do(entityCmd);
             _activeEntity = entityCmd.Entity;
-            var traitCmd1 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 100), new SKPoint(700, 100), true);
-            var traitCmd2 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 140), new SKPoint(700, 140), true);
-            var traitCmd3 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 180), new SKPoint(700, 180), true);
-            var traitCmd4 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 220), new SKPoint(700, 220), true);
-            var traitCmd5 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 260), new SKPoint(700, 260), true);
-            var traitCmd6 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 300), new SKPoint(700, 300), true);
-            var traitCmd7 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 340), new SKPoint(700, 340), true);
-            _editCommands.Do(traitCmd1, traitCmd2, traitCmd3, traitCmd4, traitCmd5, traitCmd6, traitCmd7);
-            var trait1 = traitCmd1.AddedTrait;
-            var trait2 = traitCmd2.AddedTrait;
-            var trait3 = traitCmd3.AddedTrait;
-            var fc1 = new AddFocalCommand(_activeEntity, trait1, 0.1f, 0.9f);
-            var fc2 = new AddFocalCommand(_activeEntity, trait2, 0.0f, 0.4f);
-            var fc3 = new AddFocalCommand(_activeEntity, trait3, 0.0f, 0.2f);
-            _editCommands.Do(fc1, fc2, fc3);
-            InputPad.SetUnit(fc3.AddedFocal);
 
-            var bc = new AddSingleBondCommand(fc1.AddedFocal, .2f, fc2.AddedFocal, 0.3f);
-            var db = new AddDoubleBondCommand(fc1.AddedFocal, fc2.AddedFocal);
-            _editCommands.Do(bc, db);
+            MakeXY();
+            //MakeLines();
 
             UIMode = UIMode.Any;
             ClearMouse();
         }
+
+        private void MakeXY()
+        {
+            var center = new SKPoint(500, 400);
+            var xAxis = new SKPoint(400, 0);
+            var yAxis = new SKPoint(0, 400);
+            var traitX = new AddTraitCommand(InputPad, TraitKind.XAxis, center - xAxis, center + xAxis);
+            var traitY = new AddTraitCommand(InputPad, TraitKind.YAxis, center + yAxis, center - yAxis);
+            _editCommands.Do(traitX, traitY);
+            traitX.AddedTrait.IsLocked = true;
+            traitY.AddedTrait.IsLocked = true;
+
+            var fc1 = new AddFocalCommand(_activeEntity, traitX.AddedTrait, 0.5f, 0.9f);
+            var fc2 = new AddFocalCommand(_activeEntity, traitY.AddedTrait, 0.5f, 0.9f);
+            var fc3 = new AddFocalCommand(_activeEntity, traitX.AddedTrait, 0.5f, 0.1f);
+            _editCommands.Do(fc1, fc2, fc3);
+            fc1.AddedFocal.IsLocked = true;
+            fc2.AddedFocal.IsLocked = true;
+            fc3.AddedFocal.IsLocked = true;
+            InputPad.SetUnit(fc1.AddedFocal);
+            InputPad.SetUnit(fc2.AddedFocal);
+
+            var bc1 = new AddSingleBondCommand(fc1.AddedFocal, 0.3f, fc2.AddedFocal, 1f);
+            var bc2 = new AddSingleBondCommand(fc2.AddedFocal, 0.3f, fc3.AddedFocal, 1f);
+            _editCommands.Do(bc1, bc2);
+            bc1.EndPointTask.IPoint.IsLocked = true;
+            bc2.EndPointTask.IPoint.IsLocked = true;
+        }
+
+        private void MakeLines()
+        {
+	        var traitCmd1 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 100), new SKPoint(700, 100), true);
+	        var traitCmd2 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 140), new SKPoint(700, 140), true);
+	        var traitCmd3 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 180), new SKPoint(700, 180), true);
+	        var traitCmd4 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 220), new SKPoint(700, 220), true);
+	        var traitCmd5 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 260), new SKPoint(700, 260), true);
+	        var traitCmd6 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 300), new SKPoint(700, 300), true);
+	        var traitCmd7 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(100, 340), new SKPoint(700, 340), true);
+	        _editCommands.Do(traitCmd1, traitCmd2, traitCmd3, traitCmd4, traitCmd5, traitCmd6, traitCmd7);
+	        var trait1 = traitCmd1.AddedTrait;
+	        var trait2 = traitCmd2.AddedTrait;
+	        var trait3 = traitCmd3.AddedTrait;
+	        var fc1 = new AddFocalCommand(_activeEntity, trait2, 0.1f, 0.3f);
+	        var fc2 = new AddFocalCommand(_activeEntity, trait3, 0.0f, 0.4f);
+	        var fc3 = new AddFocalCommand(_activeEntity, trait1, 0.0f, 0.2f);
+	        _editCommands.Do(fc1, fc2, fc3);
+	        InputPad.SetUnit(fc3.AddedFocal);
+
+	        var bc = new AddSingleBondCommand(fc1.AddedFocal, -0.3f, fc2.AddedFocal, 0.3f);
+	        var db = new AddDoubleBondCommand(fc1.AddedFocal, fc2.AddedFocal);
+	        _editCommands.Do(bc, db);
+        }
+
         public Pad AddPad(PadKind padKind)
         {
 	        Pads[padKind] = new Pad(padKind);
@@ -100,11 +136,11 @@ namespace Slugs.Agents
 
 	        var mousePoint = e.Location.ToSKPoint();
 
-            Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, _selectableKind);
+            Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, false, _selectableKind);
 	        Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
 
-            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
-            Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, _selectableKind);
+            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
+            Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, false, _selectableKind);
             Data.Selected.Position = mousePoint;
             if (UIMode == UIMode.SetUnit && Data.Selected.FirstElement is Focal focal)
             {
@@ -134,7 +170,7 @@ namespace Slugs.Agents
             var result = false;
 		    var mousePoint = e.Location.ToSKPoint();
 		    Data.Current.UpdatePositions(mousePoint);
-            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
+            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
             if (IsDown)
             {
                 result = MouseDrag(mousePoint);
@@ -251,7 +287,6 @@ namespace Slugs.Agents
 			    Data.Selected.UpdatePositions(mousePoint);
 		    }
 		    
-
 		    if (_activeCommand is AddSingleBondCommand abc)
 		    {
 			    var focal = _activeEntity.NearestFocal(mousePoint, abc.StartPointTask.FocalKey);
@@ -292,7 +327,7 @@ namespace Slugs.Agents
             var mousePoint = e.Location.ToSKPoint();
 
 		    Data.Current.UpdatePositions(mousePoint);
-		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, _selectableKind);
+		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
 
             // Merge points if needed.
             if (Data.HasHighlightPoint && _activeCommand is IDraggableCommand cmd && cmd.HasDraggablePoint)

@@ -13,7 +13,7 @@ namespace Slugs.Entities
     {
         public readonly PadKind PadKind;
         public static int KeyCounter = 1;
-        public const float SnapDistance = 10.0f;
+        public const float SnapDistance = 5.0f;
 
         private readonly Dictionary<int, IElement> _elements = new Dictionary<int, IElement>();
 
@@ -317,12 +317,13 @@ namespace Slugs.Entities
         {
         }
 
-        public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, ElementKind kind, float maxDist = SnapDistance * 2f)
+        public IPoint GetSnapPoint(SKPoint input, List<int> ignorePoints, bool ignoreLocked, ElementKind kind, float maxDist = SnapDistance * 2f)
         {
 	        IPoint result = TerminalPoint.Empty;
 	        foreach (var ptRef in PointsReversed)
 	        {
-	            if (ptRef.ElementKind.IsCompatible(kind) && !ignorePoints.Contains(ptRef.Key) && input.DistanceTo(ptRef.Position) < maxDist)
+		        var ignore = !ignoreLocked && ptRef.IsLocked;
+                if (ptRef.ElementKind.IsCompatible(kind) && !ignorePoints.Contains(ptRef.Key) && !ignore && input.DistanceTo(ptRef.Position) < maxDist)
 	            {
                     result = ptRef;
                     break;
@@ -330,13 +331,14 @@ namespace Slugs.Entities
             }
             return result;
         }
-        public IElement GetSnapElement(SKPoint point, List<int> ignoreKeys, ElementKind kind, float maxDist = SnapDistance)
+        public IElement GetSnapElement(SKPoint point, List<int> ignoreKeys, bool ignoreLocked, ElementKind kind, float maxDist = SnapDistance)
         {
             IElement result = TerminalPoint.Empty;
 
             foreach (var element in ElementsOfKindReversed(kind))
             {
-	            if (!element.HasArea && !ignoreKeys.Contains(element.Key) && element.DistanceToPoint(point) < maxDist)
+	            var ignore = !ignoreLocked && element.IsLocked;
+	            if (!element.HasArea && !ignoreKeys.Contains(element.Key) && !ignore && element.DistanceToPoint(point) < maxDist)
 	            {
 		            result = element;
 		            break;

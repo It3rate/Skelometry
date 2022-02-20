@@ -28,13 +28,21 @@ namespace Slugs.Entities
 
         public BondPoint StartPoint => (BondPoint)Pad.PointAt(StartKey);
         public BondPoint EndPoint => (BondPoint)Pad.PointAt(EndKey);
+        public float Ratio
+        {
+	        get
+	        {
+		        var spt = StartPoint.T;
+		        return spt == 0 ? float.MaxValue : EndPoint.T / StartPoint.T;
+	        }
+        }
         public BondPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndPoint : (notKey == EndKey) ? StartPoint : BondPoint.Empty;
         public override SKPoint StartPosition => StartPoint.Position;
         public override SKPoint EndPosition => EndPoint.Position;
 
         public override List<IPoint> Points => new List<IPoint>() {StartPoint, EndPoint};
 
-	    public SingleBond(BondPoint startPoint, BondPoint endPoint) : base(startPoint.PadKind)
+        public SingleBond(BondPoint startPoint, BondPoint endPoint) : base(startPoint.PadKind)
 	    {
 		    SetStartKey(startPoint.Key);
 		    SetEndKey(endPoint.Key);

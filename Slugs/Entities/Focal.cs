@@ -113,7 +113,7 @@ namespace Slugs.Entities
 
         private readonly HashSet<int> _bondStartKeys = new HashSet<int>();
         private readonly HashSet<int> _bondEndKeys = new HashSet<int>();
-        public IEnumerable<SingleBond> StartBonds
+        public IEnumerable<SingleBond> SingleBonds
         {
 	        get
 	        {

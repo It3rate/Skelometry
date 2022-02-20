@@ -131,10 +131,16 @@ namespace Slugs.Renderer
 					        DrawText(focal.Segment.OffsetAlongLine(0f, offset), focal.StartT.ToString("0.###"), Pens.SlugTextPen);
 					        DrawText(focal.Segment.OffsetAlongLine(1f, offset), focal.EndT.ToString("0.###"), Pens.SlugTextPen);
                         }
-                        foreach (var bond in focal.StartBonds)
+                        foreach (var bond in focal.SingleBonds)
 				        {
 					        DrawDirectedLine(bond.Segment, Pens.BondPen);
-				        }
+					        if (Data.DisplayMode.HasFlag(DisplayMode.ShowSlugValues))
+					        {
+						        var val = bond.Ratio;
+						        var disp = val == float.MaxValue ? "max" : val.ToString("0.###");
+						        DrawText(bond.Segment.OffsetAlongLine(0.5f, offset), disp, Pens.LineTextPen);
+					        }
+                        }
 			        }
 		        }
 

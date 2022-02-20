@@ -14,6 +14,8 @@ namespace Slugs.Entities
     {
         None,
         Default,
+        XAxis,
+        YAxis,
     }
 
     public class Trait : SegmentBase

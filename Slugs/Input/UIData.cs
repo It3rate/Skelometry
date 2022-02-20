@@ -53,17 +53,17 @@ namespace Slugs.Input
             WorkingPoints.AddRange(points);
         }
 
-        public IElement GetHighlight(SKPoint p, SelectionSet targetSet, List<int> ignoreKeys, ElementKind kind)
+        public IElement GetHighlight(SKPoint p, SelectionSet targetSet, List<int> ignoreKeys, bool ignoreLocked, ElementKind kind)
         {
 	        targetSet.Clear();
-            IElement result = targetSet.Pad.GetSnapPoint(p, ignoreKeys, kind);
+            IElement result = targetSet.Pad.GetSnapPoint(p, ignoreKeys, ignoreLocked, kind);
 	        if (!result.IsEmpty)
 	        {
 		        targetSet.SetPoint(p, (IPoint) result);
 	        }
 	        else
 	        {
-		        result = targetSet.Pad.GetSnapElement(p, ignoreKeys, kind);
+		        result = targetSet.Pad.GetSnapElement(p, ignoreKeys, ignoreLocked, kind);
 		        if (!result.IsEmpty)
 		        {
 			        targetSet.SetElements(result);

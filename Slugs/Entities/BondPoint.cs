@@ -41,7 +41,6 @@ namespace Slugs.Entities
         {
             FocalKey = focalKey;
             T = t;
-            SetOtherT(t); // this locks the t ratio
         }
 
         public override bool CanMergeWith(IPoint point)
@@ -62,7 +61,7 @@ namespace Slugs.Entities
 	        {
 		        T = Focal.TFromPoint(fp.Position).Item1;
             }
-	        SetOtherT(T); // this locks the t ratio
+	        //SetOtherT(T); // this locks the t ratio
 	        return result;
         }
 
@@ -78,7 +77,7 @@ namespace Slugs.Entities
             {
 	            var focal = Focal;
                 T = focal.TFromPoint(value, false).Item1;
-                SetOtherT(T); // this locks the t ratio
+                //SetOtherT(T); // this locks the t ratio
             }
         }
 

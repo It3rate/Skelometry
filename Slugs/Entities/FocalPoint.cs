@@ -32,16 +32,18 @@ namespace Slugs.Entities
         }
         public override int MergeInto(IPoint point)
         {
-	        var result = Key;
-	        if (point.ElementKind == ElementKind.FocalPoint)
-	        {
-		        Pad.SetPointAt(Key, point);
-		        result = point.Key;
-	        }
-	        else
-	        {
-		        T = Trait.TFromPoint(point.Position).Item1;
-	        }
+	        T = Trait.TFromPoint(point.Position).Item1;
+
+            var result = Key;
+	        //if (point.ElementKind == ElementKind.FocalPoint)
+	        //{
+		       // Pad.SetPointAt(Key, point);
+		       // result = point.Key;
+	        //}
+	        //else
+	        //{
+		       // T = Trait.TFromPoint(point.Position).Item1;
+	        //}
 	        return result;
         }
 
