@@ -7,8 +7,8 @@ using Slugs.Pads;
 
 namespace Slugs.Entities
 {
-	public class FocalPoint : PointBase
-	{
+	public class FocalPoint : PointBase, ITValue
+    {
 		public override ElementKind ElementKind => ElementKind.FocalPoint;
 		public override IElement EmptyElement => Empty;
 	    public static readonly FocalPoint Empty = new FocalPoint();
@@ -16,7 +16,12 @@ namespace Slugs.Entities
 
         public int TraitKey { get; set; }
         public Trait Trait => Pad.TraitAt(TraitKey);
-        public float T { get; set; }
+        private float _t;
+        public float T
+        {
+	        get => _t;
+	        set => _t = IsEmpty ? _t : value;
+        }
 
         public FocalPoint(PadKind padKind, int traitKey, float t) : base(padKind)
         {

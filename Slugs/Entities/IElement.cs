@@ -44,6 +44,11 @@ namespace Slugs.Entities
         float TRatio { get; }
     }
 
+	public interface ITValue
+	{
+		float T { get; set; }
+    }
+
     public abstract class ElementBase : IElement
     {
 	    public const int EmptyKeyValue = -99;

@@ -1,4 +1,6 @@
-﻿namespace Slugs.Constraints
+﻿using Slugs.Entities;
+
+namespace Slugs.Constraints
 {
     using System;
     using System.Collections.Generic;
@@ -8,5 +10,11 @@
 
     public interface IConstraint
     {
+	    IElement StartElement { get; }
+	    IElement EndElement { get; }
+        bool HasElement(int key);
+	    ConstraintTarget ConstraintTarget { get; }
+
+	    void OnElementChanged(IElement changedElement);
     }
 }

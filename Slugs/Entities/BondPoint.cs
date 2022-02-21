@@ -9,7 +9,7 @@ namespace Slugs.Entities
     using System.Text;
     using System.Threading.Tasks;
 
-    public class BondPoint : PointBase
+    public class BondPoint : PointBase, ITValue
     {
         public override ElementKind ElementKind => ElementKind.BondPoint;
         public override IElement EmptyElement => Empty;
@@ -21,14 +21,7 @@ namespace Slugs.Entities
         public float T
         {
 	        get => _t;
-	        set
-	        {
-		        if (!IsEmpty)
-		        {
-			        _t = value;
-                } 
-
-	        }
+	        set => _t = IsEmpty ? _t : value;
         }
 
         public Focal Focal => Pad.FocalAt(FocalKey);

@@ -33,23 +33,48 @@ namespace Slugs.Constraints
 
     public class RatioConstraint : IConstraint
     {
-	    public ISlugElement StartElement { get; private set; }
-	    public ISlugElement EndElement { get; private set; }
-        public Slug Ratio { get; set; }
-        public ConstraintTarget ConstraintTarget{get; private set; }
-        public bool IsLocked { get; set; } 
+	    public IElement StartElement { get; private set; }
+	    public IElement EndElement { get; private set; }
+	    public IElement OtherElement(int originalKey) => originalKey == StartElement.Key ? EndElement : StartElement;
+	    public bool HasElement(int key) => StartElement.Key == key || EndElement.Key == key;
 
-        public RatioConstraint(ISlugElement start, ISlugElement end)
+        public ConstraintTarget ConstraintTarget{get; private set; }
+
+	    private Slug _ratio;
+        public Slug Ratio { get => _ratio; set => _ratio = IsRatioLocked ? _ratio : value; }
+        public bool IsRatioLocked { get; set; } 
+
+        public RatioConstraint(IElement start, IElement end)
 	    {
 		    StartElement = start;
 		    EndElement = end;
         }
 
+        public void OnElementChanged(IElement changedElement)
+        {
+	        if (changedElement.Key == StartElement.Key)
+	        {
+		        OnStartChanged();
+	        }
+            else if (changedElement.Key == EndElement.Key)
+	        {
+		        OnEndChanged();
+	        }
+        }
         public void OnStartChanged()
-	    {
-	    }
+        {
+	        if (ConstraintTarget == ConstraintTarget.T && StartElement is ITValue start && EndElement is ITValue end)
+	        {
+		        end.T = start.T * (float)_ratio.DirectedLength();
+	        }
+        }
 	    public void OnEndChanged()
 	    {
-	    }
+		    if (ConstraintTarget == ConstraintTarget.T && StartElement is ITValue start && EndElement is ITValue end)
+		    {
+			    var dl = (float) _ratio.DirectedLength();
+			    start.T = (dl == 0) ? float.MaxValue : end.T / (float)_ratio.DirectedLength();
+		    }
+        }
     }
 }
