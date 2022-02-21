@@ -138,7 +138,7 @@ namespace Slugs.Renderer
 					        {
 						        var val = bond.TRatio;
 						        var displayVal = val == float.MaxValue ? "max" : val.ToString("0.###");
-						        DrawText(bond.Segment.OffsetAlongLine(0.5f, offset), displayVal, Pens.LineTextPen);
+						        DrawText(bond.Segment.OffsetAlongLine(0.6f, offset), displayVal, Pens.LineTextPen);
 					        }
                         }
 			        }

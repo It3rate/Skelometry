@@ -44,11 +44,13 @@ namespace Slugs.Constraints
         public Slug Ratio { get => _ratio; set => _ratio = IsRatioLocked ? _ratio : value; }
         public bool IsRatioLocked { get; set; } 
 
-        public RatioConstraint(IElement start, IElement end)
+        public RatioConstraint(IElement start, IElement end, ConstraintTarget constraintTarget, Slug ratio)
 	    {
 		    StartElement = start;
 		    EndElement = end;
-        }
+		    ConstraintTarget = constraintTarget;
+            _ratio = ratio;
+	    }
 
         public void OnElementChanged(IElement changedElement)
         {

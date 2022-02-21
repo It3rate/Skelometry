@@ -7,6 +7,7 @@ using SkiaSharp.Views.Desktop;
 using Slugs.Commands;
 using Slugs.Commands.EditCommands;
 using Slugs.Commands.Tasks;
+using Slugs.Constraints;
 using Slugs.Entities;
 using Slugs.Input;
 using Slugs.Pads;
@@ -95,6 +96,12 @@ namespace Slugs.Agents
             _editCommands.Do(bc1, bc2);
             bc1.EndPointTask.IPoint.IsLocked = true;
             bc2.EndPointTask.IPoint.IsLocked = true;
+
+            InputPad.Constraints.Add(new RatioConstraint(
+	            bc1.StartPointTask.BondPoint,
+	            bc2.StartPointTask.BondPoint,
+	            ConstraintTarget.T,
+	            new Slug(-0.5, 0.5)));
         }
 
         private void MakeLines()
@@ -181,7 +188,7 @@ namespace Slugs.Agents
 	    private float _minDragDistance = 10f;
 	    public bool MouseDrag(SKPoint mousePoint)
 	    {
-		    if (!IsDragging)
+            if (!IsDragging)
 		    {
 				var dist = (mousePoint - Data.Begin.Position).Length;
 				if (dist > _minDragDistance)
@@ -249,9 +256,6 @@ namespace Slugs.Agents
 		                        _selectableKind = ElementKind.FocalPart;
                             }
                         }
-                        else
-                        {
-                        }
 					}
 					else if(Data.Begin.HasSelection) // drag existing object
 					{
@@ -272,11 +276,9 @@ namespace Slugs.Agents
 							_ignoreList.Add(Data.Begin.FirstElement.Key);
 							_selectableKind = ElementKind.None;
 						}
-					}
-					else // rect select
-					{
 
 					}
+					
 					IsDragging = true;
 				}
 		    }
@@ -315,7 +317,12 @@ namespace Slugs.Agents
 					    db.ApplyRatioRecursively(focal.Key, appliedBondKeys);
 				    }
 			    }
-		    }
+
+			    if (mec.HasDraggablePoint)
+			    {
+				    InputPad.UpdateConstraints(mec.DraggablePoint);
+			    }
+            }
             return true;
 	    }
 

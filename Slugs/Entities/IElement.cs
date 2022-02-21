@@ -21,7 +21,6 @@ namespace Slugs.Entities
         bool IsEmpty { get; }
         bool HasArea { get; }
         SKPath Path { get; }
-        List<IConstraint> Constraints { get; }
 
         //IPoint[] TerminalPoints { get; }
         List<IPoint> Points { get; }
@@ -79,7 +78,6 @@ namespace Slugs.Entities
 
 		public virtual bool HasArea => false;
 
-		public List<IConstraint> Constraints { get; } = new List<IConstraint>();
         private bool _isLocked;
         public bool IsLocked
 		{

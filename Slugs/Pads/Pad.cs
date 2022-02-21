@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using SkiaSharp;
+using Slugs.Constraints;
 using Slugs.Pads;
 using Slugs.Primitives;
 
@@ -16,6 +17,7 @@ namespace Slugs.Entities
         public const float SnapDistance = 5.0f;
 
         private readonly Dictionary<int, IElement> _elements = new Dictionary<int, IElement>();
+        public List<IConstraint> Constraints { get; } = new List<IConstraint>();
 
         public Dictionary<TraitKind, int> UnitMap = new Dictionary<TraitKind, int>();
         public void SetUnit(Focal focal) => UnitMap[focal.TraitKind] = focal.Key;
@@ -361,6 +363,16 @@ namespace Slugs.Entities
             }
             End:
             return result;
+        }
+
+        public void UpdateConstraints(IElement changedElement)
+        {
+	        var related = Constraints.Where(constraint => constraint.HasElement(changedElement.Key));
+	        foreach (var constraint in related)
+	        {
+		        constraint.OnElementChanged(changedElement);
+	        }
+
         }
     }
 }
