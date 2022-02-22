@@ -119,6 +119,12 @@
     <Compile Include="Commands\Tasks\MoveElementTask.cs" />
     <Compile Include="Commands\Tasks\SetSelectionTask.cs" />
     <Compile Include="Commands\Tasks\TaskBase.cs" />
+    <Compile Include="Constraints\EqualLengthConstraint.cs" />
+    <Compile Include="Constraints\HorizontalVerticalConstraint.cs" />
+    <Compile Include="Constraints\CollinearConstraint.cs" />
+    <Compile Include="Constraints\LockConstraint.cs" />
+    <Compile Include="Constraints\ParallelConstraint.cs" />
+    <Compile Include="Constraints\PerpendicularConstraint.cs" />
     <Compile Include="Constraints\RatioConstraint.cs" />
     <Compile Include="Constraints\IConstraint.cs" />
     <Compile Include="Entities\DoubleBond.cs" />
