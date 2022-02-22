@@ -97,11 +97,11 @@ namespace Slugs.Agents
             bc1.EndPointTask.IPoint.IsLocked = true;
             bc2.EndPointTask.IPoint.IsLocked = true;
 
-            InputPad.Constraints.Add(new RatioConstraint(
-	            bc1.StartPointTask.BondPoint,
-	            bc2.StartPointTask.BondPoint,
-	            ConstraintTarget.T,
-	            new Slug(-0.5, 0.5)));
+            var constraint = new RatioConstraint(
+	            bc1.StartPointTask.BondPoint, bc2.StartPointTask.BondPoint,
+	            ConstraintTarget.T, new Slug(-0.5, 0.5));
+            var rc = new AddConstraintCommand(InputPad, constraint);
+            _editCommands.Do(rc);
         }
 
         private void MakeLines()
@@ -318,10 +318,7 @@ namespace Slugs.Agents
 				    }
 			    }
 
-			    if (mec.HasDraggablePoint)
-			    {
-				    InputPad.UpdateConstraints(mec.DraggablePoint);
-			    }
+			    InputPad.UpdateConstraints(mec.Element);
             }
             return true;
 	    }
