@@ -122,6 +122,7 @@ namespace Slugs.Renderer
 		    //BondFillPen = GetPen(new SKColor(100, 20, 240, 40), DefaultWidth * 2);
 		    //BondFillPen.Style = SKPaintStyle.Fill;
             BondFillPen = new SKPaint();
+            BondFillPen.IsAntialias = true;
             BondFillPen.Color = new SKColor(100, 20, 240, 40);
             BondFillPen.Style = SKPaintStyle.Fill;
             BondSelectPen = new SKPaint();

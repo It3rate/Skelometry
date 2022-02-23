@@ -8,39 +8,15 @@ namespace Slugs.Constraints
     using System.Text;
     using System.Threading.Tasks;
 
-    public class EqualLengthConstraint : ITwoElementConstraint
+    public class EqualLengthConstraint : TwoElementConstraintBase
     {
-	    public IElement StartElement { get; private set; }
-	    public IElement EndElement { get; private set; }
-	    public bool HasElement(int key) => StartElement.Key == key || EndElement.Key == key;
-
 	    public SegmentBase StartSegment => (SegmentBase)StartElement;
 	    public SegmentBase EndSegment => (SegmentBase)StartElement;
 
-        public ConstraintTarget ConstraintTarget => ConstraintTarget.Length;
+	    public EqualLengthConstraint(SegmentBase startElement, SegmentBase endElement) : base(startElement, endElement) { }
 
-	    public EqualLengthConstraint(SegmentBase start, IElement end)
-	    {
-		    StartElement = start;
-		    EndElement = end;
-	    }
 
-	    public void OnAddConstraint() { }
-	    public void OnRemoveConstraint() { }
-
-	    public void OnElementChanged(IElement changedElement)
-	    {
-		    if (changedElement.Key == StartElement.Key)
-		    {
-			    OnStartChanged();
-		    }
-		    else if (changedElement.Key == EndElement.Key)
-		    {
-			    OnEndChanged();
-		    }
-	    }
-
-	    public void OnStartChanged()
+	    public override void OnStartChanged()
 	    {
 		    if (EndElement is IPoint point)
 		    {
@@ -49,7 +25,7 @@ namespace Slugs.Constraints
 		    {
 		    }
 	    }
-	    public void OnEndChanged()
+	    public override void OnEndChanged()
 	    {
 		    if (EndElement is IPoint point)
 		    {

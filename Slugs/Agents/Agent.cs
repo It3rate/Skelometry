@@ -102,6 +102,13 @@ namespace Slugs.Agents
 	            ConstraintTarget.T, new Slug(-0.5, 0.5));
             var rc = new AddConstraintCommand(InputPad, constraint);
             _editCommands.Do(rc);
+
+            var t0 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(50, 50), new SKPoint(80, 250));
+            var t1 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(90, 150), new SKPoint(140, 200));
+            _editCommands.Do(t0, t1);
+            var coll = new CollinearConstraint(t0.AddedTrait, t1.StartPointTask.IPoint);
+            var collCommand = new AddConstraintCommand(InputPad, coll);
+            _editCommands.Do(collCommand);
         }
 
         private void MakeLines()

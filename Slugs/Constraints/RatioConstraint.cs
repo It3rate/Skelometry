@@ -9,49 +9,28 @@ namespace Slugs.Constraints
     using System.Text;
     using System.Threading.Tasks;
 
-    public class RatioConstraint : ITwoElementConstraint
+    public class RatioConstraint : TwoElementConstraintBase
     {
-	    public IElement StartElement { get; private set; }
-	    public IElement EndElement { get; private set; }
-	    public IElement OtherElement(int originalKey) => originalKey == StartElement.Key ? EndElement : StartElement;
-	    public bool HasElement(int key) => StartElement.Key == key || EndElement.Key == key;
+	    public ConstraintTarget ConstraintTarget { get; }
 
-        public ConstraintTarget ConstraintTarget{get; private set; }
-
-	    private Slug _ratio;
+        private Slug _ratio;
         public Slug Ratio { get => _ratio; set => _ratio = IsRatioLocked ? _ratio : value; }
         public bool IsRatioLocked { get; set; } 
 
-        public RatioConstraint(IElement start, IElement end, ConstraintTarget constraintTarget, Slug ratio)
-	    {
-		    StartElement = start;
-		    EndElement = end;
+        public RatioConstraint(IElement startElement, IElement endElement, ConstraintTarget constraintTarget, Slug ratio) : base(startElement, endElement)
+        {
 		    ConstraintTarget = constraintTarget;
             _ratio = ratio;
         }
 
-        public void OnAddConstraint() { }
-        public void OnRemoveConstraint() { }
-
-        public void OnElementChanged(IElement changedElement)
-        {
-	        if (changedElement.Key == StartElement.Key)
-	        {
-		        OnStartChanged();
-	        }
-            else if (changedElement.Key == EndElement.Key)
-	        {
-		        OnEndChanged();
-	        }
-        }
-        public void OnStartChanged()
+        public override void OnStartChanged()
         {
 	        if (ConstraintTarget == ConstraintTarget.T && StartElement is ITValue start && EndElement is ITValue end)
 	        {
 		        end.T = start.T * (float)_ratio.DirectedLength();
 	        }
         }
-	    public void OnEndChanged()
+	    public override void OnEndChanged()
 	    {
 		    if (ConstraintTarget == ConstraintTarget.T && StartElement is ITValue start && EndElement is ITValue end)
 		    {

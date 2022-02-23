@@ -8,42 +8,17 @@ namespace Slugs.Constraints
     using System.Text;
     using System.Threading.Tasks;
 
-    public class ParallelConstraint : ITwoElementConstraint
+    public class ParallelConstraint : TwoElementConstraintBase
     {
-	    public IElement StartElement { get; private set; }
-	    public IElement EndElement { get; private set; }
-	    public bool HasElement(int key) => StartElement.Key == key || EndElement.Key == key;
-
 	    public SegmentBase StartSegment => (SegmentBase)StartElement;
 	    public SegmentBase EndSegment => (SegmentBase)EndElement;
 
-	    public ConstraintTarget ConstraintTarget => ConstraintTarget.Perpendicular;
+	    public ParallelConstraint(SegmentBase startElement, SegmentBase endElement) : base(startElement, endElement) { }
 
-	    public ParallelConstraint(SegmentBase start, SegmentBase end)
-	    {
-		    StartElement = start;
-		    EndElement = end;
-	    }
-
-	    public void OnAddConstraint() { }
-	    public void OnRemoveConstraint() { }
-
-        public void OnElementChanged(IElement changedElement)
-	    {
-		    if (changedElement.Key == StartElement.Key)
-		    {
-			    OnStartChanged();
-		    }
-		    else if (changedElement.Key == EndElement.Key)
-		    {
-			    OnEndChanged();
-		    }
-	    }
-
-	    public void OnStartChanged()
+	    public override void OnStartChanged()
 	    {
 	    }
-	    public void OnEndChanged()
+	    public override void OnEndChanged()
 	    {
 	    }
     }

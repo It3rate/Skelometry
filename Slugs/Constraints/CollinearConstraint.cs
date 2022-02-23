@@ -9,50 +9,27 @@ namespace Slugs.Constraints
     using System.Text;
     using System.Threading.Tasks;
 
-    public class CollinearConstraint : ITwoElementConstraint
+    public class CollinearConstraint : TwoElementConstraintBase
     {
-	    public IElement StartElement { get; private set; }
-	    public IElement EndElement { get; private set; }
-	    public bool HasElement(int key) => StartElement.Key == key || EndElement.Key == key;
-
 	    public SegmentBase SegmentElement => (SegmentBase)StartElement;
 
-	    public ConstraintTarget ConstraintTarget => ConstraintTarget.Collinear;
+	    public CollinearConstraint(SegmentBase startElement, IElement endElement) : base(startElement, endElement) { }
 
-	    public CollinearConstraint(SegmentBase start, IElement end)
-	    {
-		    StartElement = start;
-		    EndElement = end;
-	    }
-
-	    public void OnAddConstraint() { }
-	    public void OnRemoveConstraint() { }
-
-        public void OnElementChanged(IElement changedElement)
-	    {
-		    if (changedElement.Key == StartElement.Key)
-		    {
-			    OnStartChanged();
-		    }
-		    else if (changedElement.Key == EndElement.Key)
-		    {
-			    OnEndChanged();
-		    }
-        }
-
-	    public void OnStartChanged()
+	    public override void OnStartChanged()
 	    {
 		    if (EndElement is IPoint point)
 		    {
-		    }
+			    point.Position = SegmentElement.ProjectPointOnto(point.Position);
+            }
 		    else if (EndElement is SegmentBase segment)
 		    {
 		    }
         }
-	    public void OnEndChanged()
+	    public override void OnEndChanged()
 	    {
 		    if (EndElement is IPoint point)
 		    {
+			    point.Position = SegmentElement.ProjectPointOnto(point.Position);
 		    }
 		    else if (EndElement is SegmentBase segment)
 		    {

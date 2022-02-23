@@ -8,21 +8,13 @@ namespace Slugs.Constraints
     using System.Text;
     using System.Threading.Tasks;
 
-    public class LockConstraint : IConstraint
+    public class LockConstraint : ConstraintBase
     {
-	    public IElement StartElement { get; private set; }
-	    public bool HasElement(int key) => StartElement.Key == key;
+	    public LockConstraint(IElement startElement) : base(startElement) { }
 
-	    public ConstraintTarget ConstraintTarget => ConstraintTarget.Perpendicular;
+	    public override void OnAddConstraint() => StartElement.IsLocked = true; 
+	    public override void OnRemoveConstraint() => StartElement.IsLocked = false;
 
-	    public LockConstraint(SegmentBase start, SegmentBase end)
-	    {
-		    StartElement = start;
-	    }
-
-	    public void OnAddConstraint() { StartElement.IsLocked = true; }
-	    public void OnRemoveConstraint() { StartElement.IsLocked = false; }
-
-        public void OnElementChanged(IElement changedElement) { }
+        public override void OnElementChanged(IElement changedElement) { }
     }
 }

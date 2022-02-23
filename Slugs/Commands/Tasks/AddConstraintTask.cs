@@ -22,6 +22,8 @@ namespace Slugs.Commands.Tasks
 	    {
 		    base.RunTask();
 		    Pad.Constraints.Add(Constraint);
+		    Constraint.OnElementChanged(Constraint.StartElement);
+
 	    }
 	    public override void UnRunTask()
 	    {

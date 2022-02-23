@@ -19,7 +19,7 @@ namespace Slugs.Constraints
     {
 	    IElement StartElement { get; }
         bool HasElement(int key);
-	    ConstraintTarget ConstraintTarget { get; }
+        List<int> AffectedKeys { get; }
 
 	    void OnAddConstraint();
 	    void OnRemoveConstraint();
@@ -29,7 +29,8 @@ namespace Slugs.Constraints
     public interface ITwoElementConstraint : IConstraint
     {
 	    IElement EndElement { get; }
-	    void OnStartChanged();
+
+	    IElement OtherElement(int originalKey);
 	    void OnEndChanged();
     }
 
