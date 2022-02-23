@@ -26,6 +26,7 @@ namespace Slugs.Entities
         }
 
         public override SKPath Path => new SKPath();
+        public override SKPoint Center => SKPoint.Empty;
 
         public int Count => _elementKeys.Count;
 	    public ElementKind Kind => _elementKeys.Count == 0 ? ElementKind.None : _elementKeys.Count > 1 ? ElementKind.Any : FirstElement.ElementKind;

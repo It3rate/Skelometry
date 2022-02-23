@@ -72,12 +72,16 @@ namespace Slugs.Agents
 
         private void MakeXY()
         {
+            EditCommand cmd;
+
             var center = new SKPoint(500, 400);
             var xAxis = new SKPoint(400, 0);
             var yAxis = new SKPoint(0, 400);
             var traitX = new AddTraitCommand(InputPad, TraitKind.XAxis, center - xAxis, center + xAxis);
             var traitY = new AddTraitCommand(InputPad, TraitKind.YAxis, center + yAxis, center - yAxis);
             _editCommands.Do(traitX, traitY);
+            //cmd = new AddConstraintCommand(InputPad, new MidpointConstraint(traitX.AddedTrait, traitY.AddedTrait));
+            //_editCommands.Do(cmd);
             traitX.AddedTrait.IsLocked = true;
             traitY.AddedTrait.IsLocked = true;
 
@@ -105,10 +109,13 @@ namespace Slugs.Agents
 
             var t0 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(50, 50), new SKPoint(80, 250));
             var t1 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(90, 150), new SKPoint(140, 200));
-            _editCommands.Do(t0, t1);
-            var coll = new CollinearConstraint(t0.AddedTrait, t1.StartPointTask.IPoint);
-            var collCommand = new AddConstraintCommand(InputPad, coll);
-            _editCommands.Do(collCommand);
+            var t2 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(120, 10), new SKPoint(100, 220));
+            var t3 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(110, 40), new SKPoint(130, 140));
+            _editCommands.Do(t0, t1, t2, t3);
+            var collCommand = new AddConstraintCommand(InputPad, new CollinearConstraint(t0.AddedTrait, t1.StartPointTask.IPoint));
+            var coinCommand = new AddConstraintCommand(InputPad, new CoincidentConstraint(t1.EndPointTask.IPoint, t2.StartPointTask.IPoint));
+            var midCommand = new AddConstraintCommand(InputPad, new MidpointConstraint(t2.AddedTrait, t3.EndPointTask.IPoint));
+            _editCommands.Do(collCommand, coinCommand, midCommand);
         }
 
         private void MakeLines()

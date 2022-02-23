@@ -7,15 +7,19 @@ namespace Slugs.Primitives
     {
         public SKPoint StartPoint { get; private set; }
         public SKPoint EndPoint { get; private set; }
-        public SKPoint Midpoint => (EndPoint - StartPoint).Divide(2f) + StartPoint;
+        public SKPoint Midpoint
+        {
+	        get => (EndPoint - StartPoint).Divide(2f) + StartPoint;
+	        set
+	        {
+		        var dif = Midpoint - StartPoint;
+		        StartPoint = value - dif;
+		        EndPoint = value + dif;
+            }
+        }
 
         public static readonly SKSegment Empty = new SKSegment(SKPoint.Empty, SKPoint.Empty);
 
-        //public SKSegment(Position start)
-        //{
-	       // Point = start;
-	       // EndPosition = start;
-        //}
         public SKSegment(SKPoint start, SKPoint end)
         {
 	        StartPoint = start;

@@ -18,7 +18,7 @@ namespace Slugs.Entities
         YAxis,
     }
 
-    public class Trait : SegmentBase
+    public class Trait : SegmentBase, IMidpointSettable
     {
 	    public override ElementKind ElementKind => ElementKind.Trait;
 	    public override IElement EmptyElement => Empty;
@@ -61,6 +61,14 @@ namespace Slugs.Entities
 	        {
 		        throw new ArgumentException("Trait points must be IPoint.");
 	        }
+        }
+
+        public void SetMidpoint(SKPoint midPoint)
+        {
+	        var midSeg = Segment;
+	        midSeg.Midpoint = midPoint;
+	        StartPoint.Position = midSeg.StartPoint;
+	        EndPoint.Position = midSeg.EndPoint;
         }
 
         private readonly HashSet<int> _focalKeys = new HashSet<int>();

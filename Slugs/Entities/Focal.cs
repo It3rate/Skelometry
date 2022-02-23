@@ -10,7 +10,7 @@ namespace Slugs.Entities
 {
     // Eventually Focals will allow multiple segments to multiply/square/cube etc, as well as have probability and fuzzy endpoints.
     // These are slug collections with bonds between them and causation direction.
-	public class Focal : SegmentBase, ISlugElement
+	public class Focal : SegmentBase, ISlugElement, IMidpointSettable
     {
 	    public override ElementKind ElementKind => ElementKind.Focal;
 	    public override IElement EmptyElement => Empty;
@@ -53,6 +53,7 @@ namespace Slugs.Entities
 	        get => EndPoint.T;
 	        set => EndPoint.T = value;
         }
+        public float TLength => EndT - StartT;
         public float TRatio => (float)(LocalSlug.DirectedLength() / FocalUnit.LocalSlug.DirectedLength());
         public override SKPoint StartPosition => Trait.PointAlongLine(StartPoint.T);
         public override SKPoint EndPosition => Trait.PointAlongLine(EndPoint.T);
@@ -118,6 +119,14 @@ namespace Slugs.Entities
 	        {
 		        throw new ArgumentException("Focal points must be FocalPoint.");
 	        }
+        }
+
+        public void SetMidpoint(SKPoint midPoint)
+        {
+	        var originT = Trait.TFromPoint(midPoint).Item1;
+	        var len = TLength;
+	        StartT = originT - TLength / 2f;
+	        EndT = originT - TLength / 2f;
         }
 
         private readonly HashSet<int> _bondStartKeys = new HashSet<int>();

@@ -16,8 +16,9 @@ namespace Slugs.Entities
 
         public abstract SKPoint StartPosition { get; }//protected set; }
 	    public abstract SKPoint EndPosition { get; } //protected set; }
+	    public override SKPoint Center => MidPoint;
 
-	    public SKSegment Segment => new SKSegment(StartPosition, EndPosition);
+        public SKSegment Segment => new SKSegment(StartPosition, EndPosition);
 
         protected SegmentBase(bool isEmpty) : base(isEmpty) { }
         //protected SegmentBase(PadKind padKind) : base(padKind) { }
@@ -37,12 +38,21 @@ namespace Slugs.Entities
         public float Length => Segment.Length;
 	    public float SquaredLength => Segment.LengthSquared;
 	    public SKPoint PointAlongLine(float t) => Segment.PointAlongLine(t);
-	    public SKPoint SKPointFromStart(float dist) => Segment.PointAlongLine(dist);
+        public SKPoint SKPointFromStart(float dist) => Segment.PointAlongLine(dist);
 	    public SKPoint SKPointFromEnd(float dist) => Segment.SKPointFromEnd(dist);
 	    public SKPoint OrthogonalPoint(SKPoint pt, float offset) => Segment.OrthogonalPoint(pt, offset);
 	    public SKPoint ProjectPointOnto(SKPoint p) => Segment.ProjectPointOnto(p);
         public (float, SKPoint) TFromPoint(SKPoint point, bool clamp = true) => Segment.TFromPoint(point, clamp);
 	    public SKPoint[] EndArrow(float dist = 8f) => Segment.EndArrow(dist);
+
+	    public SKPoint MidPoint => Segment.Midpoint;
+
+	    public SKSegment SegmentFromMidpoint(SKPoint midPoint)
+	    {
+		    var result = Segment;
+		    result.Midpoint = midPoint;
+		    return result;
+	    }
 
 	    public override float DistanceToPoint(SKPoint point)
 	    {

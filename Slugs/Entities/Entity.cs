@@ -14,6 +14,7 @@ namespace Slugs.Entities
 
         public override List<IPoint> Points => new List<IPoint> { };
         public override SKPath Path => new SKPath();
+        public override SKPoint Center => SKPoint.Empty;
 
         public override List<int> AllKeys => new List<int>() { Key };
 

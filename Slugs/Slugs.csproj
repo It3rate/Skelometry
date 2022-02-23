@@ -125,6 +125,7 @@
     <Compile Include="Constraints\HorizontalVerticalConstraint.cs" />
     <Compile Include="Constraints\CollinearConstraint.cs" />
     <Compile Include="Constraints\LockConstraint.cs" />
+    <Compile Include="Constraints\MidpointConstraint.cs" />
     <Compile Include="Constraints\ParallelConstraint.cs" />
     <Compile Include="Constraints\PerpendicularConstraint.cs" />
     <Compile Include="Constraints\RatioConstraint.cs" />

@@ -21,6 +21,7 @@ namespace Slugs.Entities
         bool IsEmpty { get; }
         bool HasArea { get; }
         SKPath Path { get; }
+        SKPoint Center { get; }
 
         //IPoint[] TerminalPoints { get; }
         List<IPoint> Points { get; }
@@ -49,6 +50,11 @@ namespace Slugs.Entities
 		float T { get; set; }
     }
 
+	public interface IMidpointSettable
+	{
+		void SetMidpoint(SKPoint midPoint);
+	}
+
     public abstract class ElementBase : IElement
     {
 	    public const int EmptyKeyValue = -99;
@@ -64,7 +70,8 @@ namespace Slugs.Entities
 		public abstract ElementKind ElementKind { get; }
 		public abstract SKPath Path { get; }
 		public abstract List<IPoint> Points { get; }
-		public List<SKPoint> SKPoints
+		public abstract SKPoint Center { get; }
+        public List<SKPoint> SKPoints
 		{
 			get
 			{

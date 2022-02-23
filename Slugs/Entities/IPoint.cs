@@ -21,6 +21,7 @@ namespace Slugs.Entities
 	public abstract class PointBase : ElementBase, IPoint
 	{
 		public abstract SKPoint Position { get; set; }
+		public override SKPoint Center => Position;
 
 		protected PointBase(bool isEmpty) : base(isEmpty) { }
 		protected PointBase(PadKind padKind) : base(padKind) { }

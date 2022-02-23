@@ -49,10 +49,10 @@ namespace Slugs.Commands
 	    public ICommand Do(ICommand command)
 	    {
             // should always pick up correct type of command override for Do
-		    throw new ArgumentException("command must match generic type of command stack");
+		    throw new ArgumentException("command must match generic type the command stack was created with.");
 	    }
 
-        public TCommand Do(params TCommand[] commands)
+	    public TCommand Do(params TCommand[] commands)
 	    {
 		    RemoveRedoCommands();
 		    TCommand result = default(TCommand);
