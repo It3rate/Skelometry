@@ -17,6 +17,7 @@ namespace Slugs.Entities
         private BondPoint() : base(true) { }
 
         public int FocalKey { get; set; }
+        public override List<int> AllKeys => new List<int>() { Key, FocalKey };
         private float _t;
         public float T
         {
@@ -34,6 +35,7 @@ namespace Slugs.Entities
         {
             FocalKey = focalKey;
             T = t;
+            AllKeys.Add(FocalKey);
         }
 
         public override bool CanMergeWith(IPoint point)

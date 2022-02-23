@@ -16,7 +16,9 @@ namespace Slugs.Entities
 
 	    public int StartKey { get; private set; }
 	    public int EndKey { get; private set; }
-	    public Slug LocalRatio { get; set; }
+	    public override List<int> AllKeys => new List<int>() { StartKey, EndKey, StartFocal.StartKey, StartFocal.EndKey, EndFocal.StartKey, EndFocal.EndKey };
+
+        public Slug LocalRatio { get; set; }
 	    public float StartT
 	    {
 		    get => (float)LocalRatio.Imaginary;

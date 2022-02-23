@@ -24,6 +24,7 @@ namespace Slugs.Entities
 
         //IPoint[] TerminalPoints { get; }
         List<IPoint> Points { get; }
+        List<int> AllKeys { get; }
         List<SKPoint> SKPoints { get; }
         float DistanceToPoint(SKPoint point);
 
@@ -57,6 +58,7 @@ namespace Slugs.Entities
         public Pad Pad { get; }
 	    public PadKind PadKind => Pad.PadKind;
 		public int Key { get; }
+		public abstract List<int> AllKeys { get; }
 
         public abstract IElement EmptyElement { get; }
 		public abstract ElementKind ElementKind { get; }

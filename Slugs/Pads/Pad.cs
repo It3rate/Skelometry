@@ -181,6 +181,18 @@ namespace Slugs.Entities
 	        }
 	        return result;
         }
+        public int[] TraitsWithKey(int key)
+        {
+	        var result = new List<int>();
+	        foreach (var trait in Traits)
+	        {
+		        if (trait.StartKey == key || trait.EndKey == key)
+		        {
+			        result.Add(trait.Key);
+		        }
+	        }
+	        return result.ToArray();
+        }
 
         #endregion
         #region Points

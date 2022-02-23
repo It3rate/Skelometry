@@ -21,7 +21,9 @@ namespace Slugs.Entities
 			Position = SKPoint.Empty;
 		}
 
-		public int TargetKey { get; private set; }
+		public override List<int> AllKeys => TargetPoint.AllKeys; // should never be RefPoint, empty point is ok.
+
+        public int TargetKey { get; private set; }
 		public override IPoint TargetPoint => Pad.ResolvedPointFor(this);
 		public ElementKind TargetKind => TargetPoint.ElementKind;
 

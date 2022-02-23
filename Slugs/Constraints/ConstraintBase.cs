@@ -17,7 +17,8 @@ namespace Slugs.Constraints
 	    protected ConstraintBase(IElement startElement)
 	    {
 		    StartElement = startElement;
-	    }
+		    AffectedKeys.AddRange(StartElement.AllKeys);
+        }
 
         public virtual void OnAddConstraint() { }
 	    public virtual void OnRemoveConstraint() { }
@@ -29,23 +30,23 @@ namespace Slugs.Constraints
     {
 	    public IElement EndElement { get; }
         public IElement OtherElement(int originalKey) => originalKey == StartElement.Key ? EndElement : StartElement;
-	    public override bool HasElement(int key) => StartElement.Key == key || EndElement.Key == key;
 
 	    protected TwoElementConstraintBase(IElement startElement, IElement endElement) : base(startElement)
 	    {
 		    EndElement = endElement;
-	    }
+		    AffectedKeys.AddRange(EndElement.AllKeys);
+        }
 
         public virtual void OnStartChanged() { }
 	    public virtual void OnEndChanged() { }
 
 	    public override void OnElementChanged(IElement changedElement)
 	    {
-		    if (changedElement.Key == StartElement.Key)
+		    if (StartElement.AllKeys.Contains(changedElement.Key))
 		    {
 			    OnStartChanged();
 		    }
-		    else if (changedElement.Key == EndElement.Key)
+		    else if (EndElement.AllKeys.Contains(changedElement.Key))
 		    {
 			    OnEndChanged();
 		    }

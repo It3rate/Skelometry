@@ -15,6 +15,7 @@ namespace Slugs.Entities
         private FocalPoint():base(true) { }
 
         public int TraitKey { get; set; }
+        public override List<int> AllKeys => new List<int>() { Key, TraitKey };
         public Trait Trait => Pad.TraitAt(TraitKey);
         private float _t;
         public float T

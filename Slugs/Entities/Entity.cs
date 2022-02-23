@@ -15,6 +15,8 @@ namespace Slugs.Entities
         public override List<IPoint> Points => new List<IPoint> { };
         public override SKPath Path => new SKPath();
 
+        public override List<int> AllKeys => new List<int>() { Key };
+
         private readonly HashSet<int> _focalKeys = new HashSet<int>();
 	    private readonly HashSet<int> _doubleBondKeys = new HashSet<int>();
 

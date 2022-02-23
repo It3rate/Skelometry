@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SkiaSharp;
 using Slugs.Agents;
 using Slugs.Pads;
@@ -24,7 +25,7 @@ namespace Slugs.Entities
 		protected PointBase(bool isEmpty) : base(isEmpty) { }
 		protected PointBase(PadKind padKind) : base(padKind) { }
 
-		public override SKPath Path {
+        public override SKPath Path {
 			get
 			{
                 var path = new SKPath();

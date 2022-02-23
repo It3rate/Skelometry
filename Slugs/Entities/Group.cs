@@ -12,6 +12,7 @@ namespace Slugs.Entities
     public class Group : ElementBase
     {
 	    public override ElementKind ElementKind => Entities.ElementKind.Group;
+	    public override List<int> AllKeys => new List<int>(){Key};
 	    public override IElement EmptyElement => Empty;
 	    public static readonly Group Empty = new Group();
         public Group() : base(true) { }

@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.Collections.Generic;
+using SkiaSharp;
 using Slugs.Pads;
 using Slugs.Primitives;
 
@@ -10,6 +11,8 @@ namespace Slugs.Entities
 	    public int EndKey { get; protected set; }
 	    protected virtual void SetStartKey(int key) => StartKey = key;
 	    protected virtual void SetEndKey(int key) => EndKey = key;
+
+	    public override List<int> AllKeys => new List<int>() { Key, StartKey, EndKey };
 
         public abstract SKPoint StartPosition { get; }//protected set; }
 	    public abstract SKPoint EndPosition { get; } //protected set; }
