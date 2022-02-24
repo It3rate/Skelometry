@@ -1,4 +1,5 @@
-﻿using Slugs.Entities;
+﻿using SkiaSharp;
+using Slugs.Entities;
 
 namespace Slugs.Constraints
 {
@@ -15,13 +16,15 @@ namespace Slugs.Constraints
 
         public CoincidentConstraint(IPoint startElement, IPoint endElement) : base(startElement, endElement) { }
 
-	    public override void OnStartChanged()
+	    public override void OnStartChanged(Dictionary<int, SKPoint> adjustedElements)
 	    {
 		    EndPoint.Position = StartPoint.Position;
+            EndPoint.Pad.UpdateConstraints(EndPoint, adjustedElements);
 	    }
-	    public override void OnEndChanged()
+	    public override void OnEndChanged(Dictionary<int, SKPoint> adjustedElements)
 	    {
 		    StartPoint.Position = EndPoint.Position;
+		    StartPoint.Pad.UpdateConstraints(StartPoint, adjustedElements);
         }
     }
 }

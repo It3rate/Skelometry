@@ -1,4 +1,5 @@
-﻿using Slugs.Entities;
+﻿using SkiaSharp;
+using Slugs.Entities;
 
 namespace Slugs.Constraints
 {
@@ -16,23 +17,12 @@ namespace Slugs.Constraints
 	    public EqualLengthConstraint(SegmentBase startElement, SegmentBase endElement) : base(startElement, endElement) { }
 
 
-	    public override void OnStartChanged()
+	    public override void OnStartChanged(Dictionary<int, SKPoint> adjustedElements)
 	    {
-		    if (EndElement is IPoint point)
-		    {
-		    }
-		    else if (EndElement is SegmentBase segment)
-		    {
-		    }
+		    //EndSegment.Length = StartSegment.Length;
 	    }
-	    public override void OnEndChanged()
+	    public override void OnEndChanged(Dictionary<int, SKPoint> adjustedElements)
 	    {
-		    if (EndElement is IPoint point)
-		    {
-		    }
-		    else if (EndElement is SegmentBase segment)
-		    {
-		    }
 	    }
     }
 }

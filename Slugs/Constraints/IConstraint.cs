@@ -1,4 +1,5 @@
-﻿using Slugs.Entities;
+﻿using SkiaSharp;
+using Slugs.Entities;
 
 namespace Slugs.Constraints
 {
@@ -23,7 +24,7 @@ namespace Slugs.Constraints
 
 	    void OnAddConstraint();
 	    void OnRemoveConstraint();
-        void OnElementChanged(IElement changedElement);
+        void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> _changes);
     }
 
     public interface ITwoElementConstraint : IConstraint
@@ -31,7 +32,8 @@ namespace Slugs.Constraints
 	    IElement EndElement { get; }
 
 	    IElement OtherElement(int originalKey);
-	    void OnEndChanged();
+	    void OnStartChanged(Dictionary<int, SKPoint> adjustedElements);
+	    void OnEndChanged(Dictionary<int, SKPoint> adjustedElements);
     }
 
     public enum ConstraintTarget

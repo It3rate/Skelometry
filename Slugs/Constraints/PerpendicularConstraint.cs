@@ -1,4 +1,5 @@
-﻿using Slugs.Entities;
+﻿using SkiaSharp;
+using Slugs.Entities;
 
 namespace Slugs.Constraints
 {
@@ -16,10 +17,10 @@ namespace Slugs.Constraints
         public PerpendicularConstraint(SegmentBase startElement, SegmentBase endElement) : base(startElement, endElement) { }
 
 
-	    public override void OnStartChanged()
+	    public override void OnStartChanged(Dictionary<int, SKPoint> adjustedElements)
 	    {
 	    }
-	    public override void OnEndChanged()
+	    public override void OnEndChanged(Dictionary<int, SKPoint> adjustedElements)
 	    {
 	    }
     }

@@ -377,14 +377,17 @@ namespace Slugs.Entities
             return result;
         }
 
-        public void UpdateConstraints(IElement changedElement)
+        public void UpdateConstraints(IElement changedElement, Dictionary<int, SKPoint> adjustedElements)
         {
-	        var related = Constraints.Where(constraint => constraint.HasElement(changedElement.Key));
-	        foreach (var constraint in related)
+	        if (!changedElement.IsLocked && !adjustedElements.ContainsKey(changedElement.Key))
 	        {
-		        constraint.OnElementChanged(changedElement);
+                adjustedElements.Add(changedElement.Key, changedElement.Center);
+                var related = Constraints.Where(constraint => constraint.HasElement(changedElement.Key));
+		        foreach (var constraint in related)
+		        {
+			        constraint.OnElementChanged(changedElement, adjustedElements);
+		        }
 	        }
-
         }
     }
 }

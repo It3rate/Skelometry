@@ -1,4 +1,5 @@
-﻿using Slugs.Entities;
+﻿using SkiaSharp;
+using Slugs.Entities;
 
 namespace Slugs.Constraints
 {
@@ -15,6 +16,6 @@ namespace Slugs.Constraints
 	    public override void OnAddConstraint() => StartElement.IsLocked = true; 
 	    public override void OnRemoveConstraint() => StartElement.IsLocked = false;
 
-        public override void OnElementChanged(IElement changedElement) { }
+        public override void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements) { }
     }
 }

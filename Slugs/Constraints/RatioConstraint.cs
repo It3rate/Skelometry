@@ -1,4 +1,5 @@
-﻿using Slugs.Entities;
+﻿using SkiaSharp;
+using Slugs.Entities;
 using Slugs.Primitives;
 
 namespace Slugs.Constraints
@@ -23,20 +24,22 @@ namespace Slugs.Constraints
             _ratio = ratio;
         }
 
-        public override void OnStartChanged()
+        public override void OnStartChanged(Dictionary<int, SKPoint> adjustedElements)
         {
 	        if (ConstraintTarget == ConstraintTarget.T && StartElement is ITValue start && EndElement is ITValue end)
 	        {
 		        end.T = start.T * (float)_ratio.DirectedLength();
-	        }
+		        EndElement.Pad.UpdateConstraints(EndElement, adjustedElements);
+            }
         }
-	    public override void OnEndChanged()
+	    public override void OnEndChanged(Dictionary<int, SKPoint> adjustedElements)
 	    {
 		    if (ConstraintTarget == ConstraintTarget.T && StartElement is ITValue start && EndElement is ITValue end)
 		    {
 			    var dl = (float) _ratio.DirectedLength();
 			    start.T = (dl == 0) ? float.MaxValue : end.T / (float)_ratio.DirectedLength();
-		    }
+			    StartElement.Pad.UpdateConstraints(StartElement, adjustedElements);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Slugs.Constraints;
+﻿using SkiaSharp;
+using Slugs.Constraints;
 using Slugs.Entities;
 using Slugs.Pads;
 
@@ -13,6 +14,8 @@ namespace Slugs.Commands.Tasks
     public class AddConstraintTask : EditTask, ICreateTask
     {
         public IConstraint Constraint { get; }
+        private readonly Dictionary<int, SKPoint> _changes = new Dictionary<int, SKPoint>();
+
         public AddConstraintTask(PadKind padKind, IConstraint constraint) : base(padKind)
         {
 	        Constraint = constraint;
@@ -22,7 +25,7 @@ namespace Slugs.Commands.Tasks
 	    {
 		    base.RunTask();
 		    Pad.Constraints.Add(Constraint);
-		    Constraint.OnElementChanged(Constraint.StartElement);
+		    Constraint.OnElementChanged(Constraint.StartElement, _changes);
 
 	    }
 	    public override void UnRunTask()

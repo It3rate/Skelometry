@@ -1,4 +1,5 @@
-﻿using Slugs.Entities;
+﻿using SkiaSharp;
+using Slugs.Entities;
 using Slugs.Primitives;
 
 namespace Slugs.Constraints
@@ -15,22 +16,24 @@ namespace Slugs.Constraints
 
 	    public CollinearConstraint(SegmentBase startElement, IElement endElement) : base(startElement, endElement) { }
 
-	    public override void OnStartChanged()
+	    public override void OnStartChanged(Dictionary<int, SKPoint> adjustedElements)
 	    {
 		    if (EndElement is IPoint point)
 		    {
 			    point.Position = SegmentElement.ProjectPointOnto(point.Position);
+			    point.Pad.UpdateConstraints(point, adjustedElements);
             }
 		    else if (EndElement is SegmentBase segment)
 		    {
 		    }
         }
-	    public override void OnEndChanged()
+	    public override void OnEndChanged(Dictionary<int, SKPoint> adjustedElements)
 	    {
 		    if (EndElement is IPoint point)
 		    {
 			    point.Position = SegmentElement.ProjectPointOnto(point.Position);
-		    }
+			    point.Pad.UpdateConstraints(point, adjustedElements);
+            }
 		    else if (EndElement is SegmentBase segment)
 		    {
 		    }

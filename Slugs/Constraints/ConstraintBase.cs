@@ -1,4 +1,5 @@
-﻿using Slugs.Entities;
+﻿using SkiaSharp;
+using Slugs.Entities;
 
 namespace Slugs.Constraints
 {
@@ -22,7 +23,7 @@ namespace Slugs.Constraints
 
         public virtual void OnAddConstraint() { }
 	    public virtual void OnRemoveConstraint() { }
-	    public virtual void OnElementChanged(IElement changedElement) { }
+	    public virtual void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements) { }
 
     }
 
@@ -37,18 +38,18 @@ namespace Slugs.Constraints
 		    AffectedKeys.AddRange(EndElement.AllKeys);
         }
 
-        public virtual void OnStartChanged() { }
-	    public virtual void OnEndChanged() { }
+        public virtual void OnStartChanged(Dictionary<int, SKPoint> adjustedElements) { }
+	    public virtual void OnEndChanged(Dictionary<int, SKPoint> adjustedElements) { }
 
-	    public override void OnElementChanged(IElement changedElement)
+	    public override void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements)
 	    {
 		    if (StartElement.AllKeys.Contains(changedElement.Key))
 		    {
-			    OnStartChanged();
+			    OnStartChanged(adjustedElements);
 		    }
 		    else if (EndElement.AllKeys.Contains(changedElement.Key))
 		    {
-			    OnEndChanged();
+			    OnEndChanged(adjustedElements);
 		    }
 	    }
     }

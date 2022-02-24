@@ -72,8 +72,6 @@ namespace Slugs.Agents
 
         private void MakeXY()
         {
-            EditCommand cmd;
-
             var center = new SKPoint(500, 400);
             var xAxis = new SKPoint(400, 0);
             var yAxis = new SKPoint(0, 400);
@@ -332,7 +330,8 @@ namespace Slugs.Agents
 				    }
 			    }
 
-			    InputPad.UpdateConstraints(mec.Element);
+			    var adjustedElements = new Dictionary<int, SKPoint>();
+			    InputPad.UpdateConstraints(mec.Element, adjustedElements);
             }
             return true;
 	    }
