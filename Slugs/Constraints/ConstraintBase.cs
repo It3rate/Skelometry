@@ -45,6 +45,7 @@ namespace Slugs.Constraints
 	    {
 		    if (StartElement.AllKeys.Contains(changedElement.Key))
 		    {
+                // add all keys to adjusted
 			    OnStartChanged(adjustedElements);
 		    }
 		    else if (EndElement.AllKeys.Contains(changedElement.Key))

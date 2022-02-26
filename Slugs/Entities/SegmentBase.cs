@@ -41,7 +41,7 @@ namespace Slugs.Entities
         public SKPoint SKPointFromStart(float dist) => Segment.PointAlongLine(dist);
 	    public SKPoint SKPointFromEnd(float dist) => Segment.SKPointFromEnd(dist);
 	    public SKPoint OrthogonalPoint(SKPoint pt, float offset) => Segment.OrthogonalPoint(pt, offset);
-	    public SKPoint ProjectPointOnto(SKPoint p) => Segment.ProjectPointOnto(p);
+	    public SKPoint ProjectPointOnto(SKPoint p, bool clamp) => Segment.ProjectPointOnto(p, clamp);
         public (float, SKPoint) TFromPoint(SKPoint point, bool clamp = true) => Segment.TFromPoint(point, clamp);
 	    public SKPoint[] EndArrow(float dist = 8f) => Segment.EndArrow(dist);
 
@@ -56,7 +56,7 @@ namespace Slugs.Entities
 
 	    public override float DistanceToPoint(SKPoint point)
 	    {
-		    var closest = ProjectPointOnto(point);
+		    var closest = ProjectPointOnto(point, true);
 		    return point.DistanceTo(closest);
 	    }
 

@@ -20,7 +20,7 @@ namespace Slugs.Constraints
 	    {
 		    if (EndElement is IPoint point)
 		    {
-			    point.Position = SegmentElement.ProjectPointOnto(point.Position);
+			    point.Position = SegmentElement.ProjectPointOnto(point.Position, false);
 			    point.Pad.UpdateConstraints(point, adjustedElements);
             }
 		    else if (EndElement is SegmentBase segment)
@@ -31,7 +31,7 @@ namespace Slugs.Constraints
 	    {
 		    if (EndElement is IPoint point)
 		    {
-			    point.Position = SegmentElement.ProjectPointOnto(point.Position);
+			    point.Position = SegmentElement.ProjectPointOnto(point.Position, false);
 			    point.Pad.UpdateConstraints(point, adjustedElements);
             }
 		    else if (EndElement is SegmentBase segment)
