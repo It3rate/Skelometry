@@ -50,7 +50,7 @@ namespace Slugs.Entities
 
         public override bool HasArea => true;
 
-	    public override List<IPoint> Points => new List<IPoint>() { StartFocal.StartPoint, StartFocal.EndPoint, EndFocal.StartPoint, EndFocal.EndPoint };
+	    public override List<IPoint> Points => new List<IPoint>() { StartFocal.StartFocalPoint, StartFocal.EndFocalPoint, EndFocal.StartFocalPoint, EndFocal.EndFocalPoint };
 
 	    public DoubleBond(Focal startFocal, Focal endFocal) : base(startFocal.PadKind)
 	    {

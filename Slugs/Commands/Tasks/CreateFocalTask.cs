@@ -25,8 +25,8 @@ namespace Slugs.Commands.Tasks
         public int TraitKey => StartPoint.TraitKey;
         public Trait Trait => Pad.TraitAt(TraitKey);
 
-        public float StartT => AddedFocal.StartPoint.T;
-	    public float EndT => AddedFocal.EndPoint.T;
+        public float StartT => AddedFocal.StartFocalPoint.T;
+	    public float EndT => AddedFocal.EndFocalPoint.T;
 
         public ElementKind SegmentKind => ElementKind.Focal;
         public SegmentBase Segment;

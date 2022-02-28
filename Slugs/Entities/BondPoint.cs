@@ -79,8 +79,8 @@ namespace Slugs.Entities
         public Trait GetTrait() => Pad.TraitAt(GetFocal().TraitKey);
         public Focal GetFocal() => Pad.FocalAt(FocalKey);
         public float GetT() => T;
-        public IPoint GetStartPoint() => Pad.FocalAt(FocalKey).StartPoint;
-        public IPoint GetEndPoint() => Pad.FocalAt(FocalKey).EndPoint;
+        public IPoint GetStartPoint() => Pad.FocalAt(FocalKey).StartFocalPoint;
+        public IPoint GetEndPoint() => Pad.FocalAt(FocalKey).EndFocalPoint;
 
         public bool ReplaceWith(IPoint to)
         {

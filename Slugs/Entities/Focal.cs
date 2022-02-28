@@ -10,7 +10,7 @@ namespace Slugs.Entities
 {
     // Eventually Focals will allow multiple segments to multiply/square/cube etc, as well as have probability and fuzzy endpoints.
     // These are slug collections with bonds between them and causation direction.
-	public class Focal : SegmentBase, ISlugElement, IMidpointSettable
+	public class Focal : SegmentBase, ISlugElement, ISegmentElement, IMidpointSettable
     {
 	    public override ElementKind ElementKind => ElementKind.Focal;
 	    public override IElement EmptyElement => Empty;
@@ -20,23 +20,25 @@ namespace Slugs.Entities
         public int EntityKey { get; }
 
         public Entity Entity => Pad.EntityAt(EntityKey);
-        public int TraitKey => StartPoint.TraitKey;
+        public int TraitKey => StartFocalPoint.TraitKey;
         public Trait Trait => Pad.TraitAt(TraitKey);
         public TraitKind TraitKind => Pad.TraitAt(TraitKey).TraitKind;
 
-        public float Direction => StartPoint.T <= EndPoint.T ? 1f : -1f;
-        public float ZeroT => FocalUnit.StartPoint.T;
-        public FocalPoint StartPoint => (FocalPoint)Pad.PointAt(StartKey);
-        public FocalPoint EndPoint => (FocalPoint)Pad.PointAt(EndKey);
-        public FocalPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndPoint : (notKey == EndKey) ? StartPoint : FocalPoint.Empty;
+        public float Direction => StartFocalPoint.T <= EndFocalPoint.T ? 1f : -1f;
+        public float ZeroT => FocalUnit.StartFocalPoint.T;
+        public IPoint StartPoint => Pad.PointAt(StartKey);
+        public IPoint EndPoint => Pad.PointAt(EndKey);
+        public FocalPoint StartFocalPoint => (FocalPoint)Pad.PointAt(StartKey);
+        public FocalPoint EndFocalPoint => (FocalPoint)Pad.PointAt(EndKey);
+        public FocalPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndFocalPoint : (notKey == EndKey) ? StartFocalPoint : FocalPoint.Empty;
 
         public Slug LocalRatio
         {
 	        get => new Slug(StartT, EndT);
 	        set
 	        {
-		        StartPoint.T = (float)value.Imaginary;
-		        EndPoint.T = (float)value.Real;
+		        StartFocalPoint.T = (float)value.Imaginary;
+		        EndFocalPoint.T = (float)value.Real;
 	        }
         }
 
@@ -45,18 +47,18 @@ namespace Slugs.Entities
 
         public float StartT
         {
-	        get => StartPoint.T;
-	        set => StartPoint.T = value;
+	        get => StartFocalPoint.T;
+	        set => StartFocalPoint.T = value;
         }
         public float EndT
         {
-	        get => EndPoint.T;
-	        set => EndPoint.T = value;
+	        get => EndFocalPoint.T;
+	        set => EndFocalPoint.T = value;
         }
         public float TLength => EndT - StartT;
         public float TRatio => (float)(LocalSlug.DirectedLength() / FocalUnit.LocalSlug.DirectedLength());
-        public override SKPoint StartPosition => Trait.PointAlongLine(StartPoint.T);
-        public override SKPoint EndPosition => Trait.PointAlongLine(EndPoint.T);
+        public override SKPoint StartPosition => Trait.PointAlongLine(StartFocalPoint.T);
+        public override SKPoint EndPosition => Trait.PointAlongLine(EndFocalPoint.T);
 
         public bool IsUnit => Pad.UnitKeyFor(TraitKind) == Key;
         public float UnitLength => (float)Pad.UnitFor(TraitKind).DirectedLength();
@@ -77,15 +79,15 @@ namespace Slugs.Entities
 
         public Slug LocalSlug
         {
-	        get => new Slug(StartPoint.T, EndPoint.T);
+	        get => new Slug(StartFocalPoint.T, EndFocalPoint.T);
 	        set
 	        {
-		        StartPoint.T = (float) value.Imaginary;
-		        EndPoint.T = (float)value.Real;
+		        StartFocalPoint.T = (float) value.Imaginary;
+		        EndFocalPoint.T = (float)value.Real;
 	        }
         }
 
-        public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartPoint, EndPoint };
+        public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { StartFocalPoint, EndFocalPoint };
 
         public Focal(Entity entity, FocalPoint startPoint, FocalPoint endPoint) : base(entity.PadKind)
         {

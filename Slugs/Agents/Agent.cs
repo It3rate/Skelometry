@@ -111,14 +111,15 @@ namespace Slugs.Agents
             var t3 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(110, 40), new SKPoint(130, 140));
             var t4 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(220, 80), new SKPoint(190, 170));
             var t5 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(260, 80), new SKPoint(290, 150));
-            var t6 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(270, 80), new SKPoint(300, 100));
+            var t6 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(270, 80), new SKPoint(300, 300));
             _editCommands.Do(t0, t1, t2, t3, t4, t5, t6);
-            //t4.AddedTrait.StartPoint.IsLocked = true;
+            //t4.AddedTrait.StartFocalPoint.IsLocked = true;
             var collCommand = new AddConstraintCommand(InputPad, new CollinearConstraint(t0.AddedTrait, t1.StartPointTask.IPoint));
             var coinCommand = new AddConstraintCommand(InputPad, new CoincidentConstraint(t1.EndPointTask.IPoint, t2.StartPointTask.IPoint));
             var midCommand = new AddConstraintCommand(InputPad, new MidpointConstraint(t2.AddedTrait, t3.EndPointTask.IPoint));
             var parCommand = new AddConstraintCommand(InputPad, new ParallelConstraint(t3.AddedTrait, t4.AddedTrait));
-            var eqCommand = new AddConstraintCommand(InputPad, new EqualLengthConstraint(t5.AddedTrait, t6.AddedTrait));
+            var eqCommand = new AddConstraintCommand(InputPad, 
+	            new EqualConstraint(t5.AddedTrait, t6.AddedTrait, LengthLock.None, DirectionLock.Perpendicular));
             _editCommands.Do(collCommand, coinCommand, midCommand, parCommand, eqCommand);
         }
 
@@ -244,7 +245,7 @@ namespace Slugs.Agents
 	                        var startT = trait.TFromPoint(Data.Begin.Position).Item1;
 	                        var focalCmd = new AddFocalCommand(_activeEntity, trait, startT, startT);
 	                        _activeCommand = _editCommands.Do(focalCmd);
-	                        Data.Selected.Point = focalCmd.AddedFocal.EndPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
+	                        Data.Selected.Point = focalCmd.AddedFocal.EndFocalPoint;// new TerminalPoint(PadKind.Input, mousePoint);// 
 	                        Data.Selected.ClearElements();
 	                        _selectableKind = ElementKind.TraitPart;
                         }

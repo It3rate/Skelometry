@@ -18,7 +18,7 @@ namespace Slugs.Entities
         YAxis,
     }
 
-    public class Trait : SegmentBase, IMidpointSettable
+    public class Trait : SegmentBase, ISegmentElement, IMidpointSettable
     {
 	    public override ElementKind ElementKind => ElementKind.Trait;
 	    public override IElement EmptyElement => Empty;

@@ -44,8 +44,15 @@ namespace Slugs.Entities
         Slug LocalRatio { get; set; }
         float TRatio { get; }
     }
+	public interface ISegmentElement
+    {
+	    IPoint StartPoint { get; }
+        IPoint EndPoint { get; }
+        SKPoint StartPosition { get; }
+	    SKPoint EndPosition { get; }
+    }
 
-	public interface ITValue
+    public interface ITValue
 	{
 		float T { get; set; }
     }

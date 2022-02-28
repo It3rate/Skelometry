@@ -38,6 +38,21 @@ namespace Slugs.Constraints
 		    AffectedKeys.AddRange(EndElement.AllKeys);
         }
 
+	    protected void AddPoints(Trait trait, Dictionary<int, SKPoint> adjustedElements)
+	    {
+		    if (!adjustedElements.ContainsKey(trait.StartPoint.Key))
+		    {
+			    adjustedElements.Add(trait.StartPoint.Key, trait.StartPosition);
+		    }
+		    if (!adjustedElements.ContainsKey(trait.EndPoint.Key))
+		    {
+			    adjustedElements.Add(trait.EndPoint.Key, trait.EndPosition);
+		    }
+		    if (!adjustedElements.ContainsKey(trait.Key))
+		    {
+			    adjustedElements.Add(trait.Key, trait.Center);
+		    }
+	    }
         public virtual void OnStartChanged(Dictionary<int, SKPoint> adjustedElements) { }
 	    public virtual void OnEndChanged(Dictionary<int, SKPoint> adjustedElements) { }
 
