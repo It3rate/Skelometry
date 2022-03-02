@@ -27,7 +27,8 @@ namespace Slugs.Entities
 
         public IPoint StartPoint => Pad.PointAt(StartKey);
         public IPoint EndPoint => Pad.PointAt(EndKey);
-	    public TraitKind TraitKind { get; }
+        public IPoint OtherPoint(IPoint orgPoint) => StartPoint == orgPoint ? EndPoint : StartPoint;
+        public TraitKind TraitKind { get; }
 
         public override SKPoint StartPosition => StartPoint.Position;
 	    public override SKPoint EndPosition => EndPoint.Position;

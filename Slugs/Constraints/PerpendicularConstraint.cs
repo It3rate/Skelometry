@@ -9,19 +9,9 @@ namespace Slugs.Constraints
     using System.Text;
     using System.Threading.Tasks;
 
-    public class PerpendicularConstraint : TwoElementConstraintBase
+    public class PerpendicularConstraint : EqualConstraint
     {
-	    public SegmentBase StartSegment => (SegmentBase)StartElement;
-	    public SegmentBase EndSegment => (SegmentBase)EndElement;
-
-        public PerpendicularConstraint(SegmentBase startElement, SegmentBase endElement) : base(startElement, endElement) { }
-
-
-	    public override void OnStartChanged(Dictionary<int, SKPoint> adjustedElements)
-	    {
-	    }
-	    public override void OnEndChanged(Dictionary<int, SKPoint> adjustedElements)
-	    {
-	    }
+        public PerpendicularConstraint(Trait startElement, Trait endElement, LengthLock lengthLock) : 
+	        base(startElement, endElement, lengthLock, DirectionLock.Perpendicular) { }
     }
 }
