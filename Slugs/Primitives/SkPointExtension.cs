@@ -22,14 +22,14 @@ namespace Slugs.Primitives
 	    public static SKPoint Divide(this SKPoint a, float value) => new SKPoint(value == 0 ? float.MaxValue : a.X / value, value == 0 ? float.MaxValue : a.Y / value);
         public static SKPoint TurnCCW(this SKPoint a) => new SKPoint(-a.Y, a.X);
 	    public static SKPoint TurnCW(this SKPoint a) => new SKPoint(a.Y, -a.X);
-	    public static SKPoint Rotate(this SKPoint a, float degrees)
+	    public static SKPoint RotateOnOrigin(this SKPoint a, float degrees)
 	    {
 		    var angle = (float)(degrees / 180.0 * Math.PI);
 		    var x = (float)(Math.Cos(angle) * a.X - Math.Sin(angle) * a.Y);
 		    var y = (float)(Math.Sin(angle) * a.X + Math.Cos(angle) * a.Y);
-            return new SKPoint(x, y);
-        }
-	    public static SKPoint Normalize(this SKPoint a)
+		    return new SKPoint(x, y);
+	    }
+        public static SKPoint Normalize(this SKPoint a)
 	    {
 		    var len = a.Length;
 		    return new SKPoint(a.X / len, a.Y / len);

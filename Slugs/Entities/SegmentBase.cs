@@ -16,7 +16,7 @@ namespace Slugs.Entities
 
         public abstract SKPoint StartPosition { get; }//protected set; }
 	    public abstract SKPoint EndPosition { get; } //protected set; }
-	    public override SKPoint Center => MidPoint;
+	    public override SKPoint Center => MidPosition;
 
         public SKSegment Segment => new SKSegment(StartPosition, EndPosition);
 
@@ -45,7 +45,7 @@ namespace Slugs.Entities
         public (float, SKPoint) TFromPoint(SKPoint point, bool clamp = true) => Segment.TFromPoint(point, clamp);
 	    public SKPoint[] EndArrow(float dist = 8f) => Segment.EndArrow(dist);
 
-	    public SKPoint MidPoint => Segment.Midpoint;
+	    public SKPoint MidPosition => Segment.Midpoint;
 
 	    public SKSegment SegmentFromMidpoint(SKPoint midPoint)
 	    {

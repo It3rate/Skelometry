@@ -19,12 +19,12 @@ namespace Slugs.Constraints
 	    {
 		    if (EndElement is IPoint point)
 		    {
-			    point.Position = StartSegment.MidPoint;
+			    point.Position = StartSegment.MidPosition;
 			    point.Pad.UpdateConstraints(point, adjustedElements);
             }
 		    else if (EndElement is IMidpointSettable ms)
 		    {
-			    ms.SetMidpoint(StartSegment.MidPoint);
+			    ms.SetMidpoint(StartSegment.MidPosition);
 			    EndElement.Pad.UpdateConstraints(EndElement, adjustedElements);
             }
 	    }

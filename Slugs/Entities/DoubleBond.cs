@@ -46,7 +46,7 @@ namespace Slugs.Entities
 	    public Focal OtherFocal(Focal orgFocal) => (orgFocal.Key == StartKey) ? EndFocal : (orgFocal.Key == EndKey) ? StartFocal : Focal.Empty;
 	    public SKSegment StartSegment => StartFocal.Segment;
 	    public SKSegment EndSegment => EndFocal.Segment;
-	    public override SKPoint Center => new SKSegment(StartFocal.MidPoint, EndFocal.MidPoint).Midpoint;
+	    public override SKPoint Center => new SKSegment(StartFocal.MidPosition, EndFocal.MidPosition).Midpoint;
 
         public override bool HasArea => true;
 

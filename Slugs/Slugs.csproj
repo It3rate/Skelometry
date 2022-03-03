@@ -140,6 +140,7 @@
     <Compile Include="Input\SelectionSet.cs" />
     <Compile Include="Pads\Pad.cs" />
     <Compile Include="Input\UIData.cs" />
+    <Compile Include="Primitives\MathF.cs" />
     <Compile Include="Primitives\SkPointExtension.cs" />
     <Compile Include="Primitives\SKSegment.cs" />
     <Compile Include="Entities\SingleBond.cs" />

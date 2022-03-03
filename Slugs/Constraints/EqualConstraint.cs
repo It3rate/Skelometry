@@ -93,7 +93,7 @@ namespace Slugs.Constraints
 	        var finalLen = LengthLock == LengthLock.Ratio ? len * ratio : len;
 	        var result = diff.Normalize().Multiply(finalLen);
             // todo: keep direction of perp line
-            return DirectionLock == DirectionLock.Perpendicular ? result.Rotate(-90) : result;
+            return DirectionLock == DirectionLock.Perpendicular ? result.RotateOnOrigin(-90) : result;
         }
     }
 }
