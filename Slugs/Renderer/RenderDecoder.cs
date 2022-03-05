@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.IO;
+using SkiaSharp;
 using Slugs.Primitives;
 
 namespace Slugs.Renderer
@@ -113,6 +114,15 @@ namespace Slugs.Renderer
         private float IntToFloat(List<int> encoding, ref int index, int decimalPlaces = 3)
 	    {
 		    return (float)encoding[index++] / (10f * decimalPlaces);
-	    }
+        }
+
+        public EncodedFile Load(string filePath)
+        {
+	        using (Stream stream = File.Open(filePath, FileMode.Open))
+	        {
+		        var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+		        return (EncodedFile)binaryFormatter.Deserialize(stream);
+	        }
+        }
     }
 }

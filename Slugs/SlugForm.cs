@@ -25,8 +25,8 @@ namespace Slugs
 			DoubleBuffered = true;
             InitializeComponent();
 
-            _renderer = new SlugRenderer();
-            //_renderer = new RenderEncoder();
+            //_renderer = new SlugRenderer();
+            _renderer = new RenderEncoder();
             _control = _renderer.AddAsControl(slugPanel, false);
             _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;

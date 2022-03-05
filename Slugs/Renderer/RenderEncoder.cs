@@ -1,4 +1,6 @@
-﻿using SkiaSharp;
+﻿using System.IO;
+using System.Windows.Forms.VisualStyles;
+using SkiaSharp;
 using Slugs.Primitives;
 
 namespace Slugs.Renderer
@@ -21,6 +23,7 @@ namespace Slugs.Renderer
         {
             Encoding.Clear();
 	        base.Draw();
+	        Console.WriteLine(GenerateCode());
 	        _decoder.DecodeAndRender(Canvas, Encoding, StringList);
         }
 
@@ -94,6 +97,56 @@ namespace Slugs.Renderer
 	    public int FloatToInt(float value, int decimalPlaces = 3)
 	    {
 		    return (int)(value * (decimalPlaces * 10));
+	    }
+
+	    public void Save(string filePath)
+	    {
+		    using (Stream stream = File.Open(filePath, FileMode.Create))
+		    {
+			    var file = new EncodedFile(Encoding, StringList);
+			    var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			    binaryFormatter.Serialize(stream, file);
+            }
+        }
+
+		public string GenerateCode()
+	    {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(@"public static EncodedFile file = new EncodedFile(");
+            sb.AppendLine(@"    new List<List<int>>()");
+            sb.AppendLine(@"    {");
+            foreach (var encodedLine in Encoding)
+            {
+	            sb.Append(@"        new List<int>() {");
+	            foreach (var value in encodedLine)
+	            {
+		            sb.Append(value.ToString() + ",");
+	            }
+	            sb.AppendLine(@"},");
+            }
+            sb.AppendLine(@"    },");
+            sb.AppendLine(@"    new List<string>()");
+            sb.AppendLine(@"    {");
+            foreach (var text in StringList)
+            {
+	            sb.AppendLine("     \"" + text + "\",");
+            }
+            sb.AppendLine(@"    }");
+            sb.AppendLine(@");");
+
+            return sb.ToString();
+	    }
+    }
+
+    public class EncodedFile
+    {
+	    private List<List<int>> Encoding = new List<List<int>>();
+	    private List<string> StringList = new List<string>();
+
+	    public EncodedFile(List<List<int>> encoding, List<string> stringList)
+	    {
+		    Encoding = encoding;
+		    StringList = stringList;
 	    }
     }
 
