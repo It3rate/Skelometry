@@ -145,7 +145,7 @@ namespace Slugs.Renderer
 
 	    public EncodedFile(List<List<int>> encoding, List<string> stringList)
 	    {
-		    Encoding = encoding;
+		    Encoding = encoding; 
 		    StringList = stringList;
 	    }
     }
@@ -158,6 +158,5 @@ namespace Slugs.Renderer
         DirectedLine,
         Text,
         Bitmap,
-
     }
 }
