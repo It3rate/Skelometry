@@ -25,11 +25,11 @@ namespace Slugs.Renderer
         {
 	        float round = radius / 3f;
 	        var box = new SKRect(point.X - radius, point.Y - radius, point.X + radius, point.Y + radius);
-	        _canvas.DrawRoundRect(box, round, round, paint);
+	        Canvas.DrawRoundRect(box, round, round, paint);
         }
         public override void DrawPolyline(SKPoint[] polyline, SKPaint paint)
         {
-	        _canvas.DrawPoints(SKPointMode.Polygon, polyline, paint);
+	        Canvas.DrawPoints(SKPointMode.Polygon, polyline, paint);
         }
         public override void DrawPath(SKPoint[] polyline, SKPaint paint)
         {
@@ -39,24 +39,24 @@ namespace Slugs.Renderer
 	        };
             path.MoveTo(polyline[0]);
             path.AddPoly(polyline, true);
-	        _canvas.DrawPath(path, paint);
+	        Canvas.DrawPath(path, paint);
         }
         public override void DrawDirectedLine(SKSegment seg, SKPaint paint)
         {
             DrawPolyline(seg.Points, paint);
-	        _canvas.DrawCircle(seg.StartPoint, 2, paint);
+	        Canvas.DrawCircle(seg.StartPoint, 2, paint);
             var triPts = seg.EndArrow(8);
-            _canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
+            Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
         }
         public override void DrawText(SKPoint center, string text, SKPaint paint)
         {
 	        var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
-            _canvas.DrawRoundRect(rect, 5,5, Pens.TextBackgroundPen);
-            _canvas.DrawText(text, center.X, center.Y, paint);
+            Canvas.DrawRoundRect(rect, 5,5, Pens.TextBackgroundPen);
+            Canvas.DrawText(text, center.X, center.Y, paint);
         }
         public override void DrawBitmap(SKBitmap bitmap)
         {
-            _canvas.DrawBitmap(bitmap, new SKRect(0,0, Width, Height));
+            Canvas.DrawBitmap(bitmap, new SKRect(0,0, Width, Height));
         }
 
         public override void GeneratePens()

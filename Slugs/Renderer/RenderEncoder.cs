@@ -11,17 +11,26 @@ namespace Slugs.Renderer
 
     public class RenderEncoder : RendererBase
     {
-	    private List<List<int>> Log = new List<List<int>>();
+	    private List<List<int>> Encoding = new List<List<int>>();
 	    private List<string> StringList = new List<string>();
+
         public RenderEncoder() { }
 
-	    public override void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
+        private RenderDecoder _decoder = new RenderDecoder(new SlugRenderer());
+        public override void Draw()
+        {
+            Encoding.Clear();
+	        base.Draw();
+	        _decoder.DecodeAndRender(Canvas, Encoding, StringList);
+        }
+
+        public override void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
 	    {
 		    var drawElement = new List<int>(){ (int)DrawCommand.RoundBox };
 		    EncodePoint(point, drawElement);
             EncodePen(paint, drawElement);
             drawElement.Add(FloatToInt(radius));
-		    Log.Add(drawElement);
+		    Encoding.Add(drawElement);
         }
 	    public override void DrawPolyline(SKPoint[] polyline, SKPaint paint)
 	    {
@@ -32,7 +41,7 @@ namespace Slugs.Renderer
 			    EncodePoint(point, drawElement);
             }
 		    EncodePen(paint, drawElement);
-		    Log.Add(drawElement);
+		    Encoding.Add(drawElement);
         }
 	    public override void DrawPath(SKPoint[] polyline, SKPaint paint)
 	    {
@@ -43,7 +52,7 @@ namespace Slugs.Renderer
 			    EncodePoint(point, drawElement);
 		    }
 		    EncodePen(paint, drawElement);
-		    Log.Add(drawElement);
+		    Encoding.Add(drawElement);
         }
 	    public override void DrawDirectedLine(SKSegment seg, SKPaint paint)
 	    {
@@ -51,7 +60,7 @@ namespace Slugs.Renderer
 		    EncodePoint(seg.StartPoint, drawElement);
 		    EncodePoint(seg.EndPoint, drawElement);
             EncodePen(paint, drawElement);
-		    Log.Add(drawElement);
+		    Encoding.Add(drawElement);
         }
 	    public override void DrawText(SKPoint center, string text, SKPaint paint)
 	    {
@@ -60,7 +69,7 @@ namespace Slugs.Renderer
 		    EncodePoint(center, drawElement);
 		    drawElement.Add(StringList.Count - 1);
             EncodePen(paint, drawElement);
-		    Log.Add(drawElement);
+		    Encoding.Add(drawElement);
         }
 	    public override void DrawBitmap(SKBitmap bitmap)
 	    {

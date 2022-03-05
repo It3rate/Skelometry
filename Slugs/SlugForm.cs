@@ -15,7 +15,7 @@ namespace Slugs
 {
     public partial class SlugForm : Form
     {
-	    private readonly SlugRenderer _renderer;
+	    private readonly RendererBase _renderer;
 	    private readonly Control _control;
 
 	    private readonly Agents.Agent _agent;
@@ -26,6 +26,7 @@ namespace Slugs
             InitializeComponent();
 
             _renderer = new SlugRenderer();
+            //_renderer = new RenderEncoder();
             _control = _renderer.AddAsControl(slugPanel, false);
             _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;

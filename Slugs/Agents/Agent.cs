@@ -32,7 +32,7 @@ namespace Slugs.Agents
         public Pad InputPad => PadFor(PadKind.Input);
         public Pad PadFor(PadKind kind) => Pads[kind];
 
-        private readonly SlugRenderer _renderer;
+        private readonly RendererBase _renderer;
         public RenderStatus RenderStatus { get; }
 
         public int ScrollLeft { get; set; }
@@ -47,7 +47,7 @@ namespace Slugs.Agents
         public event EventHandler OnDisplayModeChange;
         public event EventHandler OnSelectionChange;
 
-        public Agent(SlugRenderer renderer)
+        public Agent(RendererBase renderer)
         {
             Current = this;
             AddPad(PadKind.None); // for empty elements

@@ -23,7 +23,7 @@ namespace Slugs.Renderer
 
         public UIData Data { get; set; }
 
-        protected SKCanvas _canvas;
+        public SKCanvas Canvas;
         public SlugPens Pens { get; set; }
         public SKBitmap Bitmap { get; set; }
         public bool ShowBitmap { get; set; }
@@ -85,26 +85,26 @@ namespace Slugs.Renderer
 
         public void DrawOnCanvas(SKCanvas canvas)
         {
-            _canvas = canvas;
+            Canvas = canvas;
             BeginDraw();
             Draw();
             EndDraw();
             //WorkingPad = null;
         }
-        public void BeginDraw()
+        public virtual void BeginDraw()
         {
-            _canvas.Save();
+            Canvas.Save();
             if (hasControl == false)
             {
-                _canvas.Clear(SKColors.White);
+                Canvas.Clear(SKColors.White);
             }
             else
             {
-                _canvas.Clear(SKColors.Beige);
+                Canvas.Clear(SKColors.Beige);
             }
 
         }
-        public void Draw()
+        public virtual void Draw()
         {
             if (Data.HasHighlightPoint)
             {
@@ -169,14 +169,14 @@ namespace Slugs.Renderer
 
             }
         }
-        public void EndDraw()
+        public virtual void EndDraw()
         {
-            _canvas.Restore();
+            Canvas.Restore();
             if (ShowBitmap && Bitmap != null)
             {
                 DrawBitmap(Bitmap);
             }
-            _canvas = null;
+            Canvas = null;
             OnDrawingComplete();
         }
         protected void OnDrawingComplete()
@@ -188,15 +188,15 @@ namespace Slugs.Renderer
         {
             if (element is SegmentBase seg)
             {
-                _canvas.DrawLine(seg.Segment.StartPoint, seg.Segment.EndPoint, paint);
+                Canvas.DrawLine(seg.Segment.StartPoint, seg.Segment.EndPoint, paint);
             }
             else if (element is IPoint point)
             {
-                _canvas.DrawCircle(point.Position.X, point.Position.Y, radius, paint);
+                Canvas.DrawCircle(point.Position.X, point.Position.Y, radius, paint);
             }
             else if (element is IAreaElement area)
             {
-                _canvas.DrawPath(area.Path, paint);
+                Canvas.DrawPath(area.Path, paint);
             }
         }
 

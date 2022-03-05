@@ -19,17 +19,30 @@ namespace Slugs.Renderer
 	    }
 
 	    private List<string> _stringList;
-	    public void DecodeAndRender(List<List<int>> encoding, List<string> stringList)
+	    public void DecodeAndRender(SKCanvas canvas, List<List<int>> encoding, List<string> stringList)
 	    {
+		    Renderer.Canvas = canvas;
 		    _stringList = stringList;
 		    foreach (var drawElement in encoding)
 		    {
 			    switch ((DrawCommand) drawElement[0])
 			    {
-                    case DrawCommand.RoundBox:
-                        DrawRoundBox(drawElement);
-                        break;
-			    }
+				    case DrawCommand.RoundBox:
+					    DrawRoundBox(drawElement);
+					    break;
+				    case DrawCommand.Polyline:
+					    DrawPolyline(drawElement);
+					    break;
+				    case DrawCommand.Path:
+					    DrawPath(drawElement);
+					    break;
+				    case DrawCommand.DirectedLine:
+					    DrawDirectedLine(drawElement);
+					    break;
+				    case DrawCommand.Text:
+					    DrawText(drawElement);
+					    break;
+                }
 		    }
 		    _stringList = null;
 	    }
@@ -95,7 +108,7 @@ namespace Slugs.Renderer
 	    }
         private SKPaint DecodePen(List<int> encoding, ref int index)
 	    {
-		    return Renderer.Pens[index++];
+		    return Renderer.Pens[encoding[index++]];
 	    }
         private float IntToFloat(List<int> encoding, ref int index, int decimalPlaces = 3)
 	    {
