@@ -148,6 +148,9 @@
     <Compile Include="Entities\FocalPoint.cs" />
     <Compile Include="Entities\SegmentBase.cs" />
     <Compile Include="Pads\PadKind.cs" />
+    <Compile Include="Renderer\RenderDecoder.cs" />
+    <Compile Include="Renderer\RenderEncoder.cs" />
+    <Compile Include="Renderer\RendererBase.cs" />
     <Compile Include="Renderer\RenderFlags.cs" />
     <Compile Include="Renderer\RenderStatus.cs" />
     <Compile Include="Renderer\SlugPens.cs" />

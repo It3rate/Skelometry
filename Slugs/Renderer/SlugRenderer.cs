@@ -15,185 +15,23 @@ using Slugs.UI;
 
 namespace Slugs.Renderer
 {
-	public class SlugRenderer
+	public class SlugRenderer : RendererBase
     {
-        public RenderStatus Status { get; set; }
-        public int Width { get; protected set; }
-        public int Height { get; protected set; }
-	    public event EventHandler DrawingComplete;
-
-	    public UIData Data { get; set; }
-
-        public SlugPens Pens { get; set; }
-	    public SKBitmap Bitmap { get; set; }
-	    public bool ShowBitmap { get; set; }
-
-        public SlugRenderer()
+        public SlugRenderer() : base()
         {
-            GeneratePens();
 	    }
 
-        private bool hasControl = false;
-        public Control AddAsControl(Control parent, bool useGL = false)
-        {
-	        Control result;
-	        if (useGL)
-	        {
-                result = new SKGLControl();
-                ((SKGLControl)result).PaintSurface += GL_PaintSurface;
-            }
-	        else
-	        {
-	            result = new SKControl();
-	            ((SKControl)result).PaintSurface += SkiaRenderer_PaintSurface;
-	        }
-	        result.Width = parent.Width;
-	        result.Height = parent.Height;
-	        Width = result.Width;
-	        Height = result.Height;
-	        parent.Controls.Add(result);
-	        hasControl = true;
-
-
-            return result;
-        }
-
-        public SKBitmap GenerateBitmap(int width, int height)
-        {
-	        Bitmap = new SKBitmap(width, height);
-	        return Bitmap;
-        }
-
-        public void DrawOnBitmap()
-        {
-	        if (Bitmap != null)
-	        {
-		        using (SKCanvas canvas = new SKCanvas(Bitmap))
-		        {
-					DrawOnCanvas(canvas);
-		        }
-	        }
-        }
-
-        private void GL_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
-        {
-	        if (Status != null)
-	        {
-		        DrawOnCanvas(e.Surface.Canvas);
-            }
-        }
-
-        private void SkiaRenderer_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
-        {
-	        if (true || Status != null)
-	        {
-		        DrawOnCanvas(e.Surface.Canvas);
-	        }
-        }
-
-        public void DrawOnCanvas(SKCanvas canvas)
-        {
-	        _canvas = canvas;
-	        BeginDraw();
-	        Draw();
-	        EndDraw();
-	        //WorkingPad = null;
-        }
-
-        public void Draw()
-        {
-            if (Data.HasHighlightPoint)
-			{
-				DrawRoundBox(Data.HighlightPoint.Position, Pens.HoverPen);
-			}
-
-			if (Data.HasHighlightLine)
-			{
-				DrawDirectedLine(Data.HighlightLine.Segment, Pens.HoverPen);
-			}
-	        foreach (var pad in Data.Pads)
-	        {
-		        pad.Refresh();
-		        foreach (var trait in pad.Traits)
-		        {
-			        DrawDirectedLine(trait.Segment, trait.IsLocked ? Pens.LockedPen : Pens.DarkPen);
-			        foreach (var focal in trait.Focals)
-			        {
-				        var focalPen = focal.IsUnit ? Pens.UnitPen : Pens.FocalPen;
-				        DrawDirectedLine(focal.Segment, focalPen);
-				        var offset = focal.Direction > 0 ? -5f : 5f;
-				        if (Data.DisplayMode.HasFlag(DisplayMode.ShowLengths))
-				        {
-					        DrawText(focal.Segment.OffsetAlongLine(0.5f, offset), focal.TRatio.ToString("0.###"), Pens.LineTextPen);
-				        }
-				        if (Data.DisplayMode.HasFlag(DisplayMode.ShowSlugValues))
-				        {
-					        DrawText(focal.Segment.OffsetAlongLine(0f, offset), focal.StartT.ToString("0.###"), Pens.SlugTextPen);
-					        DrawText(focal.Segment.OffsetAlongLine(1f, offset), focal.EndT.ToString("0.###"), Pens.SlugTextPen);
-                        }
-                        foreach (var bond in focal.SingleBonds)
-				        {
-					        DrawDirectedLine(bond.Segment, Pens.BondPen);
-					        if (Data.DisplayMode.HasFlag(DisplayMode.ShowSlugValues))
-					        {
-						        var val = bond.TRatio;
-						        var displayVal = val == float.MaxValue ? "max" : val.ToString("0.###");
-						        DrawText(bond.Segment.OffsetAlongLine(0.6f, offset), displayVal, Pens.LineTextPen);
-					        }
-                        }
-			        }
-		        }
-
-		        foreach (var doubleBond in pad.ElementsOfKind(ElementKind.DoubleBond))
-		        {
-			        var db = (DoubleBond) doubleBond;
-			        var pen = Data.Highlight.FirstElement.Key == db.Key ? Pens.BondSelectPen : Pens.BondFillPen;
-
-                    SKPoint[] pts = new SKPoint[] { db.StartFocal.StartPosition, db.StartFocal.EndPosition, db.EndFocal.EndPosition, db.EndFocal.StartPosition };
-			        DrawPath(pts, pen);
-		        }
-
-		        if (Data.WorkingPoints.Count > 0)
-		        {
-			        DrawPath(Data.WorkingPoints.ToArray(), Pens.BondFillPen);
-		        }
-
-		        foreach (var selectedElement in Data.Selected.Elements)
-		        {
-			        DrawElement(selectedElement, Pens.SelectedPen);
-		        }
-
-            }
-        }
-
-        public void DrawElement(IElement element, SKPaint paint, float radius = 4f)
-        {
-	        if (element is SegmentBase seg)
-	        {
-                _canvas.DrawLine(seg.Segment.StartPoint, seg.Segment.EndPoint, paint);
-	        }
-	        else if (element is IPoint point)
-	        {
-		        _canvas.DrawCircle(point.Position.X, point.Position.Y, radius, paint);
-	        }
-	        else if (element is IAreaElement area)
-	        {
-		        _canvas.DrawPath(area.Path, paint);
-	        }
-        }
-
-        public void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
+        public override void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
         {
 	        float round = radius / 3f;
 	        var box = new SKRect(point.X - radius, point.Y - radius, point.X + radius, point.Y + radius);
 	        _canvas.DrawRoundRect(box, round, round, paint);
         }
-
-        public void DrawPolyline(SKPoint[] polyline, SKPaint paint)
+        public override void DrawPolyline(SKPoint[] polyline, SKPaint paint)
         {
 	        _canvas.DrawPoints(SKPointMode.Polygon, polyline, paint);
         }
-        public void DrawPath(SKPoint[] polyline, SKPaint paint)
+        public override void DrawPath(SKPoint[] polyline, SKPaint paint)
         {
 	        var path = new SKPath
 	        {
@@ -203,183 +41,28 @@ namespace Slugs.Renderer
             path.AddPoly(polyline, true);
 	        _canvas.DrawPath(path, paint);
         }
-
-        public void DrawDirectedLine(SKSegment seg, SKPaint paint)
+        public override void DrawDirectedLine(SKSegment seg, SKPaint paint)
         {
             DrawPolyline(seg.Points, paint);
 	        _canvas.DrawCircle(seg.StartPoint, 2, paint);
             var triPts = seg.EndArrow(8);
             _canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
         }
-
-        public void DrawText(SKPoint center, string text, SKPaint paint)
+        public override void DrawText(SKPoint center, string text, SKPaint paint)
         {
 	        var rect = GetTextBackgroundSize(center.X, center.Y, text, paint);
             _canvas.DrawRoundRect(rect, 5,5, Pens.TextBackgroundPen);
             _canvas.DrawText(text, center.X, center.Y, paint);
         }
-        private SKRect GetTextBackgroundSize(float x, float y, String text, SKPaint paint)
-        {
-	        var fm = paint.FontMetrics;
-	        float halfTextLength = paint.MeasureText(text) / 2 + 4;
-	        return new SKRect((int)(x - halfTextLength), (int)(y + fm.Top + 3), (int)(x + halfTextLength), (int)(y + fm.Bottom - 1));
-        }
-
-        private SKCanvas _canvas;
-        public void BeginDraw()
-        {
-	        _canvas.Save();
-            if (hasControl == false)
-            {
-	            _canvas.Clear(SKColors.White);
-            }
-            else
-            {
-	            _canvas.Clear(SKColors.Beige);
-            }
-				
-        }
-        public void EndDraw()
-        {
-            _canvas.Restore();
-	        if (ShowBitmap && Bitmap != null)
-	        {
-                DrawBitmap(Bitmap);
-	        }
-            _canvas = null;
-            OnDrawingComplete();
-        }
-
-        protected void OnDrawingComplete()
-        {
-	        DrawingComplete?.Invoke(this, EventArgs.Empty);
-        }
-
-
-        public void Flush()
-        {
-            _canvas.Flush();
-        }
-
-        public void DrawBitmap(SKBitmap bitmap)
+        public override void DrawBitmap(SKBitmap bitmap)
         {
             _canvas.DrawBitmap(bitmap, new SKRect(0,0, Width, Height));
         }
 
-     //   public override void DrawSpot(VisPoint pos, ElementRecord attributes = null, float scale = 1f)
-     //   {
-	    //    var pen = Pens.GetPenForUIType(ElementType.HighlightSpot);
-	    //    var r = pen.StrokeWidth * scale;
-	    //    _canvas.DrawCircle(pos.X, pos.Y, r, pen);
-     //   }
-     //   public override void DrawTick(VisPoint pos, ElementRecord attributes = null, float scale = 1f)
-     //   {
-	    //    var pen = Pens.GetPenForUIType(ElementType.MeasureTick);
-	    //    var r = pen.StrokeWidth * scale;
-	    //    _canvas.DrawCircle(pos.X, pos.Y, r, pen);
-     //   }
-     //   public override void DrawCircle(VisCircle circ, ElementRecord attributes = null)
-     //   {
-	    //    var pens = Pens.GetPensForElement(attributes);
-     //       foreach(var pen in pens)
-     //       {
-	    //        if (pen != null)
-	    //        {
-					//_canvas.DrawCircle(circ.Center.X, circ.Center.Y, circ.Radius, pen);
-	    //        }
-     //       }
-     //   }
-
-     //   public override void DrawOval(VisRectangle rect, ElementRecord attributes = null)
-     //   {
-	    //    var pens = Pens.GetPensForElement(attributes);
-	    //    foreach (var pen in pens)
-	    //    {
-		   //     if (pen != null)
-		   //     {
-			  //      _canvas.DrawOval(rect.Center.X, rect.Center.Y, rect.HalfSize.X, rect.HalfSize.Y, pen);
-     //           }
-	    //    }
-     //   }
-
-     //   public override void DrawRect(VisRectangle rect, ElementRecord attributes = null)
-     //   {
-	    //    var pens = Pens.GetPensForElement(attributes);
-	    //    foreach (var pen in pens)
-	    //    {
-		   //     if (pen != null)
-		   //     {
-			  //      _canvas.DrawRect(rect.SKRect(), pen);
-     //           }
-	    //    }
-     //   }
-
-     //   public override void DrawLine(VisLine seg, ElementRecord attributes = null)
-     //   {
-	    //    var pens = Pens.GetPensForElement(attributes);
-	    //    foreach (var pen in pens)
-	    //    {
-		   //     if (pen != null)
-		   //     {
-			  //      _canvas.DrawLine(seg.X, seg.Y, seg.EndKey.X, seg.EndKey.Y, pen);
-     //           }
-	    //    }
-     //   }
-
-     //   public override void DrawLine(VisPoint p0, VisPoint p1, ElementRecord attributes = null)
-     //   {
-	    //    var pens = Pens.GetPensForElement(attributes);
-	    //    foreach (var pen in pens)
-	    //    {
-		   //     if (pen != null)
-		   //     {
-			  //      _canvas.DrawLine(p0.X, p0.Y, p1.X, p1.Y, pen);
-     //           }
-	    //    }
-     //   }
-
-     //   public override void DrawLines(VisPoint[] points, ElementRecord attributes = null)
-     //   {
-	    //    var pens = Pens.GetPensForElement(attributes);
-	    //    foreach (var pen in pens)
-	    //    {
-		   //     if (pen != null)
-		   //     {
-			  //      _canvas.DrawPoints(SKPointMode.Polygon, points.SKPoints(), pen);
-     //           }
-	    //    }
-     //   }
-     //   public override void DrawPolyline(VisPolyline polyline, ElementRecord attributes = null)
-     //   {
-	    //    var pens = Pens.GetPensForElement(attributes);
-	    //    foreach (var pen in pens)
-	    //    {
-		   //     if (pen != null)
-		   //     {
-			  //      _canvas.DrawPoints(SKPointMode.Polygon, polyline.Points.SKPoints(), pen);
-			  //      //_canvas.DrawLine(polyline.Points[0].X, polyline.Points[0].Y, polyline.Points[1].X, polyline.Points[1].Y, Pens.SelectedPen);
-     //           }
-	    //    }
-     //   }
-
-        public void GeneratePens()
+        public override void GeneratePens()
         {
 	        Pens = new SlugPens(1);
         }
     }
-    public static class SkiaExtensions
-    {
-	    //public static Position[] SKPoints(this IEnumerable<VisPoint> points)
-	    //{
-		   // var result = new Position[points.Count()];
-		   // int index = 0;
-		   // foreach (var visPoint in points)
-		   // {
-			  //  result[index++] = visPoint.Position();
-     //       }
-		   // return result;
-	    //}
-	    //public static Position Position(this VisPoint point) => new Position(point.X, point.Y);
-	    //public static SKRect SKRect(this VisRectangle rect) => new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom);
-    }
+
 }

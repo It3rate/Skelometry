@@ -43,6 +43,23 @@ namespace Slugs.Renderer
 		    GenPens();
 	    }
 
+	    public SKPaint this[int i] => GetPenForIndex(i);
+	    private SKPaint GetPenForIndex(int index)
+	    {
+		    SKPaint result;
+		    index = index < 0 ? 0 : index;
+		    if (index < Pens.Count)
+		    {
+			    result = Pens[index];
+		    }
+		    else
+		    {
+                throw new OverflowException("Pen not found with index:" + index);
+			    //result = GetPenByOrder(index - Pens.Count);
+		    }
+
+		    return result;
+	    }
 	    public SKPaint[] GetPensForElement(ElementRecord attributes)
 	    {
 		    SKPaint[] result = new SKPaint[2];
@@ -56,54 +73,39 @@ namespace Slugs.Renderer
 		    {
 			    result[1] = GetPenByOrder(attributes.Index, 3f, false);
 		    }
-		    //else if (attributes.PadKind == PadKind.Working)
-		    //{
-			   // result[1] = WorkingPen;
-		    //}
-		    //else if (attributes.PadKind == PadKind.Focus)
-		    //{
-			   // result[1] = GrayPen;
-		    //}
             else if (attributes.ElementState == ElementState.Selected)
 		    {
 			    result[1] = SelectedPen;
 		    }
-		    //else if (attributes.ElementLinkage == ElementLinkage.IsUnit)
-		    //{
-			   // result[1] = UnitPen;
-		    //}
             else
 		    { 
-			    //result = GetPenForIndex(attributes.Index);
 			    result[1] = DarkPen;
             }
 
 		    return result;
 	    }
-
 	    public SKPaint GetPenForUIType(ElementType uiType)
 	    {
 		    SKPaint result = UIPens[uiType];
 		    return result;
 	    }
-
-	    public SKPaint this[int i] => GetPenForIndex(i);
-
-	    private SKPaint GetPenForIndex(int index)
+	    public SKPaint GetPenByOrder(int index, float widthScale = 1, bool antiAlias = true)
 	    {
-		    SKPaint result;
-		    index = index < 0 ? 0 : index;
-		    if (index < Pens.Count)
-		    {
-			    result = Pens[index];
-		    }
-		    else
-		    {
-			    result = GetPenByOrder(index - Pens.Count);
-		    }
+		    //uint col = (uint)((index + 3) | 0xFF000000);
+		    uint col = (uint)((index + 3) * 0x110D05) | 0xFF000000;
+            if (IndexOfColor.ContainsKey(col))
+            {
+	            IndexOfColor[col] = index;
+            }
+            else
+            {
+	            IndexOfColor.Add(col, index);
+            }
 
-		    return result;
+            var color = new SKColor(col);
+		    return GetPen(color, DefaultWidth * widthScale, antiAlias);
 	    }
+	    public int IndexOfPen(SKPaint pen) => Pens.IndexOf(pen);
 
 	    private void GenPens()
 	    {
@@ -161,6 +163,32 @@ namespace Slugs.Renderer
             Pens.Add(GetPen(SKColors.Blue, DefaultWidth));
             Pens.Add(GetPen(SKColors.Orchid, DefaultWidth));
             Pens.Add(GetPen(SKColors.Magenta, DefaultWidth));
+            Pens.Add(GetPen(SKColors.White, DefaultWidth));
+            Pens.Add(GetPen(SKColors.White, DefaultWidth)); // filler
+            Pens.Add(GetPen(SKColors.White, DefaultWidth));
+            Pens.Add(GetPen(SKColors.White, DefaultWidth));
+            Pens.Add(GetPen(SKColors.White, DefaultWidth));
+            Pens.Add(GetPen(SKColors.White, DefaultWidth));
+            Pens.Add(GetPen(SKColors.White, DefaultWidth));
+            Pens.Add(GetPen(SKColors.White, DefaultWidth)); 
+            
+            Pens.Add(HoverPen);
+            Pens.Add(SelectedPen);
+            Pens.Add(UnitPen);
+            Pens.Add(UnitGhostPen);
+            Pens.Add(DarkPen);
+            Pens.Add(GrayPen);
+            Pens.Add(WorkingPen);
+            Pens.Add(DrawPen);
+            Pens.Add(HighlightPen);
+            Pens.Add(LockedPen);
+            Pens.Add(FocalPen);
+            Pens.Add(BondPen);
+            Pens.Add(BondFillPen);
+            Pens.Add(BondSelectPen);
+            Pens.Add(LineTextPen);
+            Pens.Add(TextBackgroundPen);
+            Pens.Add(SlugTextPen);
 
             UIPens = new Dictionary<ElementType, SKPaint>()
 		    {
@@ -176,22 +204,6 @@ namespace Slugs.Renderer
 	    }
 
         public Dictionary<uint, int> IndexOfColor { get; } = new Dictionary<uint, int>();
-	    public SKPaint GetPenByOrder(int index, float widthScale = 1, bool antiAlias = true)
-	    {
-		    //uint col = (uint)((index + 3) | 0xFF000000);
-		    uint col = (uint)((index + 3) * 0x110D05) | 0xFF000000;
-            if (IndexOfColor.ContainsKey(col))
-            {
-	            IndexOfColor[col] = index;
-            }
-            else
-            {
-	            IndexOfColor.Add(col, index);
-            }
-
-            var color = new SKColor(col);
-		    return GetPen(color, DefaultWidth * widthScale, antiAlias);
-	    }
 
 	    public SKPaint GetPen(SKColor color, float width, bool antiAlias = true)
 	    {
