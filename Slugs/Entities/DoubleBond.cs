@@ -102,6 +102,7 @@ namespace Slugs.Entities
 		    }
             return result;
 	    }
+        // todo: deal with area things on double bonds.
         public bool ContainsPosition(SKPoint point)
 	    {
 		    throw new NotImplementedException();
