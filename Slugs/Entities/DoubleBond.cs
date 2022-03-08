@@ -163,6 +163,23 @@ namespace Slugs.Entities
 		    }
 	    }
 
+        public bool IsPointInside(SKPoint point)
+        {
+	        var result = false;
+	        var vs = new [] {StartFocal.StartPosition, StartFocal.EndPosition, EndFocal.EndPosition, EndFocal.StartPosition};
+	        for (int i = 0, j = vs.Length - 1; i < vs.Length; j = i++)
+	        {
+		        var xi = vs[i].X;
+		        var yi = vs[i].Y;
+		        var xj = vs[j].X;
+		        var yj = vs[j].Y;
+
+		        var intersect = ((yi > point.Y) != (yj > point.Y)) && (point.X < (xj - xi) * (point.Y - yi) / (yj - yi) + xi);
+		        if (intersect) result = !result;
+	        }
+	        return result;
+        }
+
         public static bool operator ==(DoubleBond left, DoubleBond right) =>
 		    left.Key == right.Key && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
 	    public static bool operator !=(DoubleBond left, DoubleBond right) =>
