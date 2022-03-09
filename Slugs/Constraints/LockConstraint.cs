@@ -16,6 +16,9 @@ namespace Slugs.Constraints
 	    public override void OnAddConstraint() => StartElement.IsLocked = true; 
 	    public override void OnRemoveConstraint() => StartElement.IsLocked = false;
 
-        public override void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements) { }
+        public override void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements)
+        {
+	        base.OnElementChanged(changedElement, adjustedElements);
+        }
     }
 }

@@ -24,6 +24,7 @@ using Slugs.Entities;
 
 	    public override void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements)
 	    {
+		    base.OnElementChanged(changedElement, adjustedElements);
 		    IPoint changedPoint = changedElement is IPoint ? (IPoint)changedElement : null;
             // at first pass start and end may not be linear, and passed element may be trait, so straighten from center
             if (changedElement is Trait trait)

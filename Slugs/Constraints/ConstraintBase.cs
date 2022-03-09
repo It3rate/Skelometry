@@ -11,19 +11,24 @@ namespace Slugs.Constraints
 
     public abstract class ConstraintBase : IConstraint
     {
+        public int Key { get; }
 	    public IElement StartElement { get; }
 	    public virtual bool HasElement(int key) => AffectedKeys.Contains(key);
 	    public List<int> AffectedKeys { get; } = new List<int>();
 
 	    protected ConstraintBase(IElement startElement)
 	    {
-		    StartElement = startElement;
+		    Key = Pad.KeyCounter++;
+            StartElement = startElement;
 		    AffectedKeys.AddRange(StartElement.AllKeys);
         }
 
         public virtual void OnAddConstraint() { }
 	    public virtual void OnRemoveConstraint() { }
-	    public virtual void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements) { }
+	    public virtual void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements)
+	    {
+		    adjustedElements.Add(Key, SKPoint.Empty);
+	    }
 
     }
 
@@ -58,7 +63,8 @@ namespace Slugs.Constraints
 
 	    public override void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements)
 	    {
-		    if (StartElement.AllKeys.Contains(changedElement.Key))
+		    adjustedElements.Add(Key, SKPoint.Empty);
+            if (StartElement.AllKeys.Contains(changedElement.Key))
 		    {
                 // add all keys to adjusted
 			    OnStartChanged(adjustedElements);

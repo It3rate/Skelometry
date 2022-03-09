@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using SkiaSharp;
+using Slugs.Pads;
 using Slugs.Primitives;
 
 namespace Slugs.Entities
@@ -39,6 +40,12 @@ namespace Slugs.Entities
 		    TraitKind = traitKind;
 		    StartKey = start.Key;
 		    EndKey = end.Key;
+        }
+        public Trait(float x0, float y0, float x1, float y1, PadKind padKind = PadKind.Input, TraitKind traitKind = TraitKind.Default) : base(padKind)
+        {
+	        TraitKind = traitKind;
+	        StartKey = new TerminalPoint(padKind, new SKPoint(x0, y0)).Key;
+	        EndKey = new TerminalPoint(padKind, new SKPoint(x1, y1)).Key;
         }
 
         protected override void SetStartKey(int key)

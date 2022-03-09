@@ -385,7 +385,10 @@ namespace Slugs.Entities
                 var related = Constraints.Where(constraint => constraint.HasElement(changedElement.Key));
 		        foreach (var constraint in related)
 		        {
-			        constraint.OnElementChanged(changedElement, adjustedElements);
+			        if (!adjustedElements.ContainsKey(constraint.Key))
+			        {
+						constraint.OnElementChanged(changedElement, adjustedElements);
+                    }
 		        }
 	        }
         }

@@ -114,9 +114,13 @@ namespace Slugs.Agents
             var t6 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(270, 80), new SKPoint(300, 300));
             var t7 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(270, 30), new SKPoint(330, 140));
             var t8 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(360, 30), new SKPoint(370, 140));
-            _editCommands.Do(t0, t1, t2, t3, t4, t5, t6, t7, t8);
+
+            var t10 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(10, 10), new SKPoint(80, 10));
+            var t11 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(20, 20), new SKPoint(190, 30));
+            _editCommands.Do(t0, t1, t2, t3, t4, t5, t6, t7, t8, t10, t11);
             //t4.AddedTrait.StartFocalPoint.IsLocked = true;
             var collCommand = new AddConstraintCommand(InputPad, new CollinearConstraint(t0.AddedTrait, t1.StartPointTask.IPoint));
+            var collCommand2 = new AddConstraintCommand(InputPad, new CollinearConstraint(t10.AddedTrait, t11.AddedTrait));
             var coinCommand = new AddConstraintCommand(InputPad, new CoincidentConstraint(t1.EndPointTask.IPoint, t2.StartPointTask.IPoint));
             var midCommand = new AddConstraintCommand(InputPad, new MidpointConstraint(t2.AddedTrait, t3.EndPointTask.IPoint));
             var parCommand = new AddConstraintCommand(InputPad, new ParallelConstraint(t3.AddedTrait, t4.AddedTrait, LengthLock.Ratio));
@@ -124,7 +128,10 @@ namespace Slugs.Agents
 	            new EqualConstraint(t5.AddedTrait, t6.AddedTrait, LengthLock.None, DirectionLock.Perpendicular));
             var hCommand = new AddConstraintCommand(InputPad, new HorizontalVerticalConstraint(t7.AddedTrait, true));
             var vCommand = new AddConstraintCommand(InputPad, new HorizontalVerticalConstraint(t8.AddedTrait, false));
-            _editCommands.Do(collCommand, coinCommand, midCommand, parCommand, eqCommand, hCommand, vCommand);
+
+
+
+            _editCommands.Do(collCommand, collCommand2, coinCommand, midCommand, parCommand, eqCommand, hCommand, vCommand);
         }
 
         private void MakeLines()

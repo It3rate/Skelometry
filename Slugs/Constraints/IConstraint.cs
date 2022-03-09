@@ -18,7 +18,8 @@ namespace Slugs.Constraints
 
     public interface IConstraint
     {
-	    IElement StartElement { get; }
+	    int Key { get; }
+        IElement StartElement { get; }
         bool HasElement(int key);
         List<int> AffectedKeys { get; }
 
