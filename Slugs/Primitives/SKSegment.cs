@@ -58,10 +58,23 @@ namespace Slugs.Primitives
 
         public float Length => (float)Math.Sqrt((EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y));
         public float LengthSquared => (EndPoint.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + (EndPoint.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y);
-        public SKPoint PointAlongLine(float t) => new SKPoint((EndPoint.X - StartPoint.X) * t + StartPoint.X, (EndPoint.Y - StartPoint.Y) * t + StartPoint.Y);
+        public SKPoint PointAlongLine(float t, float startT = 0)
+        {
+	        return new SKPoint(
+		        (EndPoint.X - StartPoint.X) * (t + startT) + StartPoint.X, 
+		        (EndPoint.Y - StartPoint.Y) * (t + startT) + StartPoint.Y);
+        }
         public SKPoint OffsetAlongLine(float t, float offset) => OrthogonalPoint(PointAlongLine(t), offset);
-        public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Length);
-        public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Length);
+        public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(0.001f, Length));
+        public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(0.001f, Length));
+
+        public SKSegment GetMeasuredSegmentByMidpoint(float length)
+        {
+	        var ratio = (length / Length) / 2f;
+	        var p0 = PointAlongLine(-ratio, 0.5f);
+	        var p1 = PointAlongLine(ratio, 0.5f);
+            return new SKSegment(p0, p1);
+        }
         public float Angle
         {
 	        get
@@ -78,22 +91,32 @@ namespace Slugs.Primitives
             var angle = (EndPoint - StartPoint).Angle();
             return pt.PointAtRadiansAndDistance(angle + (float)Math.PI / 2f, offset);
         }
+
         public SKPoint ProjectPointOnto(SKPoint p, bool clamp = true)
         {
-
+	        SKPoint result;
 	        var e1 = EndPoint - StartPoint;
 	        var e2 = p - StartPoint;
 	        var dp = e1.DotProduct(e2);
-
 	        var len2 = e1.SquaredLength();
-	        var x = StartPoint.X + (dp * e1.X) / len2;
-	        var y = StartPoint.Y + (dp * e1.Y) / len2;
-	        if (clamp)
+	        if (len2 < 0.1f)
 	        {
-		        x = (x < StartPoint.X && x < EndPoint.X) ? (float)Math.Min(StartPoint.X, EndPoint.X) : (x > StartPoint.X && x > EndPoint.X) ? (float)Math.Max(StartPoint.X, EndPoint.X) : x;
-		        y = (y < StartPoint.Y && y < EndPoint.Y) ? (float)Math.Min(StartPoint.Y, EndPoint.Y) : (y > StartPoint.Y && y > EndPoint.Y) ? (float)Math.Max(StartPoint.Y, EndPoint.Y) : y;
+		        result = p;
 	        }
-	        return new SKPoint(x, y);
+	        else
+	        {
+		        var x = StartPoint.X + (dp * e1.X) / len2;
+		        var y = StartPoint.Y + (dp * e1.Y) / len2;
+		        if (clamp)
+		        {
+			        x = (x < StartPoint.X && x < EndPoint.X) ? (float) Math.Min(StartPoint.X, EndPoint.X) : (x > StartPoint.X && x > EndPoint.X) ? (float) Math.Max(StartPoint.X, EndPoint.X) : x;
+			        y = (y < StartPoint.Y && y < EndPoint.Y) ? (float) Math.Min(StartPoint.Y, EndPoint.Y) : (y > StartPoint.Y && y > EndPoint.Y) ? (float) Math.Max(StartPoint.Y, EndPoint.Y) : y;
+		        }
+
+		        result = new SKPoint(x, y);
+	        }
+
+	        return result;
         }
 
         public (float, SKPoint) TFromPoint(SKPoint point, bool clamp)

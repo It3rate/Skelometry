@@ -47,7 +47,7 @@ namespace Slugs.Entities
 
 	    public SKPoint MidPosition => Segment.Midpoint;
 
-	    public SKSegment SegmentFromMidpoint(SKPoint midPoint)
+        public SKSegment SegmentFromMidpoint(SKPoint midPoint)
 	    {
 		    var result = Segment;
 		    result.Midpoint = midPoint;

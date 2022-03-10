@@ -23,7 +23,7 @@ namespace Slugs.Renderer
         {
             Encoding.Clear();
 	        base.Draw();
-	        Console.WriteLine(GenerateCode());
+	        //Console.WriteLine(GenerateCode());
 	        _decoder.DecodeAndRender(Canvas, Encoding, StringList);
         }
 

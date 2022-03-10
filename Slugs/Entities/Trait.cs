@@ -99,6 +99,13 @@ namespace Slugs.Entities
 	        _focalKeys.Remove(focal.Key);
         }
 
+        public void SetLengthByMidpoint(float length)
+        {
+	        SKSegment seg = Segment.GetMeasuredSegmentByMidpoint(length);
+	        StartPoint.Position = seg.StartPoint;
+	        EndPoint.Position = seg.EndPoint;
+        }
+
         public static bool operator ==(Trait left, Trait right) => 
 	        left.Key == right.Key && left.TraitKind == right.TraitKind && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
         public static bool operator !=(Trait left, Trait right) => 

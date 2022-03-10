@@ -40,8 +40,16 @@ namespace Slugs.Constraints
 			    }
 			    else if (affected is Trait affectedTrait)
 			    {
-				    affectedTrait.StartPoint.Position = movedTrait.ProjectPointOnto(affectedTrait.StartPosition, false);
-				    affectedTrait.EndPoint.Position = movedTrait.ProjectPointOnto(affectedTrait.EndPosition, false);
+				    var mlen = movedTrait.Length;
+				    var alen = affectedTrait.Length;
+				    if (mlen > 4f  && alen > 4f)
+				    {
+	                    affectedTrait.StartPoint.Position = movedTrait.ProjectPointOnto(affectedTrait.StartPosition, false);
+					    affectedTrait.EndPoint.Position = movedTrait.ProjectPointOnto(affectedTrait.EndPosition, false);
+             
+                        // maybe measure midpoints and fix distances too?
+                        affectedTrait.SetLengthByMidpoint(alen);
+				    }
 				    affectedTrait.Pad.UpdateConstraints(affectedTrait, adjustedElements);
 			    }
 		    }
