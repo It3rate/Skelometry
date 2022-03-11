@@ -63,8 +63,11 @@ namespace Slugs.Entities
 	        }
 	        set
 	        {
-		        var trait = Pad.TraitAt(TraitKey);
-		        T = trait.TFromPoint(value, false).Item1;
+		        if (!IsLocked)
+		        {
+			        var trait = Pad.TraitAt(TraitKey);
+			        T = trait.TFromPoint(value, false).Item1;
+		        }
 	        }
         }
 

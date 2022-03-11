@@ -71,6 +71,17 @@ namespace Slugs.Entities
 	        }
         }
 
+        public override bool IsLocked 
+        { 
+	        get => _isLocked;
+	        set
+	        {
+		        _isLocked = value;
+		        StartPoint.IsLocked = value;
+		        EndPoint.IsLocked = value;
+	        }
+        }
+
         public void SetMidpoint(SKPoint midPoint)
         {
 	        var midSeg = Segment;

@@ -18,12 +18,25 @@ namespace Slugs.Entities
 	    public override IElement EmptyElement => Empty;
 	    public static TerminalPoint Empty { get; } = new TerminalPoint();
 
+	    private SKPoint _position;
+	    public override SKPoint Position
+	    {
+		    get => _position;
+		    set
+		    {
+			    if (!IsLocked)
+			    {
+				    _position = value;
+			    }
+		    }
+	    }
+
 	    private TerminalPoint() : base(true)
 	    {
 		    Position = SKPoint.Empty;
 	    }
 
-	    public override List<int> AllKeys 
+        public override List<int> AllKeys 
 	    {
 		    get
 		    {
@@ -38,9 +51,8 @@ namespace Slugs.Entities
 	    }
 
     public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { this };
-        public override SKPoint Position { get; set; }
 
-        public TerminalPoint(PadKind padKind, SKPoint point) : base(padKind)
+    public TerminalPoint(PadKind padKind, SKPoint point) : base(padKind)
         {
             Position = point;
         }

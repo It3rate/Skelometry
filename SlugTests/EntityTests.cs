@@ -13,7 +13,7 @@ namespace SlugTests
 	[TestClass]
 	public class EntityTests
 	{
-		private static float tolerance = 0.00001f;
+		private static double tolerance = 0.00001;
 
 		private Agent _agent;
 		private Entity _entity;

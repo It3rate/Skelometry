@@ -70,9 +70,12 @@ namespace Slugs.Entities
             }
             set
             {
-	            var focal = Focal;
-                T = focal.TFromPoint(value, false).Item1;
-                //SetOtherT(T); // this locks the t ratio
+	            if (!IsLocked)
+	            {
+		            var focal = Focal;
+		            T = focal.TFromPoint(value, false).Item1;
+		            //SetOtherT(T); // this locks the t ratio
+	            }
             }
         }
 

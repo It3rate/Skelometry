@@ -33,11 +33,14 @@ namespace Slugs.Entities
 			get => Pad.ResolvedPointFor(this).Position;
 			set
 			{
-                var tp = Pad.ResolvedPointFor(this);
-                if (!tp.IsEmpty)
-                {
-	                tp.Position = value;
-                }
+				if (!IsLocked)
+				{
+					var tp = Pad.ResolvedPointFor(this);
+					if (!tp.IsEmpty)
+					{
+						tp.Position = value;
+					}
+				}
 			}
 		}
 

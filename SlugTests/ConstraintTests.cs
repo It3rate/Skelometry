@@ -4,6 +4,7 @@ using Slugs.Commands.EditCommands;
 using Slugs.Constraints;
 using Slugs.Entities;
 using Slugs.Pads;
+using Slugs.Primitives;
 using Slugs.Renderer;
 
 namespace SlugTests
@@ -16,7 +17,7 @@ namespace SlugTests
     [TestClass]
     public class ConstraintTests
     {
-	    private static float tolerance = 0.00001f;
+	    private static double tolerance = 0.00001;
 
 	    private Pad _pad;
 	    private Agent _agent;
@@ -231,8 +232,92 @@ namespace SlugTests
             Assert.IsTrue(_trait5.IsVertical());
         }
 
-        //var midCommand = new AddConstraintCommand(InputPad, new MidpointConstraint(t2.AddedTrait, t3.EndPointTask.IPoint));
-        //var eqCommand = new AddConstraintCommand(InputPad,
-        // new EqualConstraint(t5.AddedTrait, t6.AddedTrait, LengthLock.None, DirectionLock.Perpendicular));
+        [TestMethod]
+        public void TestMidpoint()
+        {
+	        Assert.IsFalse(_trait0.MidPosition == _trait5.EndPosition);
+
+	        _changes.Clear();
+	        var con = new MidpointConstraint(_trait0, _trait5.EndPoint);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait0, _changes);
+	        Assert.IsTrue(_trait0.MidPosition == _trait5.EndPosition);
+
+	        _changes.Clear();
+	        _trait0.StartPoint.Position = new SKPoint(300, 450);
+	        con.OnElementChanged(_trait0.StartPoint, _changes);
+	        Assert.IsTrue(_trait0.MidPosition == _trait5.EndPosition);
+
+	        _changes.Clear();
+	        _trait5.EndPoint.Position = new SKPoint(500, 250);
+	        con.OnElementChanged(_trait5.EndPoint, _changes);
+	        Assert.IsTrue(_trait0.MidPosition == _trait5.EndPosition);
+
+
+	        Assert.IsFalse(_trait1.MidPosition == _trait6.MidPosition);
+	        _changes.Clear();
+	        con = new MidpointConstraint(_trait1, _trait6);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait1, _changes);
+	        Assert.IsTrue(_trait1.MidPosition == _trait6.MidPosition);
+        }
+        [TestMethod]
+        public void TestEqual()
+        {
+	        Assert.IsFalse(_trait0.Length == _trait1.Length);
+	        Assert.IsFalse(_trait6.Length == _trait7.Length);
+
+	        _changes.Clear();
+	        var con = new EqualConstraint(_trait0, _trait1, LengthLock.Equal, DirectionLock.Parallel);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait0, _changes);
+	        Assert.IsTrue(_trait0.Length == _trait1.Length);
+	        Assert.IsTrue(_trait0.IsParallelTo(_trait1));
+
+	        var ratio = _trait6.Length / _trait7.Length;
+	        _changes.Clear();
+	        con = new EqualConstraint(_trait6, _trait7, LengthLock.Ratio, DirectionLock.None);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait6, _changes);
+	        Assert.AreEqual(_trait6.Length / _trait7.Length, ratio, tolerance);
+	        Assert.IsFalse(_trait6.IsParallelTo(_trait7));
+	        Assert.IsTrue(_trait6.IsPerpendicularTo(_trait7));
+
+	        _changes.Clear();
+	        Assert.IsFalse(_trait5.IsPerpendicularTo(_trait8));
+	        con = new EqualConstraint(_trait5, _trait8, LengthLock.Equal, DirectionLock.Perpendicular);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait5, _changes);
+	        Assert.AreEqual(_trait5.Length, _trait8.Length, tolerance);
+	        Assert.IsFalse(_trait5.IsParallelTo(_trait8));
+	        Assert.IsTrue(_trait5.IsPerpendicularTo(_trait8));
+
+        }
+        [TestMethod]
+        public void TestLock()
+        {
+	        Assert.AreEqual(new SKPoint(100, 400), _trait0.StartPosition);
+	        Assert.AreEqual(new SKPoint(200, 300), _trait0.EndPosition);
+
+	        _trait0.EndPoint.Position = new SKPoint(500, 250);
+	        Assert.AreEqual(new SKPoint(500, 250), _trait0.EndPosition);
+
+            _changes.Clear();
+	        var con = new LockConstraint(_trait0.EndPoint, true);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait0.EndPoint, _changes);
+	        _trait0.EndPoint.Position = new SKPoint(300, 150);
+	        Assert.AreNotEqual(new SKPoint(300, 150), _trait0.EndPosition);
+
+	        Assert.AreEqual(new SKPoint(110, 400), _trait1.StartPosition);
+	        Assert.AreEqual(new SKPoint(200, 310), _trait1.EndPosition);
+            _changes.Clear();
+	        con = new LockConstraint(_trait1, true);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait1, _changes);
+	        _trait1.EndPoint.Position = new SKPoint(500, 250);
+	        Assert.AreNotEqual(new SKPoint(500, 250), _trait1.EndPosition);
+
+        }
     }
 }

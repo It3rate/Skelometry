@@ -94,8 +94,8 @@ namespace Slugs.Entities
 
 		public virtual bool HasArea => false;
 
-        private bool _isLocked;
-        public bool IsLocked
+        protected bool _isLocked;
+        public virtual bool IsLocked
 		{
 			get => _isLocked;
 			set

@@ -11,14 +11,21 @@ namespace Slugs.Constraints
 
     public class LockConstraint : ConstraintBase
     {
-	    public LockConstraint(IElement startElement) : base(startElement) { }
+        public bool LockValue { get; }
 
-	    public override void OnAddConstraint() => StartElement.IsLocked = true; 
-	    public override void OnRemoveConstraint() => StartElement.IsLocked = false;
+        public LockConstraint(IElement startElement, bool lockValue) : base(startElement)
+        {
+	        LockValue = lockValue;
+        }
 
         public override void OnElementChanged(IElement changedElement, Dictionary<int, SKPoint> adjustedElements)
         {
 	        base.OnElementChanged(changedElement, adjustedElements);
+	        StartElement.IsLocked = LockValue;
+	        if (!LockValue)
+	        {
+		        StartElement.Pad.UpdateConstraints(StartElement, adjustedElements);
+	        }
         }
     }
 }

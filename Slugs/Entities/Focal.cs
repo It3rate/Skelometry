@@ -32,6 +32,17 @@ namespace Slugs.Entities
         public FocalPoint EndFocalPoint => (FocalPoint)Pad.PointAt(EndKey);
         public FocalPoint OtherPoint(int notKey) => (notKey == StartKey) ? EndFocalPoint : (notKey == EndKey) ? StartFocalPoint : FocalPoint.Empty;
 
+        public override bool IsLocked
+        {
+	        get => _isLocked;
+	        set
+	        {
+		        _isLocked = value;
+		        StartPoint.IsLocked = value;
+		        EndPoint.IsLocked = value;
+	        }
+        }
+
         public Slug LocalRatio
         {
 	        get => new Slug(StartT, EndT);
