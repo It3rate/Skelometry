@@ -99,10 +99,12 @@ namespace Slugs.Entities
 	        _focalKeys.Remove(focal.Key);
         }
 
-        public bool IsPerpendicularTo(Trait trait)
-        {
-	        return Segment.IsPerpendicularTo(trait.Segment);
-        }
+        public bool IsHorizontal() => Segment.IsHorizontal();
+        public bool IsVertical() => Segment.IsVertical();
+        public bool IsCollinearTo(Trait trait) => Segment.IsCollinearTo(trait.Segment);
+        public bool IsParallelTo(Trait trait) => Segment.IsParallelTo(trait.Segment);
+        public bool IsPerpendicularTo(Trait trait) => Segment.IsPerpendicularTo(trait.Segment);
+        
         public void SetLengthByMidpoint(float length)
         {
 	        SKSegment seg = Segment.GetMeasuredSegmentByMidpoint(length);

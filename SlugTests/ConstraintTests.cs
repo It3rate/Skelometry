@@ -53,66 +53,7 @@ namespace SlugTests
             _trait8 = new Trait(300, 600, 700, 650);
 
             _changes = new Dictionary<int, SKPoint>();          
-	    }                                                       
-
-	    [TestMethod]
-        public void TestCollinear()
-        {
-	        // test two traits
-            Assert.AreEqual(new SKPoint(100, 400), _trait0.StartPosition);
-	        Assert.AreEqual(new SKPoint(200, 300), _trait0.EndPosition);
-	        Assert.AreEqual(new SKPoint(110, 400), _trait1.StartPosition);
-	        Assert.AreEqual(new SKPoint(200, 310), _trait1.EndPosition);
-	        _changes.Clear();
-            var coll0 = new CollinearConstraint(_trait0, _trait1);
-	        _pad.Constraints.Add(coll0);
-	        coll0.OnElementChanged(_trait0, _changes);
-	        Assert.AreEqual(new SKPoint(100, 400), _trait0.StartPosition);
-	        Assert.AreEqual(new SKPoint(200, 300), _trait0.EndPosition);
-	        Assert.AreEqual(new SKPoint(105, 395), _trait1.StartPosition);
-	        Assert.AreEqual(new SKPoint(195, 305), _trait1.EndPosition);
-
-	        // test end point
-            _changes.Clear();
-	        var coll1 = new CollinearConstraint(_trait0, _trait1.EndPoint);
-	        _pad.Constraints.Add(coll1);
-	        coll1.OnElementChanged(_trait0, _changes);
-	        Assert.AreEqual(new SKPoint(100, 400), _trait0.StartPosition);
-	        Assert.AreEqual(new SKPoint(200, 300), _trait0.EndPosition);
-	        Assert.AreEqual(new SKPoint(105, 395), _trait1.StartPosition);
-	        Assert.AreEqual(new SKPoint(195, 305), _trait1.EndPosition);
-
-	        // test start point
-            Assert.AreEqual(new SKPoint(200, 400), _trait2.StartPosition);
-	        Assert.AreEqual(new SKPoint(300, 400), _trait2.EndPosition);
-	        Assert.AreEqual(new SKPoint(220, 500), _trait3.StartPosition);
-	        Assert.AreEqual(new SKPoint(300, 500), _trait3.EndPosition);
-	        _changes.Clear();
-	        var coll2 = new CollinearConstraint(_trait2.StartPoint, _trait3);
-	        _pad.Constraints.Add(coll2);
-	        coll2.OnElementChanged(_trait3, _changes);
-	        Assert.AreEqual(new SKPoint(200, 500), _trait2.StartPosition);
-	        Assert.AreEqual(new SKPoint(300, 400), _trait2.EndPosition);
-	        Assert.AreEqual(new SKPoint(220, 500), _trait3.StartPosition);
-	        Assert.AreEqual(new SKPoint(300, 500), _trait3.EndPosition);
-
-	        _changes.Clear();
-	        var coll3 = new CollinearConstraint(_trait4.StartPoint, _trait5);
-	        _pad.Constraints.Add(coll3);
-	        coll3.OnElementChanged(_trait4.StartPoint, _changes);
-	        Assert.AreEqual(new SKPoint(200, 400), _trait4.StartPosition);
-	        Assert.AreEqual(new SKPoint(300, 400), _trait4.EndPosition);
-	        Assert.AreEqual(new SKPoint(220, 400), _trait5.StartPosition);
-	        Assert.AreEqual(new SKPoint(300, 400), _trait5.EndPosition);
-
-            //var coinCommand = new AddConstraintCommand(InputPad, new CoincidentConstraint(t1.EndPointTask.IPoint, t2.StartPointTask.IPoint));
-            //var midCommand = new AddConstraintCommand(InputPad, new MidpointConstraint(t2.AddedTrait, t3.EndPointTask.IPoint));
-            //var parCommand = new AddConstraintCommand(InputPad, new ParallelConstraint(t3.AddedTrait, t4.AddedTrait, LengthLock.Ratio));
-            //var eqCommand = new AddConstraintCommand(InputPad,
-            // new EqualConstraint(t5.AddedTrait, t6.AddedTrait, LengthLock.None, DirectionLock.Perpendicular));
-            //var hCommand = new AddConstraintCommand(InputPad, new HorizontalVerticalConstraint(t7.AddedTrait, true));
-            //var vCommand = new AddConstraintCommand(InputPad, new HorizontalVerticalConstraint(t8.AddedTrait, false));
-        }
+	    }
 
         [TestMethod]
         public void TestCoincident()
@@ -123,9 +64,9 @@ namespace SlugTests
 	        Assert.AreEqual(new SKPoint(200, 310), _trait1.EndPosition);
 
 	        _changes.Clear();
-	        var con0 = new CoincidentConstraint(_trait0.StartPoint, _trait1.StartPoint);
-	        _pad.Constraints.Add(con0);
-	        con0.OnElementChanged(_trait1.StartPoint, _changes);
+	        var con = new CoincidentConstraint(_trait0.StartPoint, _trait1.StartPoint);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait1.StartPoint, _changes);
 
 	        Assert.AreEqual(new SKPoint(110, 400), _trait0.StartPosition);
 	        Assert.AreEqual(new SKPoint(200, 300), _trait0.EndPosition);
@@ -133,12 +74,75 @@ namespace SlugTests
 	        Assert.AreEqual(new SKPoint(200, 310), _trait1.EndPosition);
 
 	        _changes.Clear();
-	        con0 = new CoincidentConstraint(_trait0.EndPoint, _trait1.EndPoint);
-	        _pad.Constraints.Add(con0);
-	        con0.OnElementChanged(_trait1.EndPoint, _changes);
+	        con = new CoincidentConstraint(_trait0.EndPoint, _trait1.EndPoint);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait1.EndPoint, _changes);
 	        Assert.AreEqual(new SKPoint(200, 310), _trait0.EndPosition);
 	        Assert.AreEqual(new SKPoint(200, 310), _trait1.EndPosition);
         }
+
+        [TestMethod]
+        public void TestCollinear()
+        {
+	        // test two traits
+            Assert.AreEqual(new SKPoint(100, 400), _trait0.StartPosition);
+	        Assert.AreEqual(new SKPoint(200, 300), _trait0.EndPosition);
+	        Assert.AreEqual(new SKPoint(500, 500), _trait6.StartPosition);
+	        Assert.AreEqual(new SKPoint(500, 700), _trait6.EndPosition);
+	        Assert.IsFalse(_trait0.IsParallelTo(_trait6));
+            _changes.Clear();
+            var coll0 = new CollinearConstraint(_trait0, _trait1);
+	        _pad.Constraints.Add(coll0);
+	        coll0.OnElementChanged(_trait0, _changes);
+	        Assert.AreEqual(new SKPoint(100, 400), _trait0.StartPosition);
+	        Assert.AreEqual(new SKPoint(200, 300), _trait0.EndPosition);
+	        Assert.AreEqual(new SKPoint(105, 395), _trait1.StartPosition);
+	        Assert.AreEqual(new SKPoint(195, 305), _trait1.EndPosition);
+	        Assert.IsTrue(_trait0.IsParallelTo(_trait1));
+	        Assert.IsTrue(_trait0.IsCollinearTo(_trait1));
+
+            // test end point
+            _changes.Clear();
+	        var coll1 = new CollinearConstraint(_trait0, _trait1.EndPoint);
+	        _pad.Constraints.Add(coll1);
+	        coll1.OnElementChanged(_trait0, _changes);
+	        Assert.AreEqual(new SKPoint(100, 400), _trait0.StartPosition);
+	        Assert.AreEqual(new SKPoint(200, 300), _trait0.EndPosition);
+	        Assert.AreEqual(new SKPoint(105, 395), _trait1.StartPosition);
+	        Assert.AreEqual(new SKPoint(195, 305), _trait1.EndPosition);
+	        Assert.IsTrue(_trait0.IsParallelTo(_trait1));
+	        Assert.IsTrue(_trait0.IsCollinearTo(_trait1));
+
+            // test start point
+            Assert.AreEqual(new SKPoint(200, 400), _trait2.StartPosition);
+	        Assert.AreEqual(new SKPoint(300, 400), _trait2.EndPosition);
+	        Assert.AreEqual(new SKPoint(220, 500), _trait3.StartPosition);
+	        Assert.AreEqual(new SKPoint(300, 500), _trait3.EndPosition);
+	        Assert.IsTrue(_trait2.IsParallelTo(_trait3));
+	        Assert.IsFalse(_trait2.IsCollinearTo(_trait3));
+            _changes.Clear();
+	        var coll2 = new CollinearConstraint(_trait2.StartPoint, _trait3);
+	        _pad.Constraints.Add(coll2);
+	        coll2.OnElementChanged(_trait3, _changes);
+	        Assert.AreEqual(new SKPoint(200, 500), _trait2.StartPosition);
+	        Assert.AreEqual(new SKPoint(300, 400), _trait2.EndPosition);
+	        Assert.AreEqual(new SKPoint(220, 500), _trait3.StartPosition);
+	        Assert.AreEqual(new SKPoint(300, 500), _trait3.EndPosition);
+	        Assert.IsFalse(_trait2.IsParallelTo(_trait3));
+	        Assert.IsFalse(_trait2.IsCollinearTo(_trait3));
+
+            _changes.Clear();
+	        var coll3 = new CollinearConstraint(_trait4.StartPoint, _trait5);
+	        _pad.Constraints.Add(coll3);
+	        coll3.OnElementChanged(_trait4.StartPoint, _changes);
+	        Assert.AreEqual(new SKPoint(200, 400), _trait4.StartPosition);
+	        Assert.AreEqual(new SKPoint(300, 400), _trait4.EndPosition);
+	        Assert.AreEqual(new SKPoint(220, 400), _trait5.StartPosition);
+	        Assert.AreEqual(new SKPoint(300, 400), _trait5.EndPosition);
+	        Assert.IsTrue(_trait4.IsParallelTo(_trait5));
+	        Assert.IsTrue(_trait4.IsCollinearTo(_trait5));
+        }
+
         [TestMethod]
         public void TestPerpendicular()
         {
@@ -151,6 +155,84 @@ namespace SlugTests
 	        con.OnElementChanged(_trait6, _changes);
 	        Assert.IsTrue(_trait6.IsPerpendicularTo(_trait7));
 	        Assert.IsTrue(_trait6.IsPerpendicularTo(_trait8));
+
+	        _changes.Clear();
+	        _trait6.EndPoint.Position = new SKPoint(300, 450);
+	        con.OnElementChanged(_trait6, _changes);
+	        Assert.IsFalse(_trait6.IsPerpendicularTo(_trait7));
+	        Assert.IsTrue(_trait6.IsPerpendicularTo(_trait8));
         }
+
+        [TestMethod]
+        public void TestParallel()
+        {
+	        Assert.IsFalse(_trait6.IsParallelTo(_trait7));
+	        Assert.IsFalse(_trait6.IsParallelTo(_trait8));
+
+	        _changes.Clear();
+	        var con = new ParallelConstraint(_trait6, _trait8, LengthLock.None);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait6, _changes);
+	        Assert.IsFalse(_trait6.IsParallelTo(_trait7));
+	        Assert.IsTrue(_trait6.IsParallelTo(_trait8));
+
+	        _changes.Clear();
+	        con = new ParallelConstraint(_trait6, _trait7, LengthLock.None);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait6, _changes);
+	        Assert.IsTrue(_trait6.IsParallelTo(_trait7));
+	        Assert.IsTrue(_trait6.IsParallelTo(_trait8));
+
+	        _changes.Clear();
+	        _trait7.EndPoint.Position = new SKPoint(300, 450);
+	        con.OnElementChanged(_trait7, _changes);
+	        Assert.IsTrue(_trait6.IsParallelTo(_trait7));
+	        Assert.IsTrue(_trait6.IsParallelTo(_trait8));
+        }
+        [TestMethod]
+        public void TestHorizontalVertical()
+        {
+	        Assert.AreEqual(new SKPoint(500, 500), _trait6.StartPosition);
+	        Assert.AreEqual(new SKPoint(500, 700), _trait6.EndPosition);
+	        Assert.AreEqual(new SKPoint(300, 600), _trait7.StartPosition);
+	        Assert.AreEqual(new SKPoint(700, 600), _trait7.EndPosition);
+	        Assert.AreEqual(new SKPoint(300, 600), _trait8.StartPosition);
+	        Assert.AreEqual(new SKPoint(700, 650), _trait8.EndPosition);
+
+	        Assert.IsFalse(_trait6.IsHorizontal());
+	        Assert.IsTrue(_trait6.IsVertical());
+	        Assert.IsTrue(_trait7.IsHorizontal());
+	        Assert.IsFalse(_trait7.IsVertical());
+	        Assert.IsFalse(_trait8.IsHorizontal());
+	        Assert.IsFalse(_trait8.IsVertical());
+
+	        _changes.Clear();
+	        var con = new HorizontalVerticalConstraint(_trait8, true);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait8, _changes);
+	        Assert.IsTrue(_trait8.IsHorizontal());
+	        Assert.IsFalse(_trait8.IsVertical());
+
+	        _changes.Clear();
+            _trait8.EndPoint.Position = new SKPoint(300, 450);
+	        con.OnElementChanged(_trait8, _changes);
+	        Assert.IsTrue(_trait8.IsHorizontal());
+
+            _changes.Clear();
+	        con = new HorizontalVerticalConstraint(_trait5, false);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait5, _changes);
+	        Assert.IsFalse(_trait5.IsHorizontal());
+	        Assert.IsTrue(_trait5.IsVertical());
+
+	        _changes.Clear();
+            _trait5.StartPoint.Position = new SKPoint(100,150);
+            con.OnElementChanged(_trait5, _changes);
+            Assert.IsTrue(_trait5.IsVertical());
+        }
+
+        //var midCommand = new AddConstraintCommand(InputPad, new MidpointConstraint(t2.AddedTrait, t3.EndPointTask.IPoint));
+        //var eqCommand = new AddConstraintCommand(InputPad,
+        // new EqualConstraint(t5.AddedTrait, t6.AddedTrait, LengthLock.None, DirectionLock.Perpendicular));
     }
 }

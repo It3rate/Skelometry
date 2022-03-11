@@ -76,6 +76,21 @@ namespace Slugs.Primitives
             return new SKSegment(p0, p1);
         }
 
+        public bool IsHorizontal() => Math.Abs(StartPoint.Y - EndPoint.Y) < MathF.tolerance;
+        public bool IsVertical() => Math.Abs(StartPoint.X - EndPoint.X) < MathF.tolerance;
+        public bool IsCollinearTo(SKSegment segment)
+        {
+	        var sDist = SquaredDistanceTo(segment.StartPoint, false);
+	        var eDist = SquaredDistanceTo(segment.EndPoint, false);
+	        return Math.Abs(sDist) < MathF.tolerance && Math.Abs(eDist) < MathF.tolerance;
+        }
+        public bool IsParallelTo(SKSegment segment)
+        {
+	        var angleA = Angle;
+	        var angleB = segment.Angle;
+	        var rem = Math.IEEERemainder(angleA - angleB, MathF.PI);
+	        return (Math.Abs(rem)) < MathF.tolerance;
+        }
         public bool IsPerpendicularTo(SKSegment segment)
         {
 	        var angleA = Angle;
@@ -83,7 +98,6 @@ namespace Slugs.Primitives
 	        var rem = Math.IEEERemainder(angleA - angleB, MathF.PI);
 	        return (Math.Abs(Math.Abs(rem) - MathF.HalfPI)) < MathF.tolerance;
         }
-
         public float Angle
         {
 	        get
@@ -91,14 +105,22 @@ namespace Slugs.Primitives
 		        var dif = EndPoint - StartPoint;
 		        return (float) Math.Atan2(dif.Y, dif.X);
 	        }
-        } 
-
-
-
+        }
         public SKPoint OrthogonalPoint(SKPoint pt, float offset)
         {
             var angle = (EndPoint - StartPoint).Angle();
             return pt.PointAtRadiansAndDistance(angle + (float)Math.PI / 2f, offset);
+        }
+
+        public float DistanceTo(SKPoint p, bool clamp = true)
+        {
+	        var pp = ProjectPointOnto(p, clamp);
+	        return p.DistanceTo(pp);
+        }
+        public float SquaredDistanceTo(SKPoint p, bool clamp = true)
+        {
+	        var pp = ProjectPointOnto(p, clamp);
+	        return p.SquaredDistanceTo(pp);
         }
 
         public SKPoint ProjectPointOnto(SKPoint p, bool clamp = true)
