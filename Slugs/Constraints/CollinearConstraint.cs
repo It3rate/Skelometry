@@ -47,10 +47,11 @@ namespace Slugs.Constraints
 	                    affectedTrait.StartPoint.Position = movedTrait.ProjectPointOnto(affectedTrait.StartPosition, false);
 					    affectedTrait.EndPoint.Position = movedTrait.ProjectPointOnto(affectedTrait.EndPosition, false);
              
+                        // this is cosmetic, the points may change if affected by other constraints (or should with better constraint system)
                         // maybe measure midpoints and fix distances too?
                         affectedTrait.SetLengthByMidpoint(alen);
+						affectedTrait.Pad.UpdateConstraints(affectedTrait, adjustedElements);
 				    }
-				    affectedTrait.Pad.UpdateConstraints(affectedTrait, adjustedElements);
 			    }
 		    }
 		    else if (moved is IPoint movedPoint)

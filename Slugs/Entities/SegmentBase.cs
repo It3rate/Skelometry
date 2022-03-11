@@ -60,7 +60,7 @@ namespace Slugs.Entities
 		    return point.DistanceTo(closest);
 	    }
 
-        //public static SegmentBase operator +(SegmentBase a, float value)
+	    //public static SegmentBase operator +(SegmentBase a, float value)
         //{
         // a.StartPosition = a.StartPosition.Add(value);
         // a.EndPosition = a.EndPosition.Add(value);

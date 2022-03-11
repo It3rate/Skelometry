@@ -27,8 +27,11 @@ namespace SlugTests
 	    private Trait _trait3;
 	    private Trait _trait4;
 	    private Trait _trait5;
+	    private Trait _trait6;
+	    private Trait _trait7;
+	    private Trait _trait8;
 
-	    private Dictionary<int, SKPoint> _changes;
+        private Dictionary<int, SKPoint> _changes;
 
         [TestInitialize()]
 	    public void EntitiesInitialize()
@@ -43,9 +46,13 @@ namespace SlugTests
 		    _trait2 = new Trait(200, 400, 300, 400);
 		    _trait3 = new Trait(220, 500, 300, 500);
 		    _trait4 = new Trait(200, 400, 300, 400);
-		    _trait5 = new Trait(220, 500, 300, 500); 
-                                                                
-		    _changes = new Dictionary<int, SKPoint>();          
+		    _trait5 = new Trait(220, 500, 300, 500);
+
+            _trait6 = new Trait(500, 500, 500, 700);
+            _trait7 = new Trait(300, 600, 700, 600);
+            _trait8 = new Trait(300, 600, 700, 650);
+
+            _changes = new Dictionary<int, SKPoint>();          
 	    }                                                       
 
 	    [TestMethod]
@@ -115,7 +122,7 @@ namespace SlugTests
 	        Assert.AreEqual(new SKPoint(110, 400), _trait1.StartPosition);
 	        Assert.AreEqual(new SKPoint(200, 310), _trait1.EndPosition);
 
-            _changes.Clear();
+	        _changes.Clear();
 	        var con0 = new CoincidentConstraint(_trait0.StartPoint, _trait1.StartPoint);
 	        _pad.Constraints.Add(con0);
 	        con0.OnElementChanged(_trait1.StartPoint, _changes);
@@ -131,6 +138,19 @@ namespace SlugTests
 	        con0.OnElementChanged(_trait1.EndPoint, _changes);
 	        Assert.AreEqual(new SKPoint(200, 310), _trait0.EndPosition);
 	        Assert.AreEqual(new SKPoint(200, 310), _trait1.EndPosition);
+        }
+        [TestMethod]
+        public void TestPerpendicular()
+        {
+	        Assert.IsTrue(_trait6.IsPerpendicularTo(_trait7));
+	        Assert.IsFalse(_trait6.IsPerpendicularTo(_trait8));
+
+	        _changes.Clear();
+	        var con = new PerpendicularConstraint(_trait6, _trait8, LengthLock.None);
+	        _pad.Constraints.Add(con);
+	        con.OnElementChanged(_trait6, _changes);
+	        Assert.IsTrue(_trait6.IsPerpendicularTo(_trait7));
+	        Assert.IsTrue(_trait6.IsPerpendicularTo(_trait8));
         }
     }
 }

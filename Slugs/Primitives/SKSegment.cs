@@ -65,8 +65,8 @@ namespace Slugs.Primitives
 		        (EndPoint.Y - StartPoint.Y) * (t + startT) + StartPoint.Y);
         }
         public SKPoint OffsetAlongLine(float t, float offset) => OrthogonalPoint(PointAlongLine(t), offset);
-        public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(0.001f, Length));
-        public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(0.001f, Length));
+        public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(MathF.tolerance, Length));
+        public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(MathF.tolerance, Length));
 
         public SKSegment GetMeasuredSegmentByMidpoint(float length)
         {
@@ -75,6 +75,15 @@ namespace Slugs.Primitives
 	        var p1 = PointAlongLine(ratio, 0.5f);
             return new SKSegment(p0, p1);
         }
+
+        public bool IsPerpendicularTo(SKSegment segment)
+        {
+	        var angleA = Angle;
+	        var angleB = segment.Angle;
+	        var rem = Math.IEEERemainder(angleA - angleB, MathF.PI);
+	        return (Math.Abs(Math.Abs(rem) - MathF.HalfPI)) < MathF.tolerance;
+        }
+
         public float Angle
         {
 	        get

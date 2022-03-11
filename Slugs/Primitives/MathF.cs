@@ -8,6 +8,8 @@
 
     public class MathF
     {
+	    public static float tolerance = 0.0001f;
+
 	    public const float QuarterPI = (float)Math.PI * 0.25f;
 	    public const float HalfPI = (float)Math.PI * 0.5f;
         public const float PI = (float)Math.PI;

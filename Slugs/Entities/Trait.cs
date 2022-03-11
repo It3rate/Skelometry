@@ -99,6 +99,10 @@ namespace Slugs.Entities
 	        _focalKeys.Remove(focal.Key);
         }
 
+        public bool IsPerpendicularTo(Trait trait)
+        {
+	        return Segment.IsPerpendicularTo(trait.Segment);
+        }
         public void SetLengthByMidpoint(float length)
         {
 	        SKSegment seg = Segment.GetMeasuredSegmentByMidpoint(length);
