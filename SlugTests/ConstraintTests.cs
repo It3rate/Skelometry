@@ -19,6 +19,8 @@ namespace SlugTests
     {
 	    private static double tolerance = 0.00001;
 
+	    private Dictionary<int, SKPoint> _changes;
+
 	    private Pad _pad;
 	    private Agent _agent;
 	    private Entity _entity;
@@ -32,12 +34,10 @@ namespace SlugTests
 	    private Trait _trait7;
 	    private Trait _trait8;
 
-        private Dictionary<int, SKPoint> _changes;
-
         [TestInitialize()]
 	    public void EntitiesInitialize()
 	    {
-		    _agent = new Agent(new RenderEncoder());
+		    _agent = new Agent(new RenderEncoder(false));
 		    _pad = _agent.InputPad;
 		    _entity = new Entity(PadKind.Input);
 

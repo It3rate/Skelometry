@@ -1,35 +1,43 @@
-﻿using System.IO;
-using System.Windows.Forms.VisualStyles;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using SkiaSharp;
 using Slugs.Primitives;
 
 namespace Slugs.Renderer
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    public class RenderEncoder : RendererBase
+	public class RenderEncoder : RendererBase
     {
-	    private List<List<int>> Encoding = new List<List<int>>();
+        public bool DecodeAndRender { get; set; }
+
+        private List<List<int>> Encoding = new List<List<int>>();
 	    private List<string> StringList = new List<string>();
 
-        public RenderEncoder() { }
+	    private RenderDecoder _decoder = new RenderDecoder(new SlugRenderer());
 
-        private RenderDecoder _decoder = new RenderDecoder(new SlugRenderer());
+	    public RenderEncoder(bool decodeAndRender) : base()
+	    {
+		    DecodeAndRender = decodeAndRender;
+	    }
+
         public override void Draw()
         {
-            Encoding.Clear();
-	        base.Draw();
-	        //Console.WriteLine(GenerateCode());
-	        _decoder.DecodeAndRender(Canvas, Encoding, StringList);
+	        Encoding.Clear();
+	        StringList.Clear();
+            base.Draw();
+	        if (DecodeAndRender)
+	        {
+		        //Console.WriteLine(GenerateCode());
+		        _decoder.DecodeAndRender(Canvas, Encoding, StringList);
+            }
         }
 
         public override void DrawRoundBox(SKPoint point, SKPaint paint, float radius = 8f)
 	    {
-		    var drawElement = new List<int>(){ (int)DrawCommand.RoundBox };
+		    var drawElement = new List<int> { (int)DrawCommand.RoundBox };
 		    EncodePoint(point, drawElement);
             EncodePen(paint, drawElement);
             drawElement.Add(FloatToInt(radius));
@@ -37,7 +45,7 @@ namespace Slugs.Renderer
         }
 	    public override void DrawPolyline(SKPoint[] polyline, SKPaint paint)
 	    {
-		    var drawElement = new List<int>() { (int)DrawCommand.Polyline };
+		    var drawElement = new List<int> { (int)DrawCommand.Polyline };
 		    drawElement.Add(polyline.Length);
 		    foreach (var point in polyline)
 		    {
@@ -48,7 +56,7 @@ namespace Slugs.Renderer
         }
 	    public override void DrawPath(SKPoint[] polyline, SKPaint paint)
 	    {
-		    var drawElement = new List<int>() { (int)DrawCommand.Path };
+		    var drawElement = new List<int> { (int)DrawCommand.Path };
 		    drawElement.Add(polyline.Length);
 		    foreach (var point in polyline)
 		    {
@@ -59,7 +67,7 @@ namespace Slugs.Renderer
         }
 	    public override void DrawDirectedLine(SKSegment seg, SKPaint paint)
 	    {
-		    var drawElement = new List<int>() { (int)DrawCommand.DirectedLine };
+		    var drawElement = new List<int> { (int)DrawCommand.DirectedLine };
 		    EncodePoint(seg.StartPoint, drawElement);
 		    EncodePoint(seg.EndPoint, drawElement);
             EncodePen(paint, drawElement);
@@ -68,7 +76,7 @@ namespace Slugs.Renderer
 	    public override void DrawText(SKPoint center, string text, SKPaint paint)
 	    {
             StringList.Add(text);
-		    var drawElement = new List<int>() { (int)DrawCommand.Text };
+		    var drawElement = new List<int> { (int)DrawCommand.Text };
 		    EncodePoint(center, drawElement);
 		    drawElement.Add(StringList.Count - 1);
             EncodePen(paint, drawElement);
@@ -91,7 +99,7 @@ namespace Slugs.Renderer
 
         public override void GeneratePens()
 	    {
-		    Pens = new SlugPens(1);
+		    Pens = new SlugPens();
         }
 
 	    public int FloatToInt(float value, int decimalPlaces = 3)
@@ -99,13 +107,14 @@ namespace Slugs.Renderer
 		    return (int)(value * (decimalPlaces * 10));
 	    }
 
-	    public void Save(string filePath)
+        public EncodedFile EncodedFile => new EncodedFile(Encoding, StringList);
+
+        public void Save(string filePath)
 	    {
 		    using (Stream stream = File.Open(filePath, FileMode.Create))
 		    {
-			    var file = new EncodedFile(Encoding, StringList);
-			    var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-			    binaryFormatter.Serialize(stream, file);
+			    var binaryFormatter = new BinaryFormatter();
+			    binaryFormatter.Serialize(stream, EncodedFile);
             }
         }
 
@@ -120,7 +129,7 @@ namespace Slugs.Renderer
 	            sb.Append(@"        new List<int>() {");
 	            foreach (var value in encodedLine)
 	            {
-		            sb.Append(value.ToString() + ",");
+		            sb.Append(value + ",");
 	            }
 	            sb.AppendLine(@"},");
             }
@@ -140,23 +149,73 @@ namespace Slugs.Renderer
 
     public class EncodedFile
     {
-	    private List<List<int>> Encoding = new List<List<int>>();
-	    private List<string> StringList = new List<string>();
+	    private readonly List<List<int>> Encoding;
+	    private readonly List<string> StringList;
 
 	    public EncodedFile(List<List<int>> encoding, List<string> stringList)
 	    {
-		    Encoding = encoding; 
-		    StringList = stringList;
+		    Encoding = new List<List<int>>(encoding.Count);
+		    foreach (var enc in encoding)
+		    {
+			    var el = new List<int>();
+			    foreach (var val in enc)
+			    {
+                    el.Add(val);
+			    }
+                Encoding.Add(el);
+		    }
+
+            StringList = new List<string>(stringList.Count);
+		    foreach (var s in stringList)
+		    {
+				StringList.Add(s);   
+		    }
 	    }
+
+	    public static bool operator ==(EncodedFile a, EncodedFile b)
+	    {
+            // need to manually check encoding due to nested lists, and also makes debugging easier.
+            var result = a.Encoding.Count == b.Encoding.Count && a.StringList.SequenceEqual(b.StringList);
+            if (result)
+		    {
+			    for (var i = 0; i < a.Encoding.Count; i++)
+			    {
+				    if (a.Encoding[i].Count != b.Encoding[i].Count)
+				    {
+					    result = false;
+					    goto EndTest;
+				    }
+				    else
+				    {
+					    for (var j = 0; j < a.Encoding[i].Count; j++)
+					    {
+						    if (a.Encoding[i][j] != b.Encoding[i][j])
+						    {
+							    result = false;
+							    goto EndTest;
+						    }
+					    }
+				    }
+			    }
+		    }
+		    EndTest:
+		    return result;
+	    }
+
+        public static bool operator !=(EncodedFile a, EncodedFile b) => (a is null) || (b is null) || !(a == b);
+	    public override bool Equals(object a) => a is EncodedFile ef && ef == this;
+        public override int GetHashCode() => Encoding.GetHashCode() + 17 * StringList.GetHashCode();
+	    
     }
 
     public enum DrawCommand
     {
-	    RoundBox,
-	    Polyline,
-        Path,
-        DirectedLine,
-        Text,
-        Bitmap,
+        None = 0,
+        RoundBox = 1,
+        Polyline = 2,
+        Path = 3,
+        DirectedLine = 4,
+        Text = 5,
+        Bitmap = 6,
     }
 }

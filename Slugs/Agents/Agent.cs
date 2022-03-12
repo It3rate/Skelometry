@@ -129,8 +129,6 @@ namespace Slugs.Agents
             var hCommand = new AddConstraintCommand(InputPad, new HorizontalVerticalConstraint(t7.AddedTrait, true));
             var vCommand = new AddConstraintCommand(InputPad, new HorizontalVerticalConstraint(t8.AddedTrait, false));
 
-
-
             _editCommands.Do(collCommand, collCommand2, coinCommand, midCommand, parCommand, eqCommand, hCommand, vCommand);
         }
 

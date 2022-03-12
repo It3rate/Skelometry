@@ -39,7 +39,7 @@ namespace SlugTests
         [TestInitialize()]
 		public void EntityInitialize()
 		{
-			_agent = new Agent(new RenderEncoder());
+			_agent = new Agent(new RenderEncoder(false));
 			_entity = new Entity(PadKind.Input);
 
 			// Traits
