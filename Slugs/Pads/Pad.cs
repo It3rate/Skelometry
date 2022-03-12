@@ -17,7 +17,6 @@ namespace Slugs.Entities
         public const float SnapDistance = 5.0f;
 
         private readonly Dictionary<int, IElement> _elements = new Dictionary<int, IElement>();
-        public List<IConstraint> Constraints { get; } = new List<IConstraint>();
 
         public Dictionary<TraitKind, int> UnitMap = new Dictionary<TraitKind, int>();
         public void SetUnit(Focal focal) => UnitMap[focal.TraitKind] = focal.Key;
@@ -273,8 +272,70 @@ namespace Slugs.Entities
         }
 
         #endregion
+        #region _constraints
+	    private Dictionary<int, IConstraint> _constraintMap { get; } = new Dictionary<int, IConstraint>();
 
-	    public Focal FocalAt(int key)
+        public bool CanAddConstraint(IConstraint constraint)
+	    {
+		    return !_constraintMap.Keys.Contains(constraint.Key); // todo: check for validity of constraint
+	    }
+        public bool AddConstraint(IConstraint constraint)
+        {
+	        var result = CanAddConstraint(constraint);
+	        if (result)
+	        {
+		        _constraintMap.Add(constraint.Key, constraint);
+	        }
+	        
+	        return result;
+        }
+        public void AddConstraints(IEnumerable<IConstraint> constraints)
+        {
+	        foreach (var constraint in constraints.ToArray())
+	        {
+		        AddConstraint(constraint);
+	        }
+        }
+        public bool RemoveConstraint(IConstraint constraint)
+        {
+	        var result = _constraintMap.Keys.Contains(constraint.Key);
+	        if (result)
+	        {
+		        _constraintMap.Remove(constraint.Key);
+	        }
+	        return result;
+        }
+        public void RemoveConstraints(IEnumerable<IConstraint> constraints)
+        {
+	        foreach (var constraint in constraints.ToArray())
+	        {
+		        RemoveConstraint(constraint);
+	        }
+        }
+        public IEnumerable<IConstraint> GetRelatedConstraints(IElement element)
+        {
+	        return _constraintMap.Values.Where(constraint => constraint.HasElement(element.Key));
+        }
+
+        public void UpdateConstraints(IElement changedElement, Dictionary<int, SKPoint> adjustedElements)
+	    {
+		    if (!changedElement.IsLocked && !adjustedElements.ContainsKey(changedElement.Key))
+		    {
+			    adjustedElements.Add(changedElement.Key, changedElement.Center);
+			    var related = GetRelatedConstraints(changedElement);
+			    //_constraintMap.Values.Where(constraint => constraint.HasElement(changedElement.Key));
+			    foreach (var constraint in related)
+			    {
+				    if (!adjustedElements.ContainsKey(constraint.Key))
+				    {
+					    constraint.OnElementChanged(changedElement, adjustedElements);
+				    }
+			    }
+		    }
+	    }
+#endregion
+
+        public Focal FocalAt(int key)
 	    {
 		    var success = _elements.TryGetValue(key, out var result);
 		    return success && (result.ElementKind == ElementKind.Focal) ? (Focal)result : Focal.Empty;
@@ -377,20 +438,5 @@ namespace Slugs.Entities
             return result;
         }
 
-        public void UpdateConstraints(IElement changedElement, Dictionary<int, SKPoint> adjustedElements)
-        {
-	        if (!changedElement.IsLocked && !adjustedElements.ContainsKey(changedElement.Key))
-	        {
-                adjustedElements.Add(changedElement.Key, changedElement.Center);
-                var related = Constraints.Where(constraint => constraint.HasElement(changedElement.Key));
-		        foreach (var constraint in related)
-		        {
-			        if (!adjustedElements.ContainsKey(constraint.Key))
-			        {
-						constraint.OnElementChanged(changedElement, adjustedElements);
-                    }
-		        }
-	        }
-        }
     }
 }

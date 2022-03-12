@@ -130,6 +130,9 @@ namespace Slugs.Agents
             var vCommand = new AddConstraintCommand(InputPad, new HorizontalVerticalConstraint(t8.AddedTrait, false));
 
             _editCommands.Do(collCommand, collCommand2, coinCommand, midCommand, parCommand, eqCommand, hCommand, vCommand);
+
+            var remCommand = new RemoveElementCommand(InputPad, t3.AddedTrait);
+            _editCommands.Do(remCommand);
         }
 
         private void MakeLines()

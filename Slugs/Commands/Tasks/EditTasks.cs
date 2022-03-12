@@ -73,15 +73,6 @@ namespace Slugs.Commands.Tasks
 	        // dup element, assign key
         }
     }
-    public class RemoveElementTask : EditTask
-    {
-	    public int ElementKey { get; }
-
-	    public RemoveElementTask(PadKind padKind, int key) : base(padKind)
-	    {
-		    ElementKey = key;
-	    }
-    }
     public class GroupPointsTask : EditTask, ICreateTask
     {
         public List<int> FromKeys { get; }

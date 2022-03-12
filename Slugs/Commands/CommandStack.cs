@@ -33,6 +33,7 @@ namespace Slugs.Commands
     
 	    private readonly List<TCommand> _stack = new List<TCommand>(4096);
 	    private int _stackIndex = 0; // the pointer to the next insertion index
+	    public int StackIndex => _stackIndex;
 
 	    private readonly List<TCommand> _toAdd = new List<TCommand>();
 	    private readonly List<TCommand> _toRemove = new List<TCommand>();

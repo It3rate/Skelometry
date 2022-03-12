@@ -24,14 +24,14 @@ namespace Slugs.Commands.Tasks
 	    public override void RunTask()
 	    {
 		    base.RunTask();
-		    Pad.Constraints.Add(Constraint);
+		    Pad.AddConstraint(Constraint);
 		    Constraint.OnElementChanged(Constraint.StartElement, _changes);
 
 	    }
 	    public override void UnRunTask()
 	    {
 		    base.UnRunTask();
-		    Pad.Constraints.Remove(Constraint);
+		    Pad.RemoveConstraint(Constraint);
         }
     }
 }

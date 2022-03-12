@@ -29,7 +29,6 @@ namespace SlugTests
 	    private RenderEncoder _renderEncoder;
         private CommandStack<EditCommand> _editCommands;
 
-
         [TestInitialize()]
 	    public void EntitiesInitialize()
 	    {
@@ -53,6 +52,7 @@ namespace SlugTests
 	        var traitCmd7 = new AddTraitCommand(_pad, TraitKind.Default, new SKPoint(100, 340), new SKPoint(700, 340), true);
 	        _editCommands.Do(traitCmd1, traitCmd2, traitCmd3, traitCmd4, traitCmd5, traitCmd6, traitCmd7);
 
+	        var index = _editCommands.StackIndex;
             _renderEncoder.Draw();
             var enc0 = _renderEncoder.EncodedFile;
 	        var enc1 = _renderEncoder.EncodedFile;
@@ -78,6 +78,18 @@ namespace SlugTests
 	        var bc = new AddSingleBondCommand(fc1.AddedFocal, -0.3f, fc2.AddedFocal, 0.3f);
 	        var db = new AddDoubleBondCommand(fc1.AddedFocal, fc2.AddedFocal);
 	        _editCommands.Do(bc, db);
+
+            _renderEncoder.Draw();
+            var encFinal = _renderEncoder.EncodedFile;
+            Assert.IsFalse(enc0 == encFinal);
+            _editCommands.UndoToIndex(index);
+            _renderEncoder.Draw();
+            var enc2 = _renderEncoder.EncodedFile;
+            Assert.IsTrue(enc0 == enc1);
+            _editCommands.RedoAll();
+            _renderEncoder.Draw();
+            var enc3 = _renderEncoder.EncodedFile;
+            Assert.IsTrue(encFinal == enc3);
         }
     }
 }

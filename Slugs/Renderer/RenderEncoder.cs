@@ -175,7 +175,7 @@ namespace Slugs.Renderer
 	    public static bool operator ==(EncodedFile a, EncodedFile b)
 	    {
             // need to manually check encoding due to nested lists, and also makes debugging easier.
-            var result = a.Encoding.Count == b.Encoding.Count && a.StringList.SequenceEqual(b.StringList);
+            var result = a != null && b != null && a.Encoding.Count == b.Encoding.Count && a.StringList.SequenceEqual(b.StringList);
             if (result)
 		    {
 			    for (var i = 0; i < a.Encoding.Count; i++)
