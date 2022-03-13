@@ -112,9 +112,12 @@ namespace Slugs.Entities
         }
         public override IElement Duplicate(bool addElement = true)
         {
-	        var dup = new Focal(Entity, StartFocalPoint, EndFocalPoint);
-	        if (addElement)
+	        var sfp = (FocalPoint)StartFocalPoint.Duplicate(false);
+	        var efp = (FocalPoint)EndFocalPoint.Duplicate(false);
+	        var dup = new Focal(Entity, sfp, efp);
 	        {
+		        Pad.AddElement(sfp);
+		        Pad.AddElement(efp);
 		        Pad.AddElement(dup);
 	        }
 	        return dup;

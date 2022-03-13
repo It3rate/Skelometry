@@ -68,9 +68,12 @@ namespace Slugs.Entities
         }
         public override IElement Duplicate(bool addElement = true)
         {
-	        var dup = new SingleBond(StartPoint, EndPoint);
-	        if (addElement)
-	        {
+	        var sp = (BondPoint)StartPoint.Duplicate(false);
+	        var ep = (BondPoint)EndPoint.Duplicate(false);
+	        var dup = new SingleBond(sp, ep);
+            {
+		        Pad.AddElement(sp);
+		        Pad.AddElement(ep);
 		        Pad.AddElement(dup);
 	        }
 	        return dup;

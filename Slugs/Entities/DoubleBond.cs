@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.Net;
+using SkiaSharp;
 using Slugs.Primitives;
 using System.Numerics;
 
@@ -60,9 +61,12 @@ namespace Slugs.Entities
 	    }
 	    public override IElement Duplicate(bool addElement = true)
 	    {
+		    var sf = (IPoint)StartFocal.Duplicate(false);
+		    var ef = (IPoint)EndFocal.Duplicate(false);
 		    var dup = new DoubleBond(StartFocal, EndFocal);
-		    if (addElement)
 		    {
+			    Pad.AddElement(sf);
+			    Pad.AddElement(ef);
 			    Pad.AddElement(dup);
 		    }
 		    return dup;

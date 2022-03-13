@@ -50,10 +50,14 @@ namespace Slugs.Entities
 
         public override IElement Duplicate(bool addElement = true)
         {
-	        var dup = new Trait(TraitKind, StartPoint, EndPoint);
+	        var sp = (IPoint)StartPoint.Duplicate(false);
+	        var ep = (IPoint)EndPoint.Duplicate(false);
+            var dup = new Trait(TraitKind, sp, ep);
 	        if (addElement)
 	        {
-		        Pad.AddElement(dup);
+		        Pad.AddElement(sp);
+		        Pad.AddElement(ep);
+                Pad.AddElement(dup);
 	        }
 	        return dup;
         }
