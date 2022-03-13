@@ -58,6 +58,15 @@ namespace Slugs.Entities
 		    SetEndKey(endFocal.Key);
             CalculateRatio();
 	    }
+	    public override IElement Duplicate(bool addElement = true)
+	    {
+		    var dup = new DoubleBond(StartFocal, EndFocal);
+		    if (addElement)
+		    {
+			    Pad.AddElement(dup);
+		    }
+		    return dup;
+	    }
 
         protected void SetStartKey(int key)
 	    {

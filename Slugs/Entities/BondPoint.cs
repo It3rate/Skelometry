@@ -37,6 +37,15 @@ namespace Slugs.Entities
             T = t;
             AllKeys.Add(FocalKey);
         }
+        public override IElement Duplicate(bool addElement = true)
+        {
+	        var dup = new BondPoint(PadKind, FocalKey, T);
+	        if (addElement)
+	        {
+		        Pad.AddElement(dup);
+	        }
+	        return dup;
+        }
 
         public override bool CanMergeWith(IPoint point)
         {

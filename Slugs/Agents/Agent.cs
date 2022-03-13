@@ -118,6 +118,7 @@ namespace Slugs.Agents
             var t10 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(10, 10), new SKPoint(80, 10));
             var t11 = new AddTraitCommand(InputPad, TraitKind.Default, new SKPoint(20, 20), new SKPoint(190, 30));
             _editCommands.Do(t0, t1, t2, t3, t4, t5, t6, t7, t8, t10, t11);
+
             //t4.AddedTrait.StartFocalPoint.IsLocked = true;
             var collCommand = new AddConstraintCommand(InputPad, new CollinearConstraint(t0.AddedTrait, t1.StartPointTask.IPoint));
             var collCommand2 = new AddConstraintCommand(InputPad, new CollinearConstraint(t10.AddedTrait, t11.AddedTrait));

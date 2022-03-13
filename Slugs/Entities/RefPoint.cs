@@ -21,7 +21,7 @@ namespace Slugs.Entities
 			Position = SKPoint.Empty;
 		}
 
-		public override List<int> AllKeys => TargetPoint.AllKeys; // should never be RefPoint, empty point is ok.
+        public override List<int> AllKeys => TargetPoint.AllKeys; // should never be RefPoint, empty point is ok.
 
         public int TargetKey { get; private set; }
 		public override IPoint TargetPoint => Pad.ResolvedPointFor(this);
@@ -48,7 +48,16 @@ namespace Slugs.Entities
 		{
 			TargetKey = targetKey;
 		}
-		public override bool CanMergeWith(IPoint point)
+		public override IElement Duplicate(bool addElement = true)
+		{
+			var dup = new RefPoint(PadKind, TargetKey);
+			if (addElement)
+			{
+				Pad.AddElement(dup);
+			}
+			return dup;
+		}
+        public override bool CanMergeWith(IPoint point)
 		{
 			return TargetPoint.CanMergeWith(point.TargetPoint);
 		}

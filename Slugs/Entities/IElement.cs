@@ -31,6 +31,7 @@ namespace Slugs.Entities
 
         void MoveTo(SKPoint position);
         void SetLock(bool lockStatus);
+        IElement Duplicate(bool addElement = true);
     }
 
 	public interface IAreaElement : IElement
@@ -137,6 +138,8 @@ namespace Slugs.Entities
 	    {
 		    IsLocked = lockStatus;
 	    }
+
+	    public abstract IElement Duplicate(bool addElement = true);
     }
 
     [Flags]

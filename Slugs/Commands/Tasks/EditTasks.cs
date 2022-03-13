@@ -56,23 +56,8 @@ namespace Slugs.Commands.Tasks
     {
     }
 
-    public class DuplicateElementTask : EditTask, ICreateTask
-    {
-        public int SourceKey { get; }
 
-        //public DuplicateElementTask(PadKind padKind) : base(padKind)
-        //{
-	       // BasedOn = SelectionKind.SelectedElement;
-        //    SourceKey = ElementKeyForSelectionKind(SelectionKind.SelectedElement);
-        //    // dup element, assign key
-        //}
-        public DuplicateElementTask(PadKind padKind, int sourceKey) : base(padKind)
-        {
-	        SourceKey = sourceKey;
-	        //BasedOn = SelectionKindForElementKey(sourceKey);
-	        // dup element, assign key
-        }
-    }
+
     public class GroupPointsTask : EditTask, ICreateTask
     {
         public List<int> FromKeys { get; }
@@ -147,6 +132,7 @@ namespace Slugs.Commands.Tasks
 		    KeyToRemove = keyToRemove;
 	    }
     }
+
     //public class MultiSelectionTask : EditTask // probably multi-selections with always be temporary groups (or a fixed group on Working), so this may not be needed.
     //{
 	   // public List<int> AppendKeys { get; } = new List<int>();

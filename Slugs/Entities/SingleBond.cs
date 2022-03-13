@@ -66,8 +66,17 @@ namespace Slugs.Entities
 		    SetStartKey(startPoint.Key);
 		    SetEndKey(endPoint.Key);
         }
+        public override IElement Duplicate(bool addElement = true)
+        {
+	        var dup = new SingleBond(StartPoint, EndPoint);
+	        if (addElement)
+	        {
+		        Pad.AddElement(dup);
+	        }
+	        return dup;
+        }
 
-	    protected override void SetStartKey(int key)
+        protected override void SetStartKey(int key)
 	    {
 		    if (Pad.ElementAt(key) is BondPoint)
 		    {

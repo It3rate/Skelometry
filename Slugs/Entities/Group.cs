@@ -24,6 +24,15 @@ namespace Slugs.Entities
         public Group(PadKind padKind) : base(padKind)
 	    {
         }
+        public override IElement Duplicate(bool addElement = true)
+        {
+	        var dup = new Group(PadKind);
+	        if (addElement)
+	        {
+		        Pad.AddElement(dup);
+	        }
+	        return dup;
+        }
 
         public override SKPath Path => new SKPath();
         public override SKPoint Center => SKPoint.Empty;

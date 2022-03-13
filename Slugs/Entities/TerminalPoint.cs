@@ -50,12 +50,22 @@ namespace Slugs.Entities
 		    }
 	    }
 
-    public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { this };
+	    public override List<IPoint> Points => IsEmpty ? new List<IPoint> { } : new List<IPoint> { this };
 
-    public TerminalPoint(PadKind padKind, SKPoint point) : base(padKind)
+	    public TerminalPoint(PadKind padKind, SKPoint point) : base(padKind)
         {
             Position = point;
         }
+
+	    public override IElement Duplicate(bool addElement = true)
+	    {
+		    var dup = new TerminalPoint(PadKind, Position);
+		    if (addElement)
+		    {
+			    Pad.AddElement(dup);
+		    }
+		    return dup;
+	    }
 
         public override bool CanMergeWith(IPoint point)
         {
@@ -71,6 +81,7 @@ namespace Slugs.Entities
         {
 	        Position = from.Position;
         }
+
         public static bool operator ==(TerminalPoint left, TerminalPoint right) => left.Key == right.Key && left.Position == right.Position;
         public static bool operator !=(TerminalPoint left, TerminalPoint right) => left.Key != right.Key || left.Position != right.Position;
         public override bool Equals(object obj) => obj is TerminalPoint value && this == value;

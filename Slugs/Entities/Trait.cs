@@ -48,6 +48,16 @@ namespace Slugs.Entities
 	        EndKey = new TerminalPoint(padKind, new SKPoint(x1, y1)).Key;
         }
 
+        public override IElement Duplicate(bool addElement = true)
+        {
+	        var dup = new Trait(TraitKind, StartPoint, EndPoint);
+	        if (addElement)
+	        {
+		        Pad.AddElement(dup);
+	        }
+	        return dup;
+        }
+
         protected override void SetStartKey(int key)
         {
 	        if (Pad.ElementAt(key) is IPoint)

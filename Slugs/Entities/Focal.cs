@@ -110,6 +110,15 @@ namespace Slugs.Entities
 	        SetStartKey(startPoint.Key);
 	        SetEndKey(endPoint.Key);
         }
+        public override IElement Duplicate(bool addElement = true)
+        {
+	        var dup = new Focal(Entity, StartFocalPoint, EndFocalPoint);
+	        if (addElement)
+	        {
+		        Pad.AddElement(dup);
+	        }
+	        return dup;
+        }
 
         protected override void SetStartKey(int key)
         {

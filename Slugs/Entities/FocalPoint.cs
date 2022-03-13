@@ -29,6 +29,15 @@ namespace Slugs.Entities
 		    TraitKey = traitKey;
 		    T = t;
         }
+        public override IElement Duplicate(bool addElement = true)
+        {
+	        var dup = new FocalPoint(PadKind, TraitKey, T);
+	        if (addElement)
+	        {
+		        Pad.AddElement(dup);
+	        }
+	        return dup;
+        }
 
         public override bool CanMergeWith(IPoint point)
         {

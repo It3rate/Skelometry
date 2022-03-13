@@ -24,9 +24,18 @@ namespace Slugs.Entities
         public Entity(PadKind padKind) : base(padKind)
         {
         }
+        public override IElement Duplicate(bool addElement = true)
+        {
+	        var dup = new Entity(PadKind);
+	        if (addElement)
+	        {
+		        Pad.AddElement(dup);
+	        }
+	        return dup;
+        }
 
-		#region Focals
-	    public IEnumerable<Focal> Focals
+        #region Focals
+        public IEnumerable<Focal> Focals
 	    {
 		    get
 		    {
