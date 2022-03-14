@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using SkiaSharp;
@@ -172,11 +173,15 @@ namespace Slugs.Agents
 #region Position and Keyboard
 
 	    private bool _creatingOnDown = false;
+	    private SKPoint _downRawMousePoint;
+	    private SKPoint _rawMousePoint;
+        public SKPoint GetTransformedPoint(SKPoint point) => Data.Matrix.Invert().MapPoint(point);
         public bool MouseDown(MouseEventArgs e)
         {
             // Add to selection if ctrl down etc.
-
-	        var mousePoint = e.Location.ToSKPoint();
+            _rawMousePoint = e.Location.ToSKPoint();
+            var mousePoint = GetTransformedPoint(_rawMousePoint);
+            _downRawMousePoint = _rawMousePoint;
 
             Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, false, _selectableKind);
 	        Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
@@ -210,8 +215,10 @@ namespace Slugs.Agents
 
             // CreateTrait, AddBond, AddFocal, MoveElement, SelectRect 
             var result = false;
-		    var mousePoint = e.Location.ToSKPoint();
-		    Data.Current.UpdatePositions(mousePoint);
+            _rawMousePoint = e.Location.ToSKPoint();
+            var mousePoint = GetTransformedPoint(_rawMousePoint);
+
+            Data.Current.UpdatePositions(mousePoint);
             Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
             if (IsDown)
             {
@@ -223,7 +230,11 @@ namespace Slugs.Agents
 	    private float _minDragDistance = 10f;
 	    public bool MouseDrag(SKPoint mousePoint)
 	    {
-            if (!IsDragging)
+		    if (UIMode == UIMode.Pan)
+		    { 
+			    Data.SetPanAndZoom(_startMatrix, _downRawMousePoint, _rawMousePoint - _downRawMousePoint, 1f);
+		    }
+            else if (!IsDragging)
 		    {
 				var dist = (mousePoint - Data.Begin.Position).Length;
 				if (dist > _minDragDistance)
@@ -234,7 +245,7 @@ namespace Slugs.Agents
 					bool createDoubleBond = (UIMode == UIMode.CreateDoubleBond || _isControlDown) && 
 					                        Data.Begin.FirstElement.ElementKind == ElementKind.Focal;
 
-                    if (createDoubleBond)
+					if (createDoubleBond)
 					{
                         // create doubleBond object
 						var startFocal = (Focal)Data.Begin.FirstElement;
@@ -318,6 +329,7 @@ namespace Slugs.Agents
 				}
 		    }
 
+
 		    var dontDragAtStart = !IsDragging && _creatingOnDown;
 		    if (!dontDragAtStart)
 		    {
@@ -364,9 +376,10 @@ namespace Slugs.Agents
             // If dragging or creating, check for last point merge
             // If rect select, add contents to selection (also done in move).
             // If not dragging or creating and dist < selMax, click select
-            var mousePoint = e.Location.ToSKPoint();
+            _rawMousePoint = e.Location.ToSKPoint();
+            var mousePoint = GetTransformedPoint(_rawMousePoint);
 
-		    Data.Current.UpdatePositions(mousePoint);
+            Data.Current.UpdatePositions(mousePoint);
 		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
 
             // Merge points if needed.
@@ -445,6 +458,7 @@ namespace Slugs.Agents
 	    private bool _isShiftDown;
 	    private bool _isAltDown;
 	    private UIMode PreviousMode = UIMode.Any;
+	    private SKMatrix _startMatrix;
         // When SingleBond is selected, focals can be highlighted (but not moved), bonds can be created or edited and have precedence in conflict.
         // ctrl defaults to 'create' causing select to be exclusive to focals or singleBond points.
         public bool KeyDown(KeyEventArgs e)
@@ -483,6 +497,13 @@ namespace Slugs.Agents
 			    case Keys.I:
 				    ToggleShowNumbers();
 				    break;
+			    case Keys.Space:
+				    if (UIMode != UIMode.Pan)
+				    {
+					    _startMatrix = Data.Matrix;
+                    }
+				    UIMode = UIMode.Pan;
+                    break;
                 case Keys.Z:
 				    if (_isShiftDown && _isControlDown)
 				    {
@@ -519,6 +540,7 @@ namespace Slugs.Agents
             _isControlDown = e.Control;
             _isShiftDown = e.Shift;
             _isAltDown = e.Alt;
+            _startMatrix = Data.Matrix;
             //_selectableKind = ElementKind.Any;
             if (UIMode.IsMomentary())
             {

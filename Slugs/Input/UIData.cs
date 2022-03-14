@@ -15,7 +15,7 @@ namespace Slugs.Input
 	{
 		public IEnumerable<Pad> Pads => _agent.Pads.Values;
 
-        //public SelectionSet Origin { get; }
+		//public SelectionSet Origin { get; }
         public Dictionary<SelectionSetKind, SelectionSet> SelectionSets = new Dictionary<SelectionSetKind, SelectionSet>();
         private void AddSelectionSet(PadKind padKind, SelectionSetKind kind) => SelectionSets.Add(kind, new SelectionSet(padKind, kind));
         public SelectionSet SelectionSetFor(SelectionSetKind kind) => SelectionSets[kind];
@@ -45,8 +45,33 @@ namespace Slugs.Input
 
 	        DisplayMode |= DisplayMode.ShowAllValues;
         }
+        #region View Matrix
+		private SKMatrix _matrix = SKMatrix.CreateIdentity();
+		public SKMatrix Matrix
+		{
+			get => _matrix;
+			set => _matrix = value;
+		}
+		public float ScreenScale { get; set; } = 1f;
+        public void SetPanAndZoom(SKMatrix initalMatrix, SKPoint anchorPt, SKPoint translation, float scale)
+        {
+	        var scaledAnchor = new SKPoint(anchorPt.X * ScreenScale, anchorPt.Y * ScreenScale);
+	        var scaledTranslation = new SKPoint(translation.X * ScreenScale, translation.Y * ScreenScale);
+
+	        var mTranslation = SKMatrix.CreateTranslation(scaledTranslation.X, scaledTranslation.Y);
+	        var mScale = SKMatrix.CreateScale(scale, scale, scaledAnchor.X, scaledAnchor.Y);
+	        var mIdent = SKMatrix.CreateIdentity();
+	        SKMatrix.Concat(ref mIdent, ref mTranslation, ref mScale);
+	        SKMatrix.Concat(ref _matrix, ref mIdent, ref initalMatrix);
+        }
+        public void ResetZoom()
+        {
+	        Matrix = SKMatrix.CreateIdentity();
+        }
+#endregion
 
         public List<SKPoint> WorkingPoints = new List<SKPoint>();
+
         public void SetWorkingPoints(params SKPoint[] points)
         {
             WorkingPoints.Clear();

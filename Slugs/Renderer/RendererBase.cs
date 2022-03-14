@@ -94,6 +94,7 @@ namespace Slugs.Renderer
         public virtual void BeginDraw()
         {
             Canvas.Save();
+            Canvas.SetMatrix(Data.Matrix);
             if (hasControl == false)
             {
                 Canvas.Clear(SKColors.White);
