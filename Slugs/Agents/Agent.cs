@@ -383,7 +383,15 @@ namespace Slugs.Agents
 		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
 
             // Merge points if needed.
-            if (Data.HasHighlightPoint && _activeCommand is IDraggableCommand cmd && cmd.HasDraggablePoint)
+            if (UIMode == UIMode.Pan)
+            {
+	            _startMatrix = Data.Matrix;
+	            if (_lastKeyUp != null)
+	            {
+		            KeyUp(_lastKeyUp);
+	            }
+            }
+            else if (Data.HasHighlightPoint && _activeCommand is IDraggableCommand cmd && cmd.HasDraggablePoint)
             {
 	            if (cmd.DraggablePoint.CanMergeWith(Data.HighlightPoint))
 	            {
@@ -402,7 +410,7 @@ namespace Slugs.Agents
                 selCmd.Execute();
             }
 
-		    OnSelectionChange?.Invoke(this, new EventArgs());
+            OnSelectionChange?.Invoke(this, new EventArgs());
             ClearMouse();
 
             return true;
@@ -534,20 +542,31 @@ namespace Slugs.Agents
             return true;
 	    }
 
+        private KeyEventArgs _lastKeyUp;
         public bool KeyUp(KeyEventArgs e)
         {
-            CurrentKey = Keys.None;
-            _isControlDown = e.Control;
-            _isShiftDown = e.Shift;
-            _isAltDown = e.Alt;
-            _startMatrix = Data.Matrix;
-            //_selectableKind = ElementKind.Any;
-            if (UIMode.IsMomentary())
-            {
-	            UIMode = PreviousMode;
+	        bool result = true;
+	        if (UIMode == UIMode.Pan && IsDown && _lastKeyUp == null)
+	        {
+		        _lastKeyUp = e;
+		        result = false;
             }
-            SetSelectable(UIMode);
-            return true;
+	        else
+	        {
+		        _lastKeyUp = null;
+                CurrentKey = Keys.None;
+	            _isControlDown = e.Control;
+	            _isShiftDown = e.Shift;
+	            _isAltDown = e.Alt;
+	            _startMatrix = Data.Matrix;
+	            //_selectableKind = ElementKind.Any;
+	            if (UIMode.IsMomentary())
+	            {
+		            UIMode = PreviousMode;
+	            }
+	            SetSelectable(UIMode);
+	        }
+            return result;
         }
 
 
