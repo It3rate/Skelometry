@@ -31,6 +31,8 @@ namespace Slugs
             _control.MouseDown += OnMouseDown;
             _control.MouseMove += OnMouseMove;
             _control.MouseUp += OnMouseUp;
+            _control.MouseDoubleClick += OnMouseDoubleClick;
+            _control.MouseWheel += OnMouseWheel;
             KeyDown += OnKeyDown;
             //KeyPress += OnKeyPress;
             KeyUp += OnKeyUp;
@@ -82,6 +84,21 @@ namespace Slugs
 		        Redraw();
 	        }
         }
+        private void OnMouseDoubleClick(object sender, MouseEventArgs e)
+        {
+	        if (_agent.MouseDoubleClick(e))
+	        {
+		        Redraw();
+	        }
+        }
+        private void OnMouseWheel(object sender, MouseEventArgs e)
+        {
+	        if (_agent.MouseWheel(e))
+	        {
+		        Redraw();
+	        }
+        }
+
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (_agent.KeyDown(e))

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using OpenTK.Graphics.OpenGL;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
@@ -185,14 +186,21 @@ namespace Slugs.Agents
 
             Data.GetHighlight(mousePoint, Data.Begin, _ignoreList, false, _selectableKind);
 	        Data.Begin.Position = mousePoint; // gethighlight clears position so this must be second.
+	        Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
 
-            Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
-            Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, false, _selectableKind);
-            Data.Selected.Position = mousePoint;
-            if (UIMode == UIMode.SetUnit && Data.Selected.FirstElement is Focal focal)
-            {
-                InputPad.SetUnit(focal);
-            }
+	        if (e.Button == MouseButtons.Middle)
+	        {
+		        StartPan();
+	        }
+	        else
+	        {
+	            Data.GetHighlight(mousePoint, Data.Selected, _ignoreList, false, _selectableKind);
+	            Data.Selected.Position = mousePoint;
+	            if (UIMode == UIMode.SetUnit && Data.Selected.FirstElement is Focal focal)
+	            {
+	                InputPad.SetUnit(focal);
+	            }
+	        }
 
             IsDown = true;
             _creatingOnDown = _isControlDown;
@@ -382,13 +390,16 @@ namespace Slugs.Agents
             Data.Current.UpdatePositions(mousePoint);
 		    Data.GetHighlight(mousePoint, Data.Highlight, _ignoreList, false, _selectableKind);
 
-            // Merge points if needed.
             if (UIMode == UIMode.Pan)
             {
 	            _startMatrix = Data.Matrix;
 	            if (_lastKeyUp != null)
 	            {
 		            KeyUp(_lastKeyUp);
+	            }
+	            else
+	            {
+		            UIMode = PreviousMode;
 	            }
             }
             else if (Data.HasHighlightPoint && _activeCommand is IDraggableCommand cmd && cmd.HasDraggablePoint)
@@ -415,6 +426,24 @@ namespace Slugs.Agents
 
             return true;
 	    }
+	    public bool MouseDoubleClick(MouseEventArgs e)
+	    {
+		    if (CurrentKey == Keys.Space && e.Button == MouseButtons.Left)
+		    {
+                Data.ResetZoom();
+		    }
+            return true;
+	    }
+
+	    public float ScaleTickSize { get; set; } = 0.2f;
+	    public bool MouseWheel(MouseEventArgs e)
+	    {
+		    var scale = 1f + (Math.Sign(e.Delta) * ScaleTickSize);
+	        var rawMousePoint = e.Location.ToSKPoint();
+	        var mousePoint = GetTransformedPoint(_rawMousePoint);
+            Data.SetPanAndZoom(Data.Matrix, mousePoint, new SKPoint(0,0), scale);
+	        return true;
+        }
 
         private Keys CurrentKey;
 	    private UIMode _uiMode = UIMode.Any;
@@ -506,11 +535,7 @@ namespace Slugs.Agents
 				    ToggleShowNumbers();
 				    break;
 			    case Keys.Space:
-				    if (UIMode != UIMode.Pan)
-				    {
-					    _startMatrix = Data.Matrix;
-                    }
-				    UIMode = UIMode.Pan;
+				    StartPan();
                     break;
                 case Keys.Z:
 				    if (_isShiftDown && _isControlDown)
@@ -525,7 +550,6 @@ namespace Slugs.Agents
 			    case Keys.R:
 				    if (_isControlDown)
 				    {
-					    // redo
 					    _editCommands.Redo();
                     }
 				    else
@@ -539,6 +563,7 @@ namespace Slugs.Agents
 		    {
 			    PreviousMode = curMode;
 		    }
+
             return true;
 	    }
 
@@ -569,6 +594,14 @@ namespace Slugs.Agents
             return result;
         }
 
+        private void StartPan()
+        {
+	        if (UIMode != UIMode.Pan)
+	        {
+		        _startMatrix = Data.Matrix;
+	        }
+	        UIMode = UIMode.Pan;
+        }
 
         #endregion
 
