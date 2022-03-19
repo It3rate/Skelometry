@@ -65,7 +65,7 @@ namespace Slugs.Agents
             _editCommands.Do(entityCmd);
             _activeEntity = entityCmd.Entity;
 
-            MakeXY();
+            //MakeXY();
             //MakeLines();
 
             UIMode = UIMode.Any;

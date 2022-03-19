@@ -11,8 +11,8 @@ namespace Slugs.Commands.Tasks
 		public IPoint IPoint => Point;
 		public CreateRefPointTask(PadKind padKind, int targetKey) : base(padKind)
 		{
-			TargetKey = targetKey;
-			// create ref, assign key
+            // always reference a terminal point key
+			TargetKey = Pad.ResolvedPointFor(Pad.PointAt(targetKey)).Key;
 		}
 
 		public override void RunTask()

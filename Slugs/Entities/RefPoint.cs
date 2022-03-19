@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.Windows.Forms;
+using SkiaSharp;
 using Slugs.Agents;
 using Slugs.Pads;
 
@@ -57,7 +58,7 @@ namespace Slugs.Entities
 			}
 			return dup;
 		}
-        public override bool CanMergeWith(IPoint point)
+		public override bool CanMergeWith(IPoint point)
 		{
 			return TargetPoint.CanMergeWith(point.TargetPoint);
 		}

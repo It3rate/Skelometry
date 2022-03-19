@@ -13,22 +13,25 @@ namespace Slugs.Commands.Tasks
 
     public class RemoveElementTask : EditTask, IChangeTask
     {
-	    public int ElementKey { get; }
+	    public List<int> ElementKeys { get; }
 	    private IElement _removedElement;
 	    private IEnumerable<IConstraint> _removedConstraints = new List<IConstraint>();
 
 	    public RemoveElementTask(PadKind padKind, IElement element) : base(padKind)
 	    {
-		    ElementKey = element.Key;
+		    ElementKeys = element.AllKeys;
 	    }
 
 	    public override void RunTask()
 	    {
 		    base.RunTask();
-		    _removedElement = Pad.ElementAt(ElementKey);
-            Pad.RemoveElement(ElementKey);
-            _removedConstraints = Pad.GetRelatedConstraints(_removedElement);
-            Pad.RemoveConstraints(_removedConstraints);
+		    foreach (var key in ElementKeys)
+		    {
+			    _removedElement = Pad.ElementAt(key);
+	            Pad.RemoveElement(key);
+	            _removedConstraints = Pad.GetRelatedConstraints(_removedElement);
+	            Pad.RemoveConstraints(_removedConstraints);
+		    }
 	    }
 
 	    public override void UnRunTask()

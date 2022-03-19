@@ -96,7 +96,16 @@ namespace Slugs.Entities
         public void RemoveElement(int key)
         {
 	        var element = ElementAt(key);
-	        _elements.Remove(key);
+	        if (element is TerminalPoint tp)
+	        {
+		        var values = _elements.Values.Where(val => val is RefPoint rp && rp.TargetKey == tp.Key).ToList();
+		        foreach (var val in values)
+		        {
+			        Dereferece((RefPoint)val);
+		        }
+	        }
+
+            _elements.Remove(key);
 
 	        if (element is Trait)
 	        {
@@ -108,9 +117,15 @@ namespace Slugs.Entities
 	        }
 	        else if (element is Focal focal)
 	        {
-                focal.Trait.RemoveFocal(focal);
+		        focal.Trait.RemoveFocal(focal);
 	        }
         }
+
+        public void Dereferece(RefPoint refPoint)
+        {
+	        _elements[refPoint.Key] = new TerminalPoint(PadKind, refPoint.Position);
+        }
+
         public void ClearElements()
         {
 	        _elements.Clear();
