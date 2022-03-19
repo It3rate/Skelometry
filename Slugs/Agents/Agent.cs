@@ -274,7 +274,7 @@ namespace Slugs.Agents
                         var point = eKind.IsPoint() ? (IPoint) Data.Begin.FirstElement : Data.Begin.Point;
                         var pointTrait = InputPad.TraitWithPoint(point);
 
-                        if (eKind == ElementKind.Trait || !pointTrait.IsEmpty) // make focal if creating something on a trait
+                        if (UIMode != UIMode.CreateTrait && (eKind == ElementKind.Trait || !pointTrait.IsEmpty)) // make focal if creating something on a trait
                         {
 	                        var trait = (eKind == ElementKind.Trait) ? (Trait)Data.Begin.FirstElement : pointTrait;
 	                        var startT = trait.TFromPoint(Data.Begin.Position).Item1;
@@ -531,6 +531,9 @@ namespace Slugs.Agents
 			    case Keys.B:
 				    UIMode = UIMode.CreateBond;
 				    break;
+			    case Keys.Delete:
+				    DeleteSelected();
+				    break;
 			    case Keys.U:
 				    UIMode = UIMode.SetUnit;
 				    break;
@@ -599,6 +602,15 @@ namespace Slugs.Agents
             return result;
         }
 
+        private void DeleteSelected()
+        {
+	        if (Data.Selected.HasElement)
+	        {
+		        var element = Data.Selected.FirstElement;
+		        var remCommand = new RemoveElementCommand(InputPad, element);
+		        _editCommands.Do(remCommand);
+	        }
+        }
         private void StartPan()
         {
 	        if (UIMode != UIMode.Pan)

@@ -35,6 +35,7 @@ namespace Slugs.Input
         public IElement LastElement => _elements.LastElement;
         public ElementKind ElementKind => _elements.Kind;
         public void ClearElements() => _elements.Clear();
+        public List<int> AllElementKeys => _elements.AllKeys;
 
         public bool HasSelection => !Point.IsEmpty || _elements.Count > 0;
         public bool HasPoint => !Point.IsEmpty;

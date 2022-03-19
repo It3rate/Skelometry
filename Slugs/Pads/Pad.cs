@@ -106,6 +106,10 @@ namespace Slugs.Entities
 	        {
 		        _entityKeys.Remove(element.Key);
 	        }
+	        else if (element is Focal focal)
+	        {
+                focal.Trait.RemoveFocal(focal);
+	        }
         }
         public void ClearElements()
         {
