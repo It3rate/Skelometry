@@ -103,9 +103,32 @@ namespace Slugs.Primitives
 	        get
 	        {
 		        var dif = EndPoint - StartPoint;
-		        return (float) Math.Atan2(dif.Y, dif.X);
+		        return (float)Math.Atan2(dif.Y, dif.X);
+	        }
+	        set
+	        {
+		        var radius = Length;
+		        var sp = StartPoint;
+		        var ep = new SKPoint((float)Math.Cos(value) * radius + sp.X, (float)Math.Sin(value) * radius + sp.Y);
+		        EndPoint = ep;
 	        }
         }
+        public float AngleDegrees
+        {
+	        get => MathF.ToDegrees(Angle);
+	        set => Angle = MathF.ToRadians(value);
+        }
+
+        public SKPoint SnapAngleToStep(int stepDegrees = 15)
+        {
+	        var angle = AngleDegrees + 360;
+	        var rem = angle % stepDegrees;
+	        var centerOffset = rem > stepDegrees / 2f ? stepDegrees : 0f;
+            var clamp = (int)(angle / stepDegrees) * stepDegrees + centerOffset;
+            Angle = MathF.ToRadians(clamp);
+	        return EndPoint;
+        }
+
         public SKPoint OrthogonalPoint(SKPoint pt, float offset)
         {
             var angle = (EndPoint - StartPoint).Angle();

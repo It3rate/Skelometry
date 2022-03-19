@@ -15,5 +15,8 @@
         public const float PI = (float)Math.PI;
         public const float PIAndAHalf = (float)Math.PI * 1.5f;
         public const float TwoPI = (float)Math.PI * 2f;
+
+        public static float ToDegrees(float radAngle) => (radAngle / MathF.PI) * 180f;
+        public static float ToRadians(float degAngle) => (degAngle * MathF.PI) / 180f;
     }
 }

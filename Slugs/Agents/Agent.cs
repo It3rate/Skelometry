@@ -332,7 +332,6 @@ namespace Slugs.Agents
 						}
 
 					}
-					
 					IsDragging = true;
 				}
 		    }
@@ -343,8 +342,15 @@ namespace Slugs.Agents
 		    {
 			    Data.Selected.UpdatePositions(mousePoint);
 		    }
-		    
-		    if (_activeCommand is AddSingleBondCommand abc)
+
+		    if (_activeCommand is AddTraitCommand atc)
+		    {
+			    if (_isControlDown)
+			    {
+				    atc.AddedTrait.SnapAngleToStep(15);
+			    }
+		    }
+		    else if (_activeCommand is AddSingleBondCommand abc)
 		    {
 			    var focal = _activeEntity.NearestFocal(mousePoint, abc.StartPointTask.FocalKey);
 			    if (!focal.IsEmpty && focal.Key != abc.EndPointTask.FocalKey)
@@ -584,7 +590,6 @@ namespace Slugs.Agents
 	            _isShiftDown = e.Shift;
 	            _isAltDown = e.Alt;
 	            _startMatrix = Data.Matrix;
-	            //_selectableKind = ElementKind.Any;
 	            if (UIMode.IsMomentary())
 	            {
 		            UIMode = PreviousMode;

@@ -137,6 +137,12 @@ namespace Slugs.Entities
 	        EndPoint.Position = seg.EndPoint;
         }
 
+        public SKPoint SnapAngleToStep(int stepDegrees = 15)
+        {
+	        EndPoint.Position = Segment.SnapAngleToStep(stepDegrees);
+            return EndPoint.Position;
+        }
+
         public static bool operator ==(Trait left, Trait right) => 
 	        left.Key == right.Key && left.TraitKind == right.TraitKind && left.StartKey == right.StartKey && left.EndKey == right.EndKey;
         public static bool operator !=(Trait left, Trait right) => 
