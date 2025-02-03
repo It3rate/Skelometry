@@ -179,5 +179,4 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
   </Target>
-  <Import Project="..\packages\SkiaSharp.NativeAssets.Win32.2.88.0-preview.152\build\net462\SkiaSharp.NativeAssets.Win32.targets" Condition="Exists('..\packages\SkiaSharp.NativeAssets.Win32.2.88.0-preview.152\build\net462\SkiaSharp.NativeAssets.Win32.targets')" />
 </Project>

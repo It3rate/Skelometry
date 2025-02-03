@@ -12,7 +12,7 @@ namespace Slugs.Commands.EditCommands
         Pad Pad { get; }
         PadKind PadKind { get; }
         ICommandStack Stack { get; set; }
-
+         
         int CommandKey { get; }
         List<ITask> Tasks { get; }
         bool IsContinuous { get; }

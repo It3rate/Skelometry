@@ -4,8 +4,8 @@ using System.Numerics;
 
 namespace Slugs.Primitives
 {
-	public struct Slug : IEquatable<Slug>
-    {
+	public struct Slug : ISegment
+	{
         // This should all be done with ints, setting a unit size abs(real-imaginary), and a max value. I think.
 
         public static readonly Slug Empty = new Slug(0.0, 1.0, true); // instead of empty, perhaps the fall back slug is always UnitSlug?
@@ -156,10 +156,31 @@ namespace Slugs.Primitives
 
         public static bool operator ==(Slug left, Slug right) => left.Real == right.Real && left.Imaginary == right.Imaginary;
         public static bool operator !=(Slug left, Slug right) => left.Real != right.Real || left.Imaginary != right.Imaginary;
-        public override bool Equals(object obj) => obj is Slug slug && this == slug;
-        public bool Equals(Slug value) => this.Real.Equals(value.Real) && this.Imaginary.Equals(value.Imaginary);
-        public override int GetHashCode() => Real.GetHashCode() % 99999997 ^ Imaginary.GetHashCode();
-        
+        public override bool Equals(object obj)
+        {
+	        return obj is Slug other && Equals(other);
+        }
+
+        public bool Equals(ISegment other)
+        {
+	        return Imaginary.Equals(other.Imaginary) && Real.Equals(other.Real);
+        }
+        public bool Equals(Slug value)
+        {
+	        return Imaginary.Equals(value.Imaginary) && Real.Equals(value.Real);
+        }
+
+        public override int GetHashCode()
+        {
+	        unchecked
+	        {
+		        var hashCode = Imaginary.GetHashCode();
+		        hashCode = (hashCode * 397) ^ Real.GetHashCode();
+		        return hashCode;
+	        }
+        }
+
+
         public override string ToString() => string.Format((IFormatProvider)CultureInfo.CurrentCulture, "({0}, {1})", new object[2]
         {
 	        (object) this.Imaginary,

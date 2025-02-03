@@ -65,7 +65,7 @@ namespace Slugs.Agents
             _editCommands.Do(entityCmd);
             _activeEntity = entityCmd.Entity;
 
-            //MakeXY();
+            MakeXY();
             //MakeLines();
 
             UIMode = UIMode.Any;
@@ -137,8 +137,8 @@ namespace Slugs.Agents
 
             _editCommands.Do(collCommand, collCommand2, coinCommand, midCommand, parCommand, eqCommand, hCommand, vCommand);
 
-            var remCommand = new RemoveElementCommand(InputPad, t3.AddedTrait);
-            _editCommands.Do(remCommand);
+            //var remCommand = new RemoveElementCommand(InputPad, t3.AddedTrait);
+            //_editCommands.Do(remCommand);
         }
 
         private void MakeLines()
